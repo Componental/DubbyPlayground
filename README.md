@@ -8,7 +8,7 @@ This repository is a template C++ project for **Dubby**. For information about t
 
 ## How to use
 
-For the most smooth experience clone this repository into DaisyExamples/MyProjects.
+For the most smooth experience copy the **DubbyPlayground** folder from this repository into folder **DaisyExamples/MyProjects**.
 
 For more information on setting the C++ development environment on your computer visit Electrosmith's [Instructions on GitHub](https://github.com/electro-smith/DaisyWiki/wiki/1.-Setting-Up-Your-Development-Environment).
 
