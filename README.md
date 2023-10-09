@@ -4,7 +4,7 @@
 
 ## Getting started
 
-This repository is a template C++ project for **Dubby**. For information about the product visit [Componental](https://www.componental.co/).
+This repository is a C++ template project for **Dubby**. For information about the product visit [Componental](https://www.componental.co/).
 
 ## How to use
 
@@ -15,7 +15,7 @@ For more information on setting the C++ development environment on your computer
 
 ## File structure
 
-Class **Dubby (Dubby.h and Dubby.cpp)** handles all the hardware configurations for the Dubby hardware.
+Class **Dubby (Dubby.h and Dubby.cpp)** configures the Dubby hardware.
 Class **DubbyPlayground** is where you can write your code.
 
 ## Open to contribution
