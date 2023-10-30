@@ -12,7 +12,7 @@
       "includePath": [
         "${workspaceFolder}/**",
         "${workspaceFolder}/../../libDaisy//**",
-        "${workspaceFolder}/../../DaisySP//**"
+        "${workspaceFolder}/../../DaisySP//**",
       ],
       "name": "Win32",
       "windowsSdkVersion": "10.0.17763.0"

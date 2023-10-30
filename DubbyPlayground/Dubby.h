@@ -14,20 +14,23 @@ class Dubby
 {
   public:
 
-    enum MenuItems { 
+    enum MenuItems 
+    { 
         MENU1, 
         MENU2, 
         MENU3,
         MENU_LAST // used to know the size of enum
     };
     
-    const char * MenuItemsStrings[MENU_LAST] = { 
+    const char * MenuItemsStrings[MENU_LAST] = 
+    { 
         "SCOPE", 
         "MIXER", 
         "PREFS" 
     };
     
-    enum PreferenesMenuItems { 
+    enum PreferenesMenuItems 
+    { 
         OPTION1, 
         OPTION2,
         OPTION3,
@@ -35,16 +38,39 @@ class Dubby
         PREFERENCESMENU_LAST // used to know the size of enum
     };
     
-    const char * PreferencesMenuItemsStrings[PREFERENCESMENU_LAST] = { 
+    const char * PreferencesMenuItemsStrings[PREFERENCESMENU_LAST] = 
+    { 
         "Routing", 
-        "Parameters",
+        "Params",
         "Elements",
         "DFU Mode"
     };
 
-    enum MenuTypes {
+    enum MenuTypes 
+    {
         MAINMENU,
         PREFERENCESMENU
+    };
+
+    enum Ctrl
+    {
+        CTRL_1,   // knob 1
+        CTRL_2,   // knob 2
+        CTRL_3,   // knob 3
+        CTRL_4,   // knob 4
+        CTRL_5,   // joystick horizontal
+        CTRL_6,   // joystick vertical
+        CTRL_LAST
+    };
+
+    enum GateInput
+    {
+        GATE_IN_1,  // button 1
+        GATE_IN_2,  // button 2
+        GATE_IN_3,  // button 3
+        GATE_IN_4,  // button 4
+        GATE_IN_5,  // joystick button
+        GATE_IN_LAST,
     };
 
     Dubby() {}
@@ -52,8 +78,6 @@ class Dubby
     ~Dubby() {}
 
     void Init();
-
-    void InitDisplay();
 
     void UpdateDisplay();
 
@@ -79,15 +103,13 @@ class Dubby
 
     void UpdatePreferencesMenu(int increment);
 
-    void InitEncoder();
-
     void ProcessAllControls();
 
     void ProcessAnalogControls();
 
     void ProcessDigitalControls();
-
-    void InitAudio();
+    
+    float GetKnobValue(Ctrl k);
 
     const char * GetTextForEnum(MenuTypes m, int enumVal);
 
@@ -103,12 +125,9 @@ class Dubby
     const int menuBoxBounding[3][4] = { {0, 53, 43, 63}, {43, 53, 85, 63}, {85, 53, 127, 63} }; 
     int submenuBoxBounding[5][4];
 
-    // IO declaration,
-    Switch button1, button2, button3, button4, js_sel;
     Encoder encoder;   
-
-    float pots[4];
-    float js_v, js_h;
+    AnalogControl analogInputs[CTRL_LAST];
+    GateIn gateInputs[GATE_IN_LAST];  
 
     float scope_buffer[AUDIO_BLOCK_SIZE] = {0.f};
     
@@ -117,7 +136,13 @@ class Dubby
     OledDisplay<SSD130x4WireSpi128x64Driver> display;
 
   private:
-  
+
+    void InitAudio();
+    void InitControls();
+    void InitEncoder();
+    void InitDisplay();
+    void InitGates();
+
     int margin = 8;
     bool menuActive = false;
     uint32_t screen_update_last_, screen_update_period_;

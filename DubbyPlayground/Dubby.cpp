@@ -35,23 +35,8 @@ using namespace daisy;
 
 void Dubby::Init() 
 {
-    // IO initialization
-    button1.Init(seed.GetPin(PIN_GATE_IN_1), 1000);
-    button2.Init(seed.GetPin(PIN_GATE_IN_2), 1000);
-    button3.Init(seed.GetPin(PIN_GATE_IN_3), 1000);
-    button4.Init(seed.GetPin(PIN_GATE_IN_4), 1000);
-    js_sel.Init(seed.GetPin(PIN_JS_CLICK), 1000);
-
-    AdcChannelConfig adc[6]; //array size for number of ADC channels you need
-
-    adc[0].InitSingle(seed.GetPin(PIN_KNOB_1));
-    adc[1].InitSingle(seed.GetPin(PIN_KNOB_2));
-    adc[2].InitSingle(seed.GetPin(PIN_KNOB_3));
-    adc[3].InitSingle(seed.GetPin(PIN_KNOB_4));
-    adc[4].InitSingle(seed.GetPin(PIN_JS_V));
-    adc[5].InitSingle(seed.GetPin(PIN_JS_H));
-    seed.adc.Init(adc, 6);
-    seed.adc.Start();
+    InitControls();
+    InitGates();
     
     screen_update_period_ = 17; // roughly 60Hz
     screen_update_last_   = seed.system.GetNow();
@@ -66,7 +51,48 @@ void Dubby::Init()
 
     InitDisplay();
     InitEncoder();
+    InitAudio();
 }
+
+void Dubby::InitControls()
+{
+    AdcChannelConfig cfg[CTRL_LAST];
+
+    // Init ADC channels with Pins
+    cfg[CTRL_1].InitSingle(seed.GetPin(PIN_KNOB_1));
+    cfg[CTRL_2].InitSingle(seed.GetPin(PIN_KNOB_2));
+    cfg[CTRL_3].InitSingle(seed.GetPin(PIN_KNOB_3));
+    cfg[CTRL_4].InitSingle(seed.GetPin(PIN_KNOB_4));
+    cfg[CTRL_5].InitSingle(seed.GetPin(PIN_JS_H));
+    cfg[CTRL_6].InitSingle(seed.GetPin(PIN_JS_V));
+
+    // Initialize ADC
+    seed.adc.Init(cfg, CTRL_LAST);
+
+    // Initialize analogInputs, with flip set to true
+    for(size_t i = 0; i < CTRL_LAST; i++)
+    {
+        analogInputs[i].Init(seed.adc.GetPtr(i), seed.AudioCallbackRate(), true);
+    }
+
+    seed.adc.Start();
+}
+
+void Dubby::InitGates()
+{
+    dsy_gpio_pin pin;
+    pin = seed.GetPin(PIN_GATE_IN_1);
+    gateInputs[GATE_IN_1].Init(&pin);
+    pin = seed.GetPin(PIN_GATE_IN_2);
+    gateInputs[GATE_IN_2].Init(&pin);
+    pin = seed.GetPin(PIN_GATE_IN_3);
+    gateInputs[GATE_IN_3].Init(&pin);
+    pin = seed.GetPin(PIN_GATE_IN_4);
+    gateInputs[GATE_IN_4].Init(&pin);
+    pin = seed.GetPin(PIN_JS_CLICK);
+    gateInputs[GATE_IN_5].Init(&pin);
+}
+
 
 void Dubby::InitDisplay() 
 {
@@ -226,7 +252,7 @@ void Dubby::UpdateSubmenu()
 void Dubby::UpdateBar(int i) 
 {
     display.DrawRect((i * 32)  + margin, 1, ((i + 1) * 31) - margin, 51, false, true);
-    display.DrawRect((i * 32)  + margin, int(pots[i] * 51.0f) + 1, ((i + 1) * 31) - margin, 51, true, false);
+    display.DrawRect((i * 32)  + margin, int(abs(1.0f - GetKnobValue(static_cast<Dubby::Ctrl>(i))) * 51.0f) + 1, ((i + 1) * 31) - margin, 51, true, false);
     display.DrawRect((i * 32)  + margin, int(abs((currentLevels[i] * 5.0f) - 1.0f) * 51.0f) + 1, ((i + 1) * 31) - margin, 51, true, true);
     
     display.Update();
@@ -312,20 +338,18 @@ void Dubby::ProcessAllControls()
 
 void Dubby::ProcessAnalogControls()
 {
-    for (int i = 0; i < 4; i++) pots[i] = seed.adc.GetFloat(i);
-
-    js_v = seed.adc.GetFloat(4);
-    js_h = seed.adc.GetFloat(5);
+    for(size_t i = 0; i < CTRL_LAST; i++)
+        analogInputs[i].Process();
 }
 
 void Dubby::ProcessDigitalControls()
 {
-    button1.Debounce();
-    button2.Debounce();
-    button3.Debounce();
-    button4.Debounce();
-    js_sel.Debounce();
     encoder.Debounce();
+}
+
+float Dubby::GetKnobValue(Ctrl k)
+{
+    return (analogInputs[k].Value());
 }
 
 void Dubby::InitAudio() 
@@ -412,6 +436,7 @@ const char * Dubby::GetTextForEnum(MenuTypes m, int enumVal)
             return PreferencesMenuItemsStrings[enumVal];
             break;
         default:
+            return "";
             break;
     }
 }

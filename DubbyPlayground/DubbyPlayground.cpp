@@ -15,7 +15,7 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
 	{
         for (int j = 0; j < 4; j++) 
         {
-            out[j][i] = abs(dubby.pots[j] - 1.0f) * in[j][i];
+            out[j][i] = dubby.GetKnobValue(static_cast<Dubby::Ctrl>(j)) * in[j][i];
 
             float sample = out[j][i];
             sumSquared[j] += sample * sample;
@@ -30,12 +30,13 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
 int main(void)
 {
 	dubby.seed.Init();
-    dubby.InitAudio();
-	dubby.seed.SetAudioBlockSize(AUDIO_BLOCK_SIZE); // number of samples handled per callback
-	dubby.seed.SetAudioSampleRate(SaiHandle::Config::SampleRate::SAI_48KHZ);
+    // dubby.InitAudio();
 	// dubby.seed.StartLog(true);
 
     dubby.Init();
+    
+	dubby.seed.SetAudioBlockSize(AUDIO_BLOCK_SIZE); // number of samples handled per callback
+	dubby.seed.SetAudioSampleRate(SaiHandle::Config::SampleRate::SAI_48KHZ);
     dubby.ProcessAllControls();
 
     dubby.DrawLogo(); 

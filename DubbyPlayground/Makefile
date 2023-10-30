@@ -2,7 +2,7 @@
 TARGET = DubbyPlayground
 
 # Sources
-CPP_SOURCES = \ DubbyPlayground.cpp \ Dubby.cpp
+CPP_SOURCES = / DubbyPlayground.cpp / Dubby.cpp
 
 # Library Locations
 LIBDAISY_DIR = ../../libDaisy/
