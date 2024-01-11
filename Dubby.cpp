@@ -36,7 +36,7 @@ using namespace daisy;
 void Dubby::Init() 
 {
     InitControls();
-    InitGates();
+    InitButtons();
     
     screen_update_period_ = 17; // roughly 60Hz
     screen_update_last_   = seed.system.GetNow();
@@ -78,19 +78,13 @@ void Dubby::InitControls()
     seed.adc.Start();
 }
 
-void Dubby::InitGates()
+void Dubby::InitButtons()
 {
-    dsy_gpio_pin pin;
-    pin = seed.GetPin(PIN_GATE_IN_1);
-    gateInputs[GATE_IN_1].Init(&pin);
-    pin = seed.GetPin(PIN_GATE_IN_2);
-    gateInputs[GATE_IN_2].Init(&pin);
-    pin = seed.GetPin(PIN_GATE_IN_3);
-    gateInputs[GATE_IN_3].Init(&pin);
-    pin = seed.GetPin(PIN_GATE_IN_4);
-    gateInputs[GATE_IN_4].Init(&pin);
-    pin = seed.GetPin(PIN_JS_CLICK);
-    gateInputs[GATE_IN_5].Init(&pin);
+    //Set button to pins, to be updated at a 1kHz  samplerate
+    buttons[0].Init(seed.GetPin(PIN_GATE_IN_1), 1000);
+    buttons[1].Init(seed.GetPin(PIN_GATE_IN_2), 1000);
+    buttons[2].Init(seed.GetPin(PIN_GATE_IN_3), 1000);
+    buttons[3].Init(seed.GetPin(PIN_GATE_IN_4), 1000);
 }
 
 
@@ -345,6 +339,8 @@ void Dubby::ProcessAnalogControls()
 void Dubby::ProcessDigitalControls()
 {
     encoder.Debounce();
+    
+    for (int i = 0; i < 4; i++) buttons[i].Debounce();
 }
 
 float Dubby::GetKnobValue(Ctrl k)

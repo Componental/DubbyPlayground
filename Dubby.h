@@ -128,6 +128,7 @@ class Dubby
     Encoder encoder;   
     AnalogControl analogInputs[CTRL_LAST];
     GateIn gateInputs[GATE_IN_LAST];  
+    Switch buttons[4];
 
     float scope_buffer[AUDIO_BLOCK_SIZE] = {0.f};
     
@@ -141,7 +142,7 @@ class Dubby
     void InitControls();
     void InitEncoder();
     void InitDisplay();
-    void InitGates();
+    void InitButtons();
 
     int margin = 8;
     bool menuActive = false;

@@ -31,7 +31,7 @@ int main(void)
 {
 	dubby.seed.Init();
     // dubby.InitAudio();
-	// dubby.seed.StartLog(true);
+	dubby.seed.StartLog(true);
 
     dubby.Init();
     
@@ -47,5 +47,12 @@ int main(void)
 	while(1) { 
         dubby.ProcessAllControls();
         dubby.UpdateDisplay();
+
+        for (int i = 0; i < 4; i++) {
+            if (dubby.buttons[i].RisingEdge())
+                dubby.seed.PrintLine("Button %d pressed", i+1);
+            else if (dubby.buttons[i].FallingEdge())
+                dubby.seed.PrintLine("Button %d released", i+1);
+        }
 	}
 }
