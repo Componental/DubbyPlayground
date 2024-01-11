@@ -1,4 +1,4 @@
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 1
 
 
    1              		.cpu cortex-m7
@@ -58,7 +58,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
   27:../../libDaisy//src/hid/disp/oled_display.h ****     uint16_t Height() const override { return driver_.Height(); }
   30              		.loc 1 27 14 view -0
   31              		.cfi_startproc
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 2
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 2
 
 
   32              		@ args = 0, pretend = 0, frame = 0
@@ -118,7 +118,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
   12:Dubby.cpp     **** #define PIN_KNOB_3 21
   13:Dubby.cpp     **** #define PIN_KNOB_4 22
   14:Dubby.cpp     **** #define PIN_JS_CLICK 3
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 3
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 3
 
 
   15:Dubby.cpp     **** #define PIN_JS_V 20
@@ -178,7 +178,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
   69:Dubby.cpp     ****     // Initialize ADC
   70:Dubby.cpp     ****     seed.adc.Init(cfg, CTRL_LAST);
   71:Dubby.cpp     **** 
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 4
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 4
 
 
   72:Dubby.cpp     ****     // Initialize analogInputs, with flip set to true
@@ -238,7 +238,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  126:Dubby.cpp     ****             UpdateMixerPane();
  127:Dubby.cpp     ****             break;
  128:Dubby.cpp     ****         case MENU3:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 5
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 5
 
 
  129:Dubby.cpp     ****             if (encoder.Pressed() && preferencesMenuItemSelected == OPTION4) ResetToBootloader();
@@ -298,7 +298,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  183:Dubby.cpp     **** 
  184:Dubby.cpp     ****     display.Fill(false);
  185:Dubby.cpp     **** 
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 6
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 6
 
 
  186:Dubby.cpp     ****     if (higlight) HightlightMenuItem();
@@ -358,7 +358,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  240:Dubby.cpp     ****             // for (int i = 0; i < 4; i++) UpdateBar(i);
  241:Dubby.cpp     ****             break;
  242:Dubby.cpp     ****         case MENU3:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 7
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 7
 
 
  243:Dubby.cpp     ****             DisplayPreferencesMenu();
@@ -418,7 +418,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
    6:../../libDaisy//src/hid/disp/display.h **** #include "daisy_core.h"
    7:../../libDaisy//src/hid/disp/display.h **** #include "graphics_common.h"
    8:../../libDaisy//src/hid/disp/display.h **** 
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 8
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 8
 
 
    9:../../libDaisy//src/hid/disp/display.h **** #ifndef deg2rad
@@ -478,7 +478,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
   63:../../libDaisy//src/hid/disp/display.h ****                           bool         on)
   64:../../libDaisy//src/hid/disp/display.h ****         = 0;
   65:../../libDaisy//src/hid/disp/display.h **** 
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 9
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 9
 
 
   66:../../libDaisy//src/hid/disp/display.h ****     /**
@@ -538,7 +538,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  120:../../libDaisy//src/hid/disp/display.h ****     \param radius      radius of the circle
  121:../../libDaisy//src/hid/disp/display.h ****     \param on  on or off
  122:../../libDaisy//src/hid/disp/display.h ****     */
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 10
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 10
 
 
  123:../../libDaisy//src/hid/disp/display.h ****     void
@@ -598,7 +598,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  177:../../libDaisy//src/hid/disp/display.h ****     /** 
  178:../../libDaisy//src/hid/disp/display.h ****     Writes the current display buffer to the OLED device using SPI or I2C depending on 
  179:../../libDaisy//src/hid/disp/display.h ****     how the object was initialized.
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 11
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 11
 
 
  180:../../libDaisy//src/hid/disp/display.h ****     */
@@ -658,7 +658,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  234:../../libDaisy//src/hid/disp/display.h ****         // If we write "ChildType::DrawPixel(x2, y2, on);", we end up with
  235:../../libDaisy//src/hid/disp/display.h ****         // all sorts of weird compiler errors when the Child class is a template
  236:../../libDaisy//src/hid/disp/display.h ****         // class. The only way around this is to use this very verbose syntax:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 12
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 12
 
 
  237:../../libDaisy//src/hid/disp/display.h ****         ((ChildType*)(this))->ChildType::DrawPixel(x2, y2, on);
@@ -718,7 +718,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  124              	.LBI269:
  257:../../libDaisy//src/hid/disp/display.h ****                   uint_fast8_t y1,
  125              		.loc 3 257 10 view .LVU15
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 13
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 13
 
 
  126              	.LBB285:
@@ -778,7 +778,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
   24:../../libDaisy//src/dev/oled_ssd130x.h ****         }
   25:../../libDaisy//src/dev/oled_ssd130x.h ****         I2CHandle::Config i2c_config;
   26:../../libDaisy//src/dev/oled_ssd130x.h ****         uint8_t           i2c_address;
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 14
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 14
 
 
   27:../../libDaisy//src/dev/oled_ssd130x.h ****         void              Defaults()
@@ -838,7 +838,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
   81:../../libDaisy//src/dev/oled_ssd130x.h ****         void Defaults()
   82:../../libDaisy//src/dev/oled_ssd130x.h ****         {
   83:../../libDaisy//src/dev/oled_ssd130x.h ****             // SPI peripheral config
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 15
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 15
 
 
   84:../../libDaisy//src/dev/oled_ssd130x.h ****             spi_config.periph = SpiHandle::Config::Peripheral::SPI_1;
@@ -898,7 +898,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  138:../../libDaisy//src/dev/oled_ssd130x.h **** };
  139:../../libDaisy//src/dev/oled_ssd130x.h **** 
  140:../../libDaisy//src/dev/oled_ssd130x.h **** /**
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 16
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 16
 
 
  141:../../libDaisy//src/dev/oled_ssd130x.h ****  * Soft SPI Transport for SSD1306 / SSD1309 OLED display devices
@@ -958,7 +958,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  195:../../libDaisy//src/dev/oled_ssd130x.h ****         dsy_gpio_write(&pin_reset_, 1);
  196:../../libDaisy//src/dev/oled_ssd130x.h ****         System::Delay(10);
  197:../../libDaisy//src/dev/oled_ssd130x.h ****     };
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 17
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 17
 
 
  198:../../libDaisy//src/dev/oled_ssd130x.h ****     void SendCommand(uint8_t cmd)
@@ -1018,7 +1018,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  252:../../libDaisy//src/dev/oled_ssd130x.h **** 
  253:../../libDaisy//src/dev/oled_ssd130x.h ****     void Init(Config config)
  254:../../libDaisy//src/dev/oled_ssd130x.h ****     {
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 18
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 18
 
 
  255:../../libDaisy//src/dev/oled_ssd130x.h ****         transport_.Init(config.transport_config);
@@ -1078,7 +1078,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  309:../../libDaisy//src/dev/oled_ssd130x.h ****                 // Multiplex Ratio
  310:../../libDaisy//src/dev/oled_ssd130x.h ****                 transport_.SendCommand(0xA8);
  311:../../libDaisy//src/dev/oled_ssd130x.h ****                 transport_.SendCommand(0x3F);
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 19
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 19
 
 
  312:../../libDaisy//src/dev/oled_ssd130x.h ****                 // COM Pins
@@ -1138,7 +1138,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  147 0014 D308     		lsrs	r3, r2, #3
  148              		.loc 4 359 55 view .LVU23
  149 0016 02F00701 		and	r1, r2, #7
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 20
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 20
 
 
  150              		.loc 4 359 49 view .LVU24
@@ -1198,7 +1198,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  266:../../libDaisy//src/hid/disp/display.h ****             {
  202              		.loc 3 266 40 is_stmt 0 view .LVU36
  203 0044 A146     		mov	r9, r4
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 21
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 21
 
 
  204              	.LBE285:
@@ -1258,7 +1258,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
    1:/Library/DaisyToolchain/0.2.0/arm/arm-none-eabi/include/c++/10.3.1/bits/stl_algobase.h **** // Core algorithmic facilities -*- C++ -*-
    2:/Library/DaisyToolchain/0.2.0/arm/arm-none-eabi/include/c++/10.3.1/bits/stl_algobase.h **** 
    3:/Library/DaisyToolchain/0.2.0/arm/arm-none-eabi/include/c++/10.3.1/bits/stl_algobase.h **** // Copyright (C) 2001-2020 Free Software Foundation, Inc.
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 22
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 22
 
 
    4:/Library/DaisyToolchain/0.2.0/arm/arm-none-eabi/include/c++/10.3.1/bits/stl_algobase.h **** //
@@ -1318,7 +1318,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
   58:/Library/DaisyToolchain/0.2.0/arm/arm-none-eabi/include/c++/10.3.1/bits/stl_algobase.h **** 
   59:/Library/DaisyToolchain/0.2.0/arm/arm-none-eabi/include/c++/10.3.1/bits/stl_algobase.h **** #include <bits/c++config.h>
   60:/Library/DaisyToolchain/0.2.0/arm/arm-none-eabi/include/c++/10.3.1/bits/stl_algobase.h **** #include <bits/functexcept.h>
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 23
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 23
 
 
   61:/Library/DaisyToolchain/0.2.0/arm/arm-none-eabi/include/c++/10.3.1/bits/stl_algobase.h **** #include <bits/cpp_type_traits.h>
@@ -1378,7 +1378,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  115:/Library/DaisyToolchain/0.2.0/arm/arm-none-eabi/include/c++/10.3.1/bits/stl_algobase.h ****       template<typename _ForwardIterator1, typename _ForwardIterator2>
  116:/Library/DaisyToolchain/0.2.0/arm/arm-none-eabi/include/c++/10.3.1/bits/stl_algobase.h **** 	static void
  117:/Library/DaisyToolchain/0.2.0/arm/arm-none-eabi/include/c++/10.3.1/bits/stl_algobase.h **** 	iter_swap(_ForwardIterator1 __a, _ForwardIterator2 __b)
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 24
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 24
 
 
  118:/Library/DaisyToolchain/0.2.0/arm/arm-none-eabi/include/c++/10.3.1/bits/stl_algobase.h **** 	{
@@ -1438,7 +1438,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  172:/Library/DaisyToolchain/0.2.0/arm/arm-none-eabi/include/c++/10.3.1/bits/stl_algobase.h **** 	_ReferenceType1;
  173:/Library/DaisyToolchain/0.2.0/arm/arm-none-eabi/include/c++/10.3.1/bits/stl_algobase.h ****       typedef typename iterator_traits<_ForwardIterator2>::reference
  174:/Library/DaisyToolchain/0.2.0/arm/arm-none-eabi/include/c++/10.3.1/bits/stl_algobase.h **** 	_ReferenceType2;
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 25
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 25
 
 
  175:/Library/DaisyToolchain/0.2.0/arm/arm-none-eabi/include/c++/10.3.1/bits/stl_algobase.h ****       std::__iter_swap<__are_same<_ValueType1, _ValueType2>::__value
@@ -1498,7 +1498,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  229:/Library/DaisyToolchain/0.2.0/arm/arm-none-eabi/include/c++/10.3.1/bits/stl_algobase.h ****     inline const _Tp&
  230:/Library/DaisyToolchain/0.2.0/arm/arm-none-eabi/include/c++/10.3.1/bits/stl_algobase.h ****     min(const _Tp& __a, const _Tp& __b)
  231:/Library/DaisyToolchain/0.2.0/arm/arm-none-eabi/include/c++/10.3.1/bits/stl_algobase.h ****     {
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 26
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 26
 
 
  232:/Library/DaisyToolchain/0.2.0/arm/arm-none-eabi/include/c++/10.3.1/bits/stl_algobase.h ****       // concept requirements
@@ -1558,7 +1558,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  261              	.LVL15:
  262              		.loc 5 259 7 view .LVU51
  263              	.LBE294:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 27
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 27
 
 
  264              	.LBE296:
@@ -1618,7 +1618,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  221:../../libDaisy//src/hid/disp/display.h ****                   uint_fast8_t y1,
  305              		.loc 3 221 10 is_stmt 1 view .LVU65
  306              	.LBB317:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 28
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 28
 
 
  227:../../libDaisy//src/hid/disp/display.h ****         int_fast16_t deltaY = abs((int_fast16_t)y2 - (int_fast16_t)y1);
@@ -1678,7 +1678,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  350              	.LBB308:
  351              	.LBB305:
  352              	.LBB303:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 29
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 29
 
 
  357:../../libDaisy//src/dev/oled_ssd130x.h ****         else
@@ -1738,7 +1738,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  352:../../libDaisy//src/dev/oled_ssd130x.h ****     {
  397              		.loc 4 352 10 view .LVU89
  398              	.LBB312:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 30
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 30
 
 
  357:../../libDaisy//src/dev/oled_ssd130x.h ****         else
@@ -1798,7 +1798,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  439              		.loc 3 246 20 view .LVU103
  440 012e 029B     		ldr	r3, [sp, #8]
  245:../../libDaisy//src/hid/disp/display.h ****                 x1 += signX;
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 31
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 31
 
 
  441              		.loc 3 245 23 view .LVU104
@@ -1858,7 +1858,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  484              	.LBB327:
  124:../../libDaisy//src/dev/oled_ssd130x.h ****         spi_.BlockingTransmit(&cmd, 1);
  485              		.loc 4 124 24 is_stmt 0 view .LVU118
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 32
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 32
 
 
  486 0150 0AF58367 		add	r7, r10, #1048
@@ -1918,7 +1918,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  510              	.LBB331:
  511              	.LBB329:
  124:../../libDaisy//src/dev/oled_ssd130x.h ****         spi_.BlockingTransmit(&cmd, 1);
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 33
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 33
 
 
  512              		.loc 4 124 23 view .LVU126
@@ -1978,7 +1978,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  555 0194 3846     		mov	r0, r7
  556 0196 FFF7FEFF 		bl	_ZN5daisy9SpiHandle16BlockingTransmitEPhjm
  557              	.LVL42:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 34
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 34
 
 
  125:../../libDaisy//src/dev/oled_ssd130x.h ****     };
@@ -2038,7 +2038,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  599              		.loc 4 131 9 is_stmt 1 view .LVU151
  131:../../libDaisy//src/dev/oled_ssd130x.h ****     };
  600              		.loc 4 131 30 is_stmt 0 view .LVU152
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 35
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 35
 
 
  601 01be 8022     		movs	r2, #128
@@ -2098,7 +2098,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  647              		.loc 2 274 45 view .LVU161
  648 01d8 0134     		adds	r4, r4, #1
  649 01da 53E7     		b	.L8
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 36
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 36
 
 
  650              	.LVL51:
@@ -2158,7 +2158,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  700              		.cfi_offset 14, -4
  701 0002 0546     		mov	r5, r0
  702 0004 A3B0     		sub	sp, sp, #140
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 37
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 37
 
 
  703              		.cfi_def_cfa_offset 160
@@ -2218,7 +2218,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  745 0040 FFF7FEFF 		bl	_ZN5daisy9DaisySeed6GetPinEh
  746              	.LVL59:
  747 0044 0346     		mov	r3, r0	@ movhi
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 38
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 38
 
 
  748 0046 0DF14200 		add	r0, sp, #66
@@ -2278,7 +2278,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
   73:Dubby.cpp     ****     {
  794              		.loc 2 73 5 is_stmt 1 view .LVU189
  795              	.LBB349:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 39
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 39
 
 
   73:Dubby.cpp     ****     {
@@ -2338,7 +2338,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  838              	.LVL73:
  839              	.L51:
   79:Dubby.cpp     **** 
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 40
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 40
 
 
  840              		.loc 2 79 1 view .LVU202
@@ -2398,7 +2398,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  886 0018 FFF7FEFF 		bl	_ZN5daisy6GateIn4InitEP12dsy_gpio_pinb
  887              	.LVL77:
   86:Dubby.cpp     ****     gateInputs[GATE_IN_2].Init(&pin);
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 41
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 41
 
 
  888              		.loc 2 86 5 is_stmt 1 view .LVU213
@@ -2458,7 +2458,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  927 0052 ADF80400 		strh	r0, [sp, #4]	@ movhi
   91:Dubby.cpp     ****     pin = seed.GetPin(PIN_JS_CLICK);
  928              		.loc 2 91 5 is_stmt 1 view .LVU229
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 42
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 42
 
 
   91:Dubby.cpp     ****     pin = seed.GetPin(PIN_JS_CLICK);
@@ -2518,7 +2518,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  973              		@ args = 0, pretend = 0, frame = 24
  974              		@ frame_needed = 0, uses_anonymous_args = 0
  151:Dubby.cpp     ****     display.Fill(false);
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 43
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 43
 
 
  975              		.loc 2 151 1 is_stmt 0 view .LVU242
@@ -2578,7 +2578,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  1020 0012 00F22440 		addw	r0, r0, #1060
  1021              	.LVL90:
  1022              	.LBB394:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 44
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 44
 
 
  155:Dubby.cpp     ****         for (int y = 0; y < OLED_HEIGHT; y++) {
@@ -2638,7 +2638,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  1064              		.loc 2 158 13 is_stmt 1 view .LVU264
  161:Dubby.cpp     **** 
  1065              		.loc 2 161 13 view .LVU265
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 45
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 45
 
 
  164:Dubby.cpp     **** 
@@ -2698,7 +2698,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  359:../../libDaisy//src/dev/oled_ssd130x.h ****     }
  1113              		.loc 4 359 49 view .LVU273
  1114 0042 9440     		lsls	r4, r4, r2
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 46
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 46
 
 
  1115              	.LBE405:
@@ -2758,7 +2758,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  169:Dubby.cpp     **** 
  1162              		.loc 2 169 17 discriminator 2 view .LVU281
  171:Dubby.cpp     ****             }
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 47
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 47
 
 
  1163              		.loc 2 171 17 discriminator 2 view .LVU282
@@ -2818,7 +2818,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  164:Dubby.cpp     **** 
  1208              		.loc 2 164 13 is_stmt 1 discriminator 2 view .LVU293
  164:Dubby.cpp     **** 
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 48
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 48
 
 
  1209              		.loc 2 164 45 discriminator 2 view .LVU294
@@ -2878,7 +2878,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  1255              	.LBB444:
  1256              	.LBB445:
  1257              	.LBB446:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 49
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 49
 
 
  124:../../libDaisy//src/dev/oled_ssd130x.h ****         spi_.BlockingTransmit(&cmd, 1);
@@ -2938,7 +2938,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  124:../../libDaisy//src/dev/oled_ssd130x.h ****         spi_.BlockingTransmit(&cmd, 1);
  1302              		.loc 4 124 23 view .LVU315
  1303 00cc 3946     		mov	r1, r7
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 50
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 50
 
 
  1304 00ce 2846     		mov	r0, r5
@@ -2998,7 +2998,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  124:../../libDaisy//src/dev/oled_ssd130x.h ****         spi_.BlockingTransmit(&cmd, 1);
  1347              		.loc 4 124 9 view .LVU328
  124:../../libDaisy//src/dev/oled_ssd130x.h ****         spi_.BlockingTransmit(&cmd, 1);
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 51
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 51
 
 
  1348              		.loc 4 124 23 is_stmt 0 view .LVU329
@@ -3058,7 +3058,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  1392              		.loc 4 383 22 view .LVU342
  1393 011c B82C     		cmp	r4, #184
  1394 011e C6D1     		bne	.L62
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 52
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 52
 
 
  1395 0120 B1E7     		b	.L61
@@ -3118,7 +3118,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  1448              		.cfi_startproc
  1449              		@ args = 0, pretend = 0, frame = 40
  1450              		@ frame_needed = 0, uses_anonymous_args = 0
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 53
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 53
 
 
  254:Dubby.cpp     ****     display.DrawRect((i * 32)  + margin, int(abs(1.0f - GetKnobValue(static_cast<Dubby::Ctrl>(i))) 
@@ -3178,7 +3178,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  1492 001e 0594     		str	r4, [sp, #20]
  254:Dubby.cpp     ****     display.DrawRect((i * 32)  + margin, int(abs(1.0f - GetKnobValue(static_cast<Dubby::Ctrl>(i))) 
  1493              		.loc 2 254 54 view .LVU361
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 54
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 54
 
 
  1494 0020 0693     		str	r3, [sp, #24]
@@ -3238,7 +3238,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  1539              		.loc 4 359 49 view .LVU374
  1540 002e 0124     		movs	r4, #1
  1541              	.LBE591:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 55
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 55
 
 
  1542              	.LBE594:
@@ -3298,7 +3298,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  255:Dubby.cpp     ****     display.DrawRect((i * 32)  + margin, int(abs((currentLevels[i] * 5.0f) - 1.0f) * 51.0f) + 1, ((
  1587              		.loc 2 255 5 is_stmt 1 view .LVU385
  1588              	.LBB603:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 56
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 56
 
 
  1589              	.LBI603:
@@ -3358,7 +3358,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  340:Dubby.cpp     **** {
  341:Dubby.cpp     ****     for(size_t i = 0; i < CTRL_LAST; i++)
  342:Dubby.cpp     ****         analogInputs[i].Process();
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 57
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 57
 
 
  343:Dubby.cpp     **** }
@@ -3418,7 +3418,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
   38:../../libDaisy//src/hid/ctrl.h **** 
   39:../../libDaisy//src/hid/ctrl.h ****     /** 
   40:../../libDaisy//src/hid/ctrl.h ****     This Initializes the AnalogControl for a -5V to 5V inverted input
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 58
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 58
 
 
   41:../../libDaisy//src/hid/ctrl.h ****     All of the Init details are the same otherwise
@@ -3478,7 +3478,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
   29:/Library/DaisyToolchain/0.2.0/arm/arm-none-eabi/include/c++/10.3.1/bits/std_abs.h **** 
   30:/Library/DaisyToolchain/0.2.0/arm/arm-none-eabi/include/c++/10.3.1/bits/std_abs.h **** #ifndef _GLIBCXX_BITS_STD_ABS_H
   31:/Library/DaisyToolchain/0.2.0/arm/arm-none-eabi/include/c++/10.3.1/bits/std_abs.h **** #define _GLIBCXX_BITS_STD_ABS_H
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 59
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 59
 
 
   32:/Library/DaisyToolchain/0.2.0/arm/arm-none-eabi/include/c++/10.3.1/bits/std_abs.h **** 
@@ -3538,7 +3538,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  1616              		.loc 6 56 41 view .LVU394
  1617 0056 9DF80830 		ldrb	r3, [sp, #8]	@ zero_extendqisi2
  1618              	.LBE606:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 60
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 60
 
 
  1619              	.LBE608:
@@ -3598,7 +3598,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  1665              	.LBB613:
  1666              		.loc 7 76 31 view .LVU404
  1667 007e F0EEE77A 		vabs.f32	s15, s15
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 61
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 61
 
 
  1668              	.LBE613:
@@ -3658,7 +3658,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  1711              	.LBB626:
  1712              	.LBB622:
  354:../../libDaisy//src/dev/oled_ssd130x.h ****             return;
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 62
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 62
 
 
  1713              		.loc 4 354 14 view .LVU416
@@ -3718,7 +3718,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  1757              	.LBB636:
  357:../../libDaisy//src/dev/oled_ssd130x.h ****         else
  1758              		.loc 4 357 28 is_stmt 0 view .LVU427
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 63
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 63
 
 
  1759 00c0 F108     		lsrs	r1, r6, #3
@@ -3778,7 +3778,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  1798              		.loc 3 252 20 view .LVU442
  1799 00f8 013E     		subs	r6, r6, #1
  1800              	.LVL129:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 64
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 64
 
 
  1801              	.L87:
@@ -3838,7 +3838,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  1843              	.LBI651:
  352:../../libDaisy//src/dev/oled_ssd130x.h ****     {
  1844              		.loc 4 352 10 view .LVU455
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 65
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 65
 
 
  1845              	.LBB652:
@@ -3898,7 +3898,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  357:../../libDaisy//src/dev/oled_ssd130x.h ****         else
  1889              		.loc 4 357 28 view .LVU466
  1890 014a CB08     		lsrs	r3, r1, #3
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 66
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 66
 
 
  357:../../libDaisy//src/dev/oled_ssd130x.h ****         else
@@ -3958,7 +3958,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  1931 017c 0EF1FF3E 		add	lr, lr, #-1
  1932              	.LVL138:
  245:../../libDaisy//src/hid/disp/display.h ****                 x1 += signX;
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 67
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 67
 
 
  1933              		.loc 3 245 23 view .LVU481
@@ -4018,7 +4018,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  352:../../libDaisy//src/dev/oled_ssd130x.h ****     {
  1977              		.loc 4 352 10 view .LVU492
  1978              	.LBB665:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 68
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 68
 
 
  354:../../libDaisy//src/dev/oled_ssd130x.h ****             return;
@@ -4078,7 +4078,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  357:../../libDaisy//src/dev/oled_ssd130x.h ****         else
  2020              		.loc 4 357 48 view .LVU506
  2021 01da 01FA09F1 		lsl	r1, r1, r9
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 69
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 69
 
 
  354:../../libDaisy//src/dev/oled_ssd130x.h ****             return;
@@ -4138,7 +4138,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  239:../../libDaisy//src/hid/disp/display.h ****         {
  2063              		.loc 3 239 26 view .LVU520
  2064              	.LBE662:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 70
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 70
 
 
  2065              	.LBE661:
@@ -4198,7 +4198,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  2108              	.L105:
  354:../../libDaisy//src/dev/oled_ssd130x.h ****             return;
  2109              		.loc 4 354 9 view .LVU532
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 71
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 71
 
 
  2110              	.LBE674:
@@ -4258,7 +4258,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  2152              		.loc 4 354 9 view .LVU544
  2153 0258 08D8     		bhi	.L110
  2154 025a 3F2A     		cmp	r2, #63
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 72
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 72
 
 
  357:../../libDaisy//src/dev/oled_ssd130x.h ****         else
@@ -4318,7 +4318,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  256:Dubby.cpp     ****     
  2197              		.loc 2 256 5 is_stmt 1 view .LVU557
  256:Dubby.cpp     ****     
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 73
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 73
 
 
  2198              		.loc 2 256 66 is_stmt 0 view .LVU558
@@ -4378,7 +4378,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  2239              	.LBE705:
  2240              	.LBE704:
  2241              	.LBB715:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 74
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 74
 
 
  2242              	.LBB703:
@@ -4438,7 +4438,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  2287              	.LBB710:
  357:../../libDaisy//src/dev/oled_ssd130x.h ****         else
  2288              		.loc 4 357 28 is_stmt 0 view .LVU588
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 75
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 75
 
 
  2289 02d2 D308     		lsrs	r3, r2, #3
@@ -4498,7 +4498,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  2332              	.LBB717:
  2333              	.LBB718:
  2334              	.LBB719:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 76
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 76
 
 
  2335              	.LBB720:
@@ -4558,7 +4558,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  2379              	.LBB726:
  2380              	.LBB724:
  125:../../libDaisy//src/dev/oled_ssd130x.h ****     };
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 77
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 77
 
 
  2381              		.loc 4 125 30 view .LVU614
@@ -4618,7 +4618,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  2424              	.LBI730:
  122:../../libDaisy//src/dev/oled_ssd130x.h ****     {
  2425              		.loc 4 122 10 is_stmt 1 view .LVU626
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 78
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 78
 
 
  2426              	.LBB732:
@@ -4678,7 +4678,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  2468              		.loc 4 131 30 view .LVU639
  2469              	.LBE735:
  2470              	.LBE736:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 79
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 79
 
 
  2471              		.loc 4 383 9 is_stmt 1 view .LVU640
@@ -4738,7 +4738,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  357:../../libDaisy//src/dev/oled_ssd130x.h ****         else
  2518              		.loc 4 357 54 view .LVU649
  2519 0396 07F00701 		and	r1, r7, #7
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 80
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 80
 
 
  357:../../libDaisy//src/dev/oled_ssd130x.h ****         else
@@ -4798,7 +4798,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  2565              	.LBB624:
  354:../../libDaisy//src/dev/oled_ssd130x.h ****             return;
  2566              		.loc 4 354 14 view .LVU660
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 81
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 81
 
 
  2567 03ba 94BF     		ite	ls
@@ -4858,7 +4858,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  2609 03f2 9542     		cmp	r5, r2
  2610 03f4 7FF461AE 		bne	.L82
  239:../../libDaisy//src/hid/disp/display.h ****         {
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 82
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 82
 
 
  2611              		.loc 3 239 19 is_stmt 0 view .LVU673
@@ -4918,7 +4918,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  2659              		.loc 2 225 26 view .LVU681
  2660 0004 FFF7FEFF 		bl	_ZN5daisy6System6GetNowEv
  2661              	.LVL192:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 83
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 83
 
 
  225:Dubby.cpp     ****     {
@@ -4978,7 +4978,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  228:Dubby.cpp     ****     }
  2701              		.loc 2 228 46 view .LVU697
  2702 0026 2046     		mov	r0, r4
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 84
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 84
 
 
  2703 0028 FFF7FEFF 		bl	_ZN5daisy5Dubby9UpdateBarEi
@@ -5038,7 +5038,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  2748 000c D4F83038 		ldr	r3, [r4, #2096]
  263:Dubby.cpp     ****     {
  2749              		.loc 2 263 29 view .LVU709
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 85
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 85
 
 
  2750 0010 801A     		subs	r0, r0, r2
@@ -5098,7 +5098,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  2797              		.loc 2 328 17 view .LVU718
  2798 0006 0620     		movs	r0, #6
  2799              	.LVL204:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 86
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 86
 
 
  328:Dubby.cpp     ****                 seed.GetPin(PIN_ENC_B),
@@ -5158,7 +5158,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  2851              		@ args = 0, pretend = 0, frame = 0
  2852              		@ frame_needed = 0, uses_anonymous_args = 0
  335:Dubby.cpp     ****     ProcessDigitalControls();
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 87
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 87
 
 
  2853              		.loc 2 335 5 view .LVU724
@@ -5218,7 +5218,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  2894              	.LBI755:
  345:Dubby.cpp     **** {
  2895              		.loc 2 345 6 view .LVU738
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 88
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 88
 
 
  2896              	.LBB756:
@@ -5278,7 +5278,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  2943              		.cfi_offset 3, -16
  2944              		.cfi_offset 4, -12
  2945              		.cfi_offset 5, -8
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 89
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 89
 
 
  2946              		.cfi_offset 14, -4
@@ -5338,7 +5338,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  347:Dubby.cpp     **** }
  2991              		.loc 2 347 21 view .LVU759
  2992 0002 FFF7FEBF 		b	_ZN5daisy7Encoder8DebounceEv
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 90
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 90
 
 
  2993              	.LVL222:
@@ -5398,7 +5398,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  3045              		@ args = 0, pretend = 0, frame = 136
  3046              		@ frame_needed = 0, uses_anonymous_args = 0
  357:Dubby.cpp     ****     // Handle Seed Audio as-is and then
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 91
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 91
 
 
  358:Dubby.cpp     ****     SaiHandle::Config sai_config[2];
@@ -5458,7 +5458,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  3081 001c ADF84230 		strh	r3, [sp, #66]	@ movhi
  370:Dubby.cpp     ****         sai_config[0].pin_config.sb = {DSY_GPIOE, 3};
  3082              		.loc 2 370 9 is_stmt 1 view .LVU782
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 92
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 92
 
 
  370:Dubby.cpp     ****         sai_config[0].pin_config.sb = {DSY_GPIOE, 3};
@@ -5518,7 +5518,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  374:Dubby.cpp     ****     sai_config[0].sr              = SaiHandle::Config::SampleRate::SAI_48KHZ;
  3109              		.loc 2 374 35 view .LVU797
  3110 003e 0E94     		str	r4, [sp, #56]
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 93
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 93
 
 
  375:Dubby.cpp     ****     sai_config[0].bit_depth       = SaiHandle::Config::BitDepth::SAI_24BIT;
@@ -5578,7 +5578,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
   34:../../libDaisy//src/per/i2c.h ****             I2C_SLAVE,
   35:../../libDaisy//src/per/i2c.h ****         };
   36:../../libDaisy//src/per/i2c.h **** 
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 94
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 94
 
 
   37:../../libDaisy//src/per/i2c.h ****         /** Specifices the internal peripheral to use (these are mapped to different pins on the ha
@@ -5638,7 +5638,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  390:Dubby.cpp     **** 
  3133              		.loc 2 390 28 view .LVU806
  3134 0054 2B8B     		ldrh	r3, [r5, #24]
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 95
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 95
 
 
  3135 0056 ADF82A30 		strh	r3, [sp, #42]	@ movhi
@@ -5698,7 +5698,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  392:Dubby.cpp     ****     i2c2.Init(i2c_cfg);
  3171              		.loc 2 392 5 view .LVU825
  3172              	.LBB771:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 96
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 96
 
 
  3173              	.LBI763:
@@ -5758,7 +5758,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
   15:../../libDaisy//src/dev/codec_pcm3060.h ****  * perform a MRST and SRST before setting the format to 24bit LJ, and disabling 
   16:../../libDaisy//src/dev/codec_pcm3060.h ****  * power save for both the ADC and DAC.
   17:../../libDaisy//src/dev/codec_pcm3060.h ****  *
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 97
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 97
 
 
   18:../../libDaisy//src/dev/codec_pcm3060.h ****  */
@@ -5818,7 +5818,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  3227              		.loc 2 412 33 view .LVU847
  3228 0090 2A8C     		ldrh	r2, [r5, #32]
  3229              		.loc 2 417 23 view .LVU848
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 98
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 98
 
 
  3230 0092 03A8     		add	r0, sp, #12
@@ -5878,7 +5878,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
   20:../../libDaisy//src/per/sai.h ****  * 
   21:../../libDaisy//src/per/sai.h ****  * Use SAI Handle like this:
   22:../../libDaisy//src/per/sai.h ****  * 
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 99
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 99
 
 
   23:../../libDaisy//src/per/sai.h ****  *  SaiHandle::Config sai_config;
@@ -5938,7 +5938,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
   77:../../libDaisy//src/per/sai.h ****         enum class Sync
   78:../../libDaisy//src/per/sai.h ****         {
   79:../../libDaisy//src/per/sai.h ****             MASTER,
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 100
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 100
 
 
   80:../../libDaisy//src/per/sai.h ****             SLAVE,
@@ -5998,7 +5998,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  3270              		.loc 2 416 5 view .LVU869
  416:Dubby.cpp     ****     sai_handle[0].Init(sai_config[1]);
  3271              		.loc 2 416 27 view .LVU870
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 101
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 101
 
 
  3272              	.LVL233:
@@ -6058,7 +6058,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
   11:../../libDaisy//src/hid/audio.h ****  *           If you're using a SOM like the DaisySeed or DaisyPatchSM (or any 
   12:../../libDaisy//src/hid/audio.h ****  *            board that includes one of those objects) then the intialization
   13:../../libDaisy//src/hid/audio.h ****  *            is already taken  care of.
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 102
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 102
 
 
   14:../../libDaisy//src/hid/audio.h ****  *           If you're setting up your own custom hardware, or need to make changes
@@ -6118,7 +6118,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  3321              	.LVL236:
  3322              		.loc 11 48 34 view .LVU890
  3323              	.LBE785:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 103
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 103
 
 
  3324              	.LBE787:
@@ -6178,7 +6178,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  3367              		.loc 2 365 37 view .LVU906
  3368 00fa 1791     		str	r1, [sp, #92]
  362:Dubby.cpp     ****         sai_config[0].pin_config.sb = {DSY_GPIOE, 3};
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 104
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 104
 
 
  3369              		.loc 2 362 37 view .LVU907
@@ -6238,7 +6238,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  3411              		.loc 2 436 13 view .LVU916
  3412              		.loc 2 436 55 is_stmt 0 view .LVU917
  3413 0006 00EB8200 		add	r0, r0, r2, lsl #2
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 105
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 105
 
 
  3414              	.LVL240:
@@ -6298,7 +6298,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  274:../../libDaisy//src/hid/disp/display.h ****         else
  275:../../libDaisy//src/hid/disp/display.h ****         {
  276:../../libDaisy//src/hid/disp/display.h ****             ((ChildType*)(this))->ChildType::DrawLine(x1, y1, x2, y1, on);
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 106
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 106
 
 
  277:../../libDaisy//src/hid/disp/display.h ****             ((ChildType*)(this))->ChildType::DrawLine(x2, y1, x2, y2, on);
@@ -6358,7 +6358,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  331:../../libDaisy//src/hid/disp/display.h **** 
  332:../../libDaisy//src/hid/disp/display.h ****         t_x = -radius;
  333:../../libDaisy//src/hid/disp/display.h ****         t_y = 0;
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 107
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 107
 
 
  334:../../libDaisy//src/hid/disp/display.h ****         err = 2 - 2 * radius;
@@ -6418,7 +6418,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  388:../../libDaisy//src/hid/disp/display.h ****             if(e2 > t_x)
  389:../../libDaisy//src/hid/disp/display.h ****             {
  390:../../libDaisy//src/hid/disp/display.h ****                 t_x++;
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 108
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 108
 
 
  391:../../libDaisy//src/hid/disp/display.h ****                 err = err + (t_x * 2 + 1);
@@ -6478,7 +6478,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  3457              		.loc 3 440 10 is_stmt 0 view .LVU927
  3458 0000 2DE9F04F 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
  3459              		.cfi_def_cfa_offset 36
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 109
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 109
 
 
  3460              		.cfi_offset 4, -36
@@ -6538,7 +6538,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  3507 0048 8020     		movs	r0, #128
  3508              	.L222:
  405:../../libDaisy//src/hid/disp/display.h ****            || Height() < (currentY_ + font.FontHeight))
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 110
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 110
 
 
  3509              		.loc 3 405 23 view .LVU934
@@ -6598,7 +6598,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  3552 0098 9A46     		mov	r10, r3
  3553              	.LVL248:
  3554              	.L228:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 111
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 111
 
 
  415:../../libDaisy//src/hid/disp/display.h ****             for(j = 0; j < font.FontWidth; j++)
@@ -6658,7 +6658,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  3599              	.LBE834:
  3600              	.LBE839:
  3601              	.LBE844:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 112
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 112
 
 
  3602              	.LBB845:
@@ -6718,7 +6718,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  3645              		.loc 3 418 17 view .LVU966
  3646 00e6 0004     		lsls	r0, r0, #16
  3647 00e8 EDD4     		bmi	.L258
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 113
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 113
 
 
  3648              	.LVL253:
@@ -6778,7 +6778,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  3692 00fe 0132     		adds	r2, r2, #1
  3693 0100 0131     		adds	r1, r1, #1
  3694 0102 AB42     		cmp	r3, r5
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 114
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 114
 
 
  3695              	.LBB851:
@@ -6838,7 +6838,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  3739              	.LVL259:
  3740              	.LBB859:
  3741              	.LBI852:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 115
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 115
 
 
  171:../../libDaisy//src/hid/disp/display.h ****     {
@@ -6898,7 +6898,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  3785              	.L239:
  174:../../libDaisy//src/hid/disp/display.h ****     }
  3786              		.loc 3 174 19 view .LVU998
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 116
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 116
 
 
  3787 0156 029B     		ldr	r3, [sp, #8]
@@ -6958,7 +6958,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  3821              		.cfi_remember_state
  3822              		.cfi_def_cfa_offset 36
  3823              		@ sp needed
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 117
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 117
 
 
  3824 0174 BDE8F08F 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
@@ -7018,7 +7018,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  3870              	.LBE860:
  434:../../libDaisy//src/hid/disp/display.h **** 
  3871              		.loc 3 434 19 view .LVU1014
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 118
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 118
 
 
  3872 0198 B6F804B0 		ldrh	fp, [r6, #4]
@@ -7078,7 +7078,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  3919              		.global	_ZN5daisy5Dubby18HightlightMenuItemEv
  3920              		.syntax unified
  3921              		.thumb
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 119
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 119
 
 
  3922              		.thumb_func
@@ -7138,7 +7138,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  3965              	.LBB974:
  3966              	.LBI974:
  257:../../libDaisy//src/hid/disp/display.h ****                   uint_fast8_t y1,
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 120
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 120
 
 
  3967              		.loc 3 257 10 view .LVU1035
@@ -7198,7 +7198,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  354:../../libDaisy//src/dev/oled_ssd130x.h ****             return;
  4010              		.loc 4 354 9 view .LVU1047
  4011 0038 3F2B     		cmp	r3, #63
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 121
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 121
 
 
  357:../../libDaisy//src/dev/oled_ssd130x.h ****         else
@@ -7258,7 +7258,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  4053 005e E0D2     		bcs	.L266
  4054              	.L269:
  4055              	.LBB990:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 122
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 122
 
 
  4056              	.LBB989:
@@ -7318,7 +7318,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  4100              	.LBB995:
  173:../../libDaisy//src/hid/disp/display.h ****         currentY_ = (y >= Height()) ? Height() - 1 : y;
  4101              		.loc 3 173 19 discriminator 2 view .LVU1071
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 123
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 123
 
 
  4102 007c B9F17F0F 		cmp	r9, #127
@@ -7378,7 +7378,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  4144              	.LBB1004:
  4145              	.LBI1004:
  428:Dubby.cpp     **** const char * Dubby::GetTextForEnum(MenuTypes m, int enumVal)
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 124
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 124
 
 
  4146              		.loc 2 428 14 discriminator 2 view .LVU1084
@@ -7438,7 +7438,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  4187 00be 04F58366 		add	r6, r4, #1048
  4188              	.LVL300:
  4189              	.LBB1014:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 125
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 125
 
 
  4190              	.LBI1011:
@@ -7498,7 +7498,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  4233              	.LBE1020:
  239:../../libDaisy//src/hid/disp/display.h ****         {
  4234              		.loc 3 239 26 is_stmt 1 view .LVU1110
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 126
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 126
 
 
  4235 00e2 F8D1     		bne	.L274
@@ -7558,7 +7558,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  4276              		.loc 4 357 42 view .LVU1123
  4277 00fa 42F07F02 		orr	r2, r2, #127
  4278              	.LBE1028:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 127
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 127
 
 
  4279              	.LBE1027:
@@ -7618,7 +7618,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  352:../../libDaisy//src/dev/oled_ssd130x.h ****     {
  4323              		.loc 4 352 10 view .LVU1134
  4324              	.LBB1039:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 128
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 128
 
 
  357:../../libDaisy//src/dev/oled_ssd130x.h ****         else
@@ -7678,7 +7678,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  239:../../libDaisy//src/hid/disp/display.h ****         {
  4368              		.loc 3 239 26 is_stmt 0 view .LVU1146
  4369              	.LBE1036:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 129
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 129
 
 
  4370              	.LBE1035:
@@ -7738,7 +7738,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  4413              		.loc 4 357 54 is_stmt 0 view .LVU1157
  4414 014e 03F00705 		and	r5, r3, #7
  357:../../libDaisy//src/dev/oled_ssd130x.h ****         else
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 130
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 130
 
 
  4415              		.loc 4 357 48 view .LVU1158
@@ -7798,7 +7798,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  124:../../libDaisy//src/dev/oled_ssd130x.h ****         spi_.BlockingTransmit(&cmd, 1);
  4460              		.loc 4 124 24 view .LVU1168
  4461 0170 8846     		mov	r8, r1
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 131
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 131
 
 
  4462 0172 B025     		movs	r5, #176
@@ -7858,7 +7858,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  4506              	.LBB1072:
  4507              	.LBB1073:
  124:../../libDaisy//src/dev/oled_ssd130x.h ****         spi_.BlockingTransmit(&cmd, 1);
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 132
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 132
 
 
  4508              		.loc 4 124 23 view .LVU1181
@@ -7918,7 +7918,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  125:../../libDaisy//src/dev/oled_ssd130x.h ****     };
  4550              		.loc 4 125 9 is_stmt 1 view .LVU1194
  125:../../libDaisy//src/dev/oled_ssd130x.h ****     };
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 133
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 133
 
 
  4551              		.loc 4 125 30 is_stmt 0 view .LVU1195
@@ -7978,7 +7978,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  207:Dubby.cpp     **** }
  4597              		.loc 2 207 1 is_stmt 0 view .LVU1207
  4598 01e4 05B0     		add	sp, sp, #20
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 134
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 134
 
 
  4599              		.cfi_def_cfa_offset 28
@@ -8038,7 +8038,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  4648              		.cfi_offset 11, -8
  4649              		.cfi_offset 14, -4
  4650 0004 0446     		mov	r4, r0
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 135
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 135
 
 
  4651              	.LBB1188:
@@ -8098,7 +8098,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  4693 0032 0393     		str	r3, [sp, #12]
  4694              	.LBB1190:
  4695              	.LBB1191:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 136
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 136
 
 
  4696              	.LBB1192:
@@ -8158,7 +8158,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  4741              	.LBI1195:
  352:../../libDaisy//src/dev/oled_ssd130x.h ****     {
  4742              		.loc 4 352 10 is_stmt 1 view .LVU1237
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 137
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 137
 
 
  4743              	.LBE1200:
@@ -8218,7 +8218,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  4784 007e 2344     		add	r3, r3, r4
  4785 0080 93F824C4 		ldrb	ip, [r3, #1060]	@ zero_extendqisi2
  4786 0084 41EA0C01 		orr	r1, r1, ip
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 138
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 138
 
 
  4787 0088 83F82414 		strb	r1, [r3, #1060]
@@ -8278,7 +8278,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  354:../../libDaisy//src/dev/oled_ssd130x.h ****             return;
  4831              		.loc 4 354 9 view .LVU1261
  4832 00ac BEF17F0F 		cmp	lr, #127
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 139
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 139
 
 
  357:../../libDaisy//src/dev/oled_ssd130x.h ****         else
@@ -8338,7 +8338,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  4873 00e4 039B     		ldr	r3, [sp, #12]
  4874 00e6 6345     		cmp	r3, ip
  4875 00e8 DAD1     		bne	.L297
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 140
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 140
 
 
  4876 00ea 0023     		movs	r3, #0
@@ -8398,7 +8398,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  231:../../libDaisy//src/hid/disp/display.h ****         int_fast16_t error2;
  4920              		.loc 3 231 22 view .LVU1286
  4921 010e CCF1000A 		rsb	r10, ip, #0
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 141
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 141
 
 
  4922              	.LVL353:
@@ -8458,7 +8458,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  4964 0140 2344     		add	r3, r3, r4
  4965 0142 93F824C4 		ldrb	ip, [r3, #1060]	@ zero_extendqisi2
  4966 0146 41EA0C01 		orr	r1, r1, ip
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 142
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 142
 
 
  4967 014a 83F82414 		strb	r1, [r3, #1060]
@@ -8518,7 +8518,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  5010 0170 0CEBC313 		add	r3, ip, r3, lsl #7
  5011              	.LBE1243:
  5012              	.LBE1242:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 143
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 143
 
 
  5013              	.LBE1241:
@@ -8578,7 +8578,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  5054 01a6 069B     		ldr	r3, [sp, #24]
  5055 01a8 1944     		add	r1, r1, r3
  5056              	.LVL361:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 144
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 144
 
 
  5057              	.L309:
@@ -8638,7 +8638,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  5101              	.LBB1258:
  354:../../libDaisy//src/dev/oled_ssd130x.h ****             return;
  5102              		.loc 4 354 14 is_stmt 0 view .LVU1333
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 145
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 145
 
 
  5103 01d2 7F2F     		cmp	r7, #127
@@ -8698,7 +8698,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  5145              	.L313:
  5146              	.LBB1289:
  5147              	.LBB1265:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 146
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 146
 
 
  5148              	.LBB1264:
@@ -8758,7 +8758,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  246:../../libDaisy//src/hid/disp/display.h ****             }
  5187              		.loc 3 246 20 view .LVU1361
  5188 0242 18BF     		it	ne
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 147
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 147
 
 
  5189 0244 8019     		addne	r0, r0, r6
@@ -8818,7 +8818,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  228:../../libDaisy//src/hid/disp/display.h ****         int_fast16_t signX  = ((x1 < x2) ? 1 : -1);
  5233              		.loc 3 228 22 view .LVU1372
  5234 0270 BEF1000F 		cmp	lr, #0
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 148
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 148
 
 
  5235 0274 B8BF     		it	lt
@@ -8878,7 +8878,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  5276 02a2 BBF1000F 		cmp	fp, #0
  5277 02a6 25D1     		bne	.L320
  5278 02a8 6046     		mov	r0, ip
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 149
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 149
 
 
  5279              	.LBE1267:
@@ -8938,7 +8938,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  357:../../libDaisy//src/dev/oled_ssd130x.h ****         else
  5321              		.loc 4 357 42 view .LVU1398
  5322 02c6 2344     		add	r3, r3, r4
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 150
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 150
 
 
  354:../../libDaisy//src/dev/oled_ssd130x.h ****             return;
@@ -8998,7 +8998,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  5365 02fa 04F11809 		add	r9, r4, #24
  5366 02fe 4C4F     		ldr	r7, .L374
  5367              	.LVL380:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 151
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 151
 
 
  239:../../libDaisy//src/hid/disp/display.h ****         {
@@ -9058,7 +9058,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  5410              		.loc 3 173 19 discriminator 2 view .LVU1422
  5411 0314 28BF     		it	cs
  5412 0316 7F20     		movcs	r0, #127
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 152
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 152
 
 
  5413              	.LVL385:
@@ -9118,7 +9118,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  5452 0334 B145     		cmp	r9, r6
  5453 0336 E5D1     		bne	.L326
  5454              	.LBE1291:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 153
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 153
 
 
  5455              	.LBB1304:
@@ -9178,7 +9178,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  5498 035c 0DF12F01 		add	r1, sp, #47
  5499 0360 2846     		mov	r0, r5
  5500              	.LBE1310:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 154
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 154
 
 
  5501              	.LBE1312:
@@ -9238,7 +9238,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  5544 0386 2046     		mov	r0, r4
  5545 0388 8DF82F30 		strb	r3, [sp, #47]
  5546              	.LVL399:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 155
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 155
 
 
  124:../../libDaisy//src/dev/oled_ssd130x.h ****         spi_.BlockingTransmit(&cmd, 1);
@@ -9298,7 +9298,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  131:../../libDaisy//src/dev/oled_ssd130x.h ****     };
  5589              		.loc 4 131 30 view .LVU1475
  5590 03ae 2846     		mov	r0, r5
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 156
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 156
 
 
  5591 03b0 FFF7FEFF 		bl	_ZN5daisy9SpiHandle16BlockingTransmitEPhjm
@@ -9358,7 +9358,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  5638              		.loc 3 229 42 is_stmt 0 view .LVU1485
  5639 03c8 4FF0010B 		mov	fp, #1
  5640              	.LBB1213:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 157
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 157
 
 
  5641              	.LBB1207:
@@ -9418,7 +9418,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  5686 03f0 0599     		ldr	r1, [sp, #20]
  5687              	.LBB1248:
  5688              	.LBB1236:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 158
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 158
 
 
  5689              	.LBB1230:
@@ -9478,7 +9478,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  5734              	.L373:
  239:../../libDaisy//src/hid/disp/display.h ****         {
  5735              		.loc 3 239 33 is_stmt 0 view .LVU1504
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 159
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 159
 
 
  5736 0422 4FF0010B 		mov	fp, #1
@@ -9538,7 +9538,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  5786              		.cfi_offset 10, -12
  5787              		.cfi_offset 11, -8
  5788              		.cfi_offset 14, -4
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 160
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 160
 
 
  5789              	.LBB1434:
@@ -9598,7 +9598,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  5833              		.loc 1 42 10 is_stmt 1 view .LVU1520
  5834              	.LBB1439:
  5835              	.LBI1439:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 161
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 161
 
 
  352:../../libDaisy//src/dev/oled_ssd130x.h ****     {
@@ -9658,7 +9658,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  359:../../libDaisy//src/dev/oled_ssd130x.h ****     }
  5879              		.loc 4 359 42 view .LVU1532
  5880              	.LBE1443:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 162
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 162
 
 
  5881              	.LBE1445:
@@ -9718,7 +9718,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  5923              	.LBB1461:
  5924              	.LBB1459:
  174:../../libDaisy//src/hid/disp/display.h ****     }
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 163
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 163
 
 
  5925              		.loc 3 174 19 view .LVU1545
@@ -9778,7 +9778,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  5964 007a 029A     		ldr	r2, [sp, #8]
  5965 007c 9342     		cmp	r3, r2
  5966 007e 53D0     		beq	.L461
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 164
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 164
 
 
  5967              	.L379:
@@ -9838,7 +9838,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  124:../../libDaisy//src/dev/oled_ssd130x.h ****         spi_.BlockingTransmit(&cmd, 1);
  6009              		.loc 4 124 23 view .LVU1573
  6010              	.LBE1558:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 165
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 165
 
 
  6011              	.LBI1557:
@@ -9898,7 +9898,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  6055              	.LBB1566:
  124:../../libDaisy//src/dev/oled_ssd130x.h ****         spi_.BlockingTransmit(&cmd, 1);
  6056              		.loc 4 124 9 view .LVU1586
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 166
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 166
 
 
  124:../../libDaisy//src/dev/oled_ssd130x.h ****         spi_.BlockingTransmit(&cmd, 1);
@@ -9958,7 +9958,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  6099              	.LBB1570:
  6100              	.LBI1570:
  128:../../libDaisy//src/dev/oled_ssd130x.h ****     {
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 167
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 167
 
 
  6101              		.loc 4 128 10 is_stmt 1 view .LVU1599
@@ -10018,7 +10018,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  6147              		.loc 2 302 1 view .LVU1610
  6148 0122 00BF     		.align	2
  6149              	.L464:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 168
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 168
 
 
  6150 0124 00000000 		.word	Font_6x8
@@ -10078,7 +10078,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  221:../../libDaisy//src/hid/disp/display.h ****                   uint_fast8_t y1,
  6193              		.loc 3 221 10 view .LVU1622
  6194              	.LBB1481:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 169
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 169
 
 
  227:../../libDaisy//src/hid/disp/display.h ****         int_fast16_t deltaY = abs((int_fast16_t)y2 - (int_fast16_t)y1);
@@ -10138,7 +10138,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  6237 016e 8BB9     		cbnz	r3, .L381
  6238              	.LVL447:
  6239              	.L416:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 170
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 170
 
 
  357:../../libDaisy//src/dev/oled_ssd130x.h ****         else
@@ -10198,7 +10198,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  6282              	.LBB1550:
  6283              	.LBB1487:
  6284              	.LBB1482:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 171
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 171
 
 
  6285              	.LBB1476:
@@ -10258,7 +10258,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  6324 01d0 DE44     		addne	lr, lr, fp
  6325              	.LVL452:
  249:../../libDaisy//src/hid/disp/display.h ****             {
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 172
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 172
 
 
  6326              		.loc 3 249 13 view .LVU1662
@@ -10318,7 +10318,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  6370              	.LBB1492:
  354:../../libDaisy//src/dev/oled_ssd130x.h ****             return;
  6371              		.loc 4 354 28 view .LVU1673
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 173
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 173
 
 
  6372 0200 BCF13F0F 		cmp	ip, #63
@@ -10378,7 +10378,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  357:../../libDaisy//src/dev/oled_ssd130x.h ****         else
  6416              		.loc 4 357 54 view .LVU1684
  6417 022a 0CF00701 		and	r1, ip, #7
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 174
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 174
 
 
  357:../../libDaisy//src/dev/oled_ssd130x.h ****         else
@@ -10438,7 +10438,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  6462 0254 4FF00109 		mov	r9, #1
  357:../../libDaisy//src/dev/oled_ssd130x.h ****         else
  6463              		.loc 4 357 28 view .LVU1695
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 175
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 175
 
 
  6464 0258 CB08     		lsrs	r3, r1, #3
@@ -10498,7 +10498,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  6505              	.LVL466:
  245:../../libDaisy//src/hid/disp/display.h ****                 x1 += signX;
  6506              		.loc 3 245 23 view .LVU1709
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 176
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 176
 
 
  6507 028a AEEB030E 		sub	lr, lr, r3
@@ -10558,7 +10558,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  6551 02b8 B8BF     		it	lt
  6552 02ba C8F10008 		rsblt	r8, r8, #0
  6553              	.LVL470:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 177
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 177
 
 
  6554              	.LBB1522:
@@ -10618,7 +10618,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  6595 02f4 C646     		mov	lr, r8
  6596              	.LBE1516:
  6597              	.LBE1515:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 178
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 178
 
 
  6598              	.LBE1551:
@@ -10678,7 +10678,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  357:../../libDaisy//src/dev/oled_ssd130x.h ****         else
  6638              		.loc 4 357 42 view .LVU1747
  6639              	.LBE1525:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 179
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 179
 
 
  6640              	.LBE1524:
@@ -10738,7 +10738,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  228:../../libDaisy//src/hid/disp/display.h ****         int_fast16_t signX  = ((x1 < x2) ? 1 : -1);
  6683              		.loc 3 228 52 view .LVU1759
  6684 033c A1EB0C08 		sub	r8, r1, ip
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 180
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 180
 
 
  230:../../libDaisy//src/hid/disp/display.h ****         int_fast16_t error  = deltaX - deltaY;
@@ -10798,7 +10798,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  6726              		.loc 4 357 42 view .LVU1772
  6727              	.LBE1533:
  6728              	.LBE1534:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 181
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 181
 
 
  6729              	.LBE1535:
@@ -10858,7 +10858,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  354:../../libDaisy//src/dev/oled_ssd130x.h ****             return;
  6772              		.loc 4 354 9 view .LVU1784
  6773 03a0 08D8     		bhi	.L410
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 182
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 182
 
 
  354:../../libDaisy//src/dev/oled_ssd130x.h ****             return;
@@ -10918,7 +10918,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  6815              		.loc 3 239 26 view .LVU1797
  6816              	.LBE1542:
  6817              	.LBE1543:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 183
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 183
 
 
  6818              	.LBB1544:
@@ -10978,7 +10978,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  6860 03ee 079B     		ldr	r3, [sp, #28]
  6861              	.LVL488:
  6862              	.LBB1509:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 184
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 184
 
 
  6863              	.LBB1499:
@@ -11038,7 +11038,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  6906 0414 0123     		movs	r3, #1
  6907 0416 0893     		str	r3, [sp, #32]
  6908 0418 19E7     		b	.L392
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 185
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 185
 
 
  6909              	.LVL493:
@@ -11098,7 +11098,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  234:Dubby.cpp     ****     switch(menuItemSelected) 
  6958              		.loc 2 234 12 is_stmt 0 view .LVU1828
  6959 0000 90F85830 		ldrb	r3, [r0, #88]	@ zero_extendqisi2
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 186
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 186
 
 
  233:Dubby.cpp     **** {
@@ -11158,7 +11158,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  7003              		.loc 4 124 23 view .LVU1839
  7004              	.LBE1594:
  7005              	.LBI1593:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 187
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 187
 
 
  122:../../libDaisy//src/dev/oled_ssd130x.h ****     {
@@ -11218,7 +11218,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  124:../../libDaisy//src/dev/oled_ssd130x.h ****         spi_.BlockingTransmit(&cmd, 1);
  7050              		.loc 4 124 9 view .LVU1852
  124:../../libDaisy//src/dev/oled_ssd130x.h ****         spi_.BlockingTransmit(&cmd, 1);
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 188
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 188
 
 
  7051              		.loc 4 124 23 is_stmt 0 view .LVU1853
@@ -11278,7 +11278,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  7094              	.LBI1606:
  128:../../libDaisy//src/dev/oled_ssd130x.h ****     {
  7095              		.loc 4 128 10 is_stmt 1 view .LVU1865
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 189
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 189
 
 
  7096              	.LBB1607:
@@ -11338,7 +11338,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  7141              	.LBI1610:
  261:Dubby.cpp     **** void Dubby::RenderScope()
  7142              		.loc 2 261 6 view .LVU1878
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 190
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 190
 
 
  7143              	.LBB1611:
@@ -11398,7 +11398,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  7189              		.cfi_def_cfa_offset 24
  7190              		.cfi_offset 4, -24
  7191              		.cfi_offset 5, -20
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 191
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 191
 
 
  7192              		.cfi_offset 6, -16
@@ -11458,7 +11458,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  7234              		.loc 2 186 37 is_stmt 0 discriminator 1 view .LVU1900
  7235 002c FFF7FEFF 		bl	_ZN5daisy5Dubby18HightlightMenuItemEv
  7236              	.LVL521:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 192
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 192
 
 
  7237              	.L478:
@@ -11518,7 +11518,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  7276              	.LVL523:
  124:../../libDaisy//src/dev/oled_ssd130x.h ****         spi_.BlockingTransmit(&cmd, 1);
  7277              		.loc 4 124 23 view .LVU1912
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 193
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 193
 
 
  7278              	.LBE1636:
@@ -11578,7 +11578,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  7322              		.loc 4 122 10 is_stmt 1 view .LVU1924
  7323              	.LBB1645:
  124:../../libDaisy//src/dev/oled_ssd130x.h ****         spi_.BlockingTransmit(&cmd, 1);
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 194
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 194
 
 
  7324              		.loc 4 124 9 view .LVU1925
@@ -11638,7 +11638,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  7366              	.LBE1646:
  7367              	.LBB1649:
  7368              	.LBI1649:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 195
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 195
 
 
  128:../../libDaisy//src/dev/oled_ssd130x.h ****     {
@@ -11698,7 +11698,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  7413              		.loc 2 187 21 is_stmt 0 view .LVU1950
  7414 00b6 FFF7FEFF 		bl	_ZN5daisy5Dubby11ReleaseMenuEv
  7415              	.LVL537:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 196
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 196
 
 
  187:Dubby.cpp     ****     else ReleaseMenu();
@@ -11758,7 +11758,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  7461              		.loc 2 304 6 is_stmt 1 view .LVU1961
  7462              	.LBB1659:
  308:Dubby.cpp     ****         preferencesMenuItemSelected = (PreferenesMenuItems)(preferencesMenuItemSelected + increment
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 197
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 197
 
 
  7463              		.loc 2 308 9 view .LVU1962
@@ -11818,7 +11818,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  315:Dubby.cpp     **** {
  7507              		.loc 2 315 1 is_stmt 0 view .LVU1972
  7508 0000 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 198
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 198
 
 
  7509              		.cfi_def_cfa_offset 24
@@ -11878,7 +11878,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  7552              	.LBE1690:
  7553              	.LBE1689:
  7554              	.LBE1688:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 199
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 199
 
 
  7555              	.LBE1687:
@@ -11938,7 +11938,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  7600 0034 4FF00008 		mov	r8, #0
  7601              	.LBB1698:
  7602              	.LBB1693:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 200
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 200
 
 
  124:../../libDaisy//src/dev/oled_ssd130x.h ****         spi_.BlockingTransmit(&cmd, 1);
@@ -11998,7 +11998,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  7647 005a 8DF80F80 		strb	r8, [sp, #15]
  7648              	.LVL552:
  124:../../libDaisy//src/dev/oled_ssd130x.h ****         spi_.BlockingTransmit(&cmd, 1);
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 201
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 201
 
 
  7649              		.loc 4 124 23 view .LVU2008
@@ -12058,7 +12058,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  7690 0082 0DF10F01 		add	r1, sp, #15
  7691 0086 3846     		mov	r0, r7
  7692 0088 FFF7FEFF 		bl	_ZN5daisy9SpiHandle16BlockingTransmitEPhjm
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 202
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 202
 
 
  7693              	.LVL557:
@@ -12118,7 +12118,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  7737 00a6 04B0     		add	sp, sp, #16
  7738              		.cfi_def_cfa_offset 24
  7739              		@ sp needed
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 203
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 203
 
 
  7740 00a8 BDE8F041 		pop	{r4, r5, r6, r7, r8, lr}
@@ -12178,7 +12178,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
    5:../../libDaisy//src/hid/switch.h **** #include "per/gpio.h"
    6:../../libDaisy//src/hid/switch.h **** #include "sys/system.h"
    7:../../libDaisy//src/hid/switch.h **** 
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 204
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 204
 
 
    8:../../libDaisy//src/hid/switch.h **** namespace daisy
@@ -12238,7 +12238,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
   62:../../libDaisy//src/hid/switch.h ****     /** 
   63:../../libDaisy//src/hid/switch.h ****     Called at update_rate to debounce and handle timing for the switch.
   64:../../libDaisy//src/hid/switch.h ****     In order for events not to be missed, its important that the Edge/Pressed checks
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 205
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 205
 
 
   65:../../libDaisy//src/hid/switch.h ****     be made at the same rate as the debounce function is being called.
@@ -12298,7 +12298,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
   17:../../libDaisy//src/hid/encoder.h **** class Encoder
   18:../../libDaisy//src/hid/encoder.h **** {
   19:../../libDaisy//src/hid/encoder.h ****   public:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 206
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 206
 
 
   20:../../libDaisy//src/hid/encoder.h ****     Encoder() {}
@@ -12358,7 +12358,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  7820              		.loc 12 90 26 view .LVU2050
  7821              	.LBE1768:
  7822              	.LBE1771:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 207
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 207
 
 
  7823              	.LBE1775:
@@ -12418,7 +12418,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  7870              	.LBB1766:
  7871              		.loc 12 90 26 view .LVU2062
  7872 003a 77EEE67A 		vsub.f32	s15, s15, s13
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 208
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 208
 
 
  7873              	.LBE1766:
@@ -12478,7 +12478,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  7915 006a 03B3     		cbz	r3, .L525
  7916              	.L508:
  136:Dubby.cpp     ****     if (encoder.TimeHeldMs() < 300 && menuActive)
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 209
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 209
 
 
  7917              		.loc 2 136 5 is_stmt 1 view .LVU2075
@@ -12538,7 +12538,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  7965              	.LBB1797:
  7966              	.LBB1794:
  7967              	.LBB1791:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 210
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 210
 
 
  7968              	.LBB1790:
@@ -12598,7 +12598,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  8010              	.L525:
  8011              		.cfi_restore_state
  122:Dubby.cpp     ****         case MENU1:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 211
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 211
 
 
  8012              		.loc 2 122 9 is_stmt 1 view .LVU2103
@@ -12658,7 +12658,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  8052 00c8 FFF7FEFF 		bl	_ZN5daisy6System6GetNowEv
  8053              	.LVL582:
  225:Dubby.cpp     ****     if(seed.system.GetNow() - screen_update_last_ > screen_update_period_)
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 212
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 212
 
 
  8054              		.loc 2 225 29 view .LVU2118
@@ -12718,7 +12718,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  8093 00ea FFF7FEFF 		bl	_ZN5daisy5Dubby9UpdateBarEi
  8094              	.LVL587:
  228:Dubby.cpp     ****         for (int i = 0; i < 4; i++) UpdateBar(i);
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 213
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 213
 
 
  8095              		.loc 2 228 9 is_stmt 1 view .LVU2134
@@ -12778,7 +12778,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  8135 010a 0122     		movs	r2, #1
  8136 010c 2046     		mov	r0, r4
  8137 010e FFF7FEFF 		bl	_ZN5daisy5Dubby10UpdateMenuEib
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 214
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 214
 
 
  8138              	.LVL592:
@@ -12838,7 +12838,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  8179              	.L524:
   36:../../libDaisy//src/hid/encoder.h **** 
  8180              		.loc 13 36 56 view .LVU2162
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 215
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 215
 
 
  8181 012c D4F81831 		ldr	r3, [r4, #280]
@@ -12898,7 +12898,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  8224              		.loc 13 36 40 view .LVU2178
   36:../../libDaisy//src/hid/encoder.h **** 
  8225              		.loc 13 36 56 is_stmt 0 view .LVU2179
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 216
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 216
 
 
  8226 0144 94F8F830 		ldrb	r3, [r4, #248]	@ zero_extendqisi2
@@ -12958,7 +12958,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  8265 0162 FFF7FEFF 		bl	_ZN5daisy5Dubby22DisplayPreferencesMenuEv
  8266              	.LVL601:
  312:Dubby.cpp     **** }
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 217
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 217
 
 
  8267              		.loc 2 312 1 view .LVU2195
@@ -13018,7 +13018,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  8310              		.loc 13 48 39 view .LVU2208
  8311              	.LBB1832:
  8312              	.LBB1799:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 218
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 218
 
 
   88:../../libDaisy//src/hid/switch.h ****     {
@@ -13078,7 +13078,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  8361              		.cfi_offset 4, -40
  8362              		.cfi_offset 5, -36
  8363              		.cfi_offset 6, -32
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 219
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 219
 
 
  8364              		.cfi_offset 7, -28
@@ -13138,7 +13138,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  108:../../libDaisy//src/dev/oled_ssd130x.h ****         pin_reset_.mode = DSY_GPIO_MODE_OUTPUT_PP;
  8406              		.loc 4 108 22 is_stmt 0 view .LVU2231
  8407 0022 3046     		mov	r0, r6
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 220
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 220
 
 
  8408              	.LVL609:
@@ -13198,7 +13198,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  8446 0052 FFF7FEFF 		bl	dsy_gpio_write
  8447              	.LVL615:
  120:../../libDaisy//src/dev/oled_ssd130x.h ****     };
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 221
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 221
 
 
  8448              		.loc 4 120 9 is_stmt 1 view .LVU2248
@@ -13258,7 +13258,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  8491              	.LVL620:
  124:../../libDaisy//src/dev/oled_ssd130x.h ****         spi_.BlockingTransmit(&cmd, 1);
  8492              		.loc 4 124 23 view .LVU2260
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 222
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 222
 
 
  8493              	.LBE1893:
@@ -13318,7 +13318,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  8534 00aa 2046     		mov	r0, r4
  8535 00ac FFF7FEFF 		bl	_ZN5daisy9SpiHandle16BlockingTransmitEPhjm
  8536              	.LVL625:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 223
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 223
 
 
  125:../../libDaisy//src/dev/oled_ssd130x.h ****     };
@@ -13378,7 +13378,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  8579              		.loc 4 122 10 is_stmt 1 view .LVU2285
  8580              	.LBB1903:
  124:../../libDaisy//src/dev/oled_ssd130x.h ****         spi_.BlockingTransmit(&cmd, 1);
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 224
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 224
 
 
  8581              		.loc 4 124 9 view .LVU2286
@@ -13438,7 +13438,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  8623              	.LBE1906:
  8624              	.LBE1904:
  8625              	.LBB1907:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 225
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 225
 
 
  8626              	.LBB1908:
@@ -13498,7 +13498,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  8667              		.loc 4 124 23 is_stmt 0 view .LVU2311
  8668 012c FFF7FEFF 		bl	dsy_gpio_write
  8669              	.LVL639:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 226
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 226
 
 
  125:../../libDaisy//src/dev/oled_ssd130x.h ****     };
@@ -13558,7 +13558,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  8712 015a 3946     		mov	r1, r7
  8713 015c 3046     		mov	r0, r6
  8714 015e 8DF80730 		strb	r3, [sp, #7]
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 227
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 227
 
 
  8715              	.LVL644:
@@ -13618,7 +13618,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  8755 0182 2A46     		mov	r2, r5
  8756 0184 0DF10701 		add	r1, sp, #7
  8757 0188 6423     		movs	r3, #100
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 228
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 228
 
 
  8758 018a 2046     		mov	r0, r4
@@ -13678,7 +13678,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  8801              	.LBE1926:
  8802              	.LBI1925:
  122:../../libDaisy//src/dev/oled_ssd130x.h ****     {
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 229
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 229
 
 
  8803              		.loc 4 122 10 is_stmt 1 view .LVU2349
@@ -13738,7 +13738,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  125:../../libDaisy//src/dev/oled_ssd130x.h ****     };
  8845              		.loc 4 125 30 view .LVU2362
  8846 01e4 A123     		movs	r3, #161
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 230
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 230
 
 
  8847              	.LBE1930:
@@ -13798,7 +13798,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  8889              		.loc 4 124 9 view .LVU2374
  124:../../libDaisy//src/dev/oled_ssd130x.h ****         spi_.BlockingTransmit(&cmd, 1);
  8890              		.loc 4 124 23 is_stmt 0 view .LVU2375
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 231
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 231
 
 
  8891 020a FFF7FEFF 		bl	dsy_gpio_write
@@ -13858,7 +13858,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  8934              	.LBB1941:
  124:../../libDaisy//src/dev/oled_ssd130x.h ****         spi_.BlockingTransmit(&cmd, 1);
  8935              		.loc 4 124 23 view .LVU2387
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 232
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 232
 
 
  8936 023a 3946     		mov	r1, r7
@@ -13918,7 +13918,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  8977              		.loc 4 125 9 is_stmt 1 view .LVU2400
  125:../../libDaisy//src/dev/oled_ssd130x.h ****     };
  8978              		.loc 4 125 30 is_stmt 0 view .LVU2401
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 233
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 233
 
 
  8979 0262 2A46     		mov	r2, r5
@@ -13978,7 +13978,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  9023              	.LVL677:
  124:../../libDaisy//src/dev/oled_ssd130x.h ****         spi_.BlockingTransmit(&cmd, 1);
  9024              		.loc 4 124 23 view .LVU2412
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 234
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 234
 
 
  9025              	.LBE1950:
@@ -14038,7 +14038,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  9066 02be 2046     		mov	r0, r4
  9067 02c0 FFF7FEFF 		bl	_ZN5daisy9SpiHandle16BlockingTransmitEPhjm
  9068              	.LVL682:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 235
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 235
 
 
  125:../../libDaisy//src/dev/oled_ssd130x.h ****     };
@@ -14098,7 +14098,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  347:../../libDaisy//src/dev/oled_ssd130x.h **** 
  9113              		.loc 4 347 5 view .LVU2436
  9114 02e6 04B0     		add	sp, sp, #16
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 236
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 236
 
 
  9115              		.cfi_def_cfa_offset 0
@@ -14158,7 +14158,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  9164              	.LBB1980:
  9165              	.LBI1972:
   70:../../libDaisy//src/dev/oled_ssd130x.h ****         {
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 237
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 237
 
 
  9166              		.loc 4 70 9 view .LVU2444
@@ -14218,7 +14218,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
   50:../../libDaisy//src/per/spi.h ****             LOW,
   51:../../libDaisy//src/per/spi.h ****             HIGH,
   52:../../libDaisy//src/per/spi.h ****         };
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 238
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 238
 
 
   53:../../libDaisy//src/per/spi.h **** 
@@ -14278,7 +14278,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  9183              	.LBB1985:
  9184              	.LBB1981:
  9185              	.LBB1977:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 239
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 239
 
 
  9186              	.LBB1975:
@@ -14338,7 +14338,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  9223              		.loc 1 25 44 view .LVU2467
  9224 000e 16AD     		add	r5, sp, #88
  9225 0010 6C46     		mov	r4, sp
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 240
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 240
 
 
  9226              	.LBE1992:
@@ -14398,7 +14398,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  9268              		.loc 1 25 44 view .LVU2479
  9269 0040 6746     		mov	r7, ip
  9270 0042 CDE91022 		strd	r2, r2, [sp, #64]
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 241
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 241
 
 
  9271 0046 0822     		movs	r2, #8
@@ -14458,7 +14458,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
   37:Dubby.cpp     **** {
  9322              		.loc 2 37 1 is_stmt 1 view -0
  9323              		.cfi_startproc
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 242
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 242
 
 
  9324              		@ args = 0, pretend = 0, frame = 16
@@ -14518,7 +14518,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
   46:Dubby.cpp     ****         submenuBoxBounding[i][0] = SUBMENU_X_START;
  9364              		.loc 2 46 34 discriminator 2 view .LVU2500
  9365 0026 0124     		movs	r4, #1
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 243
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 243
 
 
  9366 0028 0A32     		adds	r2, r2, #10
@@ -14578,7 +14578,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  9406              	.LVL704:
  9407 005e ADF80C00 		strh	r0, [sp, #12]	@ movhi
  9408 0062 05F1F400 		add	r0, r5, #244
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 244
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 244
 
 
  9409 0066 9FED060A 		vldr.32	s0, .L590
@@ -14638,7 +14638,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  9458 000d 02       		.byte	2
  9459 000e 0000     		.space	2
  9460              	.LC9:
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 245
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 245
 
 
  9461 0010 04       		.byte	4
@@ -14698,7 +14698,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  9493 006a 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000?\377"
  9493      00000000 
  9493      00000000 
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 246
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 246
 
 
  9493      3FFF
@@ -14758,7 +14758,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  9507      00000000 
  9507      00000000 
  9507      00
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 247
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 247
 
 
  9508 0132 00000FFF 		.ascii	"\000\000\017\377\307\377\340\000\000\000\000\000\000"
@@ -14818,7 +14818,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  9521      0FFFF000 
  9521      0000
  9522 01ef 00000000 		.ascii	"\000\000\000\000\000\037\377\370\000\000\017\377\370"
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 248
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 248
 
 
  9522      001FFFF8 
@@ -14878,7 +14878,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  9535      CF
  9536 02aa FFFC0000 		.ascii	"\377\374\000\000\000\000\000\000\000\000\000\377\377"
  9536      00000000 
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 249
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 249
 
 
  9536      000000FF 
@@ -14938,7 +14938,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  9550 0363 00001FFF 		.ascii	"\000\000\037\377\237\377\376\000\000\000\000\000\000"
  9550      9FFFFE00 
  9550      00000000 
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 250
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 250
 
 
  9550      00
@@ -14998,7 +14998,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  9565 041a 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
  9565      00000000 
  9565      00000000 
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 251
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 251
 
 
  9565      00
@@ -15058,7 +15058,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  9579      00000071 
  9579      FC700E00 
  9579      0E0000
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 252
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 252
 
 
  9580 04ed 00000000 		.ascii	"\000\000\000\000\000\000\000\000y\374x\036\000\036\000"
@@ -15118,7 +15118,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  9593      00F01F00 
  9593      00
  9594 05ab 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\001\340"
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 253
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 253
 
 
  9594      00000000 
@@ -15178,7 +15178,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  9607      000000
  9608 066e 00000000 		.ascii	"\000\000\000\000\000\000\000w\360p\0161\316\000\000"
  9608      00000077 
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 254
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 254
 
 
  9608      F0700E31 
@@ -15238,7 +15238,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  9622 0733 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
  9622      00000000 
  9622      00000000 
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 255
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 255
 
 
  9622      00
@@ -15298,7 +15298,7 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  9636      00000000 
  9636      00000000 
  9636      00
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 256
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 256
 
 
  9637 07f6 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000"
@@ -15353,94 +15353,94 @@ ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 1
  9684              		.file 59 "../../libDaisy//src/dev/sr_595.h"
  9685              		.file 60 "./bitmaps/bmps.h"
  9686              		.file 61 "<built-in>"
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 257
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 257
 
 
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 Dubby.cpp
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:19     .text._ZNK5daisy11OledDisplayINS_13SSD130xDriverILj128ELj64ENS_24SSD130x4WireSpiTransportEEEE6HeightEv:0000000000000000 $t
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:26     .text._ZNK5daisy11OledDisplayINS_13SSD130xDriverILj128ELj64ENS_24SSD130x4WireSpiTransportEEEE6HeightEv:0000000000000000 _ZNK5daisy11OledDisplayINS_13SSD130xDriverILj128ELj64ENS_24SSD130x4WireSpiTransportEEEE6HeightEv
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:44     .text._ZNK5daisy11OledDisplayINS_13SSD130xDriverILj128ELj64ENS_24SSD130x4WireSpiTransportEEEE5WidthEv:0000000000000000 $t
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:51     .text._ZNK5daisy11OledDisplayINS_13SSD130xDriverILj128ELj64ENS_24SSD130x4WireSpiTransportEEEE5WidthEv:0000000000000000 _ZNK5daisy11OledDisplayINS_13SSD130xDriverILj128ELj64ENS_24SSD130x4WireSpiTransportEEEE5WidthEv
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:68     .text._ZN5daisy5Dubby11RenderScopeEv.part.0:0000000000000000 $t
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:74     .text._ZN5daisy5Dubby11RenderScopeEv.part.0:0000000000000000 _ZN5daisy5Dubby11RenderScopeEv.part.0
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:667    .text._ZN5daisy5Dubby11RenderScopeEv.part.0:00000000000001e4 $d
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:677    .text._ZN5daisy5Dubby12InitControlsEv:0000000000000000 $t
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:684    .text._ZN5daisy5Dubby12InitControlsEv:0000000000000000 _ZN5daisy5Dubby12InitControlsEv
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:843    .text._ZN5daisy5Dubby12InitControlsEv:00000000000000d4 $d
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:848    .text._ZN5daisy5Dubby9InitGatesEv:0000000000000000 $t
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:855    .text._ZN5daisy5Dubby9InitGatesEv:0000000000000000 _ZN5daisy5Dubby9InitGatesEv
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:961    .text._ZN5daisy5Dubby10DrawBitmapEi:0000000000000000 $t
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:968    .text._ZN5daisy5Dubby10DrawBitmapEi:0000000000000000 _ZN5daisy5Dubby10DrawBitmapEi
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:1399   .text._ZN5daisy5Dubby10DrawBitmapEi:0000000000000124 $d
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:1412   .text._ZN5daisy5Dubby8DrawLogoEv:0000000000000000 $t
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:1419   .text._ZN5daisy5Dubby8DrawLogoEv:0000000000000000 _ZN5daisy5Dubby8DrawLogoEv
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:1437   .text._ZN5daisy5Dubby9UpdateBarEi:0000000000000000 $t
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:1444   .text._ZN5daisy5Dubby9UpdateBarEi:0000000000000000 _ZN5daisy5Dubby9UpdateBarEi
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:2489   .text._ZN5daisy5Dubby9UpdateBarEi:0000000000000384 $d
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:2502   .text._ZN5daisy5Dubby9UpdateBarEi:0000000000000388 $t
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:2634   .text._ZN5daisy5Dubby15UpdateMixerPaneEv:0000000000000000 $t
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:2641   .text._ZN5daisy5Dubby15UpdateMixerPaneEv:0000000000000000 _ZN5daisy5Dubby15UpdateMixerPaneEv
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:2719   .text._ZN5daisy5Dubby11RenderScopeEv:0000000000000000 $t
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:2726   .text._ZN5daisy5Dubby11RenderScopeEv:0000000000000000 _ZN5daisy5Dubby11RenderScopeEv
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:2774   .text._ZN5daisy5Dubby11InitEncoderEv:0000000000000000 $t
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:2781   .text._ZN5daisy5Dubby11InitEncoderEv:0000000000000000 _ZN5daisy5Dubby11InitEncoderEv
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:2834   .text._ZN5daisy5Dubby11InitEncoderEv:0000000000000040 $d
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:2839   .text._ZN5daisy5Dubby18ProcessAllControlsEv:0000000000000000 $t
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:2846   .text._ZN5daisy5Dubby18ProcessAllControlsEv:0000000000000000 _ZN5daisy5Dubby18ProcessAllControlsEv
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:2922   .text._ZN5daisy5Dubby21ProcessAnalogControlsEv:0000000000000000 $t
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:2929   .text._ZN5daisy5Dubby21ProcessAnalogControlsEv:0000000000000000 _ZN5daisy5Dubby21ProcessAnalogControlsEv
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:2972   .text._ZN5daisy5Dubby22ProcessDigitalControlsEv:0000000000000000 $t
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:2979   .text._ZN5daisy5Dubby22ProcessDigitalControlsEv:0000000000000000 _ZN5daisy5Dubby22ProcessDigitalControlsEv
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:2999   .text._ZN5daisy5Dubby12GetKnobValueENS0_4CtrlE:0000000000000000 $t
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:3006   .text._ZN5daisy5Dubby12GetKnobValueENS0_4CtrlE:0000000000000000 _ZN5daisy5Dubby12GetKnobValueENS0_4CtrlE
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:3033   .text._ZN5daisy5Dubby9InitAudioEv:0000000000000000 $t
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:3040   .text._ZN5daisy5Dubby9InitAudioEv:0000000000000000 _ZN5daisy5Dubby9InitAudioEv
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:3380   .text._ZN5daisy5Dubby9InitAudioEv:0000000000000108 $d
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:3386   .rodata._ZN5daisy5Dubby14GetTextForEnumENS0_9MenuTypesEi.str1.4:0000000000000000 $d
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:3390   .text._ZN5daisy5Dubby14GetTextForEnumENS0_9MenuTypesEi:0000000000000000 $t
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:3397   .text._ZN5daisy5Dubby14GetTextForEnumENS0_9MenuTypesEi:0000000000000000 _ZN5daisy5Dubby14GetTextForEnumENS0_9MenuTypesEi
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:3438   .text._ZN5daisy5Dubby14GetTextForEnumENS0_9MenuTypesEi:0000000000000018 $d
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:3443   .text._ZN5daisy25OneBitGraphicsDisplayImplINS_11OledDisplayINS_13SSD130xDriverILj128ELj64ENS_24SSD130x4WireSpiTransportEEEEEE11WriteStringEPKc7FontDefb:0000000000000000 $t
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:3450   .text._ZN5daisy25OneBitGraphicsDisplayImplINS_11OledDisplayINS_13SSD130xDriverILj128ELj64ENS_24SSD130x4WireSpiTransportEEEEEE11WriteStringEPKc7FontDefb:0000000000000000 _ZN5daisy25OneBitGraphicsDisplayImplINS_11OledDisplayINS_13SSD130xDriverILj128ELj64ENS_24SSD130x4WireSpiTransportEEEEEE11WriteStringEPKc7FontDefb
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:3907   .text._ZN5daisy25OneBitGraphicsDisplayImplINS_11OledDisplayINS_13SSD130xDriverILj128ELj64ENS_24SSD130x4WireSpiTransportEEEEEE11WriteStringEPKc7FontDefb:00000000000001b8 $d
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:3917   .text._ZN5daisy5Dubby18HightlightMenuItemEv:0000000000000000 $t
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:3924   .text._ZN5daisy5Dubby18HightlightMenuItemEv:0000000000000000 _ZN5daisy5Dubby18HightlightMenuItemEv
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:4607   .text._ZN5daisy5Dubby18HightlightMenuItemEv:00000000000001ec $d
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:4612   .text._ZN5daisy5Dubby11ReleaseMenuEv:0000000000000000 $t
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:4619   .text._ZN5daisy5Dubby11ReleaseMenuEv:0000000000000000 _ZN5daisy5Dubby11ReleaseMenuEv
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:5752   .text._ZN5daisy5Dubby11ReleaseMenuEv:0000000000000430 $d
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:5760   .text._ZN5daisy5Dubby22DisplayPreferencesMenuEv:0000000000000000 $t
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:5767   .text._ZN5daisy5Dubby22DisplayPreferencesMenuEv:0000000000000000 _ZN5daisy5Dubby22DisplayPreferencesMenuEv
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:6150   .text._ZN5daisy5Dubby22DisplayPreferencesMenuEv:0000000000000124 $d
-ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s 			page 258
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:19     .text._ZNK5daisy11OledDisplayINS_13SSD130xDriverILj128ELj64ENS_24SSD130x4WireSpiTransportEEEE6HeightEv:0000000000000000 $t
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:26     .text._ZNK5daisy11OledDisplayINS_13SSD130xDriverILj128ELj64ENS_24SSD130x4WireSpiTransportEEEE6HeightEv:0000000000000000 _ZNK5daisy11OledDisplayINS_13SSD130xDriverILj128ELj64ENS_24SSD130x4WireSpiTransportEEEE6HeightEv
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:44     .text._ZNK5daisy11OledDisplayINS_13SSD130xDriverILj128ELj64ENS_24SSD130x4WireSpiTransportEEEE5WidthEv:0000000000000000 $t
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:51     .text._ZNK5daisy11OledDisplayINS_13SSD130xDriverILj128ELj64ENS_24SSD130x4WireSpiTransportEEEE5WidthEv:0000000000000000 _ZNK5daisy11OledDisplayINS_13SSD130xDriverILj128ELj64ENS_24SSD130x4WireSpiTransportEEEE5WidthEv
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:68     .text._ZN5daisy5Dubby11RenderScopeEv.part.0:0000000000000000 $t
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:74     .text._ZN5daisy5Dubby11RenderScopeEv.part.0:0000000000000000 _ZN5daisy5Dubby11RenderScopeEv.part.0
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:667    .text._ZN5daisy5Dubby11RenderScopeEv.part.0:00000000000001e4 $d
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:677    .text._ZN5daisy5Dubby12InitControlsEv:0000000000000000 $t
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:684    .text._ZN5daisy5Dubby12InitControlsEv:0000000000000000 _ZN5daisy5Dubby12InitControlsEv
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:843    .text._ZN5daisy5Dubby12InitControlsEv:00000000000000d4 $d
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:848    .text._ZN5daisy5Dubby9InitGatesEv:0000000000000000 $t
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:855    .text._ZN5daisy5Dubby9InitGatesEv:0000000000000000 _ZN5daisy5Dubby9InitGatesEv
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:961    .text._ZN5daisy5Dubby10DrawBitmapEi:0000000000000000 $t
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:968    .text._ZN5daisy5Dubby10DrawBitmapEi:0000000000000000 _ZN5daisy5Dubby10DrawBitmapEi
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:1399   .text._ZN5daisy5Dubby10DrawBitmapEi:0000000000000124 $d
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:1412   .text._ZN5daisy5Dubby8DrawLogoEv:0000000000000000 $t
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:1419   .text._ZN5daisy5Dubby8DrawLogoEv:0000000000000000 _ZN5daisy5Dubby8DrawLogoEv
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:1437   .text._ZN5daisy5Dubby9UpdateBarEi:0000000000000000 $t
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:1444   .text._ZN5daisy5Dubby9UpdateBarEi:0000000000000000 _ZN5daisy5Dubby9UpdateBarEi
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:2489   .text._ZN5daisy5Dubby9UpdateBarEi:0000000000000384 $d
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:2502   .text._ZN5daisy5Dubby9UpdateBarEi:0000000000000388 $t
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:2634   .text._ZN5daisy5Dubby15UpdateMixerPaneEv:0000000000000000 $t
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:2641   .text._ZN5daisy5Dubby15UpdateMixerPaneEv:0000000000000000 _ZN5daisy5Dubby15UpdateMixerPaneEv
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:2719   .text._ZN5daisy5Dubby11RenderScopeEv:0000000000000000 $t
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:2726   .text._ZN5daisy5Dubby11RenderScopeEv:0000000000000000 _ZN5daisy5Dubby11RenderScopeEv
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:2774   .text._ZN5daisy5Dubby11InitEncoderEv:0000000000000000 $t
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:2781   .text._ZN5daisy5Dubby11InitEncoderEv:0000000000000000 _ZN5daisy5Dubby11InitEncoderEv
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:2834   .text._ZN5daisy5Dubby11InitEncoderEv:0000000000000040 $d
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:2839   .text._ZN5daisy5Dubby18ProcessAllControlsEv:0000000000000000 $t
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:2846   .text._ZN5daisy5Dubby18ProcessAllControlsEv:0000000000000000 _ZN5daisy5Dubby18ProcessAllControlsEv
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:2922   .text._ZN5daisy5Dubby21ProcessAnalogControlsEv:0000000000000000 $t
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:2929   .text._ZN5daisy5Dubby21ProcessAnalogControlsEv:0000000000000000 _ZN5daisy5Dubby21ProcessAnalogControlsEv
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:2972   .text._ZN5daisy5Dubby22ProcessDigitalControlsEv:0000000000000000 $t
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:2979   .text._ZN5daisy5Dubby22ProcessDigitalControlsEv:0000000000000000 _ZN5daisy5Dubby22ProcessDigitalControlsEv
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:2999   .text._ZN5daisy5Dubby12GetKnobValueENS0_4CtrlE:0000000000000000 $t
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:3006   .text._ZN5daisy5Dubby12GetKnobValueENS0_4CtrlE:0000000000000000 _ZN5daisy5Dubby12GetKnobValueENS0_4CtrlE
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:3033   .text._ZN5daisy5Dubby9InitAudioEv:0000000000000000 $t
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:3040   .text._ZN5daisy5Dubby9InitAudioEv:0000000000000000 _ZN5daisy5Dubby9InitAudioEv
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:3380   .text._ZN5daisy5Dubby9InitAudioEv:0000000000000108 $d
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:3386   .rodata._ZN5daisy5Dubby14GetTextForEnumENS0_9MenuTypesEi.str1.4:0000000000000000 $d
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:3390   .text._ZN5daisy5Dubby14GetTextForEnumENS0_9MenuTypesEi:0000000000000000 $t
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:3397   .text._ZN5daisy5Dubby14GetTextForEnumENS0_9MenuTypesEi:0000000000000000 _ZN5daisy5Dubby14GetTextForEnumENS0_9MenuTypesEi
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:3438   .text._ZN5daisy5Dubby14GetTextForEnumENS0_9MenuTypesEi:0000000000000018 $d
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:3443   .text._ZN5daisy25OneBitGraphicsDisplayImplINS_11OledDisplayINS_13SSD130xDriverILj128ELj64ENS_24SSD130x4WireSpiTransportEEEEEE11WriteStringEPKc7FontDefb:0000000000000000 $t
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:3450   .text._ZN5daisy25OneBitGraphicsDisplayImplINS_11OledDisplayINS_13SSD130xDriverILj128ELj64ENS_24SSD130x4WireSpiTransportEEEEEE11WriteStringEPKc7FontDefb:0000000000000000 _ZN5daisy25OneBitGraphicsDisplayImplINS_11OledDisplayINS_13SSD130xDriverILj128ELj64ENS_24SSD130x4WireSpiTransportEEEEEE11WriteStringEPKc7FontDefb
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:3907   .text._ZN5daisy25OneBitGraphicsDisplayImplINS_11OledDisplayINS_13SSD130xDriverILj128ELj64ENS_24SSD130x4WireSpiTransportEEEEEE11WriteStringEPKc7FontDefb:00000000000001b8 $d
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:3917   .text._ZN5daisy5Dubby18HightlightMenuItemEv:0000000000000000 $t
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:3924   .text._ZN5daisy5Dubby18HightlightMenuItemEv:0000000000000000 _ZN5daisy5Dubby18HightlightMenuItemEv
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:4607   .text._ZN5daisy5Dubby18HightlightMenuItemEv:00000000000001ec $d
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:4612   .text._ZN5daisy5Dubby11ReleaseMenuEv:0000000000000000 $t
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:4619   .text._ZN5daisy5Dubby11ReleaseMenuEv:0000000000000000 _ZN5daisy5Dubby11ReleaseMenuEv
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:5752   .text._ZN5daisy5Dubby11ReleaseMenuEv:0000000000000430 $d
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:5760   .text._ZN5daisy5Dubby22DisplayPreferencesMenuEv:0000000000000000 $t
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:5767   .text._ZN5daisy5Dubby22DisplayPreferencesMenuEv:0000000000000000 _ZN5daisy5Dubby22DisplayPreferencesMenuEv
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:6150   .text._ZN5daisy5Dubby22DisplayPreferencesMenuEv:0000000000000124 $d
+ARM GAS  /var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s 			page 258
 
 
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:6157   .text._ZN5daisy5Dubby22DisplayPreferencesMenuEv:0000000000000128 $t
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:6943   .text._ZN5daisy5Dubby13UpdateSubmenuEv:0000000000000000 $t
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:6950   .text._ZN5daisy5Dubby13UpdateSubmenuEv:0000000000000000 _ZN5daisy5Dubby13UpdateSubmenuEv
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:7169   .text._ZN5daisy5Dubby10UpdateMenuEib:0000000000000000 $t
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:7176   .text._ZN5daisy5Dubby10UpdateMenuEib:0000000000000000 _ZN5daisy5Dubby10UpdateMenuEib
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:7434   .text._ZN5daisy5Dubby21UpdatePreferencesMenuEi:0000000000000000 $t
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:7441   .text._ZN5daisy5Dubby21UpdatePreferencesMenuEi:0000000000000000 _ZN5daisy5Dubby21UpdatePreferencesMenuEi
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:7488   .rodata._ZN5daisy5Dubby17ResetToBootloaderEv.str1.4:0000000000000000 $d
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:7492   .text._ZN5daisy5Dubby17ResetToBootloaderEv:0000000000000000 $t
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:7499   .text._ZN5daisy5Dubby17ResetToBootloaderEv:0000000000000000 _ZN5daisy5Dubby17ResetToBootloaderEv
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:7755   .text._ZN5daisy5Dubby17ResetToBootloaderEv:00000000000000b0 $d
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:7762   .text._ZN5daisy5Dubby13UpdateDisplayEv:0000000000000000 $t
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:7769   .text._ZN5daisy5Dubby13UpdateDisplayEv:0000000000000000 _ZN5daisy5Dubby13UpdateDisplayEv
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:8337   .text._ZN5daisy5Dubby13UpdateDisplayEv:0000000000000188 $d
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:8342   .text._ZN5daisy13SSD130xDriverILj128ELj64ENS_24SSD130x4WireSpiTransportEE4InitENS2_6ConfigE:0000000000000000 $t
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:8349   .text._ZN5daisy13SSD130xDriverILj128ELj64ENS_24SSD130x4WireSpiTransportEE4InitENS2_6ConfigE:0000000000000000 _ZN5daisy13SSD130xDriverILj128ELj64ENS_24SSD130x4WireSpiTransportEE4InitENS2_6ConfigE
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:9121   .text._ZN5daisy5Dubby11InitDisplayEv:0000000000000000 $t
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:9128   .text._ZN5daisy5Dubby11InitDisplayEv:0000000000000000 _ZN5daisy5Dubby11InitDisplayEv
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:9307   .text._ZN5daisy5Dubby11InitDisplayEv:0000000000000088 $d
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:9312   .text._ZN5daisy5Dubby4InitEv:0000000000000000 $t
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:9319   .text._ZN5daisy5Dubby4InitEv:0000000000000000 _ZN5daisy5Dubby4InitEv
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:9437   .text._ZN5daisy5Dubby4InitEv:0000000000000080 $d
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:9442   .rodata:0000000000000000 $d
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:9480   .rodata._ZL7bitmaps:0000000000000000 $d
-/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccXuncwa.s:9484   .rodata._ZL7bitmaps:0000000000000000 _ZL7bitmaps
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:6157   .text._ZN5daisy5Dubby22DisplayPreferencesMenuEv:0000000000000128 $t
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:6943   .text._ZN5daisy5Dubby13UpdateSubmenuEv:0000000000000000 $t
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:6950   .text._ZN5daisy5Dubby13UpdateSubmenuEv:0000000000000000 _ZN5daisy5Dubby13UpdateSubmenuEv
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:7169   .text._ZN5daisy5Dubby10UpdateMenuEib:0000000000000000 $t
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:7176   .text._ZN5daisy5Dubby10UpdateMenuEib:0000000000000000 _ZN5daisy5Dubby10UpdateMenuEib
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:7434   .text._ZN5daisy5Dubby21UpdatePreferencesMenuEi:0000000000000000 $t
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:7441   .text._ZN5daisy5Dubby21UpdatePreferencesMenuEi:0000000000000000 _ZN5daisy5Dubby21UpdatePreferencesMenuEi
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:7488   .rodata._ZN5daisy5Dubby17ResetToBootloaderEv.str1.4:0000000000000000 $d
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:7492   .text._ZN5daisy5Dubby17ResetToBootloaderEv:0000000000000000 $t
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:7499   .text._ZN5daisy5Dubby17ResetToBootloaderEv:0000000000000000 _ZN5daisy5Dubby17ResetToBootloaderEv
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:7755   .text._ZN5daisy5Dubby17ResetToBootloaderEv:00000000000000b0 $d
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:7762   .text._ZN5daisy5Dubby13UpdateDisplayEv:0000000000000000 $t
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:7769   .text._ZN5daisy5Dubby13UpdateDisplayEv:0000000000000000 _ZN5daisy5Dubby13UpdateDisplayEv
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:8337   .text._ZN5daisy5Dubby13UpdateDisplayEv:0000000000000188 $d
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:8342   .text._ZN5daisy13SSD130xDriverILj128ELj64ENS_24SSD130x4WireSpiTransportEE4InitENS2_6ConfigE:0000000000000000 $t
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:8349   .text._ZN5daisy13SSD130xDriverILj128ELj64ENS_24SSD130x4WireSpiTransportEE4InitENS2_6ConfigE:0000000000000000 _ZN5daisy13SSD130xDriverILj128ELj64ENS_24SSD130x4WireSpiTransportEE4InitENS2_6ConfigE
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:9121   .text._ZN5daisy5Dubby11InitDisplayEv:0000000000000000 $t
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:9128   .text._ZN5daisy5Dubby11InitDisplayEv:0000000000000000 _ZN5daisy5Dubby11InitDisplayEv
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:9307   .text._ZN5daisy5Dubby11InitDisplayEv:0000000000000088 $d
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:9312   .text._ZN5daisy5Dubby4InitEv:0000000000000000 $t
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:9319   .text._ZN5daisy5Dubby4InitEv:0000000000000000 _ZN5daisy5Dubby4InitEv
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:9437   .text._ZN5daisy5Dubby4InitEv:0000000000000080 $d
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:9442   .rodata:0000000000000000 $d
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:9480   .rodata._ZL7bitmaps:0000000000000000 $d
+/var/folders/1y/_321xjh9623c014x9_qw12rr0000gn/T//ccb8Ixzo.s:9484   .rodata._ZL7bitmaps:0000000000000000 _ZL7bitmaps
 
 UNDEFINED SYMBOLS
 _ZN5daisy6System6GetNowEv
