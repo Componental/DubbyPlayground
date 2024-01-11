@@ -7,8 +7,6 @@ using namespace daisysp;
 
 Dubby dubby;
 
-Oscillator osc;
-
 void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, size_t size)
 {
     double sumSquared[4] = { 0.0f };
@@ -17,8 +15,7 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
 	{
         for (int j = 0; j < 4; j++) 
         {
-            // out[j][i] = dubby.GetKnobValue(static_cast<Dubby::Ctrl>(j)) * in[j][i];
-            out[j][i] = osc.Process();
+            out[j][i] = dubby.GetKnobValue(static_cast<Dubby::Ctrl>(j)) * in[j][i];
 
             float sample = out[j][i];
             sumSquared[j] += sample * sample;
@@ -37,37 +34,45 @@ void HandleMidiMessage(MidiEvent m)
         case NoteOn:
         {
             NoteOnEvent p = m.AsNoteOn();
-            
-            p = m.AsNoteOn();
-            osc.SetFreq(mtof(p.note));
-            osc.SetAmp((p.velocity / 127.0f));
-            //dubby.seed.PrintLine("NOTE ON %d %f", p.note, (float)p.velocity);
+            p = m.AsNoteOn(); // p.note, p.velocity
             break;
         }
         case NoteOff:
         {
             NoteOffEvent p = m.AsNoteOff();
-
-            osc.SetAmp(0);
-            //dubby.seed.PrintLine("NOTE OFF %d", p.note);
             break;
         }
         default: break;
     }
 }
 
+void MIDISendNoteOn(uint8_t channel, uint8_t note, uint8_t velocity) {
+    uint8_t data[3] = { 0 };
+    
+    data[0] = (channel & 0x0F) + 0x90;  // limit channel byte, add status byte
+    data[1] = note & 0x7F;              // remove MSB on data
+    data[2] = velocity & 0x7F;
+
+    dubby.midi.SendMessage(data, 3);
+}
+
+void MIDISendNoteOff(uint8_t channel, uint8_t note) {
+    uint8_t data[3] = { 0 };
+
+    data[0] = (channel & 0x0F) + 0x80;  // limit channel byte, add status byte
+    data[1] = note & 0x7F;              // remove MSB on data
+    data[2] = 0 & 0x7F;
+
+    dubby.midi.SendMessage(data, 3);
+}
+
 
 int main(void)
 {
 	dubby.seed.Init();
-    // dubby.InitAudio();
 	// dubby.seed.StartLog(true);
 
     dubby.Init();
-
-    
-    osc.Init(48000);
-    osc.SetWaveform(Oscillator::WAVE_POLYBLEP_SAW);
     
 	dubby.seed.SetAudioBlockSize(AUDIO_BLOCK_SIZE); // number of samples handled per callback
 	dubby.seed.SetAudioSampleRate(SaiHandle::Config::SampleRate::SAI_48KHZ);
@@ -90,12 +95,5 @@ int main(void)
         {
             HandleMidiMessage(dubby.midi.PopEvent());
         }
-
-        // for (int i = 0; i < 4; i++) {
-        //     if (dubby.buttons[i].RisingEdge())
-        //         dubby.seed.PrintLine("Button %d pressed", i+1);
-        //     else if (dubby.buttons[i].FallingEdge())
-        //         dubby.seed.PrintLine("Button %d released", i+1);
-        // }
 	}
 }

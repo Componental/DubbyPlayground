@@ -115,6 +115,8 @@ class Dubby
 
     void ResetToBootloader();
 
+    void SwitchMIDIOutThru(bool state);
+
     DaisySeed seed; 
 
     MenuItems menuItemSelected = (MenuItems)0;
@@ -137,6 +139,7 @@ class Dubby
     OledDisplay<SSD130x4WireSpi128x64Driver> display;
 
     MidiUartHandler midi;
+    dsy_gpio midi_sw_output;
 
   private:
 

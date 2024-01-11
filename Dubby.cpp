@@ -21,6 +21,7 @@ using namespace daisy;
 #define PIN_OLED_RESET 31
 #define PIN_MIDI_OUT 13
 #define PIN_MIDI_IN 14
+#define PIN_MIDI_SWITCH 1
 
 #define OLED_WIDTH 128
 #define OLED_HEIGHT 64
@@ -94,6 +95,14 @@ void Dubby::InitMidi()
 {
     MidiUartHandler::Config midi_config;
     midi.Init(midi_config);
+
+    // RELAY FOR SWITCHING MIDI OUT / MIDI THRU
+    midi_sw_output.pin  = seed.GetPin(PIN_MIDI_SWITCH);
+    midi_sw_output.mode = DSY_GPIO_MODE_OUTPUT_PP;
+    midi_sw_output.pull = DSY_GPIO_NOPULL;
+    dsy_gpio_init(&midi_sw_output);
+
+    dsy_gpio_write(&midi_sw_output, false); 
 }
 
 void Dubby::InitDisplay() 
@@ -323,6 +332,13 @@ void Dubby::ResetToBootloader()
     display.Update();
 
     System::ResetToBootloader();
+}
+
+void Dubby::SwitchMIDIOutThru(bool state) 
+{
+    // state == true => PIN IS HIGH => MIDI THRU
+    // state == false => PIN IS LOW => MIDI OUT
+    dsy_gpio_write(&midi_sw_output, state); 
 }
 
 void Dubby::InitEncoder()
