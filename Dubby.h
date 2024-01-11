@@ -136,6 +136,8 @@ class Dubby
 
     OledDisplay<SSD130x4WireSpi128x64Driver> display;
 
+    MidiUartHandler midi;
+
   private:
 
     void InitAudio();
@@ -143,6 +145,7 @@ class Dubby
     void InitEncoder();
     void InitDisplay();
     void InitButtons();
+    void InitMidi();
 
     int margin = 8;
     bool menuActive = false;

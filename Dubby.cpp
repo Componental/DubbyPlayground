@@ -19,6 +19,8 @@ using namespace daisy;
 #define PIN_ENC_B 5 
 #define PIN_OLED_DC 9
 #define PIN_OLED_RESET 31
+#define PIN_MIDI_OUT 13
+#define PIN_MIDI_IN 14
 
 #define OLED_WIDTH 128
 #define OLED_HEIGHT 64
@@ -52,6 +54,7 @@ void Dubby::Init()
     InitDisplay();
     InitEncoder();
     InitAudio();
+    InitMidi();
 }
 
 void Dubby::InitControls()
@@ -87,6 +90,11 @@ void Dubby::InitButtons()
     buttons[3].Init(seed.GetPin(PIN_GATE_IN_4), 1000);
 }
 
+void Dubby::InitMidi()
+{
+    MidiUartHandler::Config midi_config;
+    midi.Init(midi_config);
+}
 
 void Dubby::InitDisplay() 
 {
@@ -339,7 +347,7 @@ void Dubby::ProcessAnalogControls()
 void Dubby::ProcessDigitalControls()
 {
     encoder.Debounce();
-    
+
     for (int i = 0; i < 4; i++) buttons[i].Debounce();
 }
 
