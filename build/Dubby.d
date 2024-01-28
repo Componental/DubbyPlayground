@@ -104,15 +104,16 @@ build/Dubby.o: Dubby.cpp \
  ../../libDaisy//src/per/sai.h ../../libDaisy//src/util/unique_id.h \
  ../../libDaisy//src/per/adc.h ../../libDaisy//src/per/uart.h \
  ../../libDaisy//src/hid/midi.h ../../libDaisy//src/util/ringbuffer.h \
+ ../../libDaisy//src/util/FIFO.h ../../libDaisy//src/hid/midi_parser.h \
  ../../libDaisy//src/hid/MidiEvent.h ../../libDaisy//src/hid/usb_midi.h \
- ../../libDaisy//src/hid/usb.h ../../libDaisy//src/hid/encoder.h \
- ../../libDaisy//src/hid/switch.h ../../libDaisy//src/hid/switch3.h \
- ../../libDaisy//src/hid/ctrl.h ../../libDaisy//src/hid/gatein.h \
- ../../libDaisy//src/hid/parameter.h ../../libDaisy//src/hid/logger.h \
- ../../libDaisy//src/hid/logger_impl.h ../../libDaisy//src/hid/usb_host.h \
- ../../libDaisy//src/per/sdmmc.h ../../libDaisy//src/per/spi.h \
- ../../libDaisy//src/per/spiMultislave.h ../../libDaisy//src/per/rng.h \
- ../../libDaisy//src/hid/disp/display.h \
+ ../../libDaisy//src/hid/usb.h ../../libDaisy//src/sys/dma.h \
+ ../../libDaisy//src/hid/encoder.h ../../libDaisy//src/hid/switch.h \
+ ../../libDaisy//src/hid/switch3.h ../../libDaisy//src/hid/ctrl.h \
+ ../../libDaisy//src/hid/gatein.h ../../libDaisy//src/hid/parameter.h \
+ ../../libDaisy//src/hid/logger.h ../../libDaisy//src/hid/logger_impl.h \
+ ../../libDaisy//src/hid/usb_host.h ../../libDaisy//src/per/sdmmc.h \
+ ../../libDaisy//src/per/spi.h ../../libDaisy//src/per/spiMultislave.h \
+ ../../libDaisy//src/per/rng.h ../../libDaisy//src/hid/disp/display.h \
  ../../libDaisy//src/util/oled_fonts.h \
  ../../libDaisy//src/hid/disp/graphics_common.h \
  ../../libDaisy//src/hid/disp/oled_display.h \
@@ -128,11 +129,10 @@ build/Dubby.o: Dubby.cpp \
  ../../libDaisy//src/dev/codec_wm8731.h ../../libDaisy//src/dev/dps310.h \
  ../../libDaisy//src/dev/lcd_hd44780.h ../../libDaisy//src/dev/mcp23x17.h \
  ../../libDaisy//src/dev/max11300.h ../../libDaisy//src/dev/tlv493d.h \
- ../../libDaisy//src/dev/neopixel.h ../../libDaisy//src/dev/neotrellis.h \
- ../../libDaisy//src/dev/icm20948.h \
+ ../../libDaisy//src/dev/dotstar.h ../../libDaisy//src/dev/neopixel.h \
+ ../../libDaisy//src/dev/neotrellis.h ../../libDaisy//src/dev/icm20948.h \
  ../../libDaisy//src/ui/ButtonMonitor.h \
  ../../libDaisy//src/ui/UiEventQueue.h \
- ../../libDaisy//src/ui/../util/FIFO.h \
  ../../libDaisy//src/ui/../util/scopedirqblocker.h \
  ../../libDaisy//Drivers/CMSIS/Include/cmsis_gcc.h \
  ../../libDaisy//src/ui/../sys/system.h \
@@ -266,9 +266,12 @@ Dubby.h:
 ../../libDaisy//src/per/uart.h:
 ../../libDaisy//src/hid/midi.h:
 ../../libDaisy//src/util/ringbuffer.h:
+../../libDaisy//src/util/FIFO.h:
+../../libDaisy//src/hid/midi_parser.h:
 ../../libDaisy//src/hid/MidiEvent.h:
 ../../libDaisy//src/hid/usb_midi.h:
 ../../libDaisy//src/hid/usb.h:
+../../libDaisy//src/sys/dma.h:
 ../../libDaisy//src/hid/encoder.h:
 ../../libDaisy//src/hid/switch.h:
 ../../libDaisy//src/hid/switch3.h:
@@ -304,12 +307,12 @@ Dubby.h:
 ../../libDaisy//src/dev/mcp23x17.h:
 ../../libDaisy//src/dev/max11300.h:
 ../../libDaisy//src/dev/tlv493d.h:
+../../libDaisy//src/dev/dotstar.h:
 ../../libDaisy//src/dev/neopixel.h:
 ../../libDaisy//src/dev/neotrellis.h:
 ../../libDaisy//src/dev/icm20948.h:
 ../../libDaisy//src/ui/ButtonMonitor.h:
 ../../libDaisy//src/ui/UiEventQueue.h:
-../../libDaisy//src/ui/../util/FIFO.h:
 ../../libDaisy//src/ui/../util/scopedirqblocker.h:
 ../../libDaisy//Drivers/CMSIS/Include/cmsis_gcc.h:
 ../../libDaisy//src/ui/../sys/system.h:

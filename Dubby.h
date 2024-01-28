@@ -3,6 +3,11 @@
 #include "daisy_seed.h"
 #include "dev/oled_ssd130x.h"
 
+#include <iostream>
+#include <string>
+
+
+
 
 #include "./bitmaps/bmps.h"
 
@@ -123,7 +128,8 @@ class Dubby
     
     PreferenesMenuItems preferencesMenuItemSelected = (PreferenesMenuItems)0;
 
-    const int menuTextCursors[3][2] = { {8, 55}, {50, 55}, {92, 55} }; 
+    // const int menuTextCursors[3][2] = { {8, 55}, {50, 55}, {92, 55} }; OLD 
+    const int menuTextCursors[3][2] = { {3, 55}, {46, 55}, {88, 55} };  
     const int menuBoxBounding[3][4] = { {0, 53, 43, 63}, {43, 53, 85, 63}, {85, 53, 127, 63} }; 
     int submenuBoxBounding[5][4];
 

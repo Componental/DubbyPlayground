@@ -189,8 +189,15 @@ void Dubby::DrawBitmap(int bitmapIndex)
 
 void Dubby::UpdateMenu(int increment, bool higlight) 
 {
-    if ((menuItemSelected >= 0 && increment == 1 && menuItemSelected < 2) || (increment != 1 && menuItemSelected != 0))
-        menuItemSelected = (MenuItems)(menuItemSelected + increment);
+    // if ((menuItemSelected >= 0 && increment == 1 && menuItemSelected < 2) || (increment != 1 && menuItemSelected != 0))
+    // {
+        int mItemSelected = menuItemSelected;
+        if ((int)menuItemSelected + increment >= 3) mItemSelected = 0;
+        else if ((int)menuItemSelected + increment < 0) mItemSelected = 3;
+        else mItemSelected += increment;
+
+        menuItemSelected = (MenuItems)(mItemSelected);
+    // }
 
     display.Fill(false);
 
@@ -204,12 +211,15 @@ void Dubby::UpdateMenu(int increment, bool higlight)
 
 void Dubby::HightlightMenuItem() 
 {
-    display.DrawRect(menuBoxBounding[menuItemSelected][0], menuBoxBounding[menuItemSelected][1], menuBoxBounding[menuItemSelected][2], menuBoxBounding[menuItemSelected][3], true, true);
+    // display.DrawRect(menuBoxBounding[menuItemSelected][0], menuBoxBounding[menuItemSelected][1], menuBoxBounding[menuItemSelected][2], menuBoxBounding[menuItemSelected][3], true);
+    display.DrawRect(menuBoxBounding[0][0], menuBoxBounding[0][1], menuBoxBounding[0][2], menuBoxBounding[0][3], true);
 
     for (int i = 0; i < 3; i++) 
     {
         display.SetCursor(menuTextCursors[i][0], menuTextCursors[i][1]);
-        display.WriteString(GetTextForEnum(MAINMENU, i), Font_6x8, i == menuItemSelected ? false : true);
+        int currentText = menuItemSelected + i < 3 ? menuItemSelected + i : (menuItemSelected + i) % 3;
+        
+         display.WriteString(GetTextForEnum(MAINMENU, currentText), Font_6x8, f_truncate/*, i == menuItemSelected ? false : true*/);
     }
 
     display.DrawRect(PANE_X_START - 1, PANE_Y_START - 1, PANE_X_END + 1, PANE_Y_END + 1, true);
@@ -220,15 +230,16 @@ void Dubby::HightlightMenuItem()
 void Dubby::ReleaseMenu() 
 {        
     display.Fill(false);
-    display.DrawRect(menuBoxBounding[menuItemSelected][0], menuBoxBounding[menuItemSelected][1], menuBoxBounding[menuItemSelected][2], menuBoxBounding[menuItemSelected][3],true);
+    //display.DrawRect(menuBoxBounding[menuItemSelected][0], menuBoxBounding[menuItemSelected][1], menuBoxBounding[menuItemSelected][2], menuBoxBounding[menuItemSelected][3],true);
 
-    for (int i = 0; i < MENU_LAST; i++) 
-    {
-        display.SetCursor(menuTextCursors[i][0], menuTextCursors[i][1]);
-        display.WriteString(GetTextForEnum(MAINMENU, i), Font_6x8, true);
-    }
+    // for (int i = 0; i < MENU_LAST; i++) 
+    // {
+        display.SetCursor(menuTextCursors[0][0], menuTextCursors[0][1]);
+        display.WriteString(GetTextForEnum(MAINMENU, menuItemSelected), Font_6x8, true);
+    // }
 
     display.Update();
+    
 }
 
 void Dubby::UpdateMixerPane() 
@@ -331,7 +342,7 @@ void Dubby::ResetToBootloader()
 
     display.Update();
 
-    System::ResetToBootloader();
+    System::ResetToBootloader(System::DAISY_INFINITE_TIMEOUT);
 }
 
 void Dubby::SwitchMIDIOutThru(bool state) 

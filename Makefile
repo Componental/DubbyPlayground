@@ -1,6 +1,8 @@
 # Project Name
 TARGET = DubbyPlayground
 
+APP_TYPE=BOOT_SRAM
+
 # Sources
 CPP_SOURCES = / DubbyPlayground.cpp / Dubby.cpp
 
