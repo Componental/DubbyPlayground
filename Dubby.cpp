@@ -93,8 +93,8 @@ void Dubby::InitButtons()
 
 void Dubby::InitMidi()
 {
-    MidiUartHandler::Config midi_config;
-    midi.Init(midi_config);
+    MidiUartHandler::Config midi_uart_config;
+    midi_uart.Init(midi_uart_config);
 
     // RELAY FOR SWITCHING MIDI OUT / MIDI THRU
     midi_sw_output.pin  = seed.GetPin(PIN_MIDI_SWITCH);
@@ -103,6 +103,10 @@ void Dubby::InitMidi()
     dsy_gpio_init(&midi_sw_output);
 
     dsy_gpio_write(&midi_sw_output, false); 
+
+    MidiUsbHandler::Config midi_usb_cfg;
+    midi_usb_cfg.transport_config.periph = MidiUsbTransport::Config::EXTERNAL;
+    midi_usb.Init(midi_usb_cfg);
 }
 
 void Dubby::InitDisplay() 

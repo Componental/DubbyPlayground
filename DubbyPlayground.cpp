@@ -27,7 +27,28 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
     for (int j = 0; j < 4; j++) dubby.currentLevels[j] = sqrt(sumSquared[j] / AUDIO_BLOCK_SIZE);
 }
 
-void HandleMidiMessage(MidiEvent m)
+void MIDIUartSendNoteOn(uint8_t channel, uint8_t note, uint8_t velocity) {
+    uint8_t data[3] = { 0 };
+    
+    data[0] = (channel & 0x0F) + 0x90;  // limit channel byte, add status byte
+    data[1] = note & 0x7F;              // remove MSB on data
+    data[2] = velocity & 0x7F;
+
+    dubby.midi_uart.SendMessage(data, 3);
+}
+
+void MIDIUartSendNoteOff(uint8_t channel, uint8_t note) {
+    uint8_t data[3] = { 0 };
+
+    data[0] = (channel & 0x0F) + 0x80;  // limit channel byte, add status byte
+    data[1] = note & 0x7F;              // remove MSB on data
+    data[2] = 0 & 0x7F;
+
+    dubby.midi_uart.SendMessage(data, 3);
+}
+
+
+void HandleMidiUartMessage(MidiEvent m)
 {
     switch(m.type)
     {
@@ -46,24 +67,45 @@ void HandleMidiMessage(MidiEvent m)
     }
 }
 
-void MIDISendNoteOn(uint8_t channel, uint8_t note, uint8_t velocity) {
+
+void MIDIUsbSendNoteOn(uint8_t channel, uint8_t note, uint8_t velocity) {
     uint8_t data[3] = { 0 };
     
     data[0] = (channel & 0x0F) + 0x90;  // limit channel byte, add status byte
     data[1] = note & 0x7F;              // remove MSB on data
     data[2] = velocity & 0x7F;
 
-    dubby.midi.SendMessage(data, 3);
+    dubby.midi_usb.SendMessage(data, 3);
 }
 
-void MIDISendNoteOff(uint8_t channel, uint8_t note) {
+void MIDIUsbSendNoteOff(uint8_t channel, uint8_t note) {
     uint8_t data[3] = { 0 };
 
     data[0] = (channel & 0x0F) + 0x80;  // limit channel byte, add status byte
     data[1] = note & 0x7F;              // remove MSB on data
     data[2] = 0 & 0x7F;
 
-    dubby.midi.SendMessage(data, 3);
+    dubby.midi_usb.SendMessage(data, 3);
+}
+
+void HandleMidiUsbMessage(MidiEvent m)
+{
+    switch(m.type)
+    {
+        case NoteOn:
+        {
+            NoteOnEvent p = m.AsNoteOn();
+            p = m.AsNoteOn(); // p.note, p.velocity
+            MIDIUsbSendNoteOn(0, p.note, p.velocity);
+            break;
+        }
+        case NoteOff:
+        {
+            NoteOffEvent p = m.AsNoteOff();
+            break;
+        }
+        default: break;
+    }
 }
 
 
@@ -83,17 +125,25 @@ int main(void)
 	dubby.seed.StartAudio(AudioCallback);
     dubby.UpdateMenu(0, false);
     
-    dubby.midi.StartReceive();
+    dubby.midi_uart.StartReceive();
 
 	while(1) { 
         dubby.ProcessAllControls();
         dubby.UpdateDisplay();
 
-        dubby.midi.Listen();
-        // Handle MIDI Events
-        while(dubby.midi.HasEvents())
+        dubby.midi_uart.Listen();
+        dubby.midi_usb.Listen();
+
+        // Handle UART MIDI Events
+        while(dubby.midi_uart.HasEvents())
         {
-            HandleMidiMessage(dubby.midi.PopEvent());
+            HandleMidiUartMessage(dubby.midi_uart.PopEvent());
+        }
+
+        // Handle USB MIDI Events
+        while(dubby.midi_usb.HasEvents())
+        {
+            HandleMidiUsbMessage(dubby.midi_usb.PopEvent());
         }
 	}
 }

@@ -6,8 +6,7 @@
 #include <iostream>
 #include <string>
 
-
-
+#include "ui/DubbyEncoder.h"
 
 #include "./bitmaps/bmps.h"
 
@@ -133,7 +132,7 @@ class Dubby
     const int menuBoxBounding[3][4] = { {0, 53, 43, 63}, {43, 53, 85, 63}, {85, 53, 127, 63} }; 
     int submenuBoxBounding[5][4];
 
-    Encoder encoder;   
+    DubbyEncoder encoder;   
     AnalogControl analogInputs[CTRL_LAST];
     GateIn gateInputs[GATE_IN_LAST];  
     Switch buttons[4];
@@ -144,8 +143,11 @@ class Dubby
 
     OledDisplay<SSD130x4WireSpi128x64Driver> display;
 
-    MidiUartHandler midi;
+    MidiUartHandler midi_uart;
     dsy_gpio midi_sw_output;
+
+
+    MidiUsbHandler midi_usb;
 
   private:
 

@@ -215,7 +215,7 @@ build/DubbyPlayground.o: DubbyPlayground.cpp \
  ../../libDaisy//src/util/VoctCalibration.h \
  ../../libDaisy//src/util/WaveTableLoader.h \
  ../../libDaisy//src/sys/fatfs.h ../../libDaisy//src/util/WavWriter.h \
- ../../libDaisy//src/dev/oled_ssd130x.h bitmaps/bmps.h
+ ../../libDaisy//src/dev/oled_ssd130x.h ui/DubbyEncoder.h bitmaps/bmps.h
 ../../libDaisy//Drivers/CMSIS/Device/ST/STM32H7xx/Include/stm32h7xx.h:
 ../../libDaisy//Drivers/CMSIS/Device/ST/STM32H7xx/Include/stm32h750xx.h:
 ../../libDaisy//Drivers/CMSIS/Include/core_cm7.h:
@@ -468,4 +468,5 @@ Dubby.h:
 ../../libDaisy//src/sys/fatfs.h:
 ../../libDaisy//src/util/WavWriter.h:
 ../../libDaisy//src/dev/oled_ssd130x.h:
+ui/DubbyEncoder.h:
 bitmaps/bmps.h:
