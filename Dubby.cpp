@@ -434,7 +434,7 @@ void Dubby::DisplayPreferencesMenu(int increment)
         if (preferencesMenuItemSelected == i) {
             if (optionStart >= 0 && j == 0)
                 display.DrawRect(submenuBoxBounding[j][0], submenuBoxBounding[j][1], submenuBoxBounding[j][2], submenuBoxBounding[j][3], false);
-            if(optionStart > 0 && increment < 0) 
+            if(optionStart >= 0 && increment < 0 && j < 3) 
                 display.DrawRect(submenuBoxBounding[j + 1][0], submenuBoxBounding[j + 1][1], submenuBoxBounding[j + 1][2], submenuBoxBounding[j + 1][3], false);
             else if(optionStart == 0 && j > 0)
                 display.DrawRect(submenuBoxBounding[j - 1][0], submenuBoxBounding[j - 1][1], submenuBoxBounding[j - 1][2], submenuBoxBounding[j - 1][3], false);
