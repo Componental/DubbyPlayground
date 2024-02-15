@@ -9,22 +9,44 @@ Dubby dubby;
 
 void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, size_t size)
 {
-    double sumSquared[4] = { 0.0f };
+    double sumSquaredIns[4] = { 0.0f };
+    double sumSquaredOuts[4] = { 0.0f };
 
 	for (size_t i = 0; i < size; i++)
 	{
         for (int j = 0; j < 4; j++) 
         {
-            out[j][i] = dubby.GetKnobValue(static_cast<Dubby::Ctrl>(j)) * in[j][i];
+            float _in = dubby.audioGains[0][j] * in[j][i];
 
-            float sample = out[j][i];
-            sumSquared[j] += sample * sample;
+            out[j][i] = dubby.audioGains[1][j] * _in;
+
+            
+            float sample = _in;
+            sumSquaredIns[j] += sample * sample;
+
+            sample = out[j][i];
+            sumSquaredOuts[j] += sample * sample;
         } 
 
-        dubby.scope_buffer[i] = (out[0][i] + out[1][i]) * .5f;   
+        if (dubby.scopeSelector == 0) dubby.scope_buffer[i] = (in[0][i] + in[1][i]) * .5f;   
+        else if (dubby.scopeSelector == 1) dubby.scope_buffer[i] = (in[2][i] + in[3][i]) * .5f;   
+        else if (dubby.scopeSelector == 2) dubby.scope_buffer[i] = (out[0][i] + out[1][i]) * .5f; 
+        else if (dubby.scopeSelector == 3) dubby.scope_buffer[i] = (out[2][i] + out[3][i]) * .5f; 
+        else if (dubby.scopeSelector == 4) dubby.scope_buffer[i] = in[0][i]; 
+        else if (dubby.scopeSelector == 5) dubby.scope_buffer[i] = in[1][i]; 
+        else if (dubby.scopeSelector == 6) dubby.scope_buffer[i] = in[2][i]; 
+        else if (dubby.scopeSelector == 7) dubby.scope_buffer[i] = in[3][i]; 
+        else if (dubby.scopeSelector == 8) dubby.scope_buffer[i] = out[0][i]; 
+        else if (dubby.scopeSelector == 9) dubby.scope_buffer[i] = out[1][i]; 
+        else if (dubby.scopeSelector == 10) dubby.scope_buffer[i] = out[2][i]; 
+        else if (dubby.scopeSelector == 11) dubby.scope_buffer[i] = out[3][i]; 
 	}
 
-    for (int j = 0; j < 4; j++) dubby.currentLevels[j] = sqrt(sumSquared[j] / AUDIO_BLOCK_SIZE);
+    for (int j = 0; j < 4; j++) 
+    {
+        dubby.currentLevels[0][j] = sqrt(sumSquaredIns[j] / AUDIO_BLOCK_SIZE);
+        dubby.currentLevels[1][j] = sqrt(sumSquaredOuts[j] / AUDIO_BLOCK_SIZE);
+    }
 }
 
 void MIDIUartSendNoteOn(uint8_t channel, uint8_t note, uint8_t velocity) {

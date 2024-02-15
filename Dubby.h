@@ -23,6 +23,11 @@ class Dubby
         MENU1, 
         MENU2, 
         MENU3,
+        MENU4,
+        MENU5,
+        MENU6,
+        MENU7,
+        MENU8,
         MENU_LAST // used to know the size of enum
     };
     
@@ -30,7 +35,13 @@ class Dubby
     { 
         "SCOPE", 
         "MIXER", 
-        "PREFS" 
+        "PREFS",
+        "MENU4",
+        "MENU5",  
+        "MENU6",
+        "MENU7",
+        "MENU8",
+
     };
     
     enum PreferenesMenuItems 
@@ -39,6 +50,10 @@ class Dubby
         OPTION2,
         OPTION3,
         OPTION4,
+        OPTION5,
+        OPTION6,
+        OPTION67,
+        OPTION68,
         PREFERENCESMENU_LAST // used to know the size of enum
     };
     
@@ -47,13 +62,19 @@ class Dubby
         "Routing", 
         "Params",
         "Elements",
-        "DFU Mode"
+        "DFU Mode",
+        "DFU1",
+        "DFU2",
+        "DFU3",
+        "DFU4",
     };
 
     enum MenuTypes 
     {
         MAINMENU,
-        PREFERENCESMENU
+        SCOPE,
+        PREFERENCESMENU,
+        MIXERPAGES,
     };
 
     enum Ctrl
@@ -77,6 +98,59 @@ class Dubby
         GATE_IN_LAST,
     };
 
+    enum StatusBarSide
+    {
+        LEFT, 
+        RIGHT
+    };
+
+    enum ScopePages
+    {
+        INPUT_1_2, 
+        INPUT_3_4,
+        OUTPUT_1_2, 
+        OUTPUT_3_4,
+        INPUT_1,
+        INPUT_2,
+        INPUT_3,
+        INPUT_4,
+        OUTPUT_1,
+        OUTPUT_2,
+        OUTPUT_3,
+        OUTPUT_4,
+        SCOPE_PAGES_LAST
+    };
+
+    const char * ScopePagesStrings[SCOPE_PAGES_LAST] = 
+    { 
+        "in1,in2", 
+        "in3,in4", 
+        "out1,out2", 
+        "out3,out4", 
+        "in1", 
+        "in2", 
+        "in3", 
+        "in4", 
+        "out1", 
+        "out2", 
+        "out3", 
+        "out4", 
+    };
+
+
+    enum MixerPages
+    {
+        INPUTS, 
+        OUTPUTS,
+        MIXER_PAGES_LAST
+    };
+
+    const char * MixerPagesStrings[MIXER_PAGES_LAST] = 
+    { 
+        "inputs", 
+        "outputs",
+    };
+
     Dubby() {}
 
     ~Dubby() {}
@@ -91,19 +165,21 @@ class Dubby
 
     void UpdateMenu(int increment, bool higlight = true);
 
-    void HightlightMenuItem();
+    void HighlightMenuItem();
 
     void ReleaseMenu();
 
     void UpdateSubmenu();
-
+    
     void UpdateMixerPane();
 
     void UpdateBar(int i);
 
+    void UpdateRenderPane();
+
     void RenderScope();
 
-    void DisplayPreferencesMenu();
+    void DisplayPreferencesMenu(int increment);
 
     void UpdatePreferencesMenu(int increment);
 
@@ -121,16 +197,26 @@ class Dubby
 
     void SwitchMIDIOutThru(bool state);
 
+    void ClearPane();
+
+    void UpdateStatusBar(char* text, StatusBarSide side); // side = 0 => left, side = 1 => right
+
     DaisySeed seed; 
 
     MenuItems menuItemSelected = (MenuItems)0;
     
     PreferenesMenuItems preferencesMenuItemSelected = (PreferenesMenuItems)0;
 
-    // const int menuTextCursors[3][2] = { {8, 55}, {50, 55}, {92, 55} }; OLD 
+    // const int menuTextCursors[3][2] = { {8, 55}, {50, 55}, {92, 55} }; OLD
     const int menuTextCursors[3][2] = { {3, 55}, {46, 55}, {88, 55} };  
-    const int menuBoxBounding[3][4] = { {0, 53, 43, 63}, {43, 53, 85, 63}, {85, 53, 127, 63} }; 
+    const int menuBoxBounding[3][4] = { {0, 53, 43, 61}, {43, 53, 85, 61}, {85, 53, 127, 61} }; 
     int submenuBoxBounding[5][4];
+
+    int scrollbarWidth = 0;
+    int barSelector = 0;
+    bool isBarSelected = false;
+
+    int scopeSelector = INPUT_1_2;
 
     DubbyEncoder encoder;   
     AnalogControl analogInputs[CTRL_LAST];
@@ -139,13 +225,16 @@ class Dubby
 
     float scope_buffer[AUDIO_BLOCK_SIZE] = {0.f};
     
-    float currentLevels[4] = { 0.f };
+    float currentLevels[2][4] = { { 0.f }, { 0.f } }; // 0 => INPUTS, 1 => OUTPUTS 
 
     OledDisplay<SSD130x4WireSpi128x64Driver> display;
 
     MidiUartHandler midi_uart;
     dsy_gpio midi_sw_output;
 
+    int mixerPageSelected = INPUTS;
+
+    float audioGains[2][4] = { { 0.8f, 0.8f, 0.8f, 0.8f}, { 0.8f, 0.8f, 0.8f, 0.8f} }; // 0 => INPUTS, 1 => OUTPUTS 
 
     MidiUsbHandler midi_usb;
 

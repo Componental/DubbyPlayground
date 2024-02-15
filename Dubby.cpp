@@ -28,13 +28,18 @@ using namespace daisy;
 
 #define PANE_X_START 1
 #define PANE_X_END 126
-#define PANE_Y_START 1
-#define PANE_Y_END 51
+#define PANE_Y_START 10
+#define PANE_Y_END 52
 
-#define SUBMENU_X_START 1
+#define STATUSBAR_X_START 1
+#define STATUSBAR_X_END 126
+#define STATUSBAR_Y_START 1
+#define STATUSBAR_Y_END 11
+
+#define SUBMENU_X_START 0
 #define SUBMENU_X_END 63
 #define SUBMENU_Y_START 1
-#define SUBMENU_Y_END 11
+#define SUBMENU_Y_END 13
 
 void Dubby::Init() 
 {
@@ -47,10 +52,12 @@ void Dubby::Init()
     for (int i = 0; i < 5; i++) 
     {
         submenuBoxBounding[i][0] = SUBMENU_X_START;
-        submenuBoxBounding[i][1] = SUBMENU_Y_START + i * 10;
+        submenuBoxBounding[i][1] = SUBMENU_Y_START + i * 11;
         submenuBoxBounding[i][2] = SUBMENU_X_END;
-        submenuBoxBounding[i][3] = SUBMENU_Y_END + i * 10;
+        submenuBoxBounding[i][3] = SUBMENU_Y_END + i * 11;
     }
+
+    scrollbarWidth = int(128 / MENU_LAST);
 
     InitDisplay();
     InitEncoder();
@@ -120,33 +127,18 @@ void Dubby::InitDisplay()
 }
 
 void Dubby::UpdateDisplay() 
-{
+{ 
     if (encoder.TimeHeldMs() > 300) 
     {
         if (!menuActive) 
         {
-            HightlightMenuItem();
             menuActive = true;
+            HighlightMenuItem();
         }
 
         if (encoder.Increment()) UpdateMenu(encoder.Increment(), true);
     } 
 
-    switch(menuItemSelected) 
-    {
-        case MENU1:
-            RenderScope();
-            break;
-        case MENU2:
-            UpdateMixerPane();
-            break;
-        case MENU3:
-            if (encoder.Pressed() && preferencesMenuItemSelected == OPTION4) ResetToBootloader();
-            if (encoder.Increment() && !menuActive) UpdatePreferencesMenu(encoder.Increment());
-            break;
-        default:
-            break;
-    }
     
     if (encoder.TimeHeldMs() < 300 && menuActive)
     {
@@ -155,6 +147,23 @@ void Dubby::UpdateDisplay()
         ReleaseMenu();
         UpdateSubmenu();
     }
+
+    switch(menuItemSelected) 
+    {
+        case MENU1:
+            UpdateRenderPane();
+            break;
+        case MENU2:
+            UpdateMixerPane();
+            break;
+        case MENU3:
+            if (encoder.FallingEdge() && preferencesMenuItemSelected == OPTION3) ResetToBootloader();
+            if (encoder.Increment() && !menuActive) UpdatePreferencesMenu(encoder.Increment());
+            break;
+        default:
+            break;
+    }
+    
 }
 
 void Dubby::DrawLogo() 
@@ -193,19 +202,16 @@ void Dubby::DrawBitmap(int bitmapIndex)
 
 void Dubby::UpdateMenu(int increment, bool higlight) 
 {
-    // if ((menuItemSelected >= 0 && increment == 1 && menuItemSelected < 2) || (increment != 1 && menuItemSelected != 0))
-    // {
-        int mItemSelected = menuItemSelected;
-        if ((int)menuItemSelected + increment >= 3) mItemSelected = 0;
-        else if ((int)menuItemSelected + increment < 0) mItemSelected = 3;
-        else mItemSelected += increment;
+    int mItemSelected = menuItemSelected;
+    if ((int)menuItemSelected + increment >= MENU_LAST) mItemSelected = 0;
+    else if ((int)menuItemSelected + increment < 0) mItemSelected = MENU_LAST - 1;
+    else mItemSelected += increment;
 
-        menuItemSelected = (MenuItems)(mItemSelected);
-    // }
+    menuItemSelected = (MenuItems)(mItemSelected);
 
     display.Fill(false);
 
-    if (higlight) HightlightMenuItem();
+    if (higlight) HighlightMenuItem();
     else ReleaseMenu();
     
     UpdateSubmenu();
@@ -213,41 +219,84 @@ void Dubby::UpdateMenu(int increment, bool higlight)
     display.Update();
 }
 
-void Dubby::HightlightMenuItem() 
+void Dubby::HighlightMenuItem() 
 {
-    // display.DrawRect(menuBoxBounding[menuItemSelected][0], menuBoxBounding[menuItemSelected][1], menuBoxBounding[menuItemSelected][2], menuBoxBounding[menuItemSelected][3], true);
-    display.DrawRect(menuBoxBounding[0][0], menuBoxBounding[0][1], menuBoxBounding[0][2], menuBoxBounding[0][3], true);
+    display.DrawRect(menuBoxBounding[0][0], menuBoxBounding[0][1], menuBoxBounding[0][2], menuBoxBounding[0][3] + 1, true, true);
 
     for (int i = 0; i < 3; i++) 
     {
-        display.SetCursor(menuTextCursors[i][0], menuTextCursors[i][1]);
-        int currentText = menuItemSelected + i < 3 ? menuItemSelected + i : (menuItemSelected + i) % 3;
+        display.SetCursor(menuTextCursors[i % 3][0], menuTextCursors[i % 3][1]);
+        int currentText = menuItemSelected + i < MENU_LAST ? menuItemSelected + i : (menuItemSelected + i) % MENU_LAST;
         
-         display.WriteString(GetTextForEnum(MAINMENU, currentText), Font_6x8, f_truncate/*, i == menuItemSelected ? false : true*/);
+        display.WriteStringAligned(GetTextForEnum(MAINMENU, currentText), Font_6x8, daisy::Rectangle(menuBoxBounding[i][0], menuBoxBounding[i][1] + 3, 43, 7), daisy::Alignment::centered, i == 0 ? false : true);
     }
 
-    display.DrawRect(PANE_X_START - 1, PANE_Y_START - 1, PANE_X_END + 1, PANE_Y_END + 1, true);
+    display.DrawLine(PANE_X_START - 1, PANE_Y_START + 1, PANE_X_START - 1, PANE_Y_END + 1, true);
+    
+    display.DrawLine(PANE_X_START - 1, PANE_Y_END + 1, PANE_X_END - 1, PANE_Y_END + 1, true);
+
+    display.DrawLine(menuItemSelected * scrollbarWidth, 63, (menuItemSelected * scrollbarWidth) + scrollbarWidth, 63, true);
 
     display.Update();
 }
 
 void Dubby::ReleaseMenu() 
 {        
-    display.Fill(false);
-    //display.DrawRect(menuBoxBounding[menuItemSelected][0], menuBoxBounding[menuItemSelected][1], menuBoxBounding[menuItemSelected][2], menuBoxBounding[menuItemSelected][3],true);
+    ClearPane();
+    
+    display.DrawRect(menuBoxBounding[0][0], menuBoxBounding[0][1], menuBoxBounding[0][2], menuBoxBounding[0][3], false, false);
 
-    // for (int i = 0; i < MENU_LAST; i++) 
-    // {
-        display.SetCursor(menuTextCursors[0][0], menuTextCursors[0][1]);
-        display.WriteString(GetTextForEnum(MAINMENU, menuItemSelected), Font_6x8, true);
-    // }
+    display.SetCursor(menuTextCursors[0][0], menuTextCursors[0][1]);
+    display.WriteStringAligned(GetTextForEnum(MAINMENU, menuItemSelected), Font_6x8, daisy::Rectangle(menuBoxBounding[0][0], menuBoxBounding[0][1] + 3, 43, 7), daisy::Alignment::centered, true);
 
     display.Update();
     
 }
 
+void Dubby::ClearPane() 
+{
+    display.DrawRect(PANE_X_START - 1, PANE_Y_START - 1, PANE_X_END + 1, PANE_Y_END + 12, false, true);
+}
+
 void Dubby::UpdateMixerPane() 
 {
+    int increment = encoder.Increment();
+    if (increment && !menuActive && !isBarSelected) {
+        if ((((barSelector >= 0 && increment == 1 && barSelector < 7) || (increment == -1 && barSelector != 0)))) 
+                barSelector += increment;
+    }
+
+    if (barSelector < 4 && mixerPageSelected == OUTPUTS) mixerPageSelected = INPUTS;
+    else if (barSelector >= 4 && mixerPageSelected == INPUTS) mixerPageSelected = OUTPUTS;
+    
+
+    std::string statusStr = GetTextForEnum(MIXERPAGES, mixerPageSelected);
+    UpdateStatusBar(&statusStr[0], LEFT);
+
+    if (encoder.FallingEdge() && !menuActive)
+    {
+        isBarSelected = !isBarSelected;
+        if (isBarSelected)
+        {
+            std::string str  = (mixerPageSelected == INPUTS ? "in" : "out") + std::to_string(barSelector % 4 + 1) + ":" + std::to_string(audioGains[mixerPageSelected][barSelector % 4]).substr(0, std::to_string(audioGains[mixerPageSelected][barSelector % 4]).find(".") + 3);
+            UpdateStatusBar(&str[0], RIGHT);
+        }
+        else 
+        {
+            UpdateStatusBar(" ", RIGHT);
+        }
+    }
+
+    if (isBarSelected) {
+        if ((increment == 1 && audioGains[mixerPageSelected][barSelector % 4] < 1.0f) || (increment == -1 && audioGains[mixerPageSelected][barSelector % 4] > 0.0001f)){
+            audioGains[mixerPageSelected][barSelector % 4] += increment/20.f;
+            audioGains[mixerPageSelected][barSelector % 4] = abs(audioGains[mixerPageSelected][barSelector % 4]);
+
+            std::string str  = (mixerPageSelected == INPUTS ? "in" : "out") + std::to_string(barSelector % 4 + 1) + ":" + std::to_string(audioGains[mixerPageSelected][barSelector % 4]).substr(0, std::to_string(audioGains[mixerPageSelected][barSelector % 4]).find(".") + 3);
+            UpdateStatusBar(&str[0], RIGHT);
+        }
+    }
+
     if(seed.system.GetNow() - screen_update_last_ > screen_update_period_)
     {
         screen_update_last_ = seed.system.GetNow();
@@ -257,16 +306,40 @@ void Dubby::UpdateMixerPane()
 
 void Dubby::UpdateSubmenu()
 {
+    std::string statusStr;
+
     switch(menuItemSelected) 
     {
-        case MENU1:
-            RenderScope();
+        case MENU1:    
+        
+            statusStr = GetTextForEnum(SCOPE, scopeSelector);
+            UpdateStatusBar(&statusStr[0], LEFT);
+            UpdateRenderPane();
             break;
         case MENU2:
-            // for (int i = 0; i < 4; i++) UpdateBar(i);
+            for (int i = 0; i < 4; i++) UpdateBar(i);
             break;
         case MENU3:
-            DisplayPreferencesMenu();
+            DisplayPreferencesMenu(0);
+            break;
+        case MENU4:
+            UpdateStatusBar("pane 4", LEFT); 
+            break;
+        case MENU5:
+            display.SetCursor(10, 15);
+            UpdateStatusBar("pane 5", LEFT);
+            break;
+        case MENU6:
+            display.SetCursor(10, 15);
+            UpdateStatusBar("pane 6", LEFT);
+            break;
+        case MENU7:
+            display.SetCursor(10, 15);
+            UpdateStatusBar("pane 7", LEFT);
+            break;
+        case MENU8:
+            display.SetCursor(10, 15);
+            UpdateStatusBar("pane 8", LEFT);
             break;
         default:
             break;
@@ -277,11 +350,40 @@ void Dubby::UpdateSubmenu()
 
 void Dubby::UpdateBar(int i) 
 {
-    display.DrawRect((i * 32)  + margin, 1, ((i + 1) * 31) - margin, 51, false, true);
-    display.DrawRect((i * 32)  + margin, int(abs(1.0f - GetKnobValue(static_cast<Dubby::Ctrl>(i))) * 51.0f) + 1, ((i + 1) * 31) - margin, 51, true, false);
-    display.DrawRect((i * 32)  + margin, int(abs((currentLevels[i] * 5.0f) - 1.0f) * 51.0f) + 1, ((i + 1) * 31) - margin, 51, true, true);
+    // clear bars
+    display.DrawRect((i * 32)  + margin - 3, 10, ((i + 1) * 32) - margin + 3, 52, false, true);
+
+    // highlight bar
+    if (barSelector % 4 == i) display.DrawRect((i * 32)  + margin - 3, 11, ((i + 1) * 32) - margin + 3, 53, true, isBarSelected);
+
+    // clear bars
+    display.DrawRect((i * 32)  + margin, 12, ((i + 1) * 32) - margin, 52, false, true);
+
+    // set gain
+    display.DrawRect((i * 32)  + margin, int(abs(1.0f - audioGains[mixerPageSelected][i]) * 41.0f) + 12, ((i + 1) * 32) - margin, 52, true, false);
+
+    // display sound output
+    display.DrawRect((i * 32)  + margin, int(abs((currentLevels[mixerPageSelected][i] * 5.0f) - 1.0f) * 41.0f) + 12, ((i + 1) * 32) - margin, 53, true, true);
+
     
     display.Update();
+}
+
+void Dubby::UpdateRenderPane() 
+{
+    int increment = encoder.Increment();
+    if (increment && !menuActive) {
+        if ((((scopeSelector >= 0 && increment == 1 && scopeSelector < SCOPE_PAGES_LAST - 1) || (increment == -1 && scopeSelector != 0)))) 
+                scopeSelector += increment;
+    }
+
+    if (increment) 
+    {
+        std::string statusStr = GetTextForEnum(SCOPE, scopeSelector);
+        UpdateStatusBar(&statusStr[0], LEFT);
+    }
+
+    RenderScope();
 }
 
 void Dubby::RenderScope()
@@ -296,7 +398,7 @@ void Dubby::RenderScope()
         {
             int y = 1 + std::min(std::max((OLED_HEIGHT - 15) / 2
                                         - int(scope_buffer[i] * 150),
-                                    0),
+                                    10),
                             OLED_HEIGHT - 15);
             int x = 1 + i * (OLED_WIDTH - 2) / AUDIO_BLOCK_SIZE;
             if(i != 0)
@@ -311,17 +413,38 @@ void Dubby::RenderScope()
     }   
 }
 
-void Dubby::DisplayPreferencesMenu()
+void Dubby::DisplayPreferencesMenu(int increment)
 {
-    display.DrawRect(PANE_X_START, PANE_Y_START, PANE_X_END, PANE_Y_END, false, true);
+    // clear bounding box
+    //display.DrawRect(PANE_X_START - 1, 1, PANE_X_END, PANE_Y_END, false, true);
 
-    for (int i = 0; i < PREFERENCESMENU_LAST; i++)
+    int optionStart = 0;
+    if (preferencesMenuItemSelected > 3)
     {
-        display.SetCursor(5, 3 + (i * 10));
+        optionStart = preferencesMenuItemSelected - 3;
+    }
+
+    std::string statusStr = GetTextForEnum(PREFERENCESMENU, preferencesMenuItemSelected);
+    UpdateStatusBar(&statusStr[0], RIGHT);    
+    
+    // display each item, j for text cursor
+    for (int i = optionStart, j = 0; i < optionStart + 4; i++, j++)
+    {
+        // display and remove bounding boxes
+        if (preferencesMenuItemSelected == i) {
+            if (optionStart >= 0 && j == 0)
+                display.DrawRect(submenuBoxBounding[j][0], submenuBoxBounding[j][1], submenuBoxBounding[j][2], submenuBoxBounding[j][3], false);
+            if(optionStart > 0 && increment < 0) 
+                display.DrawRect(submenuBoxBounding[j + 1][0], submenuBoxBounding[j + 1][1], submenuBoxBounding[j + 1][2], submenuBoxBounding[j + 1][3], false);
+            else if(optionStart == 0 && j > 0)
+                display.DrawRect(submenuBoxBounding[j - 1][0], submenuBoxBounding[j - 1][1], submenuBoxBounding[j - 1][2], submenuBoxBounding[j - 1][3], false);
+            
+            display.DrawRect(submenuBoxBounding[j][0], submenuBoxBounding[j][1], submenuBoxBounding[j][2], submenuBoxBounding[j][3], true);
+        } 
+
+        display.SetCursor(5, 4 + (j * 11));
         display.WriteString(GetTextForEnum(PREFERENCESMENU, i), Font_6x8, true);
 
-        if (preferencesMenuItemSelected == i)
-            display.DrawRect(submenuBoxBounding[i][0], submenuBoxBounding[i][1], submenuBoxBounding[i][2], submenuBoxBounding[i][3], true);
     }
 
     display.Update();
@@ -333,8 +456,27 @@ void Dubby::UpdatePreferencesMenu(int increment)
     {
         preferencesMenuItemSelected = (PreferenesMenuItems)(preferencesMenuItemSelected + increment);
         
-        DisplayPreferencesMenu();
+        DisplayPreferencesMenu(increment);
     }
+}
+
+void Dubby::UpdateStatusBar(char* text, StatusBarSide side = LEFT) 
+{
+    if (side == LEFT) 
+    {   
+        display.DrawRect(STATUSBAR_X_START, STATUSBAR_Y_START, 63, STATUSBAR_Y_END - 3, false, true);
+        display.WriteStringAligned(&text[0], Font_6x8, daisy::Rectangle(STATUSBAR_X_START, STATUSBAR_Y_START, STATUSBAR_X_END - 64, STATUSBAR_Y_END - 1), daisy::Alignment::centeredLeft, true);
+    } 
+    else if (side == RIGHT) 
+    {   
+        display.DrawRect(64, STATUSBAR_Y_START, 127, STATUSBAR_Y_END - 3, false, true);
+        display.WriteStringAligned(&text[0], Font_6x8, daisy::Rectangle(64, STATUSBAR_Y_START, 64, STATUSBAR_Y_END - 1), daisy::Alignment::centeredRight, true);
+    
+        // display.DrawRect(STATUSBAR_X_START + 64, STATUSBAR_Y_START, STATUSBAR_X_END - 1, STATUSBAR_Y_END, false, true);
+        // display.WriteStringAligned(&text[0], Font_6x8, daisy::Rectangle(STATUSBAR_X_START + 64, STATUSBAR_Y_START, STATUSBAR_X_END  - 1, STATUSBAR_Y_END), daisy::Alignment::centeredRight, true);
+    }
+
+    display.Update();
 }
 
 void Dubby::ResetToBootloader() 
@@ -469,6 +611,12 @@ const char * Dubby::GetTextForEnum(MenuTypes m, int enumVal)
             break;
         case PREFERENCESMENU:
             return PreferencesMenuItemsStrings[enumVal];
+            break;
+        case SCOPE:
+            return ScopePagesStrings[enumVal];
+            break;
+        case MIXERPAGES:
+            return MixerPagesStrings[enumVal];
             break;
         default:
             return "";
