@@ -101,7 +101,8 @@ class Dubby
     enum StatusBarSide
     {
         LEFT, 
-        RIGHT
+        RIGHT, 
+        MIDDLE
     };
 
     enum ScopePages

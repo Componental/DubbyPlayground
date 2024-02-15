@@ -6,9 +6,12 @@ using namespace daisy;
 using namespace daisysp;
 
 Dubby dubby;
+CpuLoadMeter loadMeter;
 
 void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, size_t size)
 {
+    loadMeter.OnBlockStart();
+
     double sumSquaredIns[4] = { 0.0f };
     double sumSquaredOuts[4] = { 0.0f };
 
@@ -26,7 +29,9 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
 
             sample = out[j][i];
             sumSquaredOuts[j] += sample * sample;
+
         } 
+
 
         if (dubby.scopeSelector == 0) dubby.scope_buffer[i] = (in[0][i] + in[1][i]) * .5f;   
         else if (dubby.scopeSelector == 1) dubby.scope_buffer[i] = (in[2][i] + in[3][i]) * .5f;   
@@ -47,6 +52,8 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
         dubby.currentLevels[0][j] = sqrt(sumSquaredIns[j] / AUDIO_BLOCK_SIZE);
         dubby.currentLevels[1][j] = sqrt(sumSquaredOuts[j] / AUDIO_BLOCK_SIZE);
     }
+
+    loadMeter.OnBlockEnd();
 }
 
 void MIDIUartSendNoteOn(uint8_t channel, uint8_t note, uint8_t velocity) {
@@ -146,12 +153,19 @@ int main(void)
     System::Delay(1000);
 	dubby.seed.StartAudio(AudioCallback);
     dubby.UpdateMenu(0, false);
+
+    loadMeter.Init(dubby.seed.AudioSampleRate(), dubby.seed.AudioBlockSize());
     
     dubby.midi_uart.StartReceive();
 
 	while(1) { 
         dubby.ProcessAllControls();
         dubby.UpdateDisplay();
+
+        // CPU METER =====
+        std::string str = std::to_string(int(loadMeter.GetAvgCpuLoad() * 100.0f)) + "%"; 
+        dubby.UpdateStatusBar(&str[0], dubby.MIDDLE);
+        // ===============
 
         dubby.midi_uart.Listen();
         dubby.midi_usb.Listen();

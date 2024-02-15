@@ -157,7 +157,7 @@ void Dubby::UpdateDisplay()
             UpdateMixerPane();
             break;
         case MENU3:
-            if (encoder.FallingEdge() && preferencesMenuItemSelected == OPTION3) ResetToBootloader();
+            if (encoder.FallingEdge() && preferencesMenuItemSelected == OPTION4) ResetToBootloader();
             if (encoder.Increment() && !menuActive) UpdatePreferencesMenu(encoder.Increment());
             break;
         default:
@@ -471,10 +471,13 @@ void Dubby::UpdateStatusBar(char* text, StatusBarSide side = LEFT)
     {   
         display.DrawRect(64, STATUSBAR_Y_START, 127, STATUSBAR_Y_END - 3, false, true);
         display.WriteStringAligned(&text[0], Font_6x8, daisy::Rectangle(64, STATUSBAR_Y_START, 64, STATUSBAR_Y_END - 1), daisy::Alignment::centeredRight, true);
-    
-        // display.DrawRect(STATUSBAR_X_START + 64, STATUSBAR_Y_START, STATUSBAR_X_END - 1, STATUSBAR_Y_END, false, true);
-        // display.WriteStringAligned(&text[0], Font_6x8, daisy::Rectangle(STATUSBAR_X_START + 64, STATUSBAR_Y_START, STATUSBAR_X_END  - 1, STATUSBAR_Y_END), daisy::Alignment::centeredRight, true);
     }
+    else if (side == MIDDLE) 
+    {   
+        display.DrawRect(52, STATUSBAR_Y_START, 72, STATUSBAR_Y_END - 3, false, true);
+        display.WriteStringAligned(&text[0], Font_6x8, daisy::Rectangle(36, STATUSBAR_Y_START, 58, STATUSBAR_Y_END - 1), daisy::Alignment::centered, true);
+    }
+
 
     display.Update();
 }
