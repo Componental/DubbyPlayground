@@ -67,6 +67,8 @@ void Dubby::Init()
     InitEncoder();
     InitAudio();
     InitMidi();
+    sequencerStartTime = seed.system.GetNow(); // Initialize the sequencer start time
+
 }
 
 void Dubby::InitControls()
@@ -171,6 +173,9 @@ void Dubby::UpdateDisplay()
             if (encoder.Increment() && !windowSelectorActive && !isSubMenuActive) UpdatePreferencesMenuList(encoder.Increment());
             else if (encoder.Increment() && !windowSelectorActive && isSubMenuActive) UpdatePreferencesSubMenuList(encoder.Increment(), preferencesMenuItemSelected);
             break;
+        case WIN4:
+            Sequencer();
+
         default:
             break;
     }
@@ -269,6 +274,32 @@ void Dubby::ClearPane()
     display.DrawRect(PANE_X_START - 1, PANE_Y_START - 1, PANE_X_END + 1, PANE_Y_END + 12, false, true);
 }
 
+void Dubby::Sequencer() 
+{
+   // Clear the display
+    display.Fill(false);
+
+    // Calculate the position of the vertical line based on time elapsed
+    // Since your sequencer runs at a constant rate, you can calculate the position
+    // based on the elapsed time and the beat interval.
+    // Let's assume bpm is the tempo in beats per minute.
+    // We'll calculate the time for each beat and determine the position of the line.
+
+    float secondsPerBeat = 60.0f / bpm; // Calculate how many seconds per beat
+    float elapsedTime = seed.system.GetNow() * 0.0001 - sequencerStartTime*0.0001; // Get elapsed time since the sequencer started
+
+    // Calculate the position of the vertical line
+     verticalLinePosition = int((elapsedTime / secondsPerBeat) * (OLED_WIDTH - 1)) % OLED_WIDTH;
+
+    // Draw the vertical line at the calculated position
+    display.DrawLine(verticalLinePosition, 0, verticalLinePosition, OLED_HEIGHT - 1, true);
+
+    // Update the display
+    display.Update();
+}
+
+
+
 void Dubby::UpdateMixerPane() 
 {
     int increment = encoder.Increment();
@@ -334,6 +365,7 @@ void Dubby::UpdateMenuList()
             break;
         case WIN4:
             UpdateStatusBar("pane 4", LEFT); 
+            Sequencer();
             break;
         case WIN5:
             display.SetCursor(10, 15);

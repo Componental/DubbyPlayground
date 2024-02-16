@@ -15,6 +15,7 @@ uint8_t lastNote = 0;
 float currentTime;
 bool isBeat = false; // Flag to indicate a beat
 float bpm = 120.0f; // Initial BPM
+
 const float beatsPerMinuteToInterval = 60.0f; // Conversion factor from BPM to seconds
 float beatInterval; // Interval between beats in seconds
 float nextBeatTime = 0.0f; // Time of the next beat
@@ -167,7 +168,7 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
 
     // Handle MIDI note sending based on beat interval
     currentTime = static_cast<float>(daisy::System::GetNow()) / 1.0e3f; // Current time in seconds
-
+    dubby.elapsedTime = currentTime;
   
     // Check for MIDI notes to turn off
     for (auto it = activeNotes.begin(); it != activeNotes.end(); ) {
@@ -234,10 +235,11 @@ int main(void)
 	while(1) { 
 
         bpm=dubby.GetKnobValue(dubby.CTRL_1)*800;
+                dubby.bpm = bpm;
+
         noteLength=dubby.GetKnobValue(dubby.CTRL_2)*2.f;
         beatInterval = beatsPerMinuteToInterval / bpm;
-
-        std::string printStuffLeft = std::to_string(nextBeatTime);
+        std::string printStuffLeft = std::to_string(dubby.verticalLinePosition);
         std::string printStuffRight = std::to_string(currentTime);
 
         dubby.UpdateStatusBar(&printStuffLeft[0],dubby.LEFT);

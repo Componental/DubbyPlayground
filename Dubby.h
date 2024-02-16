@@ -247,6 +247,8 @@ class Dubby
 
     void UpdateStatusBar(char* text, StatusBarSide side); // side = 0 => left, side = 1 => right
 
+    void Sequencer();
+
     DaisySeed seed; 
 
     WindowItems windowItemSelected = (WindowItems)0;
@@ -289,6 +291,10 @@ class Dubby
 
     MidiUsbHandler midi_usb;
 
+    float elapsedTime;
+    float bpm;
+    float sequencerStartTime;
+    int verticalLinePosition;
   private:
 
     void InitAudio();
