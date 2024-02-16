@@ -36,10 +36,12 @@ using namespace daisy;
 #define STATUSBAR_Y_START 1
 #define STATUSBAR_Y_END 11
 
-#define SUBMENU_X_START 0
-#define SUBMENU_X_END 63
-#define SUBMENU_Y_START 1
-#define SUBMENU_Y_END 13
+#define MENULIST_X_START 0
+#define MENULIST_X_END 63
+#define MENULIST_Y_START 11
+#define MENULIST_Y_END 21
+#define MENULIST_SPACING 10
+#define MENULIST_SUBMENU_SPACING 63
 
 void Dubby::Init() 
 {
@@ -51,13 +53,13 @@ void Dubby::Init()
 
     for (int i = 0; i < 5; i++) 
     {
-        submenuBoxBounding[i][0] = SUBMENU_X_START;
-        submenuBoxBounding[i][1] = SUBMENU_Y_START + i * 11;
-        submenuBoxBounding[i][2] = SUBMENU_X_END;
-        submenuBoxBounding[i][3] = SUBMENU_Y_END + i * 11;
+        menuListBoxBounding[i][0] = MENULIST_X_START;
+        menuListBoxBounding[i][1] = MENULIST_Y_START + i * MENULIST_SPACING;
+        menuListBoxBounding[i][2] = MENULIST_X_END;
+        menuListBoxBounding[i][3] = MENULIST_Y_END + i * MENULIST_SPACING;
     }
 
-    scrollbarWidth = int(128 / MENU_LAST);
+    scrollbarWidth = int(128 / WIN_LAST);
 
     InitDisplay();
     InitEncoder();
@@ -130,35 +132,42 @@ void Dubby::UpdateDisplay()
 { 
     if (encoder.TimeHeldMs() > 300) 
     {
-        if (!menuActive) 
+        if (!windowSelectorActive) 
         {
-            menuActive = true;
-            HighlightMenuItem();
+            windowSelectorActive = true;
+            HighlightWindowItem();
         }
 
-        if (encoder.Increment()) UpdateMenu(encoder.Increment(), true);
+        if (encoder.Increment()) UpdateWindowSelector(encoder.Increment(), true);
     } 
 
     
-    if (encoder.TimeHeldMs() < 300 && menuActive)
+    if (encoder.TimeHeldMs() < 300 && windowSelectorActive)
     {
-        menuActive = false;
+        windowSelectorActive = false;
         
-        ReleaseMenu();
-        UpdateSubmenu();
+        ReleaseWindowSelector();
+        UpdateMenuList();
     }
 
-    switch(menuItemSelected) 
+    switch(windowItemSelected) 
     {
-        case MENU1:
+        case WIN1:
             UpdateRenderPane();
             break;
-        case MENU2:
+        case WIN2:
             UpdateMixerPane();
             break;
-        case MENU3:
-            if (encoder.FallingEdge() && preferencesMenuItemSelected == OPTION4) ResetToBootloader();
-            if (encoder.Increment() && !menuActive) UpdatePreferencesMenu(encoder.Increment());
+        case WIN3:
+
+            if (encoder.FallingEdge() && !isSubMenuActive) isSubMenuActive = true;
+
+            if (windowSelectorActive) isSubMenuActive = false;
+
+            DisplayPreferencesSubMenuList(encoder.Increment(), preferencesMenuItemSelected);
+            if (encoder.FallingEdge() && preferencesMenuItemSelected == DFUMODE) ResetToBootloader();
+            if (encoder.Increment() && !windowSelectorActive && !isSubMenuActive) UpdatePreferencesMenuList(encoder.Increment());
+            else if (encoder.Increment() && !windowSelectorActive && isSubMenuActive) UpdatePreferencesSubMenuList(encoder.Increment(), preferencesMenuItemSelected);
             break;
         default:
             break;
@@ -200,54 +209,54 @@ void Dubby::DrawBitmap(int bitmapIndex)
     }
 }
 
-void Dubby::UpdateMenu(int increment, bool higlight) 
+void Dubby::UpdateWindowSelector(int increment, bool higlight) 
 {
-    int mItemSelected = menuItemSelected;
-    if ((int)menuItemSelected + increment >= MENU_LAST) mItemSelected = 0;
-    else if ((int)menuItemSelected + increment < 0) mItemSelected = MENU_LAST - 1;
-    else mItemSelected += increment;
+    int wItemSelected = windowItemSelected;
+    if ((int)windowItemSelected + increment >= WIN_LAST) wItemSelected = 0;
+    else if ((int)windowItemSelected + increment < 0) wItemSelected = WIN_LAST - 1;
+    else wItemSelected += increment;
 
-    menuItemSelected = (MenuItems)(mItemSelected);
+    windowItemSelected = (WindowItems)(wItemSelected);
 
     display.Fill(false);
 
-    if (higlight) HighlightMenuItem();
-    else ReleaseMenu();
+    if (higlight) HighlightWindowItem();
+    else ReleaseWindowSelector();
     
-    UpdateSubmenu();
+    UpdateMenuList();
 
     display.Update();
 }
 
-void Dubby::HighlightMenuItem() 
+void Dubby::HighlightWindowItem() 
 {
-    display.DrawRect(menuBoxBounding[0][0], menuBoxBounding[0][1], menuBoxBounding[0][2], menuBoxBounding[0][3] + 1, true, true);
+    display.DrawRect(windowBoxBounding[0][0], windowBoxBounding[0][1], windowBoxBounding[0][2], windowBoxBounding[0][3] + 1, true, true);
 
     for (int i = 0; i < 3; i++) 
     {
-        display.SetCursor(menuTextCursors[i % 3][0], menuTextCursors[i % 3][1]);
-        int currentText = menuItemSelected + i < MENU_LAST ? menuItemSelected + i : (menuItemSelected + i) % MENU_LAST;
+        display.SetCursor(windowTextCursors[i % 3][0], windowTextCursors[i % 3][1]);
+        int currentText = windowItemSelected + i < WIN_LAST ? windowItemSelected + i : (windowItemSelected + i) % WIN_LAST;
         
-        display.WriteStringAligned(GetTextForEnum(MAINMENU, currentText), Font_6x8, daisy::Rectangle(menuBoxBounding[i][0], menuBoxBounding[i][1] + 3, 43, 7), daisy::Alignment::centered, i == 0 ? false : true);
+        display.WriteStringAligned(GetTextForEnum(WINDOWS, currentText), Font_6x8, daisy::Rectangle(windowBoxBounding[i][0], windowBoxBounding[i][1] + 3, 43, 7), daisy::Alignment::centered, i == 0 ? false : true);
     }
 
     display.DrawLine(PANE_X_START - 1, PANE_Y_START + 1, PANE_X_START - 1, PANE_Y_END + 1, true);
     
     display.DrawLine(PANE_X_START - 1, PANE_Y_END + 1, PANE_X_END - 1, PANE_Y_END + 1, true);
 
-    display.DrawLine(menuItemSelected * scrollbarWidth, 63, (menuItemSelected * scrollbarWidth) + scrollbarWidth, 63, true);
+    display.DrawLine(windowItemSelected * scrollbarWidth, 63, (windowItemSelected * scrollbarWidth) + scrollbarWidth, 63, true);
 
     display.Update();
 }
 
-void Dubby::ReleaseMenu() 
+void Dubby::ReleaseWindowSelector() 
 {        
     ClearPane();
     
-    display.DrawRect(menuBoxBounding[0][0], menuBoxBounding[0][1], menuBoxBounding[0][2], menuBoxBounding[0][3], false, false);
+    display.DrawRect(windowBoxBounding[0][0], windowBoxBounding[0][1], windowBoxBounding[0][2], windowBoxBounding[0][3], false, false);
 
-    display.SetCursor(menuTextCursors[0][0], menuTextCursors[0][1]);
-    display.WriteStringAligned(GetTextForEnum(MAINMENU, menuItemSelected), Font_6x8, daisy::Rectangle(menuBoxBounding[0][0], menuBoxBounding[0][1] + 3, 43, 7), daisy::Alignment::centered, true);
+    display.SetCursor(windowTextCursors[0][0], windowTextCursors[0][1]);
+    display.WriteStringAligned(GetTextForEnum(WINDOWS, windowItemSelected), Font_6x8, daisy::Rectangle(windowBoxBounding[0][0], windowBoxBounding[0][1] + 3, 43, 7), daisy::Alignment::centered, true);
 
     display.Update();
     
@@ -261,7 +270,7 @@ void Dubby::ClearPane()
 void Dubby::UpdateMixerPane() 
 {
     int increment = encoder.Increment();
-    if (increment && !menuActive && !isBarSelected) {
+    if (increment && !windowSelectorActive && !isBarSelected) {
         if ((((barSelector >= 0 && increment == 1 && barSelector < 7) || (increment == -1 && barSelector != 0)))) 
                 barSelector += increment;
     }
@@ -273,7 +282,7 @@ void Dubby::UpdateMixerPane()
     std::string statusStr = GetTextForEnum(MIXERPAGES, mixerPageSelected);
     UpdateStatusBar(&statusStr[0], LEFT);
 
-    if (encoder.FallingEdge() && !menuActive)
+    if (encoder.FallingEdge() && !windowSelectorActive)
     {
         isBarSelected = !isBarSelected;
         if (isBarSelected)
@@ -304,40 +313,39 @@ void Dubby::UpdateMixerPane()
     }
 }
 
-void Dubby::UpdateSubmenu()
+void Dubby::UpdateMenuList()
 {
     std::string statusStr;
 
-    switch(menuItemSelected) 
+    switch(windowItemSelected) 
     {
-        case MENU1:    
-        
+        case WIN1:    
             statusStr = GetTextForEnum(SCOPE, scopeSelector);
             UpdateStatusBar(&statusStr[0], LEFT);
             UpdateRenderPane();
             break;
-        case MENU2:
+        case WIN2:
             for (int i = 0; i < 4; i++) UpdateBar(i);
             break;
-        case MENU3:
-            DisplayPreferencesMenu(0);
+        case WIN3:
+            DisplayPreferencesMenuList(0);
             break;
-        case MENU4:
+        case WIN4:
             UpdateStatusBar("pane 4", LEFT); 
             break;
-        case MENU5:
+        case WIN5:
             display.SetCursor(10, 15);
             UpdateStatusBar("pane 5", LEFT);
             break;
-        case MENU6:
+        case WIN6:
             display.SetCursor(10, 15);
             UpdateStatusBar("pane 6", LEFT);
             break;
-        case MENU7:
+        case WIN7:
             display.SetCursor(10, 15);
             UpdateStatusBar("pane 7", LEFT);
             break;
-        case MENU8:
+        case WIN8:
             display.SetCursor(10, 15);
             UpdateStatusBar("pane 8", LEFT);
             break;
@@ -372,7 +380,7 @@ void Dubby::UpdateBar(int i)
 void Dubby::UpdateRenderPane() 
 {
     int increment = encoder.Increment();
-    if (increment && !menuActive) {
+    if (increment && !windowSelectorActive) {
         if ((((scopeSelector >= 0 && increment == 1 && scopeSelector < SCOPE_PAGES_LAST - 1) || (increment == -1 && scopeSelector != 0)))) 
                 scopeSelector += increment;
     }
@@ -413,7 +421,7 @@ void Dubby::RenderScope()
     }   
 }
 
-void Dubby::DisplayPreferencesMenu(int increment)
+void Dubby::DisplayPreferencesMenuList(int increment)
 {
     // clear bounding box
     //display.DrawRect(PANE_X_START - 1, 1, PANE_X_END, PANE_Y_END, false, true);
@@ -423,26 +431,26 @@ void Dubby::DisplayPreferencesMenu(int increment)
     {
         optionStart = preferencesMenuItemSelected - 3;
     }
-
-    std::string statusStr = GetTextForEnum(PREFERENCESMENU, preferencesMenuItemSelected);
-    UpdateStatusBar(&statusStr[0], RIGHT);    
     
     // display each item, j for text cursor
     for (int i = optionStart, j = 0; i < optionStart + 4; i++, j++)
     {
+        // clear item spaces
+        if ((optionStart > 0 || (!optionStart && increment < 0))) {
+            display.DrawRect(menuListBoxBounding[j][0], menuListBoxBounding[j][1], menuListBoxBounding[j][2], menuListBoxBounding[j][3], false, true);
+        }
+
         // display and remove bounding boxes
         if (preferencesMenuItemSelected == i) {
-            if (optionStart >= 0 && j == 0)
-                display.DrawRect(submenuBoxBounding[j][0], submenuBoxBounding[j][1], submenuBoxBounding[j][2], submenuBoxBounding[j][3], false);
             if(optionStart >= 0 && increment < 0 && j < 3) 
-                display.DrawRect(submenuBoxBounding[j + 1][0], submenuBoxBounding[j + 1][1], submenuBoxBounding[j + 1][2], submenuBoxBounding[j + 1][3], false);
+                display.DrawRect(menuListBoxBounding[j + 1][0], menuListBoxBounding[j + 1][1], menuListBoxBounding[j + 1][2], menuListBoxBounding[j + 1][3], false);
             else if(optionStart == 0 && j > 0)
-                display.DrawRect(submenuBoxBounding[j - 1][0], submenuBoxBounding[j - 1][1], submenuBoxBounding[j - 1][2], submenuBoxBounding[j - 1][3], false);
+                display.DrawRect(menuListBoxBounding[j - 1][0], menuListBoxBounding[j - 1][1], menuListBoxBounding[j - 1][2], menuListBoxBounding[j - 1][3], false);
             
-            display.DrawRect(submenuBoxBounding[j][0], submenuBoxBounding[j][1], submenuBoxBounding[j][2], submenuBoxBounding[j][3], true);
+            display.DrawRect(menuListBoxBounding[j][0], menuListBoxBounding[j][1], menuListBoxBounding[j][2], menuListBoxBounding[j][3], true);
         } 
 
-        display.SetCursor(5, 4 + (j * 11));
+        display.SetCursor(5, MENULIST_Y_START + 2 + (j * MENULIST_SPACING));
         display.WriteString(GetTextForEnum(PREFERENCESMENU, i), Font_6x8, true);
 
     }
@@ -450,15 +458,100 @@ void Dubby::DisplayPreferencesMenu(int increment)
     display.Update();
 }
 
-void Dubby::UpdatePreferencesMenu(int increment) 
+void Dubby::UpdatePreferencesMenuList(int increment) 
 {
     if (((preferencesMenuItemSelected >= 0 && increment == 1 && preferencesMenuItemSelected < PREFERENCESMENU_LAST - 1) || (increment != 1 && preferencesMenuItemSelected != 0))) 
     {
-        preferencesMenuItemSelected = (PreferenesMenuItems)(preferencesMenuItemSelected + increment);
+        preferencesMenuItemSelected = (PreferencesMenuItems)(preferencesMenuItemSelected + increment);
         
-        DisplayPreferencesMenu(increment);
+        DisplayPreferencesMenuList(increment);
     }
 }
+
+void Dubby::DisplayPreferencesSubMenuList(int increment, PreferencesMenuItems prefMenuItemSelected)
+{
+    // clear bounding box
+    display.DrawRect(PANE_X_START + MENULIST_SUBMENU_SPACING - 1, PANE_Y_START, PANE_X_END, PANE_Y_END, false, true);
+
+
+    EnumTypes type; 
+
+    switch (prefMenuItemSelected)
+    {
+    case MIDI:
+        type = PREFERENCESMIDIMENULIST;
+        break;
+    case ROUTING:
+        type = PREFERENCESROUTINGMENULIST;
+        break;
+    default:
+        type = PREFERENCESMIDIMENULIST;
+        break;
+    }
+
+    int optionStart = 0;
+    if (subMenuSelector > 3)
+    {
+        optionStart = subMenuSelector - 3;
+    }
+    
+    // display each item, j for text cursor
+    for (int i = optionStart, j = 0; i < optionStart + 4; i++, j++)
+    {
+        // clear item spaces
+        if ((optionStart > 0 || (!optionStart && increment < 0))) {
+            display.DrawRect(menuListBoxBounding[j][0] + MENULIST_SUBMENU_SPACING, menuListBoxBounding[j][1], menuListBoxBounding[j][2] + MENULIST_SUBMENU_SPACING, menuListBoxBounding[j][3], false, true);
+        }
+
+        // display and remove bounding boxes
+        if (subMenuSelector == i) {
+            if(optionStart >= 0 && increment < 0 && j < 3) 
+                display.DrawRect(menuListBoxBounding[j + 1][0] + MENULIST_SUBMENU_SPACING, menuListBoxBounding[j + 1][1], menuListBoxBounding[j + 1][2] + MENULIST_SUBMENU_SPACING, menuListBoxBounding[j + 1][3], false);
+            else if(optionStart == 0 && j > 0)
+                display.DrawRect(menuListBoxBounding[j - 1][0] + MENULIST_SUBMENU_SPACING, menuListBoxBounding[j - 1][1], menuListBoxBounding[j - 1][2] + MENULIST_SUBMENU_SPACING, menuListBoxBounding[j - 1][3], false);
+            
+            if (isSubMenuActive)
+                display.DrawRect(menuListBoxBounding[j][0] + MENULIST_SUBMENU_SPACING, menuListBoxBounding[j][1], menuListBoxBounding[j][2] + MENULIST_SUBMENU_SPACING, menuListBoxBounding[j][3], true);
+        } 
+
+        display.SetCursor(5 + MENULIST_SUBMENU_SPACING, MENULIST_Y_START + 2 + (j * MENULIST_SPACING));
+        display.WriteString(GetTextForEnum(type, i), Font_6x8, true);
+
+    }
+    
+    display.DrawRect(PANE_X_START + MENULIST_SUBMENU_SPACING - 1, PANE_Y_START + 1, PANE_X_END, PANE_Y_END - 1, true, false);
+
+    display.Update();
+}
+
+void Dubby::UpdatePreferencesSubMenuList(int increment, PreferencesMenuItems prefMenuItemSelected) 
+{
+    int endSelector = 0;
+
+    EnumTypes type; 
+
+    switch (prefMenuItemSelected)
+    {
+    case MIDI:
+        endSelector = PREFERENCESMIDIMENU_LAST;
+        break;
+    case ROUTING:
+        endSelector = PREFERENCESROUTINGMENU_LAST;
+        break;
+    default:
+        endSelector = 0;
+        break;
+    }
+
+
+    if (((subMenuSelector >= 0 && increment == 1 && subMenuSelector < endSelector - 1) || (increment != 1 && subMenuSelector != 0))) 
+    {
+        subMenuSelector = (PreferencesMenuItems)(subMenuSelector + increment);
+        
+        DisplayPreferencesSubMenuList(increment, prefMenuItemSelected);
+    }
+}
+
 
 void Dubby::UpdateStatusBar(char* text, StatusBarSide side = LEFT) 
 {
@@ -605,15 +698,21 @@ void Dubby::InitAudio()
     seed.audio_handle.Init(cfg, sai_handle[0], sai_handle[1]);
 }
 
-const char * Dubby::GetTextForEnum(MenuTypes m, int enumVal)
+const char * Dubby::GetTextForEnum(EnumTypes m, int enumVal)
 {
     switch (m)
     {
-        case MAINMENU:
-            return MenuItemsStrings[enumVal];
+        case WINDOWS:
+            return WindowItemsStrings[enumVal];
             break;
         case PREFERENCESMENU:
             return PreferencesMenuItemsStrings[enumVal];
+            break;
+        case PREFERENCESMIDIMENULIST:
+            return PreferencesMidiMenuItemsStrings[enumVal];
+            break;
+        case PREFERENCESROUTINGMENULIST:
+            return PreferencesRoutingMenuItemsStrings[enumVal];
             break;
         case SCOPE:
             return ScopePagesStrings[enumVal];

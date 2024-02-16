@@ -152,7 +152,7 @@ int main(void)
     dubby.DrawLogo(); 
     System::Delay(1000);
 	dubby.seed.StartAudio(AudioCallback);
-    dubby.UpdateMenu(0, false);
+    dubby.UpdateWindowSelector(0, false);
 
     loadMeter.Init(dubby.seed.AudioSampleRate(), dubby.seed.AudioBlockSize());
     

@@ -18,63 +18,54 @@ class Dubby
 {
   public:
 
-    enum MenuItems 
+    enum WindowItems 
     { 
-        MENU1, 
-        MENU2, 
-        MENU3,
-        MENU4,
-        MENU5,
-        MENU6,
-        MENU7,
-        MENU8,
-        MENU_LAST // used to know the size of enum
+        WIN1, 
+        WIN2, 
+        WIN3, 
+        WIN4, 
+        WIN5, 
+        WIN6, 
+        WIN7, 
+        WIN8, 
+        WIN_LAST // used to know the size of enum
     };
     
-    const char * MenuItemsStrings[MENU_LAST] = 
+    const char * WindowItemsStrings[WIN_LAST] = 
     { 
         "SCOPE", 
         "MIXER", 
         "PREFS",
-        "MENU4",
-        "MENU5",  
-        "MENU6",
-        "MENU7",
-        "MENU8",
-
+        "WIN4",
+        "WIN5",
+        "WIN6",
+        "WIN7",
+        "WIN8",
     };
     
-    enum PreferenesMenuItems 
+    enum PreferencesMenuItems 
     { 
-        OPTION1, 
-        OPTION2,
-        OPTION3,
-        OPTION4,
+        MIDI, 
+        ROUTING,
+        PARAMS,
+        DFUMODE,
         OPTION5,
         OPTION6,
-        OPTION67,
-        OPTION68,
+        OPTION7,
+        OPTION8,
         PREFERENCESMENU_LAST // used to know the size of enum
     };
     
     const char * PreferencesMenuItemsStrings[PREFERENCESMENU_LAST] = 
     { 
-        "Routing", 
+        "MIDI", 
+        "Routing",
         "Params",
-        "Elements",
         "DFU Mode",
-        "DFU1",
-        "DFU2",
-        "DFU3",
-        "DFU4",
-    };
-
-    enum MenuTypes 
-    {
-        MAINMENU,
-        SCOPE,
-        PREFERENCESMENU,
-        MIXERPAGES,
+        "Option5",
+        "Option6",
+        "Option7",
+        "Option8",
     };
 
     enum Ctrl
@@ -152,6 +143,56 @@ class Dubby
         "outputs",
     };
 
+
+    enum PreferencesMidiMenuItems 
+    { 
+        MIDIIN, 
+        MIDIOUT,
+        MIDITHRU,
+        MIDIWHATEV,
+        MIDIWHATEVA,
+        PREFERENCESMIDIMENU_LAST // used to know the size of enum
+    };
+    
+    const char * PreferencesMidiMenuItemsStrings[PREFERENCESMENU_LAST] = 
+    { 
+        "MIDI In", 
+        "MIDI Out", 
+        "MIDI Thru", 
+        "MIDI Whatev", 
+        "MIDI Whateva", 
+    };    
+    
+    enum PreferencesRoutingMenuItems 
+    { 
+        ROUTING1, 
+        ROUTING2, 
+        ROUTING3, 
+        ROUTING4, 
+        ROUTING5, 
+        PREFERENCESROUTINGMENU_LAST // used to know the size of enum
+    };
+    
+    const char * PreferencesRoutingMenuItemsStrings[PREFERENCESMENU_LAST] = 
+    { 
+        "Routing 1", 
+        "Routing 2", 
+        "Routing 3", 
+        "Routing 4", 
+        "Routing 5", 
+    };
+
+    enum EnumTypes 
+    {
+        PREFERENCESMIDIMENULIST,
+        PREFERENCESROUTINGMENULIST,
+        PREFERENCESMENU,
+        WINDOWS,
+        SCOPE,
+        MIXERPAGES,
+    };
+
+
     Dubby() {}
 
     ~Dubby() {}
@@ -164,13 +205,13 @@ class Dubby
 
     void DrawBitmap(int bitmapIndex);
 
-    void UpdateMenu(int increment, bool higlight = true);
+    void UpdateWindowSelector(int increment, bool higlight = true);
 
-    void HighlightMenuItem();
+    void HighlightWindowItem();
 
-    void ReleaseMenu();
+    void ReleaseWindowSelector();
 
-    void UpdateSubmenu();
+    void UpdateMenuList();
     
     void UpdateMixerPane();
 
@@ -180,9 +221,13 @@ class Dubby
 
     void RenderScope();
 
-    void DisplayPreferencesMenu(int increment);
+    void DisplayPreferencesMenuList(int increment);
 
-    void UpdatePreferencesMenu(int increment);
+    void UpdatePreferencesMenuList(int increment);
+
+    void DisplayPreferencesSubMenuList(int increment, PreferencesMenuItems preferencesMenuItemSelected);
+
+    void UpdatePreferencesSubMenuList(int increment, PreferencesMenuItems preferencesMenuItemSelected);
 
     void ProcessAllControls();
 
@@ -192,7 +237,7 @@ class Dubby
     
     float GetKnobValue(Ctrl k);
 
-    const char * GetTextForEnum(MenuTypes m, int enumVal);
+    const char * GetTextForEnum(EnumTypes m, int enumVal);
 
     void ResetToBootloader();
 
@@ -204,14 +249,19 @@ class Dubby
 
     DaisySeed seed; 
 
-    MenuItems menuItemSelected = (MenuItems)0;
+    WindowItems windowItemSelected = (WindowItems)0;
     
-    PreferenesMenuItems preferencesMenuItemSelected = (PreferenesMenuItems)0;
+    PreferencesMenuItems preferencesMenuItemSelected = (PreferencesMenuItems)0;
+    PreferencesMidiMenuItems preferencesMidiMenuItemSelected = (PreferencesMidiMenuItems)0;
+    PreferencesRoutingMenuItems preferencesRoutingMenuItemSelected = (PreferencesRoutingMenuItems)0;
+    int subMenuSelector = 0;
+    
+    bool isSubMenuActive = false;
 
     // const int menuTextCursors[3][2] = { {8, 55}, {50, 55}, {92, 55} }; OLD
-    const int menuTextCursors[3][2] = { {3, 55}, {46, 55}, {88, 55} };  
-    const int menuBoxBounding[3][4] = { {0, 53, 43, 61}, {43, 53, 85, 61}, {85, 53, 127, 61} }; 
-    int submenuBoxBounding[5][4];
+    const int windowTextCursors[3][2] = { {3, 55}, {46, 55}, {88, 55} };  
+    const int windowBoxBounding[3][4] = { {0, 53, 43, 61}, {43, 53, 85, 61}, {85, 53, 127, 61} }; 
+    int menuListBoxBounding[5][4];
 
     int scrollbarWidth = 0;
     int barSelector = 0;
@@ -249,7 +299,7 @@ class Dubby
     void InitMidi();
 
     int margin = 8;
-    bool menuActive = false;
+    bool windowSelectorActive = false;
     uint32_t screen_update_last_, screen_update_period_;
 
 };
