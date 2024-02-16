@@ -211,7 +211,7 @@ class Dubby
 
     void ReleaseWindowSelector();
 
-    void UpdateMenuList();
+    void UpdateWindowList();
     
     void UpdateMixerPane();
 
@@ -305,10 +305,6 @@ class Dubby
     bool isEncoderPressed = false;
     bool wasEncoderLongPressed = false;
     unsigned long encoderPressStartTime = 0;
-
-
-
-
 };
 
 }

@@ -149,7 +149,7 @@ void Dubby::UpdateDisplay()
         windowSelectorActive = false;
         
         ReleaseWindowSelector();
-        UpdateMenuList();
+        UpdateWindowList();
     }
 
     switch(windowItemSelected) 
@@ -162,9 +162,15 @@ void Dubby::UpdateDisplay()
             break;
         case WIN3:
 
-            if (encoder.FallingEdge() && !isSubMenuActive && !wasEncoderLongPressed) isSubMenuActive = true;
+            if (encoder.FallingEdge() && !isSubMenuActive && !wasEncoderLongPressed) {
+                isSubMenuActive = true;
+                DisplayPreferencesMenuList(0);
+            }
 
-            if (windowSelectorActive) isSubMenuActive = false;
+            if (windowSelectorActive) {
+                isSubMenuActive = false;
+                DisplayPreferencesMenuList(0);
+            }
 
             DisplayPreferencesSubMenuList(encoder.Increment(), preferencesMenuItemSelected);
             if (encoder.FallingEdge() && !wasEncoderLongPressed && preferencesMenuItemSelected == DFUMODE) ResetToBootloader();
@@ -225,7 +231,7 @@ void Dubby::UpdateWindowSelector(int increment, bool higlight)
     if (higlight) HighlightWindowItem();
     else ReleaseWindowSelector();
     
-    UpdateMenuList();
+    UpdateWindowList();
 
     display.Update();
 }
@@ -315,7 +321,7 @@ void Dubby::UpdateMixerPane()
     }
 }
 
-void Dubby::UpdateMenuList()
+void Dubby::UpdateWindowList()
 {
     std::string statusStr;
 
@@ -451,15 +457,17 @@ void Dubby::DisplayPreferencesMenuList(int increment)
             
             display.DrawRect(menuListBoxBounding[j][0], menuListBoxBounding[j][1], menuListBoxBounding[j][2], menuListBoxBounding[j][3], true);
 
+            if (increment == 0)
+                display.DrawRect(menuListBoxBounding[j][0], menuListBoxBounding[j][1], menuListBoxBounding[j][2], menuListBoxBounding[j][3], false, true);
             
             if (!isSubMenuActive)
-                display.DrawRect(menuListBoxBounding[j][0], menuListBoxBounding[j][1], menuListBoxBounding[j][2], menuListBoxBounding[j][3], true);
+                display.DrawRect(menuListBoxBounding[j][0], menuListBoxBounding[j][1], menuListBoxBounding[j][2], menuListBoxBounding[j][3], true, false);
             else
                 display.DrawRect(menuListBoxBounding[j][0], menuListBoxBounding[j][1], menuListBoxBounding[j][2], menuListBoxBounding[j][3], true, true);
         } 
 
         display.SetCursor(5, MENULIST_Y_START + 2 + (j * MENULIST_SPACING));
-        display.WriteString(GetTextForEnum(PREFERENCESMENU, i), Font_6x8, true);
+        display.WriteString(GetTextForEnum(PREFERENCESMENU, i), Font_6x8, i == preferencesMenuItemSelected && isSubMenuActive ? false : true);
 
     }
 
@@ -526,7 +534,7 @@ void Dubby::DisplayPreferencesSubMenuList(int increment, PreferencesMenuItems pr
         display.WriteString(GetTextForEnum(type, i), Font_6x8, true);
 
     }
-    
+
     display.DrawRect(PANE_X_START + MENULIST_SUBMENU_SPACING - 1, PANE_Y_START + 1, PANE_X_END, PANE_Y_END - 1, true, false);
 
     display.Update();
