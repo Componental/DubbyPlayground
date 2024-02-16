@@ -302,6 +302,13 @@ class Dubby
     bool windowSelectorActive = false;
     uint32_t screen_update_last_, screen_update_period_;
 
+    bool isEncoderPressed = false;
+    bool wasEncoderLongPressed = false;
+    unsigned long encoderPressStartTime = 0;
+
+
+
+
 };
 
 }

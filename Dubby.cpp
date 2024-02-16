@@ -43,6 +43,8 @@ using namespace daisy;
 #define MENULIST_SPACING 10
 #define MENULIST_SUBMENU_SPACING 63
 
+#define ENCODER_LONGPRESS_THRESHOLD 300
+
 void Dubby::Init() 
 {
     InitControls();
@@ -130,7 +132,7 @@ void Dubby::InitDisplay()
 
 void Dubby::UpdateDisplay() 
 { 
-    if (encoder.TimeHeldMs() > 300) 
+    if (encoder.TimeHeldMs() > ENCODER_LONGPRESS_THRESHOLD) 
     {
         if (!windowSelectorActive) 
         {
@@ -142,7 +144,7 @@ void Dubby::UpdateDisplay()
     } 
 
     
-    if (encoder.TimeHeldMs() < 300 && windowSelectorActive)
+    if (encoder.TimeHeldMs() < ENCODER_LONGPRESS_THRESHOLD && windowSelectorActive)
     {
         windowSelectorActive = false;
         
@@ -160,12 +162,12 @@ void Dubby::UpdateDisplay()
             break;
         case WIN3:
 
-            if (encoder.FallingEdge() && !isSubMenuActive) isSubMenuActive = true;
+            if (encoder.FallingEdge() && !isSubMenuActive && !wasEncoderLongPressed) isSubMenuActive = true;
 
             if (windowSelectorActive) isSubMenuActive = false;
 
             DisplayPreferencesSubMenuList(encoder.Increment(), preferencesMenuItemSelected);
-            if (encoder.FallingEdge() && preferencesMenuItemSelected == DFUMODE) ResetToBootloader();
+            if (encoder.FallingEdge() && !wasEncoderLongPressed && preferencesMenuItemSelected == DFUMODE) ResetToBootloader();
             if (encoder.Increment() && !windowSelectorActive && !isSubMenuActive) UpdatePreferencesMenuList(encoder.Increment());
             else if (encoder.Increment() && !windowSelectorActive && isSubMenuActive) UpdatePreferencesSubMenuList(encoder.Increment(), preferencesMenuItemSelected);
             break;
@@ -282,7 +284,7 @@ void Dubby::UpdateMixerPane()
     std::string statusStr = GetTextForEnum(MIXERPAGES, mixerPageSelected);
     UpdateStatusBar(&statusStr[0], LEFT);
 
-    if (encoder.FallingEdge() && !windowSelectorActive)
+    if (encoder.FallingEdge() && !wasEncoderLongPressed && !windowSelectorActive)
     {
         isBarSelected = !isBarSelected;
         if (isBarSelected)
@@ -448,6 +450,12 @@ void Dubby::DisplayPreferencesMenuList(int increment)
                 display.DrawRect(menuListBoxBounding[j - 1][0], menuListBoxBounding[j - 1][1], menuListBoxBounding[j - 1][2], menuListBoxBounding[j - 1][3], false);
             
             display.DrawRect(menuListBoxBounding[j][0], menuListBoxBounding[j][1], menuListBoxBounding[j][2], menuListBoxBounding[j][3], true);
+
+            
+            if (!isSubMenuActive)
+                display.DrawRect(menuListBoxBounding[j][0], menuListBoxBounding[j][1], menuListBoxBounding[j][2], menuListBoxBounding[j][3], true);
+            else
+                display.DrawRect(menuListBoxBounding[j][0], menuListBoxBounding[j][1], menuListBoxBounding[j][2], menuListBoxBounding[j][3], true, true);
         } 
 
         display.SetCursor(5, MENULIST_Y_START + 2 + (j * MENULIST_SPACING));
@@ -617,6 +625,31 @@ void Dubby::ProcessDigitalControls()
 {
     encoder.Debounce();
 
+    if (encoder.Pressed()) {
+        if (!isEncoderPressed) {
+            // Encoder has just been pressed, record the start time
+            isEncoderPressed = true;
+            encoderPressStartTime = seed.system.GetNow();
+        }
+    } else {
+        if (isEncoderPressed) {
+            // Encoder has just been released
+            isEncoderPressed = false;
+
+            // Check if it was a short or long press
+            unsigned long buttonPressDuration = seed.system.GetNow() - encoderPressStartTime;
+            if (buttonPressDuration < ENCODER_LONGPRESS_THRESHOLD) {
+                // Short press action
+                wasEncoderLongPressed = false;
+
+            } else {
+                // Long press action
+                wasEncoderLongPressed = true;
+            }
+        }
+    }
+
+    
     for (int i = 0; i < 4; i++) buttons[i].Debounce();
 }
 
