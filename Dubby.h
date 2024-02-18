@@ -295,6 +295,7 @@ class Dubby
     float bpm;
     float sequencerStartTime;
     int verticalLinePosition;
+    
   private:
 
     void InitAudio();

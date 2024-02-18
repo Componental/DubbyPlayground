@@ -274,28 +274,33 @@ void Dubby::ClearPane()
     display.DrawRect(PANE_X_START - 1, PANE_Y_START - 1, PANE_X_END + 1, PANE_Y_END + 12, false, true);
 }
 
-void Dubby::Sequencer() 
-{
-   // Clear the display
-    display.Fill(false);
+void Dubby::Sequencer() {
+    if(seed.system.GetNow() - screen_update_last_ > screen_update_period_) {
+        screen_update_last_ = seed.system.GetNow();
 
-    // Calculate the position of the vertical line based on time elapsed
-    // Since your sequencer runs at a constant rate, you can calculate the position
-    // based on the elapsed time and the beat interval.
-    // Let's assume bpm is the tempo in beats per minute.
-    // We'll calculate the time for each beat and determine the position of the line.
+        // Clear the display
+        display.Fill(false);
 
-    float secondsPerBeat = 60.0f / bpm; // Calculate how many seconds per beat
-    float elapsedTime = seed.system.GetNow() * 0.0001 - sequencerStartTime*0.0001; // Get elapsed time since the sequencer started
+        // Calculate the position of the vertical line based on time elapsed
+        // Since your sequencer runs at a constant rate, you can calculate the position
+        // based on the elapsed time and the beat interval.
+        // Let's assume bpm is the tempo in beats per minute.
+        // We'll calculate the time for each beat and determine the position of the line.
 
-    // Calculate the position of the vertical line
-     verticalLinePosition = int((elapsedTime / secondsPerBeat) * (OLED_WIDTH - 1)) % OLED_WIDTH;
+        // Introduce a BPM factor to adjust the rate
+        const float bpmFactor = 1.2; // Adjust this value as needed
+        const float secondsPerBeat = 60.0f / ((int)bpm * bpmFactor); // Calculate how many seconds per beat with the factor
+        const uint32_t elapsedTimeMillis = daisy::System::GetNow(); 
 
-    // Draw the vertical line at the calculated position
-    display.DrawLine(verticalLinePosition, 0, verticalLinePosition, OLED_HEIGHT - 1, true);
+        // Calculate the position of the vertical line
+        verticalLinePosition = (elapsedTimeMillis / (int)(secondsPerBeat * 10)) % OLED_WIDTH;
 
-    // Update the display
-    display.Update();
+        // Draw the vertical line at the calculated position
+        display.DrawLine(verticalLinePosition, 0, verticalLinePosition, OLED_HEIGHT - 1, true);
+
+        // Update the display
+        display.Update();
+    }
 }
 
 

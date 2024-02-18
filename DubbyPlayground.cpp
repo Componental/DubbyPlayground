@@ -234,13 +234,13 @@ int main(void)
 
 	while(1) { 
 
-        bpm=dubby.GetKnobValue(dubby.CTRL_1)*800;
+        bpm=40 + dubby.GetKnobValue(dubby.CTRL_1) * (250-40);
                 dubby.bpm = bpm;
 
         noteLength=dubby.GetKnobValue(dubby.CTRL_2)*2.f;
         beatInterval = beatsPerMinuteToInterval / bpm;
         std::string printStuffLeft = std::to_string(dubby.verticalLinePosition);
-        std::string printStuffRight = std::to_string(currentTime);
+        std::string printStuffRight = std::to_string(bpm);
 
         dubby.UpdateStatusBar(&printStuffLeft[0],dubby.LEFT);
         dubby.UpdateStatusBar(&printStuffRight[0],dubby.RIGHT);
