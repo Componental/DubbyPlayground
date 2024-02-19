@@ -8,7 +8,7 @@ This repository is a C++ template project for **Dubby**. For information about t
 
 ## How to use
 
-For the most smooth experience copy the **DubbyPlayground** folder from this repository into folder **/DaisyExamples**.
+Run git clone --recurse-submodules https://github.com/Componental/DubbyPlayground to a folder of your choice. 
 
 For more information on setting the C++ development environment on your computer visit Electrosmith's [Instructions on GitHub](https://github.com/electro-smith/DaisyWiki/wiki/1.-Setting-Up-Your-Development-Environment).
 
