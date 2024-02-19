@@ -55,8 +55,12 @@ class DubbyEncoder
     bool     updated_;
     Switch   sw_;
     dsy_gpio hw_a_, hw_b_;
-    uint8_t  a_, b_;
+    uint8_t  a_, a_last, b_;
     int32_t  inc_;
     int prev_state; 
+
+
+    int aState;
+    int aLastState;  
 };
 } // namespace daisy

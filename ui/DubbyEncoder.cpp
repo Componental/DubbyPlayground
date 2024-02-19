@@ -24,12 +24,15 @@ void DubbyEncoder::Init(dsy_gpio_pin a,
     // Set initial states, etc.
     inc_ = 0;
     a_ = b_ = 0xff;
+
+
+    a_last = dsy_gpio_read(&hw_a_);   
 }
 
 void DubbyEncoder::Debounce()
 {
     // update no faster than 1kHz
-    uint32_t now = System::GetNow();
+    uint32_t now = System::GetNow(); 
     updated_     = false;
 
     if(now - last_update_ >= 1)
@@ -38,20 +41,21 @@ void DubbyEncoder::Debounce()
         updated_     = true;
 
         // Shift Button states to debounce
-        a_ = (a_ << 1) | dsy_gpio_read(&hw_a_);
-        b_ = (b_ << 1) | dsy_gpio_read(&hw_b_);
+        a_ = dsy_gpio_read(&hw_a_);
 
         // infer increment direction
         inc_ = 0; // reset inc_ first
-        if((a_ & 0x03) == 0x02 && (b_ & 0x03) == 0x00)
-        {
-            inc_ = 1;
-        }
-        else if((b_ & 0x03) == 0x02 && (a_ & 0x03) == 0x00)
-        {
-            inc_ = -1;
+        if (a_ != a_last){     
+        // If the outputB state is same the a state, that means the encoder is rotating clockwise
+            if ( dsy_gpio_read(&hw_b_) == a_) { 
+                inc_ = 1;
+            } else {
+                inc_ = -1;
+            }
         }
     }
+
+    a_last = a_; // Updates the previous state of the a with the current state
 
     // Debounce built-in switch
     sw_.Debounce();
