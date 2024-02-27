@@ -27,6 +27,7 @@ void DubbyEncoder::Init(dsy_gpio_pin a,
 
 
     a_last = dsy_gpio_read(&hw_a_);   
+    b_last = dsy_gpio_read(&hw_b_);   
 }
 
 void DubbyEncoder::Debounce()
@@ -35,27 +36,43 @@ void DubbyEncoder::Debounce()
     uint32_t now = System::GetNow(); 
     updated_     = false;
 
-    if(now - last_update_ >= 1)
+    if (now - last_update_ >= 1)
     {
         last_update_ = now;
         updated_     = true;
 
-        // Shift Button states to debounce
         a_ = dsy_gpio_read(&hw_a_);
+        b_ = dsy_gpio_read(&hw_b_);
+
+        int lastInc = inc_;
+        if (lastInc == 0) lastInc = 1;
 
         // infer increment direction
         inc_ = 0; // reset inc_ first
-        if (a_ != a_last){     
-        // If the outputB state is same the a state, that means the encoder is rotating clockwise
-            if ( dsy_gpio_read(&hw_b_) == a_) { 
-                inc_ = 1;
-            } else {
-                inc_ = -1;
+
+        // Introduce a time-based debounce
+        if (now - last_encoder_change_time_ >= DEBOUNCE_TIME)
+        {
+            if (lastInc == 1) 
+            {
+                // Only detect changes when both A and B have settled
+                if (a_ != a_last && b_ == a_) inc_ = 1; // Clockwise rotation
+                else if (b_ != b_last && b_ == a_) inc_ = -1; // Counterclockwise rotation
             }
+            else if (lastInc == -1)
+            {
+                // Only detect changes when both A and B have settled
+                if (b_ != b_last && b_ == a_) inc_ = -1; // Counterclockwise rotation
+                else if (a_ != a_last && b_ == a_) inc_ = 1; // Clockwise rotation
+            }
+
+            // Update the time of the last encoder state change
+            last_encoder_change_time_ = now;
         }
     }
 
     a_last = a_; // Updates the previous state of the a with the current state
+    b_last = b_; // Updates the previous state of the a with the current state
 
     // Debounce built-in switch
     sw_.Debounce();

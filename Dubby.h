@@ -2,6 +2,7 @@
 #pragma once
 #include "daisy_seed.h"
 #include "dev/oled_ssd130x.h"
+#include "fonts/dubby_oled_fonts.h"
 
 #include <iostream>
 #include <string>
@@ -59,13 +60,13 @@ class Dubby
     const char * PreferencesMenuItemsStrings[PREFERENCESMENU_LAST] = 
     { 
         "MIDI", 
-        "Routing",
-        "Params",
-        "DFU Mode",
-        "Option5",
-        "Option6",
-        "Option7",
-        "Option8",
+        "ROUTING",
+        "PARAMETERS",
+        "DFU MODE",
+        "OPTION 5",
+        "OPTION 6",
+        "OPTION 7",
+        "OPTION 8",
     };
 
     enum Ctrl
@@ -115,18 +116,18 @@ class Dubby
 
     const char * ScopePagesStrings[SCOPE_PAGES_LAST] = 
     { 
-        "in1,in2", 
-        "in3,in4", 
-        "out1,out2", 
-        "out3,out4", 
-        "in1", 
-        "in2", 
-        "in3", 
-        "in4", 
-        "out1", 
-        "out2", 
-        "out3", 
-        "out4", 
+        "IN 1, IN 2", 
+        "IN 3, IN 4", 
+        "OUT 1, OUT 2", 
+        "OUT 3, OUT 4", 
+        "IN 1", 
+        "IN 2", 
+        "IN 3", 
+        "IN 4", 
+        "OUT 1", 
+        "OUT 2", 
+        "OUT 3", 
+        "OUT 4", 
     };
 
 
@@ -139,8 +140,8 @@ class Dubby
 
     const char * MixerPagesStrings[MIXER_PAGES_LAST] = 
     { 
-        "inputs", 
-        "outputs",
+        "INPUTS", 
+        "OUTPUTS",
     };
 
 
@@ -156,11 +157,11 @@ class Dubby
     
     const char * PreferencesMidiMenuItemsStrings[PREFERENCESMENU_LAST] = 
     { 
-        "MIDI In", 
-        "MIDI Out", 
-        "MIDI Thru", 
-        "MIDI Whatev", 
-        "MIDI Whateva", 
+        "MIDI IN", 
+        "MIDI OUT", 
+        "MIDI THRU", 
+        "MIDI WHATEV", 
+        "MIDI WHATEVA", 
     };    
     
     enum PreferencesRoutingMenuItems 
@@ -175,11 +176,11 @@ class Dubby
     
     const char * PreferencesRoutingMenuItemsStrings[PREFERENCESMENU_LAST] = 
     { 
-        "Routing 1", 
-        "Routing 2", 
-        "Routing 3", 
-        "Routing 4", 
-        "Routing 5", 
+        "ROUTING 1", 
+        "ROUTING 2", 
+        "ROUTING 3", 
+        "ROUTING 4", 
+        "ROUTING 5", 
     };
 
     enum EnumTypes 

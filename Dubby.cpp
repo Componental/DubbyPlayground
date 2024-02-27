@@ -245,7 +245,7 @@ void Dubby::HighlightWindowItem()
         display.SetCursor(windowTextCursors[i % 3][0], windowTextCursors[i % 3][1]);
         int currentText = windowItemSelected + i < WIN_LAST ? windowItemSelected + i : (windowItemSelected + i) % WIN_LAST;
         
-        display.WriteStringAligned(GetTextForEnum(WINDOWS, currentText), Font_6x8, daisy::Rectangle(windowBoxBounding[i][0], windowBoxBounding[i][1] + 3, 43, 7), daisy::Alignment::centered, i == 0 ? false : true);
+        display.WriteStringAligned(GetTextForEnum(WINDOWS, currentText), Font_4x5, daisy::Rectangle(windowBoxBounding[i][0], windowBoxBounding[i][1] + 3, 43, 7), daisy::Alignment::centered, i == 0 ? false : true);
     }
 
     display.DrawLine(PANE_X_START - 1, PANE_Y_START + 1, PANE_X_START - 1, PANE_Y_END + 1, true);
@@ -264,7 +264,7 @@ void Dubby::ReleaseWindowSelector()
     display.DrawRect(windowBoxBounding[0][0], windowBoxBounding[0][1], windowBoxBounding[0][2], windowBoxBounding[0][3], false, false);
 
     display.SetCursor(windowTextCursors[0][0], windowTextCursors[0][1]);
-    display.WriteStringAligned(GetTextForEnum(WINDOWS, windowItemSelected), Font_6x8, daisy::Rectangle(windowBoxBounding[0][0], windowBoxBounding[0][1] + 3, 43, 7), daisy::Alignment::centered, true);
+    display.WriteStringAligned(GetTextForEnum(WINDOWS, windowItemSelected), Font_4x5, daisy::Rectangle(windowBoxBounding[0][0], windowBoxBounding[0][1] + 3, 43, 7), daisy::Alignment::centered, true);
 
     display.Update();
     
@@ -279,7 +279,7 @@ void Dubby::UpdateMixerPane()
 {
     int increment = encoder.Increment();
     if (increment && !windowSelectorActive && !isBarSelected) {
-        if ((((barSelector >= 0 && increment == 1 && barSelector < 7) || (increment == -1 && barSelector != 0)))) 
+        if ((((barSelector >= 0 && increment > 0 && barSelector < 7) || (increment < 0 && barSelector != 0)))) 
                 barSelector += increment;
     }
 
@@ -339,23 +339,23 @@ void Dubby::UpdateWindowList()
             DisplayPreferencesMenuList(0);
             break;
         case WIN4:
-            UpdateStatusBar("pane 4", LEFT); 
+            UpdateStatusBar("PANE 4", LEFT); 
             break;
         case WIN5:
             display.SetCursor(10, 15);
-            UpdateStatusBar("pane 5", LEFT);
+            UpdateStatusBar("PANE 5", LEFT);
             break;
         case WIN6:
             display.SetCursor(10, 15);
-            UpdateStatusBar("pane 6", LEFT);
+            UpdateStatusBar("PANE 6", LEFT);
             break;
         case WIN7:
             display.SetCursor(10, 15);
-            UpdateStatusBar("pane 7", LEFT);
+            UpdateStatusBar("PANE 7", LEFT);
             break;
         case WIN8:
             display.SetCursor(10, 15);
-            UpdateStatusBar("pane 8", LEFT);
+            UpdateStatusBar("PANE 8", LEFT);
             break;
         default:
             break;
@@ -389,7 +389,7 @@ void Dubby::UpdateRenderPane()
 {
     int increment = encoder.Increment();
     if (increment && !windowSelectorActive) {
-        if ((((scopeSelector >= 0 && increment == 1 && scopeSelector < SCOPE_PAGES_LAST - 1) || (increment == -1 && scopeSelector != 0)))) 
+        if ((((scopeSelector >= 0 && increment > 0 && scopeSelector < SCOPE_PAGES_LAST - 1) || (increment < 0 && scopeSelector != 0)))) 
                 scopeSelector += increment;
     }
 
@@ -467,7 +467,7 @@ void Dubby::DisplayPreferencesMenuList(int increment)
         } 
 
         display.SetCursor(5, MENULIST_Y_START + 2 + (j * MENULIST_SPACING));
-        display.WriteString(GetTextForEnum(PREFERENCESMENU, i), Font_6x8, i == preferencesMenuItemSelected && isSubMenuActive ? false : true);
+        display.WriteString(GetTextForEnum(PREFERENCESMENU, i), Font_4x5, i == preferencesMenuItemSelected && isSubMenuActive ? false : true);
 
     }
 
@@ -531,7 +531,7 @@ void Dubby::DisplayPreferencesSubMenuList(int increment, PreferencesMenuItems pr
         } 
 
         display.SetCursor(5 + MENULIST_SUBMENU_SPACING, MENULIST_Y_START + 2 + (j * MENULIST_SPACING));
-        display.WriteString(GetTextForEnum(type, i), Font_6x8, true);
+        display.WriteString(GetTextForEnum(type, i), Font_4x5, true);
 
     }
 
@@ -574,17 +574,17 @@ void Dubby::UpdateStatusBar(char* text, StatusBarSide side = LEFT)
     if (side == LEFT) 
     {   
         display.DrawRect(STATUSBAR_X_START, STATUSBAR_Y_START, 63, STATUSBAR_Y_END - 3, false, true);
-        display.WriteStringAligned(&text[0], Font_6x8, daisy::Rectangle(STATUSBAR_X_START, STATUSBAR_Y_START, STATUSBAR_X_END - 64, STATUSBAR_Y_END - 1), daisy::Alignment::centeredLeft, true);
+        display.WriteStringAligned(&text[0], Font_4x5, daisy::Rectangle(STATUSBAR_X_START, STATUSBAR_Y_START, STATUSBAR_X_END - 64, STATUSBAR_Y_END - 1), daisy::Alignment::centeredLeft, true);
     } 
     else if (side == RIGHT) 
     {   
         display.DrawRect(64, STATUSBAR_Y_START, 127, STATUSBAR_Y_END - 3, false, true);
-        display.WriteStringAligned(&text[0], Font_6x8, daisy::Rectangle(64, STATUSBAR_Y_START, 64, STATUSBAR_Y_END - 1), daisy::Alignment::centeredRight, true);
+        display.WriteStringAligned(&text[0], Font_4x5, daisy::Rectangle(64, STATUSBAR_Y_START, 64, STATUSBAR_Y_END - 1), daisy::Alignment::centeredRight, true);
     }
     else if (side == MIDDLE) 
     {   
         display.DrawRect(52, STATUSBAR_Y_START, 72, STATUSBAR_Y_END - 3, false, true);
-        display.WriteStringAligned(&text[0], Font_6x8, daisy::Rectangle(36, STATUSBAR_Y_START, 58, STATUSBAR_Y_END - 1), daisy::Alignment::centered, true);
+        display.WriteStringAligned(&text[0], Font_4x5, daisy::Rectangle(36, STATUSBAR_Y_START, 58, STATUSBAR_Y_END - 1), daisy::Alignment::centered, true);
     }
 
 
@@ -594,9 +594,7 @@ void Dubby::UpdateStatusBar(char* text, StatusBarSide side = LEFT)
 void Dubby::ResetToBootloader() 
 {
     DrawBitmap(1);
-
-    display.SetCursor(20, 55);
-    display.WriteString("FIRMWARE UPDATE", Font_6x8, true);
+    display.WriteStringAligned("FIRMWARE UPDATE", Font_4x5, daisy::Rectangle(1, 35, 127, 45), daisy::Alignment::centered, true);
 
     display.Update();
 

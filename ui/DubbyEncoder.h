@@ -3,6 +3,8 @@
 #include "per/gpio.h"
 #include "hid/switch.h"
 
+#define DEBOUNCE_TIME 2
+
 namespace daisy
 {
 /** 
@@ -55,12 +57,9 @@ class DubbyEncoder
     bool     updated_;
     Switch   sw_;
     dsy_gpio hw_a_, hw_b_;
-    uint8_t  a_, a_last, b_;
+    uint8_t  a_, a_last, b_, b_last, a_stable_, b_stable_;
     int32_t  inc_;
+    int32_t  last_encoder_change_time_;
     int prev_state; 
-
-
-    int aState;
-    int aLastState;  
 };
 } // namespace daisy
