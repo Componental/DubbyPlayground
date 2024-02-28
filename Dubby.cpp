@@ -67,6 +67,7 @@ void Dubby::Init()
     InitEncoder();
     InitAudio();
     InitMidi();
+    sequencerStartTime = seed.system.GetNow(); // Initialize the sequencer start time
 }
 
 void Dubby::InitControls()
@@ -155,14 +156,14 @@ void Dubby::UpdateDisplay()
     switch(windowItemSelected) 
     {
         case WIN1:
-            UpdateRenderPane();
+             UpdateRenderPane();
             break;
         case WIN2:
             UpdateMixerPane();
             break;
         case WIN3:
 
-            if (encoder.FallingEdge() && !isSubMenuActive && !wasEncoderLongPressed) {
+                      if (encoder.FallingEdge() && !isSubMenuActive && !wasEncoderLongPressed) {
                 isSubMenuActive = true;
                 DisplayPreferencesMenuList(0);
             }
@@ -177,6 +178,9 @@ void Dubby::UpdateDisplay()
             if (encoder.Increment() && !windowSelectorActive && !isSubMenuActive) UpdatePreferencesMenuList(encoder.Increment());
             else if (encoder.Increment() && !windowSelectorActive && isSubMenuActive) UpdatePreferencesSubMenuList(encoder.Increment(), preferencesMenuItemSelected);
             break;
+        case WIN4:
+                Sequencer();
+
         default:
             break;
     }
@@ -270,9 +274,117 @@ void Dubby::ReleaseWindowSelector()
     
 }
 
+int map(int x, int in_min, int in_max, int out_min, int out_max) {
+    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+
 void Dubby::ClearPane() 
 {
     display.DrawRect(PANE_X_START - 1, PANE_Y_START - 1, PANE_X_END + 1, PANE_Y_END + 12, false, true);
+}
+// Define verticalLinePosition as a member variable
+int verticalLinePosition = 0;
+
+void Dubby::Sequencer() {
+        display.Fill(false);
+// Check if MIDI counter has changed since last call
+    if (midiCounter != prevMidiCounter) {
+        // Calculate the position of the vertical line
+        // based on the MIDI counter
+        verticalLinePosition = map(midiCounter*4, 0, 127, 0, OLED_WIDTH-1)%OLED_WIDTH;
+        // Store the current MIDI counter for comparison
+        prevMidiCounter = midiCounter;
+    }
+
+    // Draw the vertical line at its position
+    display.DrawLine(verticalLinePosition, 10, verticalLinePosition, OLED_HEIGHT - 1, true);
+
+
+
+
+// Define the desired length of 32 steps
+int desiredLength = 32;
+
+// Visualize each rhythm
+for (int i = 0; i < MAX_RHYTHMS; ++i) {
+    // Determine the rhythm and length based on the iteration
+    std::vector<int> currentRhythm;
+    int currentLength = 0;
+
+    if (i < MAX_RHYTHMS) {
+        currentRhythm = rhythms[i];
+        currentLength = lengths[i];
+    }
+
+    // Extend the rhythm if it's shorter than desired length
+    if (currentLength < desiredLength) {
+        int repetitions = desiredLength / currentLength;
+        int remainder = desiredLength % currentLength;
+
+        std::vector<int> extendedRhythm;
+        for (int k = 0; k < repetitions; ++k) {
+            extendedRhythm.insert(extendedRhythm.end(), currentRhythm.begin(), currentRhythm.end());
+        }
+
+        // Append the remainder if it exists
+        if (remainder > 0) {
+            extendedRhythm.insert(extendedRhythm.end(), currentRhythm.begin(), currentRhythm.begin() + remainder);
+        }
+
+        // Update current rhythm and length
+        currentRhythm = extendedRhythm;
+        currentLength = desiredLength;
+    }
+
+    // Calculate the vertical position for the current rhythm
+    int horizontalLinePosition = OLED_HEIGHT / 9 * (i + 2) - 4; // Shifting three pixels up
+
+    // Draw rectangle on top of the active rhythm
+    if (i == activeRhythm) {
+
+                // Visualize the rhythm with vertical lines for each 1 in the vector
+   
+
+
+
+        // Calculate coordinates of the rectangle
+        int rectX1 = 0;
+        int rectY1 = horizontalLinePosition; // Top-left corner
+        int rectX2 = OLED_WIDTH - 1;
+        int rectY2 = horizontalLinePosition + 5; // Bottom-right corner
+        
+        // Draw the rectangle
+        display.DrawRect(rectX1, rectY1, rectX2, rectY2, true, true);
+
+
+         for (int j = 0; j < currentLength; ++j) {
+        if (currentRhythm[j] == 1) {
+            // Calculate the x position of the vertical line
+            float columnWidth = static_cast<float>(OLED_WIDTH) / static_cast<float>(desiredLength);
+            int verticalLinePosition = static_cast<int>(j * columnWidth);
+
+            // Draw a vertical line on the OLED display
+            display.DrawLine(verticalLinePosition, horizontalLinePosition, verticalLinePosition, horizontalLinePosition + 4, false);
+        }
+    }
+    } else {
+            // Visualize the rhythm with vertical lines for each 1 in the vector
+    for (int j = 0; j < currentLength; ++j) {
+        if (currentRhythm[j] == 1) {
+            // Calculate the x position of the vertical line
+            float columnWidth = static_cast<float>(OLED_WIDTH) / static_cast<float>(desiredLength);
+            int verticalLinePosition = static_cast<int>(j * columnWidth);
+
+            // Draw a vertical line on the OLED display
+            display.DrawLine(verticalLinePosition, horizontalLinePosition, verticalLinePosition, horizontalLinePosition + 4, true);
+        }
+    }
+
+
+    }
+}
+// Update the display
+//display.Update();
 }
 
 void Dubby::UpdateMixerPane() 
@@ -328,10 +440,10 @@ void Dubby::UpdateWindowList()
     switch(windowItemSelected) 
     {
         case WIN1:    
-            statusStr = GetTextForEnum(SCOPE, scopeSelector);
+         statusStr = GetTextForEnum(SCOPE, scopeSelector);
             UpdateStatusBar(&statusStr[0], LEFT);
             UpdateRenderPane();
-            break;
+            break;   
         case WIN2:
             for (int i = 0; i < 4; i++) UpdateBar(i);
             break;
@@ -339,7 +451,8 @@ void Dubby::UpdateWindowList()
             DisplayPreferencesMenuList(0);
             break;
         case WIN4:
-            UpdateStatusBar("PANE 4", LEFT); 
+            //UpdateStatusBar("PANE 4", LEFT); 
+            Sequencer();
             break;
         case WIN5:
             display.SetCursor(10, 15);
@@ -457,6 +570,7 @@ void Dubby::DisplayPreferencesMenuList(int increment)
             
             display.DrawRect(menuListBoxBounding[j][0], menuListBoxBounding[j][1], menuListBoxBounding[j][2], menuListBoxBounding[j][3], true);
 
+          
             if (increment == 0)
                 display.DrawRect(menuListBoxBounding[j][0], menuListBoxBounding[j][1], menuListBoxBounding[j][2], menuListBoxBounding[j][3], false, true);
             
@@ -534,7 +648,7 @@ void Dubby::DisplayPreferencesSubMenuList(int increment, PreferencesMenuItems pr
         display.WriteString(GetTextForEnum(type, i), Font_4x5, true);
 
     }
-
+    
     display.DrawRect(PANE_X_START + MENULIST_SUBMENU_SPACING - 1, PANE_Y_START + 1, PANE_X_END, PANE_Y_END - 1, true, false);
 
     display.Update();
@@ -594,6 +708,7 @@ void Dubby::UpdateStatusBar(char* text, StatusBarSide side = LEFT)
 void Dubby::ResetToBootloader() 
 {
     DrawBitmap(1);
+
     display.WriteStringAligned("FIRMWARE UPDATE", Font_4x5, daisy::Rectangle(1, 35, 127, 45), daisy::Alignment::centered, true);
 
     display.Update();

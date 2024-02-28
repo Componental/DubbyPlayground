@@ -6,12 +6,15 @@
 
 #include <iostream>
 #include <string>
-
+#include <vector>
 #include "ui/DubbyEncoder.h"
 
 #include "./bitmaps/bmps.h"
 
+
 #define AUDIO_BLOCK_SIZE 128 
+constexpr int MAX_RHYTHMS = 8;
+constexpr int DEFAULT_NOTE = 60;
 
 namespace daisy
 {
@@ -21,10 +24,10 @@ class Dubby
 
     enum WindowItems 
     { 
+        WIN4, 
         WIN1, 
         WIN2, 
         WIN3, 
-        WIN4, 
         WIN5, 
         WIN6, 
         WIN7, 
@@ -67,6 +70,7 @@ class Dubby
         "OPTION 6",
         "OPTION 7",
         "OPTION 8",
+
     };
 
     enum Ctrl
@@ -157,7 +161,7 @@ class Dubby
     
     const char * PreferencesMidiMenuItemsStrings[PREFERENCESMENU_LAST] = 
     { 
-        "MIDI IN", 
+         "MIDI IN", 
         "MIDI OUT", 
         "MIDI THRU", 
         "MIDI WHATEV", 
@@ -176,7 +180,7 @@ class Dubby
     
     const char * PreferencesRoutingMenuItemsStrings[PREFERENCESMENU_LAST] = 
     { 
-        "ROUTING 1", 
+       "ROUTING 1", 
         "ROUTING 2", 
         "ROUTING 3", 
         "ROUTING 4", 
@@ -247,6 +251,8 @@ class Dubby
     void ClearPane();
 
     void UpdateStatusBar(char* text, StatusBarSide side); // side = 0 => left, side = 1 => right
+    void VisualizeRhythms(std::vector<int>& currentRhythm, int currentLength, int horizontalLinePosition, int desiredLength);
+    void Sequencer();
 
     DaisySeed seed; 
 
@@ -290,6 +296,27 @@ class Dubby
 
     MidiUsbHandler midi_usb;
 
+    float elapsedTime;
+    float bpm;
+    float sequencerStartTime;
+    int verticalLinePosition;
+    bool midiMessageSentThisBeatRhythm1 = false;
+        bool midiMessageSentThisBeatRhythm2 = false;
+
+    int midiCounter = 0;
+
+    int midiMessageCounterRhythm1 = 0; // Counter for rhythm 1
+int midiMessageCounterRhythm2 = 0; // Counter for rhythm 2
+
+
+    int prevMidiCounter = 0;
+     uint32_t screen_update_last_, screen_update_period_;
+float pixelsPerSecond;
+
+    std::vector<int> rhythms[MAX_RHYTHMS];
+    int lengths[MAX_RHYTHMS];
+    int activeRhythm = 0;
+
   private:
 
     void InitAudio();
@@ -301,11 +328,14 @@ class Dubby
 
     int margin = 8;
     bool windowSelectorActive = false;
-    uint32_t screen_update_last_, screen_update_period_;
 
     bool isEncoderPressed = false;
     bool wasEncoderLongPressed = false;
     unsigned long encoderPressStartTime = 0;
+
+
+
+
 };
 
 }
