@@ -127,6 +127,7 @@ float nextBeatTime = 0.0f; // Time of the next beat
 // Define tolerance for matching knob values
 const int knobTolerance = 0.1;
 
+
 // Function to check if knob values match within tolerance
 bool knobValueMatches(int currentValue, int prevValue)
 {
@@ -397,8 +398,9 @@ void selectRhythm()
             lengthX     = lengths[i];
             eventsXTemp = events[i];
             offsetX     = offsets[i];
+            
 
-            if(!knobValueMatches(knobValue1, prevKnobValue1))
+if(!knobValueMatches(knobValue1, prevKnobValue1))
             {
                 lengths[i]     = knobValue1;
                 prevKnobValue1 = knobValue1;
@@ -409,6 +411,9 @@ void selectRhythm()
                 events[i]      = knobValue2;
                 prevKnobValue2 = knobValue2;
             }
+    // Perform actions using knobValue2
+
+
 
             if(dubby.buttons[0].FallingEdge())
             {
@@ -504,6 +509,20 @@ void handleKnobs()
     knobValue4 = std::min(knobValue4, 4);
 }
 void shiftNotesAndOctaves() {
+
+      if(dubby.buttons[2].FallingEdge())
+    {
+        noteShift = std::min(noteShift + 1,
+                             11); // Increment noteShift but limit it to 11
+    }
+
+    if(dubby.buttons[3].FallingEdge())
+    {
+        noteShift = std::max(noteShift - 1,
+                             0); // Decrement noteShift but limit it to 0
+    }
+
+
     OctaveShiftLevel octaveShiftLevel = static_cast<OctaveShiftLevel>(knobValue4);
     switch(octaveShiftLevel) {
         case OCTAVE_DOWN_2:
@@ -732,7 +751,8 @@ int main(void)
         lengths[i] = 16;
     }
 
-
+    prevKnobValue1 = knobValue1;
+    prevKnobValue2 = knobValue2;
     while(1)
     {
         handleScales();
