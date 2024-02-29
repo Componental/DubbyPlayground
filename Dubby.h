@@ -314,8 +314,14 @@ int midiMessageCounterRhythm2 = 0; // Counter for rhythm 2
 float pixelsPerSecond;
 
     std::vector<int> rhythms[MAX_RHYTHMS];
+    
     int lengths[MAX_RHYTHMS];
     int activeRhythm = 0;
+int prevEventsValues [MAX_RHYTHMS] = {0};
+std::vector<int> preMuteRhythm[MAX_RHYTHMS];
+    std::vector<int> currentPreMuteRhythm;
+
+bool encoderPressed[MAX_RHYTHMS] = {false};
 
   private:
 

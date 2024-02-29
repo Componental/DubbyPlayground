@@ -300,7 +300,7 @@ void Dubby::Sequencer() {
     display.DrawLine(verticalLinePosition, 10, verticalLinePosition, OLED_HEIGHT - 1, true);
 
 
-
+   
 
 // Define the desired length of 32 steps
 int desiredLength = 32;
@@ -339,12 +339,14 @@ for (int i = 0; i < MAX_RHYTHMS; ++i) {
     // Calculate the vertical position for the current rhythm
     int horizontalLinePosition = OLED_HEIGHT / 9 * (i + 2) - 4; // Shifting three pixels up
 
+ 
+    
     // Draw rectangle on top of the active rhythm
     if (i == activeRhythm) {
 
                 // Visualize the rhythm with vertical lines for each 1 in the vector
    
-
+    
 
 
         // Calculate coordinates of the rectangle
@@ -382,7 +384,16 @@ for (int i = 0; i < MAX_RHYTHMS; ++i) {
 
 
     }
+       if (encoderPressed[i] && i == activeRhythm){
+                        display.DrawLine(0, horizontalLinePosition+3, OLED_WIDTH - 1, horizontalLinePosition+3, false);
+
+    } else if (encoderPressed[i] && i != activeRhythm){
+                        display.DrawLine(0, horizontalLinePosition+3, OLED_WIDTH - 1, horizontalLinePosition+3, true);
+
+    }
 }
+
+
 // Update the display
 //display.Update();
 }

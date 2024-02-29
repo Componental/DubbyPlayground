@@ -14,7 +14,6 @@ Dubby dubby;
 CpuLoadMeter loadMeter;
 
 bool        buttonPressed  = false;
-bool        encoderPressed = false;
 bool        shiftIsOn;
 uint8_t     lastNote     = 0;
 int         activeRhythm = 0;
@@ -25,6 +24,9 @@ std::string octaveShiftForPrint;
 //int totalShift = 0;
 int octaveShift = 0;
 int noteShift   = 0;
+
+// Define an array to store the previous events values for each rhythm
+
 
 
 uint8_t chromatic_chord[MAX_RHYTHMS] = {DEFAULT_NOTE,
@@ -84,6 +86,24 @@ uint8_t major7_chord[MAX_RHYTHMS] = {DEFAULT_NOTE,
                                      DEFAULT_NOTE + 25};
 
 
+// Define enums for scale types and octave shift levels
+enum ScaleType {
+    CHROMATIC = 0,
+    MAJOR,
+    MINOR,
+    PENTATONIC,
+    MINOR7,
+    MAJOR7
+};
+
+enum OctaveShiftLevel {
+    OCTAVE_DOWN_2 = 0,
+    OCTAVE_DOWN_1,
+    NO_OCTAVE_SHIFT,
+    OCTAVE_UP_1,
+    OCTAVE_UP_2
+};
+
 const uint8_t velocity = 110;
 // Variable to store previous knob values
 int prevKnobValue1 = 0;
@@ -105,7 +125,7 @@ float beatInterval;        // Interval between beats in seconds
 float nextBeatTime = 0.0f; // Time of the next beat
 
 // Define tolerance for matching knob values
-const int knobTolerance = 0.001;
+const int knobTolerance = 0.1;
 
 // Function to check if knob values match within tolerance
 bool knobValueMatches(int currentValue, int prevValue)
@@ -277,10 +297,25 @@ std::string noteShiftForPrint(int noteShift)
 
 void handleEncoder()
 {
-    if(dubby.encoder.FallingEdge())
-    {
-        encoderPressed = !encoderPressed;
+       // Check for falling edge of encoder press
+    if (dubby.encoder.FallingEdge()) {
+        // Toggle the encoderPressed state for the active rhythm
+        dubby.encoderPressed[activeRhythm] = !dubby.encoderPressed[activeRhythm];
+
+        if (dubby.encoderPressed[activeRhythm]) {
+            // Reset events to 0 when encoder is pressed
+            dubby.prevEventsValues[activeRhythm] = events[activeRhythm];
+            dubby.preMuteRhythm[activeRhythm] = dubby.rhythms[activeRhythm]; 
+            events[activeRhythm] = 0;
+        } else {
+            // Restore previous events value when encoder is pressed again
+            events[activeRhythm] = dubby.prevEventsValues[activeRhythm];
+            dubby.rhythms[activeRhythm] = dubby.preMuteRhythm[activeRhythm];
+
+        }
     }
+    
+
 
 
     int rotationDirection = dubby.encoder.Increment();
@@ -357,7 +392,7 @@ void selectRhythm()
     // Switch between rhythms
     for(int i = 0; i < MAX_RHYTHMS; ++i)
     {
-        if(activeRhythm == i)
+        if(activeRhythm == i && dubby.encoderPressed[i] == false)
         {
             lengthX     = lengths[i];
             eventsXTemp = events[i];
@@ -390,64 +425,69 @@ void selectRhythm()
     }
 }
 
-void handleScales()
-{
-    switch(knobValue3)
-    {
-        case 0:
-            for(int i = 0; i < MAX_RHYTHMS; ++i)
-            {
-                notes[i]      = chromatic_chord[i] + noteShift + octaveShift;
+
+
+
+
+void handleScales() {
+    ScaleType scaleType = static_cast<ScaleType>(knobValue3);
+    switch(scaleType) {
+        case CHROMATIC:
+            // Handle chromatic scale
+            for(int i = 0; i < MAX_RHYTHMS; ++i) {
+                notes[i] = chromatic_chord[i] + noteShift + octaveShift;
                 scaleForPrint = "CHRO";
             }
             break;
-        case 1:
-            for(int i = 0; i < MAX_RHYTHMS; ++i)
-            {
-                notes[i]      = major_chord[i] + noteShift + octaveShift;
+        case MAJOR:
+            // Handle major scale
+            for(int i = 0; i < MAX_RHYTHMS; ++i) {
+                notes[i] = major_chord[i] + noteShift + octaveShift;
                 scaleForPrint = "MAJ";
             }
             break;
-        case 2:
-            for(int i = 0; i < MAX_RHYTHMS; ++i)
-            {
-                notes[i]      = minor_chord[i] + noteShift + octaveShift;
+        case MINOR:
+            // Handle minor scale
+            for(int i = 0; i < MAX_RHYTHMS; ++i) {
+                notes[i] = minor_chord[i] + noteShift + octaveShift;
                 scaleForPrint = "MIN";
             }
             break;
-        case 3:
-            for(int i = 0; i < MAX_RHYTHMS; ++i)
-            {
-                notes[i]      = pentatonic_chord[i] + noteShift + octaveShift;
+        case PENTATONIC:
+            // Handle pentatonic scale
+            for(int i = 0; i < MAX_RHYTHMS; ++i) {
+                notes[i] = pentatonic_chord[i] + noteShift + octaveShift;
                 scaleForPrint = "PEN";
             }
             break;
-        case 4:
-            for(int i = 0; i < MAX_RHYTHMS; ++i)
-            {
-                notes[i]      = minor7_chord[i] + noteShift + octaveShift;
+        case MINOR7:
+            // Handle minor 7th scale
+            for(int i = 0; i < MAX_RHYTHMS; ++i) {
+                notes[i] = minor7_chord[i] + noteShift + octaveShift;
                 scaleForPrint = "MIN7";
             }
             break;
-        case 5:
-            for(int i = 0; i < MAX_RHYTHMS; ++i)
-            {
-                notes[i]      = major7_chord[i] + noteShift + octaveShift;
+        case MAJOR7:
+            // Handle major 7th scale
+            for(int i = 0; i < MAX_RHYTHMS; ++i) {
+                notes[i] = major7_chord[i] + noteShift + octaveShift;
                 scaleForPrint = "MAJ7";
             }
             break;
         default:
-            for(int i = 0; i < MAX_RHYTHMS; ++i)
-            {
-                notes[i]      = chromatic_chord[i] + noteShift + octaveShift;
+            // Handle default case (chromatic scale)
+            for(int i = 0; i < MAX_RHYTHMS; ++i) {
+                notes[i] = chromatic_chord[i] + noteShift + octaveShift;
                 scaleForPrint = "CHRO";
             }
             break;
     }
 }
 
+
 void handleKnobs()
 {
+    
     knobValue1 = (dubby.GetKnobValue(dubby.CTRL_1) * 32)
                  + 1; // Adjust knob 1 to start from 1 and have a maximum of 32
     knobValue2 = dubby.GetKnobValue(dubby.CTRL_2) * 33;
@@ -463,61 +503,35 @@ void handleKnobs()
     knobValue3 = std::min(knobValue3, 5);
     knobValue4 = std::min(knobValue4, 4);
 }
-
-void shiftNotesAndOctaves()
-{
-    if(dubby.buttons[2].FallingEdge())
-    {
-        noteShift = std::min(noteShift + 1,
-                             11); // Increment noteShift but limit it to 11
-    }
-
-    if(dubby.buttons[3].FallingEdge())
-    {
-        noteShift = std::max(noteShift - 1,
-                             0); // Decrement noteShift but limit it to 0
-    }
-
-
-    switch(knobValue4)
-    {
-        case 0:
-            octaveShift         = -24;
+void shiftNotesAndOctaves() {
+    OctaveShiftLevel octaveShiftLevel = static_cast<OctaveShiftLevel>(knobValue4);
+    switch(octaveShiftLevel) {
+        case OCTAVE_DOWN_2:
+            octaveShift = -24;
             octaveShiftForPrint = "--";
-
             break;
-        case 1:
+        case OCTAVE_DOWN_1:
             octaveShift = -12;
-
             octaveShiftForPrint = "-";
-
             break;
-        case 2:
+        case NO_OCTAVE_SHIFT:
             octaveShift = 0;
-
             octaveShiftForPrint = "";
-
             break;
-        case 3:
-            octaveShift         = 12;
+        case OCTAVE_UP_1:
+            octaveShift = 12;
             octaveShiftForPrint = "+";
-
             break;
-        case 4:
-            octaveShift         = 24;
+        case OCTAVE_UP_2:
+            octaveShift = 24;
             octaveShiftForPrint = "++";
-
             break;
-            ;
         default:
-            octaveShift         = 0;
+            octaveShift = 0;
             octaveShiftForPrint = "";
-
-
             break;
     }
 }
-
 
 void handleJoystick()
 {
@@ -612,8 +626,8 @@ void generateRhythms()
 
 void printValuesToDisplay()
 {
-    std::string printStuffLeft = std::to_string(lengthX) + "|"
-                                 + std::to_string(eventsXTemp) + "|"
+    std::string printStuffLeft = "LE:" + std::to_string(lengthX) + " EV:"
+                                 + std::to_string(eventsXTemp) + " OF:"
                                  + std::to_string(offsetX);
     std::string printStuffRight = noteShiftForPrint(noteShift) + " "
                                   + scaleForPrint + octaveShiftForPrint + " "
