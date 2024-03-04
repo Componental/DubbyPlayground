@@ -310,19 +310,32 @@ int midiMessageCounterRhythm2 = 0; // Counter for rhythm 2
 
 
     int prevMidiCounter = 0;
+        int prevMidiCounter2 = 0;
+
      uint32_t screen_update_last_, screen_update_period_;
-float pixelsPerSecond;
+    float pixelsPerSecond;
 
     std::vector<int> rhythms[MAX_RHYTHMS];
-    
+
     int lengths[MAX_RHYTHMS];
     int activeRhythm = 0;
-int prevEventsValues [MAX_RHYTHMS] = {0};
-std::vector<int> preMuteRhythm[MAX_RHYTHMS];
+    int prevEventsValues [MAX_RHYTHMS] = {0};
+    std::vector<int> preMuteRhythm[MAX_RHYTHMS];
     std::vector<int> currentPreMuteRhythm;
 
+bool iterateRhythms;
+int vertLinePos;
 bool encoderPressed[MAX_RHYTHMS] = {false};
+int print0, print1, print2;
 
+    int stepsOnDisplay = 32;
+
+    // Define other necessary member variables
+    int desiredLength[MAX_RHYTHMS];
+    int startIndex[MAX_RHYTHMS];
+    int endIndex[MAX_RHYTHMS];
+
+    
   private:
 
     void InitAudio();

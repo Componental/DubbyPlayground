@@ -16,7 +16,7 @@ using namespace daisy;
 #define PIN_JS_H 16
 #define PIN_ENC_CLICK 4
 #define PIN_ENC_A 6
-#define PIN_ENC_B 5 
+#define PIN_ENC_B 5
 #define PIN_OLED_DC 9
 #define PIN_OLED_RESET 31
 #define PIN_MIDI_OUT 13
@@ -45,15 +45,15 @@ using namespace daisy;
 
 #define ENCODER_LONGPRESS_THRESHOLD 300
 
-void Dubby::Init() 
+void Dubby::Init()
 {
     InitControls();
     InitButtons();
-    
-    screen_update_period_ = 17; // roughly 60Hz
-    screen_update_last_   = seed.system.GetNow();
 
-    for (int i = 0; i < 5; i++) 
+    screen_update_period_ = 17; // roughly 60Hz
+    screen_update_last_ = seed.system.GetNow();
+
+    for (int i = 0; i < 5; i++)
     {
         menuListBoxBounding[i][0] = MENULIST_X_START;
         menuListBoxBounding[i][1] = MENULIST_Y_START + i * MENULIST_SPACING;
@@ -86,7 +86,7 @@ void Dubby::InitControls()
     seed.adc.Init(cfg, CTRL_LAST);
 
     // Initialize analogInputs, with flip set to true
-    for(size_t i = 0; i < CTRL_LAST; i++)
+    for (size_t i = 0; i < CTRL_LAST; i++)
     {
         analogInputs[i].Init(seed.adc.GetPtr(i), seed.AudioCallbackRate(), true);
     }
@@ -96,7 +96,7 @@ void Dubby::InitControls()
 
 void Dubby::InitButtons()
 {
-    //Set button to pins, to be updated at a 1kHz  samplerate
+    // Set button to pins, to be updated at a 1kHz  samplerate
     buttons[0].Init(seed.GetPin(PIN_GATE_IN_1), 1000);
     buttons[1].Init(seed.GetPin(PIN_GATE_IN_2), 1000);
     buttons[2].Init(seed.GetPin(PIN_GATE_IN_3), 1000);
@@ -109,96 +109,102 @@ void Dubby::InitMidi()
     midi_uart.Init(midi_uart_config);
 
     // RELAY FOR SWITCHING MIDI OUT / MIDI THRU
-    midi_sw_output.pin  = seed.GetPin(PIN_MIDI_SWITCH);
+    midi_sw_output.pin = seed.GetPin(PIN_MIDI_SWITCH);
     midi_sw_output.mode = DSY_GPIO_MODE_OUTPUT_PP;
     midi_sw_output.pull = DSY_GPIO_NOPULL;
     dsy_gpio_init(&midi_sw_output);
 
-    dsy_gpio_write(&midi_sw_output, false); 
+    dsy_gpio_write(&midi_sw_output, false);
 
     MidiUsbHandler::Config midi_usb_cfg;
     midi_usb_cfg.transport_config.periph = MidiUsbTransport::Config::EXTERNAL;
     midi_usb.Init(midi_usb_cfg);
 }
 
-void Dubby::InitDisplay() 
+void Dubby::InitDisplay()
 {
     /** Configure the Display */
     OledDisplay<SSD130x4WireSpi128x64Driver>::Config disp_cfg;
-    disp_cfg.driver_config.transport_config.pin_config.dc    = seed.GetPin(9);
+    disp_cfg.driver_config.transport_config.pin_config.dc = seed.GetPin(9);
     disp_cfg.driver_config.transport_config.pin_config.reset = seed.GetPin(31);
     /** And Initialize */
     display.Init(disp_cfg);
 }
 
-void Dubby::UpdateDisplay() 
-{ 
-    if (encoder.TimeHeldMs() > ENCODER_LONGPRESS_THRESHOLD) 
+void Dubby::UpdateDisplay()
+{
+    if (encoder.TimeHeldMs() > ENCODER_LONGPRESS_THRESHOLD)
     {
-        if (!windowSelectorActive) 
+        if (!windowSelectorActive)
         {
             windowSelectorActive = true;
             HighlightWindowItem();
         }
 
-        if (encoder.Increment()) UpdateWindowSelector(encoder.Increment(), true);
-    } 
+        if (encoder.Increment())
+            UpdateWindowSelector(encoder.Increment(), true);
+    }
 
-    
     if (encoder.TimeHeldMs() < ENCODER_LONGPRESS_THRESHOLD && windowSelectorActive)
     {
         windowSelectorActive = false;
-        
+
         ReleaseWindowSelector();
         UpdateWindowList();
     }
 
-    switch(windowItemSelected) 
+    switch (windowItemSelected)
     {
-        case WIN1:
-             UpdateRenderPane();
-            break;
-        case WIN2:
-            UpdateMixerPane();
-            break;
-        case WIN3:
+    case WIN1:
+        UpdateRenderPane();
+        break;
+    case WIN2:
+        UpdateMixerPane();
+        break;
+    case WIN3:
 
-                      if (encoder.FallingEdge() && !isSubMenuActive && !wasEncoderLongPressed) {
-                isSubMenuActive = true;
-                DisplayPreferencesMenuList(0);
-            }
+        if (encoder.FallingEdge() && !isSubMenuActive && !wasEncoderLongPressed)
+        {
+            isSubMenuActive = true;
+            DisplayPreferencesMenuList(0);
+        }
 
-            if (windowSelectorActive) {
-                isSubMenuActive = false;
-                DisplayPreferencesMenuList(0);
-            }
+        if (windowSelectorActive)
+        {
+            isSubMenuActive = false;
+            DisplayPreferencesMenuList(0);
+        }
 
-            DisplayPreferencesSubMenuList(encoder.Increment(), preferencesMenuItemSelected);
-            if (encoder.FallingEdge() && !wasEncoderLongPressed && preferencesMenuItemSelected == DFUMODE) ResetToBootloader();
-            if (encoder.Increment() && !windowSelectorActive && !isSubMenuActive) UpdatePreferencesMenuList(encoder.Increment());
-            else if (encoder.Increment() && !windowSelectorActive && isSubMenuActive) UpdatePreferencesSubMenuList(encoder.Increment(), preferencesMenuItemSelected);
-            break;
-        case WIN4:
-                Sequencer();
+        DisplayPreferencesSubMenuList(encoder.Increment(), preferencesMenuItemSelected);
+        if (encoder.FallingEdge() && !wasEncoderLongPressed && preferencesMenuItemSelected == DFUMODE)
+            ResetToBootloader();
+        if (encoder.Increment() && !windowSelectorActive && !isSubMenuActive)
+            UpdatePreferencesMenuList(encoder.Increment());
+        else if (encoder.Increment() && !windowSelectorActive && isSubMenuActive)
+            UpdatePreferencesSubMenuList(encoder.Increment(), preferencesMenuItemSelected);
+        break;
+    case WIN4:
+        Sequencer();
 
-        default:
-            break;
+    default:
+        break;
     }
-    
 }
 
-void Dubby::DrawLogo() 
+void Dubby::DrawLogo()
 {
-    DrawBitmap(0);   
+    DrawBitmap(0);
 }
 
 void Dubby::DrawBitmap(int bitmapIndex)
 {
     display.Fill(false);
     display.SetCursor(30, 30);
-    
-    for (int x = 0; x < OLED_WIDTH; x += 8) {
-        for (int y = 0; y < OLED_HEIGHT; y++) {
+
+    for (int x = 0; x < OLED_WIDTH; x += 8)
+    {
+        for (int y = 0; y < OLED_HEIGHT; y++)
+        {
             // Calculate the index in the array
             int byteIndex = (y * OLED_WIDTH + x) / 8;
 
@@ -206,7 +212,8 @@ void Dubby::DrawBitmap(int bitmapIndex)
             char byte = bitmaps[bitmapIndex][byteIndex];
 
             // Process 8 pixels in the byte
-            for (int bitIndex = 0; bitIndex < 8; bitIndex++) {
+            for (int bitIndex = 0; bitIndex < 8; bitIndex++)
+            {
 
                 // Get the pixel value (0 or 1)
                 char pixel = (byte >> (7 - bitIndex)) & 0x01;
@@ -216,44 +223,50 @@ void Dubby::DrawBitmap(int bitmapIndex)
                 display.DrawPixel(x + bitIndex, y, isWhite);
             }
 
-            if (y % 6 == 0) display.Update();
+            if (y % 6 == 0)
+                display.Update();
         }
     }
 }
 
-void Dubby::UpdateWindowSelector(int increment, bool higlight) 
+void Dubby::UpdateWindowSelector(int increment, bool higlight)
 {
     int wItemSelected = windowItemSelected;
-    if ((int)windowItemSelected + increment >= WIN_LAST) wItemSelected = 0;
-    else if ((int)windowItemSelected + increment < 0) wItemSelected = WIN_LAST - 1;
-    else wItemSelected += increment;
+    if ((int)windowItemSelected + increment >= WIN_LAST)
+        wItemSelected = 0;
+    else if ((int)windowItemSelected + increment < 0)
+        wItemSelected = WIN_LAST - 1;
+    else
+        wItemSelected += increment;
 
     windowItemSelected = (WindowItems)(wItemSelected);
 
     display.Fill(false);
 
-    if (higlight) HighlightWindowItem();
-    else ReleaseWindowSelector();
-    
+    if (higlight)
+        HighlightWindowItem();
+    else
+        ReleaseWindowSelector();
+
     UpdateWindowList();
 
     display.Update();
 }
 
-void Dubby::HighlightWindowItem() 
+void Dubby::HighlightWindowItem()
 {
     display.DrawRect(windowBoxBounding[0][0], windowBoxBounding[0][1], windowBoxBounding[0][2], windowBoxBounding[0][3] + 1, true, true);
 
-    for (int i = 0; i < 3; i++) 
+    for (int i = 0; i < 3; i++)
     {
         display.SetCursor(windowTextCursors[i % 3][0], windowTextCursors[i % 3][1]);
         int currentText = windowItemSelected + i < WIN_LAST ? windowItemSelected + i : (windowItemSelected + i) % WIN_LAST;
-        
+
         display.WriteStringAligned(GetTextForEnum(WINDOWS, currentText), Font_4x5, daisy::Rectangle(windowBoxBounding[i][0], windowBoxBounding[i][1] + 3, 43, 7), daisy::Alignment::centered, i == 0 ? false : true);
     }
 
     display.DrawLine(PANE_X_START - 1, PANE_Y_START + 1, PANE_X_START - 1, PANE_Y_END + 1, true);
-    
+
     display.DrawLine(PANE_X_START - 1, PANE_Y_END + 1, PANE_X_END - 1, PANE_Y_END + 1, true);
 
     display.DrawLine(windowItemSelected * scrollbarWidth, 63, (windowItemSelected * scrollbarWidth) + scrollbarWidth, 63, true);
@@ -261,154 +274,166 @@ void Dubby::HighlightWindowItem()
     display.Update();
 }
 
-void Dubby::ReleaseWindowSelector() 
-{        
+void Dubby::ReleaseWindowSelector()
+{
     ClearPane();
-    
+
     display.DrawRect(windowBoxBounding[0][0], windowBoxBounding[0][1], windowBoxBounding[0][2], windowBoxBounding[0][3], false, false);
 
     display.SetCursor(windowTextCursors[0][0], windowTextCursors[0][1]);
     display.WriteStringAligned(GetTextForEnum(WINDOWS, windowItemSelected), Font_4x5, daisy::Rectangle(windowBoxBounding[0][0], windowBoxBounding[0][1] + 3, 43, 7), daisy::Alignment::centered, true);
 
     display.Update();
-    
 }
 
-int map(int x, int in_min, int in_max, int out_min, int out_max) {
+int map(int x, int in_min, int in_max, int out_min, int out_max)
+{
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
-void Dubby::ClearPane() 
+void Dubby::ClearPane()
 {
     display.DrawRect(PANE_X_START - 1, PANE_Y_START - 1, PANE_X_END + 1, PANE_Y_END + 12, false, true);
 }
 // Define verticalLinePosition as a member variable
-int verticalLinePosition = 0;
 
-void Dubby::Sequencer() {
-        display.Fill(false);
-// Check if MIDI counter has changed since last call
-    if (midiCounter != prevMidiCounter) {
+void Dubby::Sequencer()
+{
+    // Define the desired length of 32 steps
+
+    display.Fill(false);
+
+    // Check if MIDI counter has changed since last call
+    if (midiCounter != prevMidiCounter)
+    {
         // Calculate the position of the vertical line
         // based on the MIDI counter
-        verticalLinePosition = map(midiCounter*4, 0, 127, 0, OLED_WIDTH-1)%OLED_WIDTH;
+        verticalLinePosition = map(midiCounter * 4, 0, 127, 0, OLED_WIDTH - 1) % OLED_WIDTH;
         // Store the current MIDI counter for comparison
         prevMidiCounter = midiCounter;
-    }
+
+        // Update startIndex and endIndex when verticalLinePosition hits 0
+       if (verticalLinePosition == 0) {
+            // Update the startIndex and endIndex without exceeding the rhythm length
+            for (int i = 0; i < MAX_RHYTHMS; ++i) {
+        startIndex[i] = (startIndex[i] + stepsOnDisplay) % desiredLength[i];
+                endIndex[i] = (startIndex[i] + stepsOnDisplay);
+
+            }
+                            print0 = verticalLinePosition;
+
+        }
+}
 
     // Draw the vertical line at its position
     display.DrawLine(verticalLinePosition, 10, verticalLinePosition, OLED_HEIGHT - 1, true);
-
-
-   
-
-// Define the desired length of 32 steps
-int desiredLength = 32;
-
-// Visualize each rhythm
-for (int i = 0; i < MAX_RHYTHMS; ++i) {
+                print1 = startIndex[0];
+                print2 = endIndex[0];
+ 
+    // Visualize each rhythm
+ // Visualize each rhythm
+for (int i = 0; i < MAX_RHYTHMS; ++i)
+{
+    
     // Determine the rhythm and length based on the iteration
     std::vector<int> currentRhythm;
     int currentLength = 0;
 
-    if (i < MAX_RHYTHMS) {
-        currentRhythm = rhythms[i];
-        currentLength = lengths[i];
-    }
+    // Access the rhythm and its properties using the loop index
+    currentRhythm = rhythms[i];
+    currentLength = lengths[i];
+    desiredLength[i] = lengths[i] * stepsOnDisplay;
 
-    // Extend the rhythm if it's shorter than desired length
-    if (currentLength < desiredLength) {
-        int repetitions = desiredLength / currentLength;
-        int remainder = desiredLength % currentLength;
 
-        std::vector<int> extendedRhythm;
-        for (int k = 0; k < repetitions; ++k) {
-            extendedRhythm.insert(extendedRhythm.end(), currentRhythm.begin(), currentRhythm.end());
+
+        // Extend the rhythm if it's shorter than desired length
+        if (currentLength < desiredLength[i])
+        {
+            int repetitions = desiredLength[i] / currentLength;
+            int remainder = desiredLength[i] % currentLength;
+
+            std::vector<int> extendedRhythm;
+            for (int k = 0; k < repetitions; ++k)
+            {
+                extendedRhythm.insert(extendedRhythm.end(), currentRhythm.begin(), currentRhythm.end());
+            }
+
+            // Append the remainder if it exists
+            if (remainder > 0)
+            {
+                extendedRhythm.insert(extendedRhythm.end(), currentRhythm.begin(), currentRhythm.begin() + remainder);
+            }
+
+            // Update current rhythm and length
+            currentRhythm = extendedRhythm;
+            currentLength = desiredLength[i];
         }
 
-        // Append the remainder if it exists
-        if (remainder > 0) {
-            extendedRhythm.insert(extendedRhythm.end(), currentRhythm.begin(), currentRhythm.begin() + remainder);
-        }
+        // Calculate the vertical position for the current rhythm
+        int horizontalLinePosition = OLED_HEIGHT / 9 * (i + 2) - 4; // Shifting three pixels up
 
-        // Update current rhythm and length
-        currentRhythm = extendedRhythm;
-        currentLength = desiredLength;
-    }
-
-    // Calculate the vertical position for the current rhythm
-    int horizontalLinePosition = OLED_HEIGHT / 9 * (i + 2) - 4; // Shifting three pixels up
-
- 
-    
-    // Draw rectangle on top of the active rhythm
-    if (i == activeRhythm) {
-
-                // Visualize the rhythm with vertical lines for each 1 in the vector
-   
-    
-
-
-        // Calculate coordinates of the rectangle
-        int rectX1 = 0;
-        int rectY1 = horizontalLinePosition; // Top-left corner
-        int rectX2 = OLED_WIDTH - 1;
-        int rectY2 = horizontalLinePosition + 5; // Bottom-right corner
-        
-        // Draw the rectangle
-        display.DrawRect(rectX1, rectY1, rectX2, rectY2, true, true);
-
-
-         for (int j = 0; j < currentLength; ++j) {
-        if (currentRhythm[j] == 1) {
-            // Calculate the x position of the vertical line
-            float columnWidth = static_cast<float>(OLED_WIDTH) / static_cast<float>(desiredLength);
-            int verticalLinePosition = static_cast<int>(j * columnWidth);
-
-            // Draw a vertical line on the OLED display
-            display.DrawLine(verticalLinePosition, horizontalLinePosition, verticalLinePosition, horizontalLinePosition + 4, false);
-        }
-    }
-    } else {
+        // Draw rectangle on top of the active rhythm
+        if (i == activeRhythm)
+        {
             // Visualize the rhythm with vertical lines for each 1 in the vector
-    for (int j = 0; j < currentLength; ++j) {
-        if (currentRhythm[j] == 1) {
-            // Calculate the x position of the vertical line
-            float columnWidth = static_cast<float>(OLED_WIDTH) / static_cast<float>(desiredLength);
-            int verticalLinePosition = static_cast<int>(j * columnWidth);
+            // Calculate coordinates of the rectangle
+            int rectX1 = 0;
+            int rectY1 = horizontalLinePosition; // Top-left corner
+            int rectX2 = OLED_WIDTH - 1;
+            int rectY2 = horizontalLinePosition + 5; // Bottom-right corner
 
-            // Draw a vertical line on the OLED display
-            display.DrawLine(verticalLinePosition, horizontalLinePosition, verticalLinePosition, horizontalLinePosition + 4, true);
+            // Draw the rectangle
+            display.DrawRect(rectX1, rectY1, rectX2, rectY2, true, true);
+        }
+
+        // Visualize the rhythm with vertical lines for each 1 in the vector
+        for (int j = startIndex[i]; j < endIndex[i] && j < currentLength; ++j) {
+            // Calculate the x position of the vertical line
+            float columnWidth = static_cast<float>(OLED_WIDTH) / static_cast<float>(stepsOnDisplay);
+            int vLinePosition = static_cast<int>((j - startIndex[i]) * columnWidth);
+
+            // Check if the current rhythm is the active one
+            if (i == activeRhythm) {
+                if (currentRhythm[j] == 1) {
+                    // Draw a vertical line on the OLED display
+                    display.DrawLine(vLinePosition, horizontalLinePosition, vLinePosition, horizontalLinePosition + 4, false);
+                }
+            } else {
+                // For inactive rhythms, draw lines with a different color (true)
+                if (currentRhythm[j] == 1) {
+                    // Draw a vertical line on the OLED display
+                    display.DrawLine(vLinePosition, horizontalLinePosition, vLinePosition, horizontalLinePosition + 4, true);
+                }
+            }
+        }
+    
+            if (encoderPressed[i] && i == activeRhythm)
+        {
+            display.DrawLine(0, horizontalLinePosition + 3, OLED_WIDTH - 1, horizontalLinePosition + 3, false);
+        }
+        else if (encoderPressed[i] && i != activeRhythm)
+        {
+            display.DrawLine(0, horizontalLinePosition + 3, OLED_WIDTH - 1, horizontalLinePosition + 3, true);
         }
     }
-
-
-    }
-       if (encoderPressed[i] && i == activeRhythm){
-                        display.DrawLine(0, horizontalLinePosition+3, OLED_WIDTH - 1, horizontalLinePosition+3, false);
-
-    } else if (encoderPressed[i] && i != activeRhythm){
-                        display.DrawLine(0, horizontalLinePosition+3, OLED_WIDTH - 1, horizontalLinePosition+3, true);
-
-    }
 }
+    // Update the display
+    // display.Update();
 
 
-// Update the display
-//display.Update();
-}
-
-void Dubby::UpdateMixerPane() 
+void Dubby::UpdateMixerPane()
 {
     int increment = encoder.Increment();
-    if (increment && !windowSelectorActive && !isBarSelected) {
-        if ((((barSelector >= 0 && increment > 0 && barSelector < 7) || (increment < 0 && barSelector != 0)))) 
-                barSelector += increment;
+    if (increment && !windowSelectorActive && !isBarSelected)
+    {
+        if ((((barSelector >= 0 && increment > 0 && barSelector < 7) || (increment < 0 && barSelector != 0))))
+            barSelector += increment;
     }
 
-    if (barSelector < 4 && mixerPageSelected == OUTPUTS) mixerPageSelected = INPUTS;
-    else if (barSelector >= 4 && mixerPageSelected == INPUTS) mixerPageSelected = OUTPUTS;
-    
+    if (barSelector < 4 && mixerPageSelected == OUTPUTS)
+        mixerPageSelected = INPUTS;
+    else if (barSelector >= 4 && mixerPageSelected == INPUTS)
+        mixerPageSelected = OUTPUTS;
 
     std::string statusStr = GetTextForEnum(MIXERPAGES, mixerPageSelected);
     UpdateStatusBar(&statusStr[0], LEFT);
@@ -418,29 +443,32 @@ void Dubby::UpdateMixerPane()
         isBarSelected = !isBarSelected;
         if (isBarSelected)
         {
-            std::string str  = (mixerPageSelected == INPUTS ? "in" : "out") + std::to_string(barSelector % 4 + 1) + ":" + std::to_string(audioGains[mixerPageSelected][barSelector % 4]).substr(0, std::to_string(audioGains[mixerPageSelected][barSelector % 4]).find(".") + 3);
+            std::string str = (mixerPageSelected == INPUTS ? "in" : "out") + std::to_string(barSelector % 4 + 1) + ":" + std::to_string(audioGains[mixerPageSelected][barSelector % 4]).substr(0, std::to_string(audioGains[mixerPageSelected][barSelector % 4]).find(".") + 3);
             UpdateStatusBar(&str[0], RIGHT);
         }
-        else 
+        else
         {
             UpdateStatusBar(" ", RIGHT);
         }
     }
 
-    if (isBarSelected) {
-        if ((increment == 1 && audioGains[mixerPageSelected][barSelector % 4] < 1.0f) || (increment == -1 && audioGains[mixerPageSelected][barSelector % 4] > 0.0001f)){
-            audioGains[mixerPageSelected][barSelector % 4] += increment/20.f;
+    if (isBarSelected)
+    {
+        if ((increment == 1 && audioGains[mixerPageSelected][barSelector % 4] < 1.0f) || (increment == -1 && audioGains[mixerPageSelected][barSelector % 4] > 0.0001f))
+        {
+            audioGains[mixerPageSelected][barSelector % 4] += increment / 20.f;
             audioGains[mixerPageSelected][barSelector % 4] = abs(audioGains[mixerPageSelected][barSelector % 4]);
 
-            std::string str  = (mixerPageSelected == INPUTS ? "in" : "out") + std::to_string(barSelector % 4 + 1) + ":" + std::to_string(audioGains[mixerPageSelected][barSelector % 4]).substr(0, std::to_string(audioGains[mixerPageSelected][barSelector % 4]).find(".") + 3);
+            std::string str = (mixerPageSelected == INPUTS ? "in" : "out") + std::to_string(barSelector % 4 + 1) + ":" + std::to_string(audioGains[mixerPageSelected][barSelector % 4]).substr(0, std::to_string(audioGains[mixerPageSelected][barSelector % 4]).find(".") + 3);
             UpdateStatusBar(&str[0], RIGHT);
         }
     }
 
-    if(seed.system.GetNow() - screen_update_last_ > screen_update_period_)
+    if (seed.system.GetNow() - screen_update_last_ > screen_update_period_)
     {
         screen_update_last_ = seed.system.GetNow();
-        for (int i = 0; i < 4; i++) UpdateBar(i);
+        for (int i = 0; i < 4; i++)
+            UpdateBar(i);
     }
 }
 
@@ -448,76 +476,78 @@ void Dubby::UpdateWindowList()
 {
     std::string statusStr;
 
-    switch(windowItemSelected) 
+    switch (windowItemSelected)
     {
-        case WIN1:    
-         statusStr = GetTextForEnum(SCOPE, scopeSelector);
-            UpdateStatusBar(&statusStr[0], LEFT);
-            UpdateRenderPane();
-            break;   
-        case WIN2:
-            for (int i = 0; i < 4; i++) UpdateBar(i);
-            break;
-        case WIN3:
-            DisplayPreferencesMenuList(0);
-            break;
-        case WIN4:
-            //UpdateStatusBar("PANE 4", LEFT); 
-            Sequencer();
-            break;
-        case WIN5:
-            display.SetCursor(10, 15);
-            UpdateStatusBar("PANE 5", LEFT);
-            break;
-        case WIN6:
-            display.SetCursor(10, 15);
-            UpdateStatusBar("PANE 6", LEFT);
-            break;
-        case WIN7:
-            display.SetCursor(10, 15);
-            UpdateStatusBar("PANE 7", LEFT);
-            break;
-        case WIN8:
-            display.SetCursor(10, 15);
-            UpdateStatusBar("PANE 8", LEFT);
-            break;
-        default:
-            break;
+    case WIN1:
+        statusStr = GetTextForEnum(SCOPE, scopeSelector);
+        UpdateStatusBar(&statusStr[0], LEFT);
+        UpdateRenderPane();
+        break;
+    case WIN2:
+        for (int i = 0; i < 4; i++)
+            UpdateBar(i);
+        break;
+    case WIN3:
+        DisplayPreferencesMenuList(0);
+        break;
+    case WIN4:
+        // UpdateStatusBar("PANE 4", LEFT);
+        Sequencer();
+        break;
+    case WIN5:
+        display.SetCursor(10, 15);
+        UpdateStatusBar("PANE 5", LEFT);
+        break;
+    case WIN6:
+        display.SetCursor(10, 15);
+        UpdateStatusBar("PANE 6", LEFT);
+        break;
+    case WIN7:
+        display.SetCursor(10, 15);
+        UpdateStatusBar("PANE 7", LEFT);
+        break;
+    case WIN8:
+        display.SetCursor(10, 15);
+        UpdateStatusBar("PANE 8", LEFT);
+        break;
+    default:
+        break;
     }
 
     display.Update();
 }
 
-void Dubby::UpdateBar(int i) 
+void Dubby::UpdateBar(int i)
 {
     // clear bars
-    display.DrawRect((i * 32)  + margin - 3, 10, ((i + 1) * 32) - margin + 3, 52, false, true);
+    display.DrawRect((i * 32) + margin - 3, 10, ((i + 1) * 32) - margin + 3, 52, false, true);
 
     // highlight bar
-    if (barSelector % 4 == i) display.DrawRect((i * 32)  + margin - 3, 11, ((i + 1) * 32) - margin + 3, 53, true, isBarSelected);
+    if (barSelector % 4 == i)
+        display.DrawRect((i * 32) + margin - 3, 11, ((i + 1) * 32) - margin + 3, 53, true, isBarSelected);
 
     // clear bars
-    display.DrawRect((i * 32)  + margin, 12, ((i + 1) * 32) - margin, 52, false, true);
+    display.DrawRect((i * 32) + margin, 12, ((i + 1) * 32) - margin, 52, false, true);
 
     // set gain
-    display.DrawRect((i * 32)  + margin, int(abs(1.0f - audioGains[mixerPageSelected][i]) * 41.0f) + 12, ((i + 1) * 32) - margin, 52, true, false);
+    display.DrawRect((i * 32) + margin, int(abs(1.0f - audioGains[mixerPageSelected][i]) * 41.0f) + 12, ((i + 1) * 32) - margin, 52, true, false);
 
     // display sound output
-    display.DrawRect((i * 32)  + margin, int(abs((currentLevels[mixerPageSelected][i] * 5.0f) - 1.0f) * 41.0f) + 12, ((i + 1) * 32) - margin, 53, true, true);
+    display.DrawRect((i * 32) + margin, int(abs((currentLevels[mixerPageSelected][i] * 5.0f) - 1.0f) * 41.0f) + 12, ((i + 1) * 32) - margin, 53, true, true);
 
-    
     display.Update();
 }
 
-void Dubby::UpdateRenderPane() 
+void Dubby::UpdateRenderPane()
 {
     int increment = encoder.Increment();
-    if (increment && !windowSelectorActive) {
-        if ((((scopeSelector >= 0 && increment > 0 && scopeSelector < SCOPE_PAGES_LAST - 1) || (increment < 0 && scopeSelector != 0)))) 
-                scopeSelector += increment;
+    if (increment && !windowSelectorActive)
+    {
+        if ((((scopeSelector >= 0 && increment > 0 && scopeSelector < SCOPE_PAGES_LAST - 1) || (increment < 0 && scopeSelector != 0))))
+            scopeSelector += increment;
     }
 
-    if (increment) 
+    if (increment)
     {
         std::string statusStr = GetTextForEnum(SCOPE, scopeSelector);
         UpdateStatusBar(&statusStr[0], LEFT);
@@ -528,20 +558,19 @@ void Dubby::UpdateRenderPane()
 
 void Dubby::RenderScope()
 {
-    if(seed.system.GetNow() - screen_update_last_ > screen_update_period_)
+    if (seed.system.GetNow() - screen_update_last_ > screen_update_period_)
     {
         screen_update_last_ = seed.system.GetNow();
         display.DrawRect(PANE_X_START, PANE_Y_START, PANE_X_END, PANE_Y_END, false, true);
         int prev_x = 0;
         int prev_y = (OLED_HEIGHT - 15) / 2;
-        for(size_t i = 0; i < AUDIO_BLOCK_SIZE; i++)
+        for (size_t i = 0; i < AUDIO_BLOCK_SIZE; i++)
         {
-            int y = 1 + std::min(std::max((OLED_HEIGHT - 15) / 2
-                                        - int(scope_buffer[i] * 150),
-                                    10),
-                            OLED_HEIGHT - 15);
+            int y = 1 + std::min(std::max((OLED_HEIGHT - 15) / 2 - int(scope_buffer[i] * 150),
+                                          10),
+                                 OLED_HEIGHT - 15);
             int x = 1 + i * (OLED_WIDTH - 2) / AUDIO_BLOCK_SIZE;
-            if(i != 0)
+            if (i != 0)
             {
                 display.DrawLine(prev_x, prev_y, x, y, true);
             }
@@ -550,61 +579,61 @@ void Dubby::RenderScope()
         }
 
         display.Update();
-    }   
+    }
 }
 
 void Dubby::DisplayPreferencesMenuList(int increment)
 {
     // clear bounding box
-    //display.DrawRect(PANE_X_START - 1, 1, PANE_X_END, PANE_Y_END, false, true);
+    // display.DrawRect(PANE_X_START - 1, 1, PANE_X_END, PANE_Y_END, false, true);
 
     int optionStart = 0;
     if (preferencesMenuItemSelected > 3)
     {
         optionStart = preferencesMenuItemSelected - 3;
     }
-    
+
     // display each item, j for text cursor
     for (int i = optionStart, j = 0; i < optionStart + 4; i++, j++)
     {
         // clear item spaces
-        if ((optionStart > 0 || (!optionStart && increment < 0))) {
+        if ((optionStart > 0 || (!optionStart && increment < 0)))
+        {
             display.DrawRect(menuListBoxBounding[j][0], menuListBoxBounding[j][1], menuListBoxBounding[j][2], menuListBoxBounding[j][3], false, true);
         }
 
         // display and remove bounding boxes
-        if (preferencesMenuItemSelected == i) {
-            if(optionStart >= 0 && increment < 0 && j < 3) 
+        if (preferencesMenuItemSelected == i)
+        {
+            if (optionStart >= 0 && increment < 0 && j < 3)
                 display.DrawRect(menuListBoxBounding[j + 1][0], menuListBoxBounding[j + 1][1], menuListBoxBounding[j + 1][2], menuListBoxBounding[j + 1][3], false);
-            else if(optionStart == 0 && j > 0)
+            else if (optionStart == 0 && j > 0)
                 display.DrawRect(menuListBoxBounding[j - 1][0], menuListBoxBounding[j - 1][1], menuListBoxBounding[j - 1][2], menuListBoxBounding[j - 1][3], false);
-            
+
             display.DrawRect(menuListBoxBounding[j][0], menuListBoxBounding[j][1], menuListBoxBounding[j][2], menuListBoxBounding[j][3], true);
 
-          
             if (increment == 0)
                 display.DrawRect(menuListBoxBounding[j][0], menuListBoxBounding[j][1], menuListBoxBounding[j][2], menuListBoxBounding[j][3], false, true);
-            
+
             if (!isSubMenuActive)
                 display.DrawRect(menuListBoxBounding[j][0], menuListBoxBounding[j][1], menuListBoxBounding[j][2], menuListBoxBounding[j][3], true, false);
             else
                 display.DrawRect(menuListBoxBounding[j][0], menuListBoxBounding[j][1], menuListBoxBounding[j][2], menuListBoxBounding[j][3], true, true);
-        } 
+        }
 
         display.SetCursor(5, MENULIST_Y_START + 2 + (j * MENULIST_SPACING));
         display.WriteString(GetTextForEnum(PREFERENCESMENU, i), Font_4x5, i == preferencesMenuItemSelected && isSubMenuActive ? false : true);
-
     }
 
     display.Update();
 }
 
-void Dubby::UpdatePreferencesMenuList(int increment) 
+void Dubby::UpdatePreferencesMenuList(int increment)
 {
-    if (((preferencesMenuItemSelected >= 0 && increment == 1 && preferencesMenuItemSelected < PREFERENCESMENU_LAST - 1) || (increment != 1 && preferencesMenuItemSelected != 0))) 
+    if (((preferencesMenuItemSelected >= 0 && increment == 1 && preferencesMenuItemSelected < PREFERENCESMENU_LAST - 1) || (increment != 1 && preferencesMenuItemSelected != 0)))
     {
         preferencesMenuItemSelected = (PreferencesMenuItems)(preferencesMenuItemSelected + increment);
-        
+
         DisplayPreferencesMenuList(increment);
     }
 }
@@ -614,8 +643,7 @@ void Dubby::DisplayPreferencesSubMenuList(int increment, PreferencesMenuItems pr
     // clear bounding box
     display.DrawRect(PANE_X_START + MENULIST_SUBMENU_SPACING - 1, PANE_Y_START, PANE_X_END, PANE_Y_END, false, true);
 
-
-    EnumTypes type; 
+    EnumTypes type;
 
     switch (prefMenuItemSelected)
     {
@@ -635,41 +663,42 @@ void Dubby::DisplayPreferencesSubMenuList(int increment, PreferencesMenuItems pr
     {
         optionStart = subMenuSelector - 3;
     }
-    
+
     // display each item, j for text cursor
     for (int i = optionStart, j = 0; i < optionStart + 4; i++, j++)
     {
         // clear item spaces
-        if ((optionStart > 0 || (!optionStart && increment < 0))) {
+        if ((optionStart > 0 || (!optionStart && increment < 0)))
+        {
             display.DrawRect(menuListBoxBounding[j][0] + MENULIST_SUBMENU_SPACING, menuListBoxBounding[j][1], menuListBoxBounding[j][2] + MENULIST_SUBMENU_SPACING, menuListBoxBounding[j][3], false, true);
         }
 
         // display and remove bounding boxes
-        if (subMenuSelector == i) {
-            if(optionStart >= 0 && increment < 0 && j < 3) 
+        if (subMenuSelector == i)
+        {
+            if (optionStart >= 0 && increment < 0 && j < 3)
                 display.DrawRect(menuListBoxBounding[j + 1][0] + MENULIST_SUBMENU_SPACING, menuListBoxBounding[j + 1][1], menuListBoxBounding[j + 1][2] + MENULIST_SUBMENU_SPACING, menuListBoxBounding[j + 1][3], false);
-            else if(optionStart == 0 && j > 0)
+            else if (optionStart == 0 && j > 0)
                 display.DrawRect(menuListBoxBounding[j - 1][0] + MENULIST_SUBMENU_SPACING, menuListBoxBounding[j - 1][1], menuListBoxBounding[j - 1][2] + MENULIST_SUBMENU_SPACING, menuListBoxBounding[j - 1][3], false);
-            
+
             if (isSubMenuActive)
                 display.DrawRect(menuListBoxBounding[j][0] + MENULIST_SUBMENU_SPACING, menuListBoxBounding[j][1], menuListBoxBounding[j][2] + MENULIST_SUBMENU_SPACING, menuListBoxBounding[j][3], true);
-        } 
+        }
 
         display.SetCursor(5 + MENULIST_SUBMENU_SPACING, MENULIST_Y_START + 2 + (j * MENULIST_SPACING));
         display.WriteString(GetTextForEnum(type, i), Font_4x5, true);
-
     }
-    
+
     display.DrawRect(PANE_X_START + MENULIST_SUBMENU_SPACING - 1, PANE_Y_START + 1, PANE_X_END, PANE_Y_END - 1, true, false);
 
     display.Update();
 }
 
-void Dubby::UpdatePreferencesSubMenuList(int increment, PreferencesMenuItems prefMenuItemSelected) 
+void Dubby::UpdatePreferencesSubMenuList(int increment, PreferencesMenuItems prefMenuItemSelected)
 {
     int endSelector = 0;
 
-    EnumTypes type; 
+    EnumTypes type;
 
     switch (prefMenuItemSelected)
     {
@@ -684,39 +713,36 @@ void Dubby::UpdatePreferencesSubMenuList(int increment, PreferencesMenuItems pre
         break;
     }
 
-
-    if (((subMenuSelector >= 0 && increment == 1 && subMenuSelector < endSelector - 1) || (increment != 1 && subMenuSelector != 0))) 
+    if (((subMenuSelector >= 0 && increment == 1 && subMenuSelector < endSelector - 1) || (increment != 1 && subMenuSelector != 0)))
     {
         subMenuSelector = (PreferencesMenuItems)(subMenuSelector + increment);
-        
+
         DisplayPreferencesSubMenuList(increment, prefMenuItemSelected);
     }
 }
 
-
-void Dubby::UpdateStatusBar(char* text, StatusBarSide side = LEFT) 
+void Dubby::UpdateStatusBar(char *text, StatusBarSide side = LEFT)
 {
-    if (side == LEFT) 
-    {   
+    if (side == LEFT)
+    {
         display.DrawRect(STATUSBAR_X_START, STATUSBAR_Y_START, 63, STATUSBAR_Y_END - 3, false, true);
         display.WriteStringAligned(&text[0], Font_4x5, daisy::Rectangle(STATUSBAR_X_START, STATUSBAR_Y_START, STATUSBAR_X_END - 64, STATUSBAR_Y_END - 1), daisy::Alignment::centeredLeft, true);
-    } 
-    else if (side == RIGHT) 
-    {   
+    }
+    else if (side == RIGHT)
+    {
         display.DrawRect(64, STATUSBAR_Y_START, 127, STATUSBAR_Y_END - 3, false, true);
         display.WriteStringAligned(&text[0], Font_4x5, daisy::Rectangle(64, STATUSBAR_Y_START, 64, STATUSBAR_Y_END - 1), daisy::Alignment::centeredRight, true);
     }
-    else if (side == MIDDLE) 
-    {   
+    else if (side == MIDDLE)
+    {
         display.DrawRect(52, STATUSBAR_Y_START, 72, STATUSBAR_Y_END - 3, false, true);
         display.WriteStringAligned(&text[0], Font_4x5, daisy::Rectangle(36, STATUSBAR_Y_START, 58, STATUSBAR_Y_END - 1), daisy::Alignment::centered, true);
     }
 
-
     display.Update();
 }
 
-void Dubby::ResetToBootloader() 
+void Dubby::ResetToBootloader()
 {
     DrawBitmap(1);
 
@@ -727,18 +753,18 @@ void Dubby::ResetToBootloader()
     System::ResetToBootloader(System::DAISY_INFINITE_TIMEOUT);
 }
 
-void Dubby::SwitchMIDIOutThru(bool state) 
+void Dubby::SwitchMIDIOutThru(bool state)
 {
     // state == true => PIN IS HIGH => MIDI THRU
     // state == false => PIN IS LOW => MIDI OUT
-    dsy_gpio_write(&midi_sw_output, state); 
+    dsy_gpio_write(&midi_sw_output, state);
 }
 
 void Dubby::InitEncoder()
 {
     encoder.Init(seed.GetPin(PIN_ENC_A),
-                seed.GetPin(PIN_ENC_B),
-                seed.GetPin(PIN_ENC_CLICK));
+                 seed.GetPin(PIN_ENC_B),
+                 seed.GetPin(PIN_ENC_CLICK));
 }
 
 void Dubby::ProcessAllControls()
@@ -749,7 +775,7 @@ void Dubby::ProcessAllControls()
 
 void Dubby::ProcessAnalogControls()
 {
-    for(size_t i = 0; i < CTRL_LAST; i++)
+    for (size_t i = 0; i < CTRL_LAST; i++)
         analogInputs[i].Process();
 }
 
@@ -757,32 +783,39 @@ void Dubby::ProcessDigitalControls()
 {
     encoder.Debounce();
 
-    if (encoder.Pressed()) {
-        if (!isEncoderPressed) {
+    if (encoder.Pressed())
+    {
+        if (!isEncoderPressed)
+        {
             // Encoder has just been pressed, record the start time
             isEncoderPressed = true;
             encoderPressStartTime = seed.system.GetNow();
         }
-    } else {
-        if (isEncoderPressed) {
+    }
+    else
+    {
+        if (isEncoderPressed)
+        {
             // Encoder has just been released
             isEncoderPressed = false;
 
             // Check if it was a short or long press
             unsigned long buttonPressDuration = seed.system.GetNow() - encoderPressStartTime;
-            if (buttonPressDuration < ENCODER_LONGPRESS_THRESHOLD) {
+            if (buttonPressDuration < ENCODER_LONGPRESS_THRESHOLD)
+            {
                 // Short press action
                 wasEncoderLongPressed = false;
-
-            } else {
+            }
+            else
+            {
                 // Long press action
                 wasEncoderLongPressed = true;
             }
         }
     }
 
-    
-    for (int i = 0; i < 4; i++) buttons[i].Debounce();
+    for (int i = 0; i < 4; i++)
+        buttons[i].Debounce();
 }
 
 float Dubby::GetKnobValue(Ctrl k)
@@ -790,40 +823,40 @@ float Dubby::GetKnobValue(Ctrl k)
     return (analogInputs[k].Value());
 }
 
-void Dubby::InitAudio() 
+void Dubby::InitAudio()
 {
     // Handle Seed Audio as-is and then
     SaiHandle::Config sai_config[2];
     // Internal Codec
-    if(seed.CheckBoardVersion() == DaisySeed::BoardVersion::DAISY_SEED_1_1)
+    if (seed.CheckBoardVersion() == DaisySeed::BoardVersion::DAISY_SEED_1_1)
     {
         sai_config[0].pin_config.sa = {DSY_GPIOE, 6};
         sai_config[0].pin_config.sb = {DSY_GPIOE, 3};
-        sai_config[0].a_dir         = SaiHandle::Config::Direction::RECEIVE;
-        sai_config[0].b_dir         = SaiHandle::Config::Direction::TRANSMIT;
+        sai_config[0].a_dir = SaiHandle::Config::Direction::RECEIVE;
+        sai_config[0].b_dir = SaiHandle::Config::Direction::TRANSMIT;
     }
     else
     {
         sai_config[0].pin_config.sa = {DSY_GPIOE, 6};
         sai_config[0].pin_config.sb = {DSY_GPIOE, 3};
-        sai_config[0].a_dir         = SaiHandle::Config::Direction::TRANSMIT;
-        sai_config[0].b_dir         = SaiHandle::Config::Direction::RECEIVE;
+        sai_config[0].a_dir = SaiHandle::Config::Direction::TRANSMIT;
+        sai_config[0].b_dir = SaiHandle::Config::Direction::RECEIVE;
     }
-    sai_config[0].periph          = SaiHandle::Config::Peripheral::SAI_1;
-    sai_config[0].sr              = SaiHandle::Config::SampleRate::SAI_48KHZ;
-    sai_config[0].bit_depth       = SaiHandle::Config::BitDepth::SAI_24BIT;
-    sai_config[0].a_sync          = SaiHandle::Config::Sync::MASTER;
-    sai_config[0].b_sync          = SaiHandle::Config::Sync::SLAVE;
-    sai_config[0].pin_config.fs   = {DSY_GPIOE, 4};
+    sai_config[0].periph = SaiHandle::Config::Peripheral::SAI_1;
+    sai_config[0].sr = SaiHandle::Config::SampleRate::SAI_48KHZ;
+    sai_config[0].bit_depth = SaiHandle::Config::BitDepth::SAI_24BIT;
+    sai_config[0].a_sync = SaiHandle::Config::Sync::MASTER;
+    sai_config[0].b_sync = SaiHandle::Config::Sync::SLAVE;
+    sai_config[0].pin_config.fs = {DSY_GPIOE, 4};
     sai_config[0].pin_config.mclk = {DSY_GPIOE, 2};
-    sai_config[0].pin_config.sck  = {DSY_GPIOE, 5};
+    sai_config[0].pin_config.sck = {DSY_GPIOE, 5};
 
     // External Codec
 
     I2CHandle::Config i2c_cfg;
-    i2c_cfg.periph         = I2CHandle::Config::Peripheral::I2C_1;
-    i2c_cfg.mode           = I2CHandle::Config::Mode::I2C_MASTER;
-    i2c_cfg.speed          = I2CHandle::Config::Speed::I2C_400KHZ;
+    i2c_cfg.periph = I2CHandle::Config::Peripheral::I2C_1;
+    i2c_cfg.mode = I2CHandle::Config::Mode::I2C_MASTER;
+    i2c_cfg.speed = I2CHandle::Config::Speed::I2C_400KHZ;
     i2c_cfg.pin_config.scl = {DSY_GPIOB, 8};
     i2c_cfg.pin_config.sda = {DSY_GPIOB, 9};
 
@@ -831,24 +864,24 @@ void Dubby::InitAudio()
     i2c2.Init(i2c_cfg);
 
     // pullups must be enabled
-    GPIOB->PUPDR &= ~((GPIO_PUPDR_PUPD8)|(GPIO_PUPDR_PUPD9)); 
-    GPIOB->PUPDR |= ((GPIO_PUPDR_PUPD8_0)|(GPIO_PUPDR_PUPD9_0)); 
+    GPIOB->PUPDR &= ~((GPIO_PUPDR_PUPD8) | (GPIO_PUPDR_PUPD9));
+    GPIOB->PUPDR |= ((GPIO_PUPDR_PUPD8_0) | (GPIO_PUPDR_PUPD9_0));
 
     Pcm3060 codec;
 
-    codec.Init(i2c2);        
+    codec.Init(i2c2);
 
-    sai_config[1].periph          = SaiHandle::Config::Peripheral::SAI_2;
-    sai_config[1].sr              = SaiHandle::Config::SampleRate::SAI_48KHZ;
-    sai_config[1].bit_depth       = SaiHandle::Config::BitDepth::SAI_24BIT;
-    sai_config[1].a_sync          = SaiHandle::Config::Sync::SLAVE;
-    sai_config[1].b_sync          = SaiHandle::Config::Sync::MASTER;
-    sai_config[1].pin_config.fs   = {DSY_GPIOG, 9};
+    sai_config[1].periph = SaiHandle::Config::Peripheral::SAI_2;
+    sai_config[1].sr = SaiHandle::Config::SampleRate::SAI_48KHZ;
+    sai_config[1].bit_depth = SaiHandle::Config::BitDepth::SAI_24BIT;
+    sai_config[1].a_sync = SaiHandle::Config::Sync::SLAVE;
+    sai_config[1].b_sync = SaiHandle::Config::Sync::MASTER;
+    sai_config[1].pin_config.fs = {DSY_GPIOG, 9};
     sai_config[1].pin_config.mclk = {DSY_GPIOA, 1};
-    sai_config[1].pin_config.sck  = {DSY_GPIOA, 2};
-    sai_config[1].a_dir         = SaiHandle::Config::Direction::TRANSMIT;
+    sai_config[1].pin_config.sck = {DSY_GPIOA, 2};
+    sai_config[1].a_dir = SaiHandle::Config::Direction::TRANSMIT;
     sai_config[1].pin_config.sa = {DSY_GPIOD, 11};
-    sai_config[1].b_dir         = SaiHandle::Config::Direction::RECEIVE;
+    sai_config[1].b_dir = SaiHandle::Config::Direction::RECEIVE;
     sai_config[1].pin_config.sb = {DSY_GPIOA, 0};
 
     SaiHandle sai_handle[2];
@@ -857,36 +890,36 @@ void Dubby::InitAudio()
 
     // Reinit Audio for _both_ codecs...
     AudioHandle::Config cfg;
-    cfg.blocksize  = 48;
+    cfg.blocksize = 48;
     cfg.samplerate = SaiHandle::Config::SampleRate::SAI_48KHZ;
-    cfg.postgain   = 0.5f;
+    cfg.postgain = 0.5f;
     seed.audio_handle.Init(cfg, sai_handle[0], sai_handle[1]);
 }
 
-const char * Dubby::GetTextForEnum(EnumTypes m, int enumVal)
+const char *Dubby::GetTextForEnum(EnumTypes m, int enumVal)
 {
     switch (m)
     {
-        case WINDOWS:
-            return WindowItemsStrings[enumVal];
-            break;
-        case PREFERENCESMENU:
-            return PreferencesMenuItemsStrings[enumVal];
-            break;
-        case PREFERENCESMIDIMENULIST:
-            return PreferencesMidiMenuItemsStrings[enumVal];
-            break;
-        case PREFERENCESROUTINGMENULIST:
-            return PreferencesRoutingMenuItemsStrings[enumVal];
-            break;
-        case SCOPE:
-            return ScopePagesStrings[enumVal];
-            break;
-        case MIXERPAGES:
-            return MixerPagesStrings[enumVal];
-            break;
-        default:
-            return "";
-            break;
+    case WINDOWS:
+        return WindowItemsStrings[enumVal];
+        break;
+    case PREFERENCESMENU:
+        return PreferencesMenuItemsStrings[enumVal];
+        break;
+    case PREFERENCESMIDIMENULIST:
+        return PreferencesMidiMenuItemsStrings[enumVal];
+        break;
+    case PREFERENCESROUTINGMENULIST:
+        return PreferencesRoutingMenuItemsStrings[enumVal];
+        break;
+    case SCOPE:
+        return ScopePagesStrings[enumVal];
+        break;
+    case MIXERPAGES:
+        return MixerPagesStrings[enumVal];
+        break;
+    default:
+        return "";
+        break;
     }
 }

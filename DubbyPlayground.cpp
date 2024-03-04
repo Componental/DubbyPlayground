@@ -24,6 +24,9 @@ std::string octaveShiftForPrint;
 //int totalShift = 0;
 int octaveShift = 0;
 int noteShift   = 0;
+// Define an array to store the previous knob values for the first two knobs for each rhythm
+int prevKnobValues[MAX_RHYTHMS][2] = {{0}}; // Assuming initial values are 0
+
 
 // Define an array to store the previous events values for each rhythm
 
@@ -404,12 +407,22 @@ if(!knobValueMatches(knobValue1, prevKnobValue1))
             {
                 lengths[i]     = knobValue1;
                 prevKnobValue1 = knobValue1;
+//                midiMessageCounter = 0;
+               // dubby.startIndex[i] = 0;
+                 dubby.endIndex[i] = (dubby.startIndex[i] + dubby.stepsOnDisplay);
+                dubby.desiredLength[i] = dubby.lengths[i] = dubby.stepsOnDisplay;
+
             }
 
             if(!knobValueMatches(knobValue2, prevKnobValue2))
-            {
+         {
                 events[i]      = knobValue2;
                 prevKnobValue2 = knobValue2;
+            //                    midiMessageCounter = 0;
+
+              //   dubby.startIndex[i] = 0;
+                dubby.endIndex[i] = (dubby.startIndex[i] + dubby.stepsOnDisplay);
+                dubby.desiredLength[i] = dubby.lengths[i] = dubby.stepsOnDisplay;
             }
     // Perform actions using knobValue2
 
@@ -435,57 +448,18 @@ if(!knobValueMatches(knobValue1, prevKnobValue1))
 
 
 void handleScales() {
-    ScaleType scaleType = static_cast<ScaleType>(knobValue3);
-    switch(scaleType) {
-        case CHROMATIC:
-            // Handle chromatic scale
-            for(int i = 0; i < MAX_RHYTHMS; ++i) {
-                notes[i] = chromatic_chord[i] + noteShift + octaveShift;
-                scaleForPrint = "CHRO";
-            }
-            break;
-        case MAJOR:
-            // Handle major scale
-            for(int i = 0; i < MAX_RHYTHMS; ++i) {
-                notes[i] = major_chord[i] + noteShift + octaveShift;
-                scaleForPrint = "MAJ";
-            }
-            break;
-        case MINOR:
-            // Handle minor scale
-            for(int i = 0; i < MAX_RHYTHMS; ++i) {
-                notes[i] = minor_chord[i] + noteShift + octaveShift;
-                scaleForPrint = "MIN";
-            }
-            break;
-        case PENTATONIC:
-            // Handle pentatonic scale
-            for(int i = 0; i < MAX_RHYTHMS; ++i) {
-                notes[i] = pentatonic_chord[i] + noteShift + octaveShift;
-                scaleForPrint = "PEN";
-            }
-            break;
-        case MINOR7:
-            // Handle minor 7th scale
-            for(int i = 0; i < MAX_RHYTHMS; ++i) {
-                notes[i] = minor7_chord[i] + noteShift + octaveShift;
-                scaleForPrint = "MIN7";
-            }
-            break;
-        case MAJOR7:
-            // Handle major 7th scale
-            for(int i = 0; i < MAX_RHYTHMS; ++i) {
-                notes[i] = major7_chord[i] + noteShift + octaveShift;
-                scaleForPrint = "MAJ7";
-            }
-            break;
-        default:
-            // Handle default case (chromatic scale)
-            for(int i = 0; i < MAX_RHYTHMS; ++i) {
-                notes[i] = chromatic_chord[i] + noteShift + octaveShift;
-                scaleForPrint = "CHRO";
-            }
-            break;
+    const uint8_t* chord = nullptr;
+    switch (static_cast<ScaleType>(knobValue3)) {
+        case CHROMATIC: chord = chromatic_chord; scaleForPrint = "CHRO"; break;
+        case MAJOR:     chord = major_chord;     scaleForPrint = "MAJ";  break;
+        case MINOR:     chord = minor_chord;     scaleForPrint = "MIN";  break;
+        case PENTATONIC: chord = pentatonic_chord; scaleForPrint = "PEN"; break;
+        case MINOR7:    chord = minor7_chord;    scaleForPrint = "MIN7"; break;
+        case MAJOR7:    chord = major7_chord;    scaleForPrint = "MAJ7"; break;
+        default:        chord = chromatic_chord;  scaleForPrint = "CHRO"; break;
+    }
+    for (int i = 0; i < MAX_RHYTHMS; ++i) {
+        notes[i] = chord[i] + noteShift + octaveShift;
     }
 }
 
@@ -648,9 +622,13 @@ void printValuesToDisplay()
     std::string printStuffLeft = "LE:" + std::to_string(lengthX) + " EV:"
                                  + std::to_string(eventsXTemp) + " OF:"
                                  + std::to_string(offsetX);
+    //std::string printStuffRight = noteShiftForPrint(noteShift) + " "
+                                //  + scaleForPrint + octaveShiftForPrint + " "
+                               //   + std::to_string((int)bpm);
     std::string printStuffRight = noteShiftForPrint(noteShift) + " "
-                                  + scaleForPrint + octaveShiftForPrint + " "
-                                  + std::to_string((int)bpm);
+                                  + std::to_string(dubby.print0) + " " +std::to_string(dubby.print1)
+                                  +" " +std::to_string(dubby.print2);
+    
     dubby.UpdateStatusBar(&printStuffLeft[0], dubby.LEFT);
     dubby.UpdateStatusBar(&printStuffRight[0], dubby.RIGHT);
 }
@@ -753,6 +731,15 @@ int main(void)
 
     prevKnobValue1 = knobValue1;
     prevKnobValue2 = knobValue2;
+
+       for (int i = 0; i < MAX_RHYTHMS; ++i) {
+      //  dubby.startIndex[i] = lengths[i];
+    }
+
+    // Set all indexes of endIndex to 32
+    for (int i = 0; i < MAX_RHYTHMS; ++i) {
+        dubby.endIndex[i] = dubby.stepsOnDisplay;
+    }
     while(1)
     {
         handleScales();
