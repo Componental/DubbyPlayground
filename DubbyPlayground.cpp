@@ -27,6 +27,7 @@ int noteShift   = 0;
 // Define an array to store the previous knob values for the first two knobs for each rhythm
 int prevKnobValues[MAX_RHYTHMS][2] = {{0}}; // Assuming initial values are 0
 
+ bool adjustBpm = false;
 
 // Define an array to store the previous events values for each rhythm
 
@@ -301,10 +302,13 @@ std::string noteShiftForPrint(int noteShift)
 
 void handleEncoder()
 {
+
+
        // Check for falling edge of encoder press
     if (dubby.encoder.FallingEdge()) {
         // Toggle the encoderPressed state for the active rhythm
         dubby.encoderPressed[activeRhythm] = !dubby.encoderPressed[activeRhythm];
+
 
         if (dubby.encoderPressed[activeRhythm]) {
             // Reset events to 0 when encoder is pressed
@@ -319,22 +323,19 @@ void handleEncoder()
         }
     }
     
-
-
-
     int rotationDirection = dubby.encoder.Increment();
-    if(rotationDirection == 1)
-    {
-        activeRhythm += 1;
-    }
-    else if(rotationDirection == -1)
-    {
-        activeRhythm -= 1;
-    }
+
+    if(dubby.buttons[2].Pressed()){
+         if(rotationDirection != 0){ bpm = bpm + rotationDirection;
+            adjustBpm = true;
+         } 
+} else {
+         if(rotationDirection != 0){ activeRhythm = activeRhythm + rotationDirection;
+         }
+
     activeRhythm = (activeRhythm % MAX_RHYTHMS + MAX_RHYTHMS) % MAX_RHYTHMS;
     dubby.activeRhythm = activeRhythm;
-
-    dubby.bpm = bpm;
+}
 }
 
 
@@ -404,7 +405,7 @@ void selectRhythm()
             
 
 if(!knobValueMatches(knobValue1, prevKnobValue1))
-            {
+             {
                 lengths[i]     = knobValue1;
                 prevKnobValue1 = knobValue1;
 //                midiMessageCounter = 0;
@@ -486,8 +487,14 @@ void shiftNotesAndOctaves() {
 
       if(dubby.buttons[2].FallingEdge())
     {
-        noteShift = std::min(noteShift + 1,
+        if(adjustBpm){
+        adjustBpm= false;
+        } else{
+                    noteShift = std::min(noteShift + 1,
                              11); // Increment noteShift but limit it to 11
+
+        }
+        
     }
 
     if(dubby.buttons[3].FallingEdge())
@@ -528,16 +535,24 @@ void shiftNotesAndOctaves() {
 
 void handleJoystick()
 {
+    int maxMultiplicationFactor = 6;
+    int halfMaxMultiplicationFactor = maxMultiplicationFactor / 2;
+
+    float firstThreshold = 0.2f;
+    float firstThresholdInverse = 1.0f - firstThreshold;
+    float secondThreshold = 0.4f;
+    float secondThresholdInverse = 1.0f - secondThreshold;
+
     // Adjust events1Temp based on knob value for CTRL_6
-    if(dubby.GetKnobValue(dubby.CTRL_6) < 0.2)
+    if (dubby.GetKnobValue(dubby.CTRL_6) < firstThreshold)
     {
         // Quadruple the events1 value temporarily
-        eventsTemp[0] = std::min(events[0] * 4, 32);
+        eventsTemp[0] = std::min(events[0] * maxMultiplicationFactor, 32);
     }
-    else if(dubby.GetKnobValue(dubby.CTRL_6) < 0.4)
+    else if (dubby.GetKnobValue(dubby.CTRL_6) < secondThreshold)
     {
         // Double the events1 value temporarily
-        eventsTemp[0] = std::min(events[0] * 2, 32);
+        eventsTemp[0] = std::min(events[0] * halfMaxMultiplicationFactor, 32);
     }
     else
     {
@@ -546,15 +561,15 @@ void handleJoystick()
     }
 
     // Adjust events2Temp based on knob value for CTRL_5
-    if(dubby.GetKnobValue(dubby.CTRL_5) < 0.2)
+    if (dubby.GetKnobValue(dubby.CTRL_5) < firstThreshold)
     {
         // Quadruple the events2 value temporarily
-        eventsTemp[1] = std::min(events[1] * 4, 32);
+        eventsTemp[1] = std::min(events[1] * maxMultiplicationFactor, 32);
     }
-    else if(dubby.GetKnobValue(dubby.CTRL_5) < 0.4)
+    else if (dubby.GetKnobValue(dubby.CTRL_5) < secondThreshold)
     {
         // Double the events2 value temporarily
-        eventsTemp[1] = std::min(events[1] * 2, 32);
+        eventsTemp[1] = std::min(events[1] * halfMaxMultiplicationFactor, 32);
     }
     else
     {
@@ -563,15 +578,15 @@ void handleJoystick()
     }
 
     // Adjust events3Temp based on knob value for CTRL_6
-    if(dubby.GetKnobValue(dubby.CTRL_6) > 0.8)
+    if (dubby.GetKnobValue(dubby.CTRL_6) > firstThresholdInverse)
     {
         // Quadruple the events3 value temporarily
-        eventsTemp[2] = std::min(events[2] * 4, 32);
+        eventsTemp[2] = std::min(events[2] * maxMultiplicationFactor, 32);
     }
-    else if(dubby.GetKnobValue(dubby.CTRL_6) > 0.6)
+    else if (dubby.GetKnobValue(dubby.CTRL_6) > secondThresholdInverse)
     {
         // Double the events3 value temporarily
-        eventsTemp[2] = std::min(events[2] * 2, 32);
+        eventsTemp[2] = std::min(events[2] * halfMaxMultiplicationFactor, 32);
     }
     else
     {
@@ -580,15 +595,15 @@ void handleJoystick()
     }
 
     // Adjust events4Temp based on knob value for CTRL_5
-    if(dubby.GetKnobValue(dubby.CTRL_5) > 0.8)
+    if (dubby.GetKnobValue(dubby.CTRL_5) > firstThresholdInverse)
     {
         // Quadruple the events4 value temporarily
-        eventsTemp[3] = std::min(events[3] * 4, 32);
+        eventsTemp[3] = std::min(events[3] * maxMultiplicationFactor, 32);
     }
-    else if(dubby.GetKnobValue(dubby.CTRL_5) > 0.6)
+    else if (dubby.GetKnobValue(dubby.CTRL_5) > secondThresholdInverse)
     {
         // Double the events4 value temporarily
-        eventsTemp[3] = std::min(events[3] * 2, 32);
+        eventsTemp[3] = std::min(events[3] * halfMaxMultiplicationFactor, 32);
     }
     else
     {
@@ -622,12 +637,12 @@ void printValuesToDisplay()
     std::string printStuffLeft = "LE:" + std::to_string(lengthX) + " EV:"
                                  + std::to_string(eventsXTemp) + " OF:"
                                  + std::to_string(offsetX);
-    //std::string printStuffRight = noteShiftForPrint(noteShift) + " "
-                                //  + scaleForPrint + octaveShiftForPrint + " "
-                               //   + std::to_string((int)bpm);
     std::string printStuffRight = noteShiftForPrint(noteShift) + " "
-                                  + std::to_string(dubby.print0) + " " +std::to_string(dubby.print1)
-                                  +" " +std::to_string(dubby.print2);
+                                  + scaleForPrint + octaveShiftForPrint + " "
+                                  + std::to_string((int)bpm);
+   // std::string printStuffRight = noteShiftForPrint(noteShift) + " "
+             //                     + std::to_string(dubby.print0) + " " +std::to_string(dubby.print1)
+               //                   +" " +std::to_string(dubby.print2);
     
     dubby.UpdateStatusBar(&printStuffLeft[0], dubby.LEFT);
     dubby.UpdateStatusBar(&printStuffRight[0], dubby.RIGHT);
@@ -709,7 +724,6 @@ int main(void)
     dubby.seed.SetAudioSampleRate(SaiHandle::Config::SampleRate::SAI_48KHZ);
     dubby.ProcessAllControls();
 
-    beatInterval = beatsPerMinuteToInterval / bpm;
 
     dubby.DrawLogo();
     System::Delay(200);
@@ -719,10 +733,7 @@ int main(void)
     loadMeter.Init(dubby.seed.AudioSampleRate(), dubby.seed.AudioBlockSize());
 
     dubby.midi_uart.StartReceive();
-
-
-    bpm = 140;
-
+    //bpm = 140;
 
     for(int i = 0; i < MAX_RHYTHMS; ++i)
     {
@@ -732,16 +743,17 @@ int main(void)
     prevKnobValue1 = knobValue1;
     prevKnobValue2 = knobValue2;
 
-       for (int i = 0; i < MAX_RHYTHMS; ++i) {
-      //  dubby.startIndex[i] = lengths[i];
-    }
-
+    
     // Set all indexes of endIndex to 32
     for (int i = 0; i < MAX_RHYTHMS; ++i) {
         dubby.endIndex[i] = dubby.stepsOnDisplay;
+    //  dubby.startIndex[i] = lengths[i];
+
     }
     while(1)
     {
+            beatInterval = beatsPerMinuteToInterval / bpm;
+
         handleScales();
         shiftNotesAndOctaves();
         handleKnobs();
@@ -758,10 +770,7 @@ int main(void)
 
 
         // Button handling for reset to bootloader
-        if(dubby.buttons[3].TimeHeldMs() > 1000)
-        {
-            dubby.ResetToBootloader();
-        }
+        if(dubby.buttons[3].TimeHeldMs() > 1000){dubby.ResetToBootloader();}
 
 
         dubby.ProcessAllControls();

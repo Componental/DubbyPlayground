@@ -313,38 +313,37 @@ void Dubby::Sequencer()
         prevMidiCounter = midiCounter;
 
         // Update startIndex and endIndex when verticalLinePosition hits 0
-       if (verticalLinePosition == 0) {
+        if (verticalLinePosition == 0)
+        {
             // Update the startIndex and endIndex without exceeding the rhythm length
-            for (int i = 0; i < MAX_RHYTHMS; ++i) {
-        startIndex[i] = (startIndex[i] + stepsOnDisplay) % desiredLength[i];
+            for (int i = 0; i < MAX_RHYTHMS; ++i)
+            {
+                desiredLength[i] = lengths[i] * stepsOnDisplay;
+                startIndex[i] = (startIndex[i] + stepsOnDisplay) % desiredLength[i];
                 endIndex[i] = (startIndex[i] + stepsOnDisplay);
-
             }
-                            print0 = verticalLinePosition;
-
+            // print0 = verticalLinePosition;
         }
-}
+    }
 
     // Draw the vertical line at its position
     display.DrawLine(verticalLinePosition, 10, verticalLinePosition, OLED_HEIGHT - 1, true);
-                print1 = startIndex[0];
-                print2 = endIndex[0];
- 
+    print1 = startIndex[0];
+    print2 = endIndex[0];
+
     // Visualize each rhythm
- // Visualize each rhythm
-for (int i = 0; i < MAX_RHYTHMS; ++i)
-{
-    
-    // Determine the rhythm and length based on the iteration
-    std::vector<int> currentRhythm;
-    int currentLength = 0;
+    // Visualize each rhythm
+    for (int i = 0; i < MAX_RHYTHMS; ++i)
+    {
 
-    // Access the rhythm and its properties using the loop index
-    currentRhythm = rhythms[i];
-    currentLength = lengths[i];
-    desiredLength[i] = lengths[i] * stepsOnDisplay;
+        // Determine the rhythm and length based on the iteration
+        std::vector<int> currentRhythm;
+        int currentLength = 0;
 
-
+        // Access the rhythm and its properties using the loop index
+        currentRhythm = rhythms[i];
+        currentLength = lengths[i];
+        desiredLength[i] = lengths[i] * stepsOnDisplay;
 
         // Extend the rhythm if it's shorter than desired length
         if (currentLength < desiredLength[i])
@@ -387,27 +386,33 @@ for (int i = 0; i < MAX_RHYTHMS; ++i)
         }
 
         // Visualize the rhythm with vertical lines for each 1 in the vector
-        for (int j = startIndex[i]; j < endIndex[i] && j < currentLength; ++j) {
+        for (int j = startIndex[i]; j < endIndex[i] && j < currentLength; ++j)
+        {
             // Calculate the x position of the vertical line
             float columnWidth = static_cast<float>(OLED_WIDTH) / static_cast<float>(stepsOnDisplay);
             int vLinePosition = static_cast<int>((j - startIndex[i]) * columnWidth);
 
             // Check if the current rhythm is the active one
-            if (i == activeRhythm) {
-                if (currentRhythm[j] == 1) {
+            if (i == activeRhythm)
+            {
+                if (currentRhythm[j] == 1)
+                {
                     // Draw a vertical line on the OLED display
                     display.DrawLine(vLinePosition, horizontalLinePosition, vLinePosition, horizontalLinePosition + 4, false);
                 }
-            } else {
+            }
+            else
+            {
                 // For inactive rhythms, draw lines with a different color (true)
-                if (currentRhythm[j] == 1) {
+                if (currentRhythm[j] == 1)
+                {
                     // Draw a vertical line on the OLED display
                     display.DrawLine(vLinePosition, horizontalLinePosition, vLinePosition, horizontalLinePosition + 4, true);
                 }
             }
         }
-    
-            if (encoderPressed[i] && i == activeRhythm)
+
+        if (encoderPressed[i] && i == activeRhythm)
         {
             display.DrawLine(0, horizontalLinePosition + 3, OLED_WIDTH - 1, horizontalLinePosition + 3, false);
         }
@@ -417,9 +422,8 @@ for (int i = 0; i < MAX_RHYTHMS; ++i)
         }
     }
 }
-    // Update the display
-    // display.Update();
-
+// Update the display
+// display.Update();
 
 void Dubby::UpdateMixerPane()
 {
