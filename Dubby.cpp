@@ -301,8 +301,7 @@ void Dubby::Sequencer()
 {
     // Define the desired length of 32 steps
 
-    display.Fill(false);
-
+    ClearPane();
     // Check if MIDI counter has changed since last call
     if (midiCounter != prevMidiCounter)
     {
@@ -724,27 +723,28 @@ void Dubby::UpdatePreferencesSubMenuList(int increment, PreferencesMenuItems pre
         DisplayPreferencesSubMenuList(increment, prefMenuItemSelected);
     }
 }
-
-void Dubby::UpdateStatusBar(char *text, StatusBarSide side = LEFT)
+void Dubby::UpdateStatusBar(char *text, StatusBarSide side = LEFT, int width)
 {
     if (side == LEFT)
     {
-        display.DrawRect(STATUSBAR_X_START, STATUSBAR_Y_START, 63, STATUSBAR_Y_END - 3, false, true);
-        display.WriteStringAligned(&text[0], Font_4x5, daisy::Rectangle(STATUSBAR_X_START, STATUSBAR_Y_START, STATUSBAR_X_END - 64, STATUSBAR_Y_END - 1), daisy::Alignment::centeredLeft, true);
-    }
-    else if (side == RIGHT)
-    {
-        display.DrawRect(64, STATUSBAR_Y_START, 127, STATUSBAR_Y_END - 3, false, true);
-        display.WriteStringAligned(&text[0], Font_4x5, daisy::Rectangle(64, STATUSBAR_Y_START, 64, STATUSBAR_Y_END - 1), daisy::Alignment::centeredRight, true);
+        display.DrawRect(STATUSBAR_X_START, STATUSBAR_Y_START, width, STATUSBAR_Y_END - 3, false, true);
+        display.WriteStringAligned(&text[0], Font_4x5, daisy::Rectangle(STATUSBAR_X_START, STATUSBAR_Y_START, STATUSBAR_X_END, STATUSBAR_Y_END), daisy::Alignment::centeredLeft, true);
     }
     else if (side == MIDDLE)
     {
-        display.DrawRect(52, STATUSBAR_Y_START, 72, STATUSBAR_Y_END - 3, false, true);
-        display.WriteStringAligned(&text[0], Font_4x5, daisy::Rectangle(36, STATUSBAR_Y_START, 58, STATUSBAR_Y_END - 1), daisy::Alignment::centered, true);
+        display.DrawRect(64 - (width/2), STATUSBAR_Y_START, 64 + (width/2), STATUSBAR_Y_END - 3, false, true);
+        display.WriteStringAligned(&text[0], Font_4x5, daisy::Rectangle(STATUSBAR_X_START, STATUSBAR_Y_START, STATUSBAR_X_END, STATUSBAR_Y_END), daisy::Alignment::centered, true);
     }
+    else if (side == RIGHT)
+    {
+        display.DrawRect(STATUSBAR_X_END - width, STATUSBAR_Y_START, STATUSBAR_X_END, STATUSBAR_Y_END - 3, false, true);
+        display.WriteStringAligned(&text[0], Font_4x5, daisy::Rectangle(STATUSBAR_X_START, STATUSBAR_Y_START, STATUSBAR_X_END, STATUSBAR_Y_END), daisy::Alignment::centeredRight, true);
+    }
+    
 
     display.Update();
 }
+
 
 void Dubby::ResetToBootloader()
 {

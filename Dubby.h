@@ -250,7 +250,7 @@ class Dubby
 
     void ClearPane();
 
-    void UpdateStatusBar(char* text, StatusBarSide side); // side = 0 => left, side = 1 => right
+void UpdateStatusBar(char* text, StatusBarSide side, int width = 40); // side = 0 => left, side = 1 => right
     void VisualizeRhythms(std::vector<int>& currentRhythm, int currentLength, int horizontalLinePosition, int desiredLength);
     void Sequencer();
 

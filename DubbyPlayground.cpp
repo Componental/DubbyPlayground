@@ -20,6 +20,11 @@ int         activeRhythm = 0;
 uint8_t     notes[MAX_RHYTHMS];
 std::string scaleForPrint;
 std::string octaveShiftForPrint;
+
+std::string printStuffLeft;
+                        std::string printStuffMiddle;
+
+            std::string printStuffRight;
 //std::string noteShiftForPrint;
 //int totalShift = 0;
 int octaveShift = 0;
@@ -28,8 +33,15 @@ int noteShift   = 0;
 int prevKnobValues[MAX_RHYTHMS][2] = {{0}}; // Assuming initial values are 0
 
  bool adjustBpm = false;
+ bool adjustNoteLength = false; // not used
+bool adjustVelocityBaseline = false;
+bool adjustVelocityRandomnessAmount = false;
 
-// Define an array to store the previous events values for each rhythm
+
+float                 noteLength = 0.2f;
+
+
+size_t nextNoteIndex = 0; // Index to keep track of the next note to play
 
 
 
@@ -108,13 +120,15 @@ enum OctaveShiftLevel {
     OCTAVE_UP_2
 };
 
-const uint8_t velocity = 110;
+//int velocity = 110;
 // Variable to store previous knob values
 int prevKnobValue1 = 0;
 int prevKnobValue2 = 0;
 
 int knobValue1, knobValue2, knobValue3, knobValue4;
 
+int baselineVelocity = 110; // Initial baseline velocity
+float velocityRandomAmount = 1.0f;    // Adjust this value to change the randomness level
 
 // BPM implement
 bool  isBeat = false;  // Flag to indicate a beat
@@ -241,6 +255,7 @@ struct MidiNote
 
     float startTime; // Time when the note was triggered
 };
+std::vector<MidiNote> activeNotes; // Vector to store active MIDI notes
 
 
 std::vector<int> euclideanRhythm(int length, int events, int offset)
@@ -278,12 +293,6 @@ std::vector<int> euclideanRhythm(int length, int events, int offset)
 
     return rhythm;
 }
-
-std::vector<MidiNote> activeNotes; // Vector to store active MIDI notes
-float                 noteLength = 0.2f;
-
-
-size_t nextNoteIndex = 0; // Index to keep track of the next note to play
 
 
 std::string noteShiftForPrint(int noteShift)
@@ -325,19 +334,36 @@ void handleEncoder()
     
     int rotationDirection = dubby.encoder.Increment();
 
-    if(dubby.buttons[2].Pressed()){
-         if(rotationDirection != 0){ bpm = bpm + rotationDirection;
-            adjustBpm = true;
+    if(dubby.buttons[2].Pressed() && dubby.buttons[2].TimeHeldMs() > 200){
+                     adjustBpm = true;
+         if(rotationDirection != 0){ 
+            bpm = bpm + rotationDirection;
          } 
-} else {
-         if(rotationDirection != 0){ activeRhythm = activeRhythm + rotationDirection;
+
+} else  if (dubby.buttons[0].Pressed() && dubby.buttons[0].TimeHeldMs() > 200){
+                    adjustVelocityBaseline = true;
+        if(rotationDirection != 0){
+            baselineVelocity = std::max(0, std::min(127, baselineVelocity + rotationDirection));
+            } 
+        } else  if (dubby.buttons[1].Pressed() && dubby.buttons[1].TimeHeldMs() > 200){
+                    adjustVelocityRandomnessAmount = true;
+        if(rotationDirection != 0){
+        velocityRandomAmount = std::max(0.0f, std::min(1.0f, velocityRandomAmount + rotationDirection * 0.01f));
+            } 
+        } else {
+         if(rotationDirection != 0){ 
+            activeRhythm = activeRhythm + rotationDirection;
          }
 
     activeRhythm = (activeRhythm % MAX_RHYTHMS + MAX_RHYTHMS) % MAX_RHYTHMS;
     dubby.activeRhythm = activeRhythm;
 }
-}
 
+}
+// Define a function to get a random integer within a range
+int getRandom(int min, int max) {
+    return min + rand() % (max - min + 1);
+}
 
 void sendMidiBasedOnRhythms()
 {
@@ -371,19 +397,15 @@ void sendMidiBasedOnRhythms()
             }
         }
 
-        // Send note on for all active notes
-        for(int note : activeNotesSet)
-        {
-            MIDIUsbSendNoteOn(
-                0,
-                note,
-                velocity); // Sending all notes to MIDI channel 0 for USB
-            MIDIUartSendNoteOn(
-                0,
-                note,
-                velocity); // Sending all notes to MIDI channel 0 for UART
-        }
+      // Calculate new velocity based on baseline and randomness
+    int newVelocity = std::max(0, std::min(127, baselineVelocity + getRandom(-velocityRandomAmount * baselineVelocity, velocityRandomAmount * baselineVelocity)));
 
+    // Send note on for all active notes with updated velocity
+    for(int note : activeNotesSet) {
+        MIDIUsbSendNoteOn(0, note, newVelocity);
+        MIDIUartSendNoteOn(0, note, newVelocity);
+    }
+        
         float subdivisionInterval = beatInterval / 4.0f;
         nextBeatTime += subdivisionInterval;
         ++midiMessageCounter;
@@ -428,16 +450,28 @@ if(!knobValueMatches(knobValue1, prevKnobValue1))
     // Perform actions using knobValue2
 
 
+if(dubby.buttons[0].FallingEdge())
+    {
+        if(adjustVelocityBaseline){
+        adjustVelocityBaseline= false;
+        } else{
+                    offsets[i]++;
 
-            if(dubby.buttons[0].FallingEdge())
-            {
-                offsets[i]++;
-            }
+        }
+        
+    }
+
 
             if(dubby.buttons[1].FallingEdge())
-            {
-                offsets[i]--;
-            }
+    {
+        if(adjustVelocityRandomnessAmount){
+        adjustVelocityRandomnessAmount= false;
+        } else{
+                    offsets[i]--;
+
+        }
+        
+    }
 
             break;
         }
@@ -634,18 +668,46 @@ void generateRhythms()
 
 void printValuesToDisplay()
 {
-    std::string printStuffLeft = "LE:" + std::to_string(lengthX) + " EV:"
+
+    if(dubby.buttons[0].Pressed() && dubby.buttons[0].TimeHeldMs() > 200){
+             printStuffLeft = ""; 
+             printStuffRight = "";
+            printStuffMiddle = "VELOCITY:" + std::to_string(baselineVelocity); 
+
+    dubby.UpdateStatusBar(&printStuffMiddle[0], dubby.MIDDLE, 127);
+
+ } else if(dubby.buttons[1].Pressed() && dubby.buttons[1].TimeHeldMs() > 200){
+               printStuffLeft = ""; 
+             printStuffRight = "";
+            printStuffMiddle = "VEL. RAND.:" + std::to_string(velocityRandomAmount); 
+            
+    dubby.UpdateStatusBar(&printStuffMiddle[0], dubby.MIDDLE, 127);
+
+
+ }else if(dubby.buttons[2].Pressed() && dubby.buttons[2].TimeHeldMs() > 200){
+               printStuffLeft = ""; 
+             printStuffRight = "";
+            printStuffMiddle = "BPM:" + std::to_string((int)bpm); 
+            
+    dubby.UpdateStatusBar(&printStuffMiddle[0], dubby.MIDDLE, 127);
+
+
+ }else {
+     printStuffLeft = "LE:" + std::to_string(lengthX) + " EV:"
                                  + std::to_string(eventsXTemp) + " OF:"
                                  + std::to_string(offsetX);
-    std::string printStuffRight = noteShiftForPrint(noteShift) + " "
+     printStuffRight = noteShiftForPrint(noteShift) + " "
                                   + scaleForPrint + octaveShiftForPrint + " "
                                   + std::to_string((int)bpm);
+            
+    dubby.UpdateStatusBar(&printStuffLeft[0], dubby.LEFT, 70);
+    dubby.UpdateStatusBar(&printStuffRight[0], dubby.RIGHT,57);
+
+    }
    // std::string printStuffRight = noteShiftForPrint(noteShift) + " "
              //                     + std::to_string(dubby.print0) + " " +std::to_string(dubby.print1)
                //                   +" " +std::to_string(dubby.print2);
     
-    dubby.UpdateStatusBar(&printStuffLeft[0], dubby.LEFT);
-    dubby.UpdateStatusBar(&printStuffRight[0], dubby.RIGHT);
 }
 
 
