@@ -32,16 +32,17 @@ using namespace daisy;
 #define PANE_Y_END 52
 
 #define STATUSBAR_X_START 1
-#define STATUSBAR_X_END 126
+#define STATUSBAR_X_END 127
 #define STATUSBAR_Y_START 1
 #define STATUSBAR_Y_END 11
 
 #define MENULIST_X_START 0
 #define MENULIST_X_END 63
 #define MENULIST_Y_START 11
-#define MENULIST_Y_END 21
-#define MENULIST_SPACING 10
+#define MENULIST_Y_END 19
+#define MENULIST_SPACING 8
 #define MENULIST_SUBMENU_SPACING 63
+#define MENULIST_ROWS_ON_SCREEN 5
 
 #define ENCODER_LONGPRESS_THRESHOLD 300
 
@@ -53,7 +54,7 @@ void Dubby::Init()
     screen_update_period_ = 17; // roughly 60Hz
     screen_update_last_   = seed.system.GetNow();
 
-    for (int i = 0; i < 5; i++) 
+    for (int i = 0; i < MENULIST_ROWS_ON_SCREEN; i++) 
     {
         menuListBoxBounding[i][0] = MENULIST_X_START;
         menuListBoxBounding[i][1] = MENULIST_Y_START + i * MENULIST_SPACING;
@@ -435,13 +436,13 @@ void Dubby::DisplayPreferencesMenuList(int increment)
     //display.DrawRect(PANE_X_START - 1, 1, PANE_X_END, PANE_Y_END, false, true);
 
     int optionStart = 0;
-    if (preferencesMenuItemSelected > 3)
+    if (preferencesMenuItemSelected > (MENULIST_ROWS_ON_SCREEN - 1))
     {
-        optionStart = preferencesMenuItemSelected - 3;
+        optionStart = preferencesMenuItemSelected - (MENULIST_ROWS_ON_SCREEN - 1);
     }
     
     // display each item, j for text cursor
-    for (int i = optionStart, j = 0; i < optionStart + 4; i++, j++)
+    for (int i = optionStart, j = 0; i < optionStart + MENULIST_ROWS_ON_SCREEN; i++, j++)
     {
         // clear item spaces
         if ((optionStart > 0 || (!optionStart && increment < 0))) {
@@ -450,7 +451,7 @@ void Dubby::DisplayPreferencesMenuList(int increment)
 
         // display and remove bounding boxes
         if (preferencesMenuItemSelected == i) {
-            if(optionStart >= 0 && increment < 0 && j < 3) 
+            if(optionStart >= 0 && increment < 0 && j < MENULIST_ROWS_ON_SCREEN - 1) 
                 display.DrawRect(menuListBoxBounding[j + 1][0], menuListBoxBounding[j + 1][1], menuListBoxBounding[j + 1][2], menuListBoxBounding[j + 1][3], false);
             else if(optionStart == 0 && j > 0)
                 display.DrawRect(menuListBoxBounding[j - 1][0], menuListBoxBounding[j - 1][1], menuListBoxBounding[j - 1][2], menuListBoxBounding[j - 1][3], false);
@@ -506,13 +507,13 @@ void Dubby::DisplayPreferencesSubMenuList(int increment, PreferencesMenuItems pr
     }
 
     int optionStart = 0;
-    if (subMenuSelector > 3)
+    if (subMenuSelector > (MENULIST_ROWS_ON_SCREEN - 1))
     {
-        optionStart = subMenuSelector - 3;
+        optionStart = subMenuSelector - (MENULIST_ROWS_ON_SCREEN - 1);
     }
     
     // display each item, j for text cursor
-    for (int i = optionStart, j = 0; i < optionStart + 4; i++, j++)
+    for (int i = optionStart, j = 0; i < optionStart + MENULIST_ROWS_ON_SCREEN; i++, j++)
     {
         // clear item spaces
         if ((optionStart > 0 || (!optionStart && increment < 0))) {
@@ -569,24 +570,26 @@ void Dubby::UpdatePreferencesSubMenuList(int increment, PreferencesMenuItems pre
 }
 
 
-void Dubby::UpdateStatusBar(char* text, StatusBarSide side = LEFT) 
+void Dubby::UpdateStatusBar(char* text, StatusBarSide side = LEFT, int width)
 {
-    if (side == LEFT) 
-    {   
-        display.DrawRect(STATUSBAR_X_START, STATUSBAR_Y_START, 63, STATUSBAR_Y_END - 3, false, true);
-        display.WriteStringAligned(&text[0], Font_4x5, daisy::Rectangle(STATUSBAR_X_START, STATUSBAR_Y_START, STATUSBAR_X_END - 64, STATUSBAR_Y_END - 1), daisy::Alignment::centeredLeft, true);
-    } 
-    else if (side == RIGHT) 
-    {   
-        display.DrawRect(64, STATUSBAR_Y_START, 127, STATUSBAR_Y_END - 3, false, true);
-        display.WriteStringAligned(&text[0], Font_4x5, daisy::Rectangle(64, STATUSBAR_Y_START, 64, STATUSBAR_Y_END - 1), daisy::Alignment::centeredRight, true);
-    }
-    else if (side == MIDDLE) 
-    {   
-        display.DrawRect(52, STATUSBAR_Y_START, 72, STATUSBAR_Y_END - 3, false, true);
-        display.WriteStringAligned(&text[0], Font_4x5, daisy::Rectangle(36, STATUSBAR_Y_START, 58, STATUSBAR_Y_END - 1), daisy::Alignment::centered, true);
-    }
+    Rectangle barRec = daisy::Rectangle(STATUSBAR_X_START, STATUSBAR_Y_START, STATUSBAR_X_END, STATUSBAR_Y_END);
 
+    if (side == LEFT)
+    {
+        display.DrawRect(STATUSBAR_X_START, STATUSBAR_Y_START, width, STATUSBAR_Y_END - 3, false, true);
+        display.WriteStringAligned(&text[0], Font_4x5, barRec, daisy::Alignment::centeredLeft, true);
+    }
+    else if (side == MIDDLE)
+    {
+        display.DrawRect(64 - (width/2), STATUSBAR_Y_START, 64 + (width/2), STATUSBAR_Y_END - 3, false, true);
+        display.WriteStringAligned(&text[0], Font_4x5, barRec, daisy::Alignment::centered, true);
+    }
+    else if (side == RIGHT)
+    {
+        display.DrawRect(STATUSBAR_X_END - width, STATUSBAR_Y_START, STATUSBAR_X_END, STATUSBAR_Y_END - 3, false, true);
+        display.WriteStringAligned(&text[0], Font_4x5, barRec, daisy::Alignment::centeredRight, true);
+    }
+    
 
     display.Update();
 }
