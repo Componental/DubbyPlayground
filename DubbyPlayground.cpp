@@ -127,8 +127,10 @@ int prevKnobValue2 = 0;
 
 int knobValue1, knobValue2, knobValue3, knobValue4;
 
-int baselineVelocity = 110; // Initial baseline velocity
-float velocityRandomAmount = 1.0f;    // Adjust this value to change the randomness level
+std::array<int, MAX_RHYTHMS> baselineVelocities = {110, 110, 110, 110, 110, 110, 110, 110}; // Initialize all velocities to 110
+int velocities[MAX_RHYTHMS] = {0}; // Initialize all velocities to 0
+
+float velocityRandomAmounts[MAX_RHYTHMS] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
 
 // BPM implement
 bool  isBeat = false;  // Flag to indicate a beat
@@ -343,12 +345,12 @@ void handleEncoder()
 } else  if (dubby.buttons[0].Pressed() && dubby.buttons[0].TimeHeldMs() > 200){
                     adjustVelocityBaseline = true;
         if(rotationDirection != 0){
-            baselineVelocity = std::max(0, std::min(127, baselineVelocity + rotationDirection));
+            baselineVelocities[activeRhythm] = std::max(0, std::min(127, baselineVelocities[activeRhythm] + rotationDirection));
             } 
         } else  if (dubby.buttons[1].Pressed() && dubby.buttons[1].TimeHeldMs() > 200){
                     adjustVelocityRandomnessAmount = true;
         if(rotationDirection != 0){
-        velocityRandomAmount = std::max(0.0f, std::min(1.0f, velocityRandomAmount + rotationDirection * 0.01f));
+        velocityRandomAmounts[activeRhythm]  = std::max(0.0f, std::min(1.0f, velocityRandomAmounts[activeRhythm]  + rotationDirection * 0.01f));
             } 
         } else {
          if(rotationDirection != 0){ 
@@ -385,6 +387,7 @@ void sendMidiBasedOnRhythms()
                 activeNotesSet.insert(
                     note); // Add the note to the set of active notes
             }
+
         }
 
         // Send note off for notes that were active but are no longer active
@@ -398,13 +401,22 @@ void sendMidiBasedOnRhythms()
         }
 
       // Calculate new velocity based on baseline and randomness
-    int newVelocity = std::max(0, std::min(127, baselineVelocity + getRandom(-velocityRandomAmount * baselineVelocity, velocityRandomAmount * baselineVelocity)));
 
     // Send note on for all active notes with updated velocity
-    for(int note : activeNotesSet) {
-        MIDIUsbSendNoteOn(0, note, newVelocity);
-        MIDIUartSendNoteOn(0, note, newVelocity);
-    }
+    
+           // Calculate new velocity based on baseline and randomness
+        for(int note : activeNotesSet) {
+            int velocityIndex = 0; // Initialize the index to zero
+            for(int i = 0; i < MAX_RHYTHMS; ++i) {
+                if(notes[i] == note) {
+                    velocities[velocityIndex] = std::max(0, std::min(127, baselineVelocities[i] + getRandom(-velocityRandomAmounts[i]  * baselineVelocities[i], velocityRandomAmounts[i]  * baselineVelocities[i])));
+                    MIDIUsbSendNoteOn(0, note, velocities[velocityIndex]);
+                    MIDIUartSendNoteOn(0, note, velocities[velocityIndex]);
+                    ++velocityIndex; // Increment the index after assigning velocity
+                }
+            }
+        }
+
         
         float subdivisionInterval = beatInterval / 4.0f;
         nextBeatTime += subdivisionInterval;
@@ -672,14 +684,14 @@ void printValuesToDisplay()
     if(dubby.buttons[0].Pressed() && dubby.buttons[0].TimeHeldMs() > 200){
              printStuffLeft = ""; 
              printStuffRight = "";
-            printStuffMiddle = "VELOCITY:" + std::to_string(baselineVelocity); 
+            printStuffMiddle = "VELOCITY:" + std::to_string(baselineVelocities[activeRhythm]); 
 
     dubby.UpdateStatusBar(&printStuffMiddle[0], dubby.MIDDLE, 127);
 
  } else if(dubby.buttons[1].Pressed() && dubby.buttons[1].TimeHeldMs() > 200){
                printStuffLeft = ""; 
              printStuffRight = "";
-            printStuffMiddle = "VEL. RAND.:" + std::to_string(velocityRandomAmount); 
+            printStuffMiddle = "VEL. RAND.:" + std::to_string(velocityRandomAmounts[activeRhythm] ); 
             
     dubby.UpdateStatusBar(&printStuffMiddle[0], dubby.MIDDLE, 127);
 
