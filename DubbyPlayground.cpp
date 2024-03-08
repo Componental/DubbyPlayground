@@ -42,7 +42,7 @@ float                 noteLength = 0.2f;
 
 
 size_t nextNoteIndex = 0; // Index to keep track of the next note to play
-
+ 
 
 
 uint8_t chromatic_chord[MAX_RHYTHMS] = {DEFAULT_NOTE,
