@@ -1,116 +1,81 @@
 
 #include "daisysp.h"
 #include "Dubby.h"
+#include "Chords.h"
 #include <array>
 #include <unordered_set> // Include the unordered_set header for efficiently storing active notes
-
-// Define a set to store active notes
-std::unordered_set<int> activeNotesSet;
 
 using namespace daisy;
 using namespace daisysp;
 
+// Audio and MIDI components
 Dubby dubby;
 CpuLoadMeter loadMeter;
 
-bool        buttonPressed  = false;
-bool        shiftIsOn;
-uint8_t     lastNote     = 0;
-int         activeRhythm = 0;
-uint8_t     notes[MAX_RHYTHMS];
-std::string scaleForPrint;
-std::string octaveShiftForPrint;
+// Constants and configurations
+const float beatsPerMinuteToInterval = 60.0f; // Conversion factor from BPM to seconds
 
-std::string printStuffLeft;
-                        std::string printStuffMiddle;
+// Time and control variables
+int countdown = 2000; // Initial countdown value
+int lastTimeUpdate;
+bool buttonPressed = false;
+bool shiftIsOn;
 
-            std::string printStuffRight;
-//std::string noteShiftForPrint;
-//int totalShift = 0;
-int octaveShift = 0;
-int noteShift   = 0;
-// Define an array to store the previous knob values for the first two knobs for each rhythm
-int prevKnobValues[MAX_RHYTHMS][2] = {{0}}; // Assuming initial values are 0
-
- bool adjustBpm = false;
- bool adjustNoteLength = false; // not used
+// Knob and button adjustments
+bool adjustBpm = false;
 bool adjustVelocityBaseline = false;
 bool adjustVelocityRandomnessAmount = false;
 
+// Knob values and configurations
+int knobValue1, knobValue2, knobValue3, knobValue4;
+int prevKnobValue1 = 0, prevKnobValue2 = 0;
 
-float                 noteLength = 0.2f;
+// Velocity and randomness settings
+std::array<int, MAX_RHYTHMS> baselineVelocities = {110, 110, 110, 110, 110, 110, 110, 110}; // Baseline velocities for each rhythm
+int velocities[MAX_RHYTHMS] = {0}; // Current velocities for each rhythm
+float velocityRandomAmounts[MAX_RHYTHMS] = {0.0f}; // Randomness amount for each rhythm
 
+// Beat timing and counters
+float bpm = 120.0f; // Initial BPM
+float beatInterval; // Interval between beats in seconds
+int midiMessageCounter = 0; // Counter for MIDI messages
 
-size_t nextNoteIndex = 0; // Index to keep track of the next note to play
- 
+// MIDI notes and events
+uint8_t notes[MAX_RHYTHMS]; // MIDI notes for each rhythm
+int lengths[MAX_RHYTHMS] = {0}; // Lengths of each rhythm
+int events[MAX_RHYTHMS] = {0}; // Event counts for each rhythm
+int offsets[MAX_RHYTHMS] = {0}; // Offsets for each rhythm
 
+// Active note tracking
+std::unordered_set<int> activeNotesSet; // Set to store active MIDI notes
 
-uint8_t chromatic_chord[MAX_RHYTHMS] = {DEFAULT_NOTE,
-                                        DEFAULT_NOTE + 1,
-                                        DEFAULT_NOTE + 2,
-                                        DEFAULT_NOTE + 3,
-                                        DEFAULT_NOTE + 4,
-                                        DEFAULT_NOTE + 5,
-                                        DEFAULT_NOTE + 6,
-                                        DEFAULT_NOTE + 7};
+// Note shifting and octave adjustment
+int octaveShift = 0; // Octave shift amount
+int noteShift = 0; // Note shift amount
 
-uint8_t major_chord[MAX_RHYTHMS] = {DEFAULT_NOTE,
-                                    DEFAULT_NOTE + 4,
-                                    DEFAULT_NOTE + 7,
-                                    DEFAULT_NOTE + 11,
-                                    DEFAULT_NOTE + 14,
-                                    DEFAULT_NOTE + 17,
-                                    DEFAULT_NOTE + 21,
-                                    DEFAULT_NOTE + 24};
+// MIDI message handling
+struct MidiNote
+{
+    uint8_t note;
+    uint8_t velocity;
 
-uint8_t minor_chord[MAX_RHYTHMS] = {DEFAULT_NOTE,
-                                    DEFAULT_NOTE + 3,
-                                    DEFAULT_NOTE + 7,
-                                    DEFAULT_NOTE + 10,
-                                    DEFAULT_NOTE + 14,
-                                    DEFAULT_NOTE + 17,
-                                    DEFAULT_NOTE + 21,
-                                    DEFAULT_NOTE + 24};
-
-uint8_t pentatonic_chord[MAX_RHYTHMS] = {DEFAULT_NOTE,
-                                         DEFAULT_NOTE + 5,
-                                         DEFAULT_NOTE + 7,
-                                         DEFAULT_NOTE + 12,
-                                         DEFAULT_NOTE + 15,
-                                         DEFAULT_NOTE + 19,
-                                         DEFAULT_NOTE + 24,
-                                         DEFAULT_NOTE + 27};
-
-// Minor 7th chord
-uint8_t minor7_chord[MAX_RHYTHMS] = {DEFAULT_NOTE,
-                                     DEFAULT_NOTE + 3,
-                                     DEFAULT_NOTE + 7,
-                                     DEFAULT_NOTE + 10,
-                                     DEFAULT_NOTE + 14,
-                                     DEFAULT_NOTE + 17,
-                                     DEFAULT_NOTE + 21,
-                                     DEFAULT_NOTE + 24};
-
-// Major 7th chord
-uint8_t major7_chord[MAX_RHYTHMS] = {DEFAULT_NOTE,
-                                     DEFAULT_NOTE + 4,
-                                     DEFAULT_NOTE + 7,
-                                     DEFAULT_NOTE + 11,
-                                     DEFAULT_NOTE + 14,
-                                     DEFAULT_NOTE + 17,
-                                     DEFAULT_NOTE + 21,
-                                     DEFAULT_NOTE + 25};
-
-
-// Define enums for scale types and octave shift levels
-enum ScaleType {
-    CHROMATIC = 0,
-    MAJOR,
-    MINOR,
-    PENTATONIC,
-    MINOR7,
-    MAJOR7
+    float startTime; // Time when the note was triggered
 };
+
+std::vector<MidiNote> activeNotes; // Active MIDI notes
+int nextNoteIndex = 0; // Index to keep track of the next note to play
+
+// UI and display variables
+std::string scaleForPrint; // Current scale for display
+std::string octaveShiftForPrint; // Octave shift indication for display
+std::string printStuffLeft, printStuffMiddle, printStuffRight; // Strings for display information
+
+////////////////////////////
+
+
+uint8_t     lastNote     = 0;
+int         selectedRhythm = 0;
+
 
 enum OctaveShiftLevel {
     OCTAVE_DOWN_2 = 0,
@@ -120,28 +85,11 @@ enum OctaveShiftLevel {
     OCTAVE_UP_2
 };
 
-//int velocity = 110;
-// Variable to store previous knob values
-int prevKnobValue1 = 0;
-int prevKnobValue2 = 0;
-
-int knobValue1, knobValue2, knobValue3, knobValue4;
-
-std::array<int, MAX_RHYTHMS> baselineVelocities = {110, 110, 110, 110, 110, 110, 110, 110}; // Initialize all velocities to 110
-int velocities[MAX_RHYTHMS] = {0}; // Initialize all velocities to 0
-
-float velocityRandomAmounts[MAX_RHYTHMS] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
-
 // BPM implement
 bool  isBeat = false;  // Flag to indicate a beat
-float bpm    = 120.0f; // Initial BPM
-
-int midiMessageCounter = 0;
 
 
-const float beatsPerMinuteToInterval
-    = 60.0f;               // Conversion factor from BPM to seconds
-float beatInterval;        // Interval between beats in seconds
+
 float nextBeatTime = 0.0f; // Time of the next beat
 
 // Define tolerance for matching knob values
@@ -154,13 +102,6 @@ bool knobValueMatches(int currentValue, int prevValue)
     return abs(currentValue - prevValue) <= knobTolerance;
 }
 
-// Declare arrays to store lengths, events, and offsets
-int lengths[MAX_RHYTHMS]
-    = {0}; // Assuming initial values are 0, adjust as needed
-int events[MAX_RHYTHMS]
-    = {0}; // Assuming initial values are 0, adjust as needed
-int offsets[MAX_RHYTHMS]
-    = {0}; // Assuming initial values are 0, adjust as needed
 int eventsTemp[MAX_RHYTHMS] = {0};
 
 
@@ -250,14 +191,6 @@ void HandleMidiUsbMessage(MidiEvent m)
     }
 }
 
-struct MidiNote
-{
-    uint8_t note;
-    uint8_t velocity;
-
-    float startTime; // Time when the note was triggered
-};
-std::vector<MidiNote> activeNotes; // Vector to store active MIDI notes
 
 
 std::vector<int> euclideanRhythm(int length, int events, int offset)
@@ -318,18 +251,18 @@ void handleEncoder()
        // Check for falling edge of encoder press
     if (dubby.encoder.FallingEdge()) {
         // Toggle the encoderPressed state for the active rhythm
-        dubby.encoderPressed[activeRhythm] = !dubby.encoderPressed[activeRhythm];
+        dubby.encoderPressed[selectedRhythm] = !dubby.encoderPressed[selectedRhythm];
 
 
-        if (dubby.encoderPressed[activeRhythm]) {
+        if (dubby.encoderPressed[selectedRhythm]) {
             // Reset events to 0 when encoder is pressed
-            dubby.prevEventsValues[activeRhythm] = events[activeRhythm];
-            dubby.preMuteRhythm[activeRhythm] = dubby.rhythms[activeRhythm]; 
-            events[activeRhythm] = 0;
+            dubby.prevEventsValues[selectedRhythm] = events[selectedRhythm];
+            dubby.preMuteRhythm[selectedRhythm] = dubby.rhythms[selectedRhythm]; 
+            events[selectedRhythm] = 0;
         } else {
             // Restore previous events value when encoder is pressed again
-            events[activeRhythm] = dubby.prevEventsValues[activeRhythm];
-            dubby.rhythms[activeRhythm] = dubby.preMuteRhythm[activeRhythm];
+            events[selectedRhythm] = dubby.prevEventsValues[selectedRhythm];
+            dubby.rhythms[selectedRhythm] = dubby.preMuteRhythm[selectedRhythm];
 
         }
     }
@@ -345,20 +278,20 @@ void handleEncoder()
 } else  if (dubby.buttons[0].Pressed() && dubby.buttons[0].TimeHeldMs() > 200){
                     adjustVelocityBaseline = true;
         if(rotationDirection != 0){
-            baselineVelocities[activeRhythm] = std::max(0, std::min(127, baselineVelocities[activeRhythm] + rotationDirection));
+            baselineVelocities[selectedRhythm] = std::max(0, std::min(127, baselineVelocities[selectedRhythm] + rotationDirection));
             } 
         } else  if (dubby.buttons[1].Pressed() && dubby.buttons[1].TimeHeldMs() > 200){
                     adjustVelocityRandomnessAmount = true;
         if(rotationDirection != 0){
-        velocityRandomAmounts[activeRhythm]  = std::max(0.0f, std::min(1.0f, velocityRandomAmounts[activeRhythm]  + rotationDirection * 0.01f));
+        velocityRandomAmounts[selectedRhythm]  = std::max(0.0f, std::min(1.0f, velocityRandomAmounts[selectedRhythm]  + rotationDirection * 0.01f));
             } 
         } else {
          if(rotationDirection != 0){ 
-            activeRhythm = activeRhythm + rotationDirection;
+            selectedRhythm = selectedRhythm + rotationDirection;
          }
 
-    activeRhythm = (activeRhythm % MAX_RHYTHMS + MAX_RHYTHMS) % MAX_RHYTHMS;
-    dubby.activeRhythm = activeRhythm;
+    selectedRhythm = (selectedRhythm % MAX_RHYTHMS + MAX_RHYTHMS) % MAX_RHYTHMS;
+    dubby.selectedRhythm = selectedRhythm;
 }
 
 }
@@ -431,7 +364,7 @@ void selectRhythm()
     // Switch between rhythms
     for(int i = 0; i < MAX_RHYTHMS; ++i)
     {
-        if(activeRhythm == i && dubby.encoderPressed[i] == false)
+        if(selectedRhythm == i && dubby.encoderPressed[i] == false)
         {
             lengthX     = lengths[i];
             eventsXTemp = events[i];
@@ -468,9 +401,7 @@ if(dubby.buttons[0].FallingEdge())
         adjustVelocityBaseline= false;
         } else{
                     offsets[i]++;
-
         }
-        
     }
 
 
@@ -658,6 +589,15 @@ void handleJoystick()
     }
 }
 
+void handleButtons(){
+     // Check if button[2] is pressed and held for more than 2000 ms
+    if (dubby.buttons[0].TimeHeldMs() > 2000 && dubby.buttons[2].TimeHeldMs() > 2000) {
+        // Set events to 0 for each rhythm
+        for (int i = 0; i < MAX_RHYTHMS; ++i) {
+            events[i] = 0;
+        }
+    }
+}
 void generateRhythms()
 {
     for(int i = 0; i < MAX_RHYTHMS; ++i)
@@ -681,22 +621,47 @@ void generateRhythms()
 void printValuesToDisplay()
 {
 
-    if(dubby.buttons[0].Pressed() && dubby.buttons[0].TimeHeldMs() > 200){
+    if(dubby.buttons[0].Pressed() && dubby.buttons[2].Pressed()){
+
+                    countdown -= daisy::System::GetNow() - lastTimeUpdate;
+
+                    lastTimeUpdate = daisy::System::GetNow();
+
+               printStuffLeft = ""; 
+             printStuffRight = "";
+
+             if(countdown > 0){
+            printStuffMiddle = "CLEARING EVENTS IN: " + std::to_string(countdown) + " MS";
+             } else {
+                            printStuffMiddle = "EVENTS SUCCESSFULLY CLEARED";
+
+             } 
+             
+    dubby.UpdateStatusBar(&printStuffMiddle[0], dubby.MIDDLE, 127);
+
+
+ }else if(dubby.buttons[0].Pressed() && dubby.buttons[0].TimeHeldMs() > 200){
+    countdown = 2000;
+    lastTimeUpdate = daisy::System::GetNow();  
+
+
              printStuffLeft = ""; 
              printStuffRight = "";
-            printStuffMiddle = "VELOCITY:" + std::to_string(baselineVelocities[activeRhythm]); 
+            printStuffMiddle = "VELOCITY:" + std::to_string(baselineVelocities[selectedRhythm]); 
 
     dubby.UpdateStatusBar(&printStuffMiddle[0], dubby.MIDDLE, 127);
 
- } else if(dubby.buttons[1].Pressed() && dubby.buttons[1].TimeHeldMs() > 200){
+ }  else if(dubby.buttons[1].Pressed() && dubby.buttons[1].TimeHeldMs() > 200){
                printStuffLeft = ""; 
              printStuffRight = "";
-            printStuffMiddle = "VEL. RAND.:" + std::to_string(velocityRandomAmounts[activeRhythm] ); 
+            printStuffMiddle = "VEL. RANDOM:" + std::to_string((int)(velocityRandomAmounts[selectedRhythm]*100)) + " %"; 
             
     dubby.UpdateStatusBar(&printStuffMiddle[0], dubby.MIDDLE, 127);
 
 
  }else if(dubby.buttons[2].Pressed() && dubby.buttons[2].TimeHeldMs() > 200){
+    countdown = 2000;
+    lastTimeUpdate = daisy::System::GetNow();  
                printStuffLeft = ""; 
              printStuffRight = "";
             printStuffMiddle = "BPM:" + std::to_string((int)bpm); 
@@ -705,6 +670,8 @@ void printValuesToDisplay()
 
 
  }else {
+    countdown = 2000;
+    lastTimeUpdate = daisy::System::GetNow();  
      printStuffLeft = "LE:" + std::to_string(lengthX) + " EV:"
                                  + std::to_string(eventsXTemp) + " OF:"
                                  + std::to_string(offsetX);
@@ -837,7 +804,7 @@ int main(void)
         selectRhythm();
         sendMidiBasedOnRhythms();
         printValuesToDisplay();
-
+        handleButtons();
 
         dubby.elapsedTime = static_cast<float>(daisy::System::GetNow())
                             / 1.0e3f; // Current time in seconds

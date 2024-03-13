@@ -371,7 +371,7 @@ void Dubby::Sequencer()
         int horizontalLinePosition = OLED_HEIGHT / 9 * (i + 2) - 4; // Shifting three pixels up
 
         // Draw rectangle on top of the active rhythm
-        if (i == activeRhythm)
+        if (i == selectedRhythm)
         {
             // Visualize the rhythm with vertical lines for each 1 in the vector
             // Calculate coordinates of the rectangle
@@ -392,7 +392,7 @@ void Dubby::Sequencer()
             int vLinePosition = static_cast<int>((j - startIndex[i]) * columnWidth);
 
             // Check if the current rhythm is the active one
-            if (i == activeRhythm)
+            if (i == selectedRhythm)
             {
                 if (currentRhythm[j] == 1)
                 {
@@ -411,11 +411,11 @@ void Dubby::Sequencer()
             }
         }
 
-        if (encoderPressed[i] && i == activeRhythm)
+        if (encoderPressed[i] && i == selectedRhythm)
         {
             display.DrawLine(0, horizontalLinePosition + 3, OLED_WIDTH - 1, horizontalLinePosition + 3, false);
         }
-        else if (encoderPressed[i] && i != activeRhythm)
+        else if (encoderPressed[i] && i != selectedRhythm)
         {
             display.DrawLine(0, horizontalLinePosition + 3, OLED_WIDTH - 1, horizontalLinePosition + 3, true);
         }
