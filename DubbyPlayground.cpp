@@ -55,17 +55,11 @@ void HandleMidiMessage(MidiEvent m)
         case NoteOn:
         {
             NoteOnEvent p = m.AsNoteOn();
-
-            std::string stra = std::to_string(p.note) + " ON";
-            dubby.UpdateStatusBar(&stra[0], dubby.MIDDLE, 125);
-    
             break;
         }
         case NoteOff:
         {
             NoteOffEvent p = m.AsNoteOff();
-            std::string stra = std::to_string(p.note) + " ON";
-            dubby.UpdateStatusBar(&stra[0], dubby.MIDDLE, 125);
             break;
         }
         default: break;
