@@ -13,6 +13,8 @@
 
 #define AUDIO_BLOCK_SIZE 128 
 
+#define NUM_AUDIO_CHANNELS 4
+
 namespace daisy
 {
 class Dubby
@@ -287,8 +289,13 @@ class Dubby
     int mixerPageSelected = INPUTS;
 
     float audioGains[2][4] = { { 0.8f, 0.8f, 0.8f, 0.8f}, { 0.8f, 0.8f, 0.8f, 0.8f} }; // 0 => INPUTS, 1 => OUTPUTS 
+    
+    double sumSquaredIns[4] = { 0.0f };
+    double sumSquaredOuts[4] = { 0.0f };
 
     MidiUsbHandler midi_usb;
+
+    int globalBPM = 120;
 
   private:
 
