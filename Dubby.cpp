@@ -178,6 +178,8 @@ void Dubby::UpdateDisplay()
             if (encoder.Increment() && !windowSelectorActive && !isSubMenuActive) UpdatePreferencesMenuList(encoder.Increment());
             else if (encoder.Increment() && !windowSelectorActive && isSubMenuActive) UpdatePreferencesSubMenuList(encoder.Increment(), preferencesMenuItemSelected);
             break;
+        case WIN4:
+        visualizeKnobValues();
         default:
             break;
     }
@@ -276,6 +278,60 @@ void Dubby::ClearPane()
     display.DrawRect(PANE_X_START - 1, PANE_Y_START - 1, PANE_X_END + 1, PANE_Y_END + 12, false, true);
 }
 
+void Dubby::visualizeKnobValues() {
+    // Clear the pane
+    ClearPane();
+    int barWidth = OLED_WIDTH / 5;
+    int numBars = 4;
+
+    int barSpacing = (OLED_WIDTH - (numBars * barWidth)) / (numBars - 1);
+
+    // Get knob value
+    float knobValue1 = GetKnobValue(CTRL_1);
+    float knobValue2 = GetKnobValue(CTRL_2);
+    float knobValue3 = GetKnobValue(CTRL_3);
+    float knobValue4 = GetKnobValue(CTRL_4);
+
+    // Calculate the number of lines to draw
+    int numLines1 = static_cast<int>(knobValue1 * (OLED_HEIGHT-30));
+    int numLines2 = static_cast<int>(knobValue2 * (OLED_HEIGHT-30));
+    int numLines3 = static_cast<int>(knobValue3 * (OLED_HEIGHT-30));
+    int numLines4 = static_cast<int>(knobValue4 * (OLED_HEIGHT-30));
+
+    // Draw the first bar
+    for (int i = OLED_HEIGHT - 1; i >= OLED_HEIGHT - numLines1; --i) {
+        display.DrawLine(0, i, barWidth - 1, i, true);
+    }
+
+    // Draw the second bar
+    for (int i = OLED_HEIGHT - 1; i >= OLED_HEIGHT - numLines2; --i) {
+        display.DrawLine(barWidth + barSpacing, i, (2 * barWidth) + barSpacing - 1, i, true);
+    }
+
+    // Draw the third bar
+    for (int i = OLED_HEIGHT - 1; i >= OLED_HEIGHT - numLines3; --i) {
+        display.DrawLine((2 * (barWidth + barSpacing)), i, (3 * barWidth) + (2 * barSpacing) - 1, i, true);
+    }
+
+    // Draw the fourth bar
+    for (int i = OLED_HEIGHT - 1; i >= OLED_HEIGHT - numLines4; --i) {
+        display.DrawLine((3 * (barWidth + barSpacing)), i, (4 * barWidth) + (3 * barSpacing) - 1, i, true);
+    }
+
+    // Draw labels above each bar
+    display.SetCursor(0, 20);
+    display.WriteString("DEPTH", Font_4x5, true);
+    display.SetCursor(barWidth + barSpacing , 20);
+    display.WriteString("RATE", Font_4x5, true);
+    display.SetCursor(2 * (barWidth + barSpacing) , 20);
+    display.WriteString("FB", Font_4x5, true);
+    display.SetCursor(3 * (barWidth + barSpacing) , 20);
+    display.WriteString("Knob4", Font_4x5, true);
+
+        display.Update();
+
+}
+
 void Dubby::UpdateMixerPane() 
 {
     int increment = encoder.Increment();
@@ -340,7 +396,8 @@ void Dubby::UpdateWindowList()
             DisplayPreferencesMenuList(0);
             break;
         case WIN4:
-            UpdateStatusBar("PANE 4", LEFT); 
+            UpdateStatusBar("PHASEDUB", LEFT); 
+            visualizeKnobValues();
             break;
         case WIN5:
             display.SetCursor(10, 15);

@@ -15,6 +15,7 @@
 
 #define NUM_AUDIO_CHANNELS 4
 
+
 namespace daisy
 {
 class Dubby
@@ -247,7 +248,7 @@ class Dubby
     void SwitchMIDIOutThru(bool state);
 
     void ClearPane();
-
+    void visualizeKnobValues();
     void UpdateStatusBar(char* text, StatusBarSide side, int width = 40); // side = 0 => left, side = 1 => right
 
     DaisySeed seed; 

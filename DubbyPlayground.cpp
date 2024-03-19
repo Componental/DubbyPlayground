@@ -1,14 +1,16 @@
 
 #include "daisysp.h"
 #include "Dubby.h"
-
 #include "implementations/includes.h"
-
+#include "PhaserCustom.cpp"
 using namespace daisy;
 using namespace daisysp;
-
 Dubby dubby;
+WhiteNoise noise;
 
+PhaserCustom phaserX;
+
+//PhaserCustom phaser1 (3, 1, 0.5f, 0.4);
 void MonitorMidi();
 void HandleMidiUartMessage(MidiEvent m);
 void HandleMidiUsbMessage(MidiEvent m);
@@ -23,8 +25,9 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
         {
             float _in = SetGains(dubby, j, i, in, out);
 
+            float testNoise = noise.Process()*0.01;
             // === AUDIO CODE HERE ===================
-
+            out [j][i]= phaserX.Update(testNoise);
             // =======================================
 
             CalculateRMS(dubby, _in, out[j][i], j, sumSquared);
@@ -35,16 +38,36 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
     SetRMSValues(dubby, sumSquared);
 }
 
+void handleKnobs(){
+   // Get the knob values
+    float depth = dubby.GetKnobValue(dubby.CTRL_1);
+    float rate = dubby.GetKnobValue(dubby.CTRL_2) * 8;
+    float feedback = dubby.GetKnobValue(dubby.CTRL_3);
 
+    // Apply limits to feedback parameter
+    const float minFeedback = 0.0f;
+    const float maxFeedback = 0.99f;
+    feedback = std::min(maxFeedback, std::max(minFeedback, feedback));
 
+    // Update the PhaserCustom parameters
+    phaserX.Depth(depth);
+    phaserX.Rate(rate);
+    phaserX.Feedback(feedback);
+}
 int main(void)
 {
     Init(dubby);
 	dubby.seed.StartAudio(AudioCallback);
-
+    noise.Init();
 	while(1) { 
         Monitor(dubby);
         MonitorMidi();
+        handleKnobs();
+
+
+
+         if(dubby.buttons[3].TimeHeldMs() > 1000){dubby.ResetToBootloader();}
+
 	}
 }
 
