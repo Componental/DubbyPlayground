@@ -9,6 +9,10 @@ using namespace daisysp;
 
 Dubby dubby;
 
+static LadderFilter flt;
+static Oscillator osc, lfo;
+
+
 void MonitorMidi();
 void HandleMidiUartMessage(MidiEvent m);
 void HandleMidiUsbMessage(MidiEvent m);
@@ -16,6 +20,7 @@ void HandleMidiUsbMessage(MidiEvent m);
 void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, size_t size)
 {
     double sumSquared[2][NUM_AUDIO_CHANNELS] = { 0.0f };
+    float saw, freq, output;
 
 	for (size_t i = 0; i < size; i++)
 	{
@@ -24,6 +29,11 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
             float _in = SetGains(dubby, j, i, in, out);
 
             // === AUDIO CODE HERE ===================
+        saw  = osc.Process();
+
+        output = flt.Process(saw) * 0.1;
+
+        out[j][i] = output;
 
             // =======================================
 
@@ -35,16 +45,49 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
     SetRMSValues(dubby, sumSquared);
 }
 
+void handleKnobs(){
+   // Get the knob values
+    float res = dubby.GetKnobValue(dubby.CTRL_1) ;
+    float drive = dubby.GetKnobValue(dubby.CTRL_2);
+    float cutOff = dubby.GetKnobValue(dubby.CTRL_3)*10000;
+
+
+    // Update the filter parameters
+    flt.SetRes(res);
+    flt.SetInputDrive(drive);
+        flt.SetFreq(cutOff);
+
+}
 
 
 int main(void)
 {
     Init(dubby);
 	dubby.seed.StartAudio(AudioCallback);
+    float sample_rate = dubby.seed.AudioSampleRate();
+  // initialize Moogladder object
+    flt.Init(sample_rate);
+
+    // set parameters for sine oscillator object
+    lfo.Init(sample_rate);
+    lfo.SetWaveform(Oscillator::WAVE_TRI);
+    lfo.SetAmp(1);
+    lfo.SetFreq(.4);
+
+    // set parameters for sine oscillator object
+    osc.Init(sample_rate);
+    osc.SetWaveform(Oscillator::WAVE_POLYBLEP_SAW);
+    osc.SetFreq(100);
+    osc.SetAmp(0.25);
 
 	while(1) { 
         Monitor(dubby);
         MonitorMidi();
+
+        handleKnobs();
+                 if(dubby.buttons[3].TimeHeldMs() > 1000){dubby.ResetToBootloader();}
+
+
 	}
 }
 

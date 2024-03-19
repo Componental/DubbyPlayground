@@ -178,6 +178,8 @@ void Dubby::UpdateDisplay()
             if (encoder.Increment() && !windowSelectorActive && !isSubMenuActive) UpdatePreferencesMenuList(encoder.Increment());
             else if (encoder.Increment() && !windowSelectorActive && isSubMenuActive) UpdatePreferencesSubMenuList(encoder.Increment(), preferencesMenuItemSelected);
             break;
+        case WIN4:
+visualizeKnobValues(knobCount, customLabels);
         default:
             break;
     }
@@ -275,7 +277,37 @@ void Dubby::ClearPane()
 {
     display.DrawRect(PANE_X_START - 1, PANE_Y_START - 1, PANE_X_END + 1, PANE_Y_END + 12, false, true);
 }
+void Dubby::visualizeKnobValues(int numKnobs, const std::vector<std::string>& knobLabels) {
+    // Clear the pane
+    ClearPane();
+    
+    int barWidth = OLED_WIDTH / (numKnobs + 1); // Adjusting for number of knobs
+    int barSpacing = (OLED_WIDTH - (numKnobs * barWidth)) / (numKnobs - 1);
 
+    // Get knob values based on the number of knobs
+    float knobValues[4] = {0}; // Assuming max 4 knobs
+    for (int i = 0; i < numKnobs; ++i) {
+        knobValues[i] = GetKnobValue(static_cast<Ctrl>(i));
+    }
+
+    // Draw bars for each knob
+    for (int i = 0; i < numKnobs; ++i) {
+        int numLines = static_cast<int>(knobValues[i] * (OLED_HEIGHT - 30));
+        int startX = i * (barWidth + barSpacing);
+        int endX = startX + barWidth - 1;
+
+        // Draw the bar
+        for (int j = OLED_HEIGHT - 1; j >= OLED_HEIGHT - numLines; --j) {
+            display.DrawLine(startX, j, endX, j, true);
+        }
+
+        // Draw custom label above each bar
+        display.SetCursor(startX, 20);
+        display.WriteString(knobLabels[i].c_str(), Font_4x5, true);
+    }
+
+    display.Update();
+}
 void Dubby::UpdateMixerPane() 
 {
     int increment = encoder.Increment();
@@ -340,7 +372,8 @@ void Dubby::UpdateWindowList()
             DisplayPreferencesMenuList(0);
             break;
         case WIN4:
-            UpdateStatusBar("PANE 4", LEFT); 
+            UpdateStatusBar("LADDER FILTER", LEFT); 
+visualizeKnobValues(knobCount, customLabels);
             break;
         case WIN5:
             display.SetCursor(10, 15);
