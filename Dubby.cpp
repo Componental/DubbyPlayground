@@ -179,7 +179,7 @@ void Dubby::UpdateDisplay()
             else if (encoder.Increment() && !windowSelectorActive && isSubMenuActive) UpdatePreferencesSubMenuList(encoder.Increment(), preferencesMenuItemSelected);
             break;
         case WIN4:
-        visualizeKnobValues();
+visualizeKnobValues(knobCount, customLabels);
         default:
             break;
     }
@@ -278,59 +278,54 @@ void Dubby::ClearPane()
     display.DrawRect(PANE_X_START - 1, PANE_Y_START - 1, PANE_X_END + 1, PANE_Y_END + 12, false, true);
 }
 
-void Dubby::visualizeKnobValues() {
+void Dubby::updateKnobValues(const std::vector<float>& values) {
+    knobValuesForPrint.clear(); // Clear the existing values
+    knobValuesForPrint.insert(knobValuesForPrint.end(), values.begin(), values.end());
+}
+
+
+void Dubby::visualizeKnobValues(int numKnobs, const std::vector<std::string>& knobLabels) {
     // Clear the pane
     ClearPane();
-    int barWidth = OLED_WIDTH / 5;
-    int numBars = 4;
+    
+    int barWidth = OLED_WIDTH / (numKnobs + 1); // Adjusting for number of knobs
+    int barSpacing = (OLED_WIDTH - (numKnobs * barWidth)) / (numKnobs - 1);
 
-    int barSpacing = (OLED_WIDTH - (numBars * barWidth)) / (numBars - 1);
-
-    // Get knob value
-    float knobValue1 = GetKnobValue(CTRL_1);
-    float knobValue2 = GetKnobValue(CTRL_2);
-    float knobValue3 = GetKnobValue(CTRL_3);
-    float knobValue4 = GetKnobValue(CTRL_4);
-
-    // Calculate the number of lines to draw
-    int numLines1 = static_cast<int>(knobValue1 * (OLED_HEIGHT-30));
-    int numLines2 = static_cast<int>(knobValue2 * (OLED_HEIGHT-30));
-    int numLines3 = static_cast<int>(knobValue3 * (OLED_HEIGHT-30));
-    int numLines4 = static_cast<int>(knobValue4 * (OLED_HEIGHT-30));
-
-    // Draw the first bar
-    for (int i = OLED_HEIGHT - 1; i >= OLED_HEIGHT - numLines1; --i) {
-        display.DrawLine(0, i, barWidth - 1, i, true);
+    // Get knob values based on the number of knobs
+    float knobValues[4] = {0}; // Assuming max 4 knobs
+    for (int i = 0; i < numKnobs; ++i) {
+        knobValues[i] = GetKnobValue(static_cast<Ctrl>(i));
     }
 
-    // Draw the second bar
-    for (int i = OLED_HEIGHT - 1; i >= OLED_HEIGHT - numLines2; --i) {
-        display.DrawLine(barWidth + barSpacing, i, (2 * barWidth) + barSpacing - 1, i, true);
+    // Draw bars for each knob
+    for (int i = 0; i < numKnobs; ++i) {
+        int numLines = static_cast<int>(knobValues[i] * (OLED_HEIGHT - 30));
+        int startX = i * (barWidth + barSpacing);
+        int endX = startX + barWidth - 1;
+
+        // Draw the bar
+        for (int j = OLED_HEIGHT - 1; j >= OLED_HEIGHT - numLines; --j) {
+            display.DrawLine(startX, j, endX, j, true);
+        }
+
+        // Draw custom label above each bar
+        display.SetCursor(startX, 14);
+        display.WriteString(knobLabels[i].c_str(), Font_4x5, true);
+    
+            // Draw knob value below the label
+        // Draw knob value below the label
+        display.SetCursor(startX, 24);
+        // Format knob value to have only two decimal places
+        char formattedValue[10]; // Assuming maximum length of formatted value is 5 characters (including decimal point and null terminator)
+        snprintf(formattedValue, 10, "%.2f", knobValuesForPrint[i]);
+        display.WriteString(formattedValue, Font_4x5, true);
     }
 
-    // Draw the third bar
-    for (int i = OLED_HEIGHT - 1; i >= OLED_HEIGHT - numLines3; --i) {
-        display.DrawLine((2 * (barWidth + barSpacing)), i, (3 * barWidth) + (2 * barSpacing) - 1, i, true);
-    }
+    
 
-    // Draw the fourth bar
-    for (int i = OLED_HEIGHT - 1; i >= OLED_HEIGHT - numLines4; --i) {
-        display.DrawLine((3 * (barWidth + barSpacing)), i, (4 * barWidth) + (3 * barSpacing) - 1, i, true);
-    }
-
-    // Draw labels above each bar
-    display.SetCursor(0, 20);
-    display.WriteString("DEPTH", Font_4x5, true);
-    display.SetCursor(barWidth + barSpacing , 20);
-    display.WriteString("RATE", Font_4x5, true);
-    display.SetCursor(2 * (barWidth + barSpacing) , 20);
-    display.WriteString("FB", Font_4x5, true);
-    display.SetCursor(3 * (barWidth + barSpacing) , 20);
-    display.WriteString("Knob4", Font_4x5, true);
-
-        display.Update();
-
+    display.Update();
 }
+
 
 void Dubby::UpdateMixerPane() 
 {
@@ -397,7 +392,7 @@ void Dubby::UpdateWindowList()
             break;
         case WIN4:
             UpdateStatusBar("PHASEDUB", LEFT); 
-            visualizeKnobValues();
+visualizeKnobValues(knobCount, customLabels);
             break;
         case WIN5:
             display.SetCursor(10, 15);

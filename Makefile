@@ -4,7 +4,7 @@ TARGET = DubbyPlayground
 APP_TYPE=BOOT_SRAM
 
 # Sources
-CPP_SOURCES = / DubbyPlayground.cpp / Dubby.cpp / ui/DubbyEncoder.cpp / fonts/dubby_oled_fonts.cpp / PhaserCustom.cpp
+CPP_SOURCES = / DubbyPlayground.cpp / Dubby.cpp / ui/DubbyEncoder.cpp / fonts/dubby_oled_fonts.cpp / PhaserX.cpp / sinetable.cpp
 
 # Library Locations
 LIBDAISY_DIR = libDaisy

@@ -6,7 +6,7 @@
 
 #include <iostream>
 #include <string>
-
+#include <vector>
 #include "ui/DubbyEncoder.h"
 
 #include "./bitmaps/bmps.h"
@@ -14,7 +14,6 @@
 #define AUDIO_BLOCK_SIZE 128 
 
 #define NUM_AUDIO_CHANNELS 4
-
 
 namespace daisy
 {
@@ -248,9 +247,15 @@ class Dubby
     void SwitchMIDIOutThru(bool state);
 
     void ClearPane();
-    void visualizeKnobValues();
+
     void UpdateStatusBar(char* text, StatusBarSide side, int width = 40); // side = 0 => left, side = 1 => right
 
+    int knobCount = 3; 
+    std::vector<std::string> customLabels = {"DEPTH", "RATE", "FB", "Label4"};
+    void updateKnobValues(const std::vector<float>& values);
+    std::vector<float> knobValuesForPrint;
+
+    void visualizeKnobValues(int numKnobs, const std::vector<std::string>& knobLabels);
     DaisySeed seed; 
 
     WindowItems windowItemSelected = (WindowItems)0;

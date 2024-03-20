@@ -3,12 +3,13 @@
 #include "Dubby.h"
 #include "implementations/includes.h"
 #include "PhaserCustom.cpp"
+#include "PhaserX.h"
 using namespace daisy;
 using namespace daisysp;
 Dubby dubby;
 WhiteNoise noise;
 
-PhaserCustom phaserX;
+//Phaser  DSY_SDRAM_BSS   phaser;
 
 //PhaserCustom phaser1 (3, 1, 0.5f, 0.4);
 void MonitorMidi();
@@ -25,9 +26,8 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
         {
             float _in = SetGains(dubby, j, i, in, out);
 
-            float testNoise = noise.Process()*0.01;
             // === AUDIO CODE HERE ===================
-            out [j][i]= phaserX.Update(testNoise);
+            out [j][i]= Phaser_compute(_in);
             // =======================================
 
             CalculateRMS(dubby, _in, out[j][i], j, sumSquared);
@@ -40,25 +40,37 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
 
 void handleKnobs(){
    // Get the knob values
-    float depth = dubby.GetKnobValue(dubby.CTRL_1);
-    float rate = dubby.GetKnobValue(dubby.CTRL_2) * 8;
-    float feedback = dubby.GetKnobValue(dubby.CTRL_3);
+    float depth = dubby.GetKnobValue(dubby.CTRL_1)*127;
+    float rate = dubby.GetKnobValue(dubby.CTRL_2)*127;
+    float feedback = dubby.GetKnobValue(dubby.CTRL_3)*127;
 
-    // Apply limits to feedback parameter
-    const float minFeedback = 0.0f;
-    const float maxFeedback = 0.99f;
-    feedback = std::min(maxFeedback, std::max(minFeedback, feedback));
+    
+
 
     // Update the PhaserCustom parameters
-    phaserX.Depth(depth);
-    phaserX.Rate(rate);
-    phaserX.Feedback(feedback);
-}
+    
+    Phaser_Wet_set(depth);
+    Phaser_Rate_set(rate);
+    Phaser_Feedback_set(feedback);
+
+      std::vector<float>    knobValues = {depth, rate, feedback};
+
+    // Update knob values in Dubby class
+    dubby.updateKnobValues(knobValues);
+}   
+
+  
+
 int main(void)
 {
     Init(dubby);
+         float sample_rate = dubby.seed.AudioSampleRate();
+
+PhaserInit();
+
 	dubby.seed.StartAudio(AudioCallback);
     noise.Init();
+    
 	while(1) { 
         Monitor(dubby);
         MonitorMidi();
