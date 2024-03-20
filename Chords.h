@@ -3,12 +3,10 @@
 
 
 #include <array>
+#include "Dubby.h"
 
 // Define the default note
 #define DEFAULT_NOTE 60 // Change this value to your desired default note
-
-// Define the maximum number of rhythms
-#define MAX_RHYTHMS 8 // Change this value to your desired maximum number of rhythms
 
 
 // Define the chromatic chord
@@ -83,4 +81,5 @@ enum ScaleType {
     MAJOR7
 };
 
+int numberOfChords = CHROMATIC-MAJOR7 + 1;
 #endif CHORDS_H

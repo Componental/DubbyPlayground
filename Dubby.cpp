@@ -334,7 +334,6 @@ void Dubby::Sequencer()
     // Visualize each rhythm
     for (int i = 0; i < MAX_RHYTHMS; ++i)
     {
-
         // Determine the rhythm and length based on the iteration
         std::vector<int> currentRhythm;
         int currentLength = 0;
