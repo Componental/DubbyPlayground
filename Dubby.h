@@ -251,7 +251,9 @@ class Dubby
     void UpdateStatusBar(char* text, StatusBarSide side, int width = 40); // side = 0 => left, side = 1 => right
 
     int knobCount = 3; 
-    std::vector<std::string> customLabels = {"RES", "DRIVE", "CUTOFF", "Label4"};
+    std::vector<std::string> customLabels = {"InGAIN", "RES", "CUTOFF", "Label4"};
+    void updateKnobValues(const std::vector<float>& values);
+    std::vector<float> knobValues;
 
     void visualizeKnobValues(int numKnobs, const std::vector<std::string>& knobLabels);
     DaisySeed seed; 

@@ -31,7 +31,7 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
             // === AUDIO CODE HERE ===================
         saw  = osc.Process();
 
-        output = flt.Process(saw) * 0.1;
+        output = flt.Process(_in);
 
         out[j][i] = output;
 
@@ -47,15 +47,29 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
 
 void handleKnobs(){
    // Get the knob values
-    float res = dubby.GetKnobValue(dubby.CTRL_1) ;
-    float drive = dubby.GetKnobValue(dubby.CTRL_2);
-    float cutOff = dubby.GetKnobValue(dubby.CTRL_3)*10000;
+       float inGain = dubby.GetKnobValue(dubby.CTRL_1)*4;
+    float res = dubby.GetKnobValue(dubby.CTRL_2) ;
+    float cutOffKnobValue = dubby.GetKnobValue(dubby.CTRL_3);
+
+
+    // Map the knob value to a logarithmic scale for cutoff frequency
+    float minCutoff = 5.0f; // Minimum cutoff frequency in Hz
+    float maxCutoff = 7000.0f; // Maximum cutoff frequency in Hz
+    float mappedCutoff = daisysp::fmap(cutOffKnobValue, minCutoff, maxCutoff, daisysp::Mapping::LOG);
 
 
     // Update the filter parameters
-    flt.SetRes(res);
-    flt.SetInputDrive(drive);
-        flt.SetFreq(cutOff);
+        flt.SetInputDrive(inGain);
+        flt.SetRes(res);
+        flt.SetFreq(mappedCutoff);
+
+
+
+
+    std::vector<float>    knobValues = {inGain, res, (mappedCutoff*maxCutoff)};
+
+    // Update knob values in Dubby class
+    dubby.updateKnobValues(knobValues);
 
 }
 

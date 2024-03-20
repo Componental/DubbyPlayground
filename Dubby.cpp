@@ -277,6 +277,13 @@ void Dubby::ClearPane()
 {
     display.DrawRect(PANE_X_START - 1, PANE_Y_START - 1, PANE_X_END + 1, PANE_Y_END + 12, false, true);
 }
+
+void Dubby::updateKnobValues(const std::vector<float>& values) {
+    knobValues.clear(); // Clear the existing values
+    knobValues.insert(knobValues.end(), values.begin(), values.end());
+}
+
+
 void Dubby::visualizeKnobValues(int numKnobs, const std::vector<std::string>& knobLabels) {
     // Clear the pane
     ClearPane();
@@ -302,12 +309,24 @@ void Dubby::visualizeKnobValues(int numKnobs, const std::vector<std::string>& kn
         }
 
         // Draw custom label above each bar
-        display.SetCursor(startX, 20);
+        display.SetCursor(startX, 14);
         display.WriteString(knobLabels[i].c_str(), Font_4x5, true);
+    
+            // Draw knob value below the label
+        // Draw knob value below the label
+        display.SetCursor(startX, 24);
+        // Format knob value to have only two decimal places
+        char formattedValue[6]; // Assuming maximum length of formatted value is 5 characters (including decimal point and null terminator)
+        snprintf(formattedValue, 6, "%.2f", knobValues[i]);
+        display.WriteString(formattedValue, Font_4x5, true);
     }
+
+    
 
     display.Update();
 }
+
+
 void Dubby::UpdateMixerPane() 
 {
     int increment = encoder.Increment();
