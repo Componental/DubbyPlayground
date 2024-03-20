@@ -131,6 +131,33 @@ void Dubby::InitDisplay()
     display.Init(disp_cfg);
 }
 
+void Dubby::SetAudioInGain(AudioIns in, float gain)
+{
+    if (gain > 1.0f) gain = 1.0f;
+    else if (gain < 0.0f) gain = 0.0f;
+
+    audioGains[0][in] = gain * 0.8f;
+}
+
+float Dubby::GetAudioInGain(AudioIns in)
+{
+    return audioGains[0][in];
+}
+
+void Dubby::SetAudioOutGain(AudioOuts out, float gain)
+{
+    if (gain > 1.0f) gain = 1.0f;
+    else if (gain < 0.0f) gain = 0.0f;
+
+    audioGains[0][out] = gain * 0.8f;
+}
+
+float Dubby::GetAudioOutGain(AudioOuts out)
+{
+    return audioGains[1][out];
+}
+
+
 void Dubby::UpdateDisplay() 
 { 
     if (encoder.TimeHeldMs() > ENCODER_LONGPRESS_THRESHOLD) 

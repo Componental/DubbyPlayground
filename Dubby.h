@@ -21,6 +21,22 @@ class Dubby
 {
   public:
 
+    enum AudioIns
+    {
+        IN1,
+        IN2,
+        IN3, 
+        IN4
+    };
+
+    enum AudioOuts
+    {
+        OUT1,
+        OUT2,
+        OUT3, 
+        OUT4
+    };
+
     enum WindowItems 
     { 
         WIN1, 
@@ -202,6 +218,14 @@ class Dubby
 
     void Init();
 
+    void SetAudioInGain(AudioIns in, float gain);
+
+    float GetAudioInGain(AudioIns in);
+    
+    void SetAudioOutGain(AudioOuts out, float gain);
+
+    float GetAudioOutGain(AudioOuts out);
+
     void UpdateDisplay();
 
     void DrawLogo();
@@ -288,7 +312,6 @@ class Dubby
 
     int mixerPageSelected = INPUTS;
 
-    float audioGains[2][4] = { { 0.8f, 0.8f, 0.8f, 0.8f}, { 0.8f, 0.8f, 0.8f, 0.8f} }; // 0 => INPUTS, 1 => OUTPUTS 
     
     double sumSquaredIns[4] = { 0.0f };
     double sumSquaredOuts[4] = { 0.0f };
@@ -313,6 +336,9 @@ class Dubby
     bool isEncoderPressed = false;
     bool wasEncoderLongPressed = false;
     unsigned long encoderPressStartTime = 0;
+
+    
+    float audioGains[2][4] = { { 0.8f, 0.8f, 0.8f, 0.8f}, { 0.8f, 0.8f, 0.8f, 0.8f} }; // 0 => INPUTS, 1 => OUTPUTS 
 };
 
 }

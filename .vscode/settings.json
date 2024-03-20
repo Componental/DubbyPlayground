@@ -64,6 +64,10 @@
         "variant": "cpp",
         "vector": "cpp",
         "algorithm": "cpp",
-        "ranges": "cpp"
+        "ranges": "cpp",
+        "*.tcc": "cpp",
+        "functional": "cpp",
+        "type_traits": "cpp",
+        "utility": "cpp"
     }
 }
