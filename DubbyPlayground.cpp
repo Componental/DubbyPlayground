@@ -9,8 +9,10 @@ using namespace daisysp;
 
 Dubby dubby;
 
-static LadderFilter flt;
-static Oscillator osc, lfo;
+static LadderFilter fltLeft;
+static LadderFilter fltRight;
+
+float outGain;
 
 
 void MonitorMidi();
@@ -20,20 +22,23 @@ void HandleMidiUsbMessage(MidiEvent m);
 void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, size_t size)
 {
     double sumSquared[2][NUM_AUDIO_CHANNELS] = { 0.0f };
-    float saw, freq, output;
 
 	for (size_t i = 0; i < size; i++)
 	{
         for (int j = 0; j < NUM_AUDIO_CHANNELS; j++) 
         {
-            float _in = SetGains(dubby, j, i, in, out);
+                        float _in = SetGains(dubby, j, i, in, out);
+
+            float _inLeft = SetGains(dubby, 0, i, in, out);
+            float _inRight = SetGains(dubby, 1, i, in, out);
 
             // === AUDIO CODE HERE ===================
-        saw  = osc.Process();
 
-        output = flt.Process(_in);
+        float outputLeft = fltLeft.Process(_inLeft);
+        float outputRight = fltRight.Process(_inRight);
 
-        out[j][i] = output;
+        out[0][i] = outputLeft * outGain;
+        out[1][i] = outputRight * outGain;
 
             // =======================================
 
@@ -50,29 +55,32 @@ void handleKnobs(){
        float inGain = dubby.GetKnobValue(dubby.CTRL_1)*4;
     float res = dubby.GetKnobValue(dubby.CTRL_2) ;
     float cutOffKnobValue = dubby.GetKnobValue(dubby.CTRL_3);
-
+     outGain = dubby.GetKnobValue(dubby.CTRL_4)*3;
 
     // Map the knob value to a logarithmic scale for cutoff frequency
     float minCutoff = 5.0f; // Minimum cutoff frequency in Hz
-    float maxCutoff = 7000.0f; // Maximum cutoff frequency in Hz
+    float maxCutoff = 17000.f; // Maximum cutoff frequency in Hz
     float mappedCutoff = daisysp::fmap(cutOffKnobValue, minCutoff, maxCutoff, daisysp::Mapping::LOG);
 
+    float roundedCutoff = round(cutOffKnobValue * 1000 + 0.5f)*20.f;
 
     // Update the filter parameters
-        flt.SetInputDrive(inGain);
-        flt.SetRes(res);
-        flt.SetFreq(mappedCutoff);
+        fltLeft.SetInputDrive(inGain);
+        fltLeft.SetRes(res);
+        fltLeft.SetFreq(mappedCutoff);
 
+        fltRight.SetInputDrive(inGain);
+        fltRight.SetRes(res);
+        fltRight.SetFreq(mappedCutoff);
 
-
-
-    std::vector<float>    knobValues = {inGain, res, (mappedCutoff*maxCutoff)};
-
+    std::vector<float>    knobValues = {inGain, res, roundedCutoff,outGain};
     // Update knob values in Dubby class
     dubby.updateKnobValues(knobValues);
-
 }
+// Define an array to hold the string representations of the filter modes
 
+// Function to convert FilterMode enum to string
+// Function to convert FilterMode enum to string
 
 int main(void)
 {
@@ -80,25 +88,22 @@ int main(void)
 	dubby.seed.StartAudio(AudioCallback);
     float sample_rate = dubby.seed.AudioSampleRate();
   // initialize Moogladder object
-    flt.Init(sample_rate);
+    fltLeft.Init(sample_rate);
+    fltRight.Init(sample_rate);
 
-    // set parameters for sine oscillator object
-    lfo.Init(sample_rate);
-    lfo.SetWaveform(Oscillator::WAVE_TRI);
-    lfo.SetAmp(1);
-    lfo.SetFreq(.4);
 
-    // set parameters for sine oscillator object
-    osc.Init(sample_rate);
-    osc.SetWaveform(Oscillator::WAVE_POLYBLEP_SAW);
-    osc.SetFreq(100);
-    osc.SetAmp(0.25);
+
+    LadderFilter::FilterMode currentMode = LadderFilter::FilterMode::LP24;
+
+
 
 	while(1) { 
         Monitor(dubby);
         MonitorMidi();
 
         handleKnobs();
+
+
                  if(dubby.buttons[3].TimeHeldMs() > 1000){dubby.ResetToBootloader();}
 
 
