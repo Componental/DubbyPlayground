@@ -28,6 +28,7 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
 
             // === AUDIO CODE HERE ===================
             out [j][i]= Phaser_compute(_in);
+            
             // =======================================
 
             CalculateRMS(dubby, _in, out[j][i], j, sumSquared);
@@ -40,11 +41,21 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
 
 void handleKnobs(){
    // Get the knob values
-    float depth = dubby.GetKnobValue(dubby.CTRL_1)*127;
-    float rate = dubby.GetKnobValue(dubby.CTRL_2)*127;
-    float feedback = dubby.GetKnobValue(dubby.CTRL_3)*127;
+    float knob1Value = dubby.GetKnobValue(dubby.CTRL_1); // E.G GAIN
+    float knob2Value = dubby.GetKnobValue(dubby.CTRL_2) ; // E.G RESONANCE
+    float knob3Value = dubby.GetKnobValue(dubby.CTRL_3); // E.G CUTOFF
+    float knob4Value = dubby.GetKnobValue(dubby.CTRL_4); // E.G CUTOFF
 
-    
+
+        float depth = knob1Value*127;
+    float rate = knob2Value*127;
+    float feedback = knob3Value*127;
+    float centerFreq = knob4Value*127;
+
+    // Map the knob value to a logarithmic scale for cutoff frequency
+    float minCenterFreq = 20; // Minimum cutoff frequency in Hz
+    float maxCenterFreq = 127; // Maximum cutoff frequency in Hz
+    float mappedCenterFreq = daisysp::fmap(knob4Value, minCenterFreq, maxCenterFreq, daisysp::Mapping::LINEAR);
 
 
     // Update the PhaserCustom parameters
@@ -52,8 +63,8 @@ void handleKnobs(){
     Phaser_Wet_set(depth);
     Phaser_Rate_set(rate);
     Phaser_Feedback_set(feedback);
-
-      std::vector<float>    knobValues = {depth, rate, feedback};
+//Phaser_Center_Freq_set(mappedCenterFreq);
+      std::vector<float>    knobValues = {knob1Value, knob2Value, knob3Value, mappedCenterFreq/127 * 15000};
 
     // Update knob values in Dubby class
     dubby.updateKnobValues(knobValues);

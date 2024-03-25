@@ -37,6 +37,8 @@ void PhaserInit(void);
 void Phaser_Rate_set(uint8_t val);
 void Phaser_Feedback_set(uint8_t val);
 void Phaser_Wet_set(uint8_t val);
+void Phaser_Center_Freq_set(uint8_t val);
+
 float Phaser_compute(float xin);
 void PhaserRate(float rate);
 void PhaserFeedback(float fdb);

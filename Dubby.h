@@ -15,6 +15,8 @@
 
 #define NUM_AUDIO_CHANNELS 4
 
+#define PI_F 3.1415927410125732421875f
+
 namespace daisy
 {
 class Dubby
@@ -251,11 +253,14 @@ class Dubby
     void UpdateStatusBar(char* text, StatusBarSide side, int width = 40); // side = 0 => left, side = 1 => right
 
     int knobCount = 3; 
-    std::vector<std::string> customLabels = {"DEPTH", "RATE", "FB", "Label4"};
-    void updateKnobValues(const std::vector<float>& values);
-    std::vector<float> knobValuesForPrint;
+    std::vector<std::string> customLabels = {"DEPTH", "RATE", " FB", "FREQ"};
+void updateKnobValues(const std::vector<float>& values);
 
+    std::vector<float> knobValuesForPrint;
+    std::string algorithmTitle = "FAMILIAR PHASE";
     void visualizeKnobValues(int numKnobs, const std::vector<std::string>& knobLabels);
+    void visualizeKnobValuesCircle(int numKnobs, const std::vector<std::string>& knobLabels);
+
     DaisySeed seed; 
 
     WindowItems windowItemSelected = (WindowItems)0;

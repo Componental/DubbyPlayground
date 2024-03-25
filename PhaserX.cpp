@@ -26,18 +26,19 @@
 #include "PhaserX.h"
 
 /*---------------------------------------------------------------------*/
-#define MAX_RATE		2.f // in Hz
+#define MAX_RATE		1.f // in Hz
 #define MIN_RATE		0.01f // in Hz
 
 /*This defines the phaser stages
  that is the number of allpass filters
  */
-#define PH_STAGES 20
+#define PH_STAGES 24
 
 /*---------------------------------------------------------------------*/
 
 static float old[PH_STAGES];
 static float f_min, f_max;
+float f_centerFreq, f_spreadFreq;
 static float swrate;
 static float wet;
 static float dmin, dmax; //range
@@ -49,24 +50,39 @@ static float zm1;
 
 /*---------------------------------------------------------------------*/
 void PhaserInit(void) {
-	f_min = 200.f;
-	f_max = 1700.f;
+	f_centerFreq = 1000;
+	f_spreadFreq = 150;
+
+	f_min = f_centerFreq-f_spreadFreq;
+	f_max = f_centerFreq+f_spreadFreq;
 	swrate = 0.1f;
 	fb = 0.7f;
 	wet = 0.3f;
 
 	dmin = 2 * f_min / SAMPLERATE;
-	dmax = 2 * f_max / SAMPLERATE;
+	dmax = 2 * f_max  / SAMPLERATE;
 	lfoInc = _2PI * swrate / SAMPLERATE;
 }
+void Phaser_Center_Freq_set(uint8_t val){
+		f_centerFreq = 15000.f * val / MIDI_MAX;
+	f_spreadFreq = 250;
+
+	f_min = f_centerFreq-f_spreadFreq;
+	f_max = f_centerFreq+f_spreadFreq;
+	dmin = 2 * f_min / SAMPLERATE;
+	dmax = 2 * f_max / SAMPLERATE;
+
+}
+
 /*---------------------------------------------------------------------*/
 void Phaser_Rate_set(uint8_t val) {
 	swrate = (MAX_RATE - MIN_RATE) / MIDI_MAX * val + MIN_RATE;
 	lfoInc = _2PI * swrate / SAMPLERATE;
+	
 }
 /*---------------------------------------------------------------------*/
 void Phaser_Feedback_set(uint8_t val) {
-	fb = 0.999f * val / MIDI_MAX;
+	fb = 0.99f * val / MIDI_MAX;
 }
 /*---------------------------------------------------------------------*/
 void Phaser_Wet_set(uint8_t val) {
@@ -122,3 +138,4 @@ float Phaser_compute(float xin) {
 
 	return yout;
 }
+ 
