@@ -6,7 +6,7 @@
 
 #include <iostream>
 #include <string>
-
+#include <vector>
 #include "ui/DubbyEncoder.h"
 
 #include "./bitmaps/bmps.h"
@@ -14,6 +14,7 @@
 #define AUDIO_BLOCK_SIZE 128 
 
 #define NUM_AUDIO_CHANNELS 4
+#define PI_F 3.1415927410125732421875f
 
 namespace daisy
 {
@@ -249,6 +250,16 @@ class Dubby
     void ClearPane();
 
     void UpdateStatusBar(char* text, StatusBarSide side, int width = 40); // side = 0 => left, side = 1 => right
+
+    int knobCount = 3; 
+    std::vector<std::string> customLabels = {"ACC", "DAMP", "STRUC", "GAIN"};
+    void updateKnobValues(const std::vector<float>& values);
+
+    std::vector<float> knobValuesForPrint;
+    std::string algorithmTitle = "STRINGULAR SYNTH";
+    void visualizeKnobValues(int numKnobs, const std::vector<std::string>& knobLabels, const std::vector<int>& numDecimals);
+    void visualizeKnobValuesCircle(int numKnobs, const std::vector<std::string>& knobLabels, const std::vector<int>& numDecimals);
+    std::vector<int> numDecimals = {2, 2, 2, 2}; // Assuming you have three knobs with different decimal places
 
     DaisySeed seed; 
 
