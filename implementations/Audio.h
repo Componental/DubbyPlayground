@@ -12,8 +12,8 @@ namespace daisy
 
 float SetGains(Dubby& dubby, int channel, size_t sample, AudioHandle::InputBuffer& in, AudioHandle::OutputBuffer& out) 
 {
-    float _in  = dubby.GetAudioInGain((Dubby::AudioIns)channel) * in[channel][sample];
-    out[channel][sample] = dubby.GetAudioOutGain((Dubby::AudioOuts)channel) * _in;
+    float _in  = dubby.audioGains[0][channel] * in[channel][sample];
+    out[channel][sample] = dubby.audioGains[1][channel] * _in;
 
     return _in;
 }

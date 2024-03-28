@@ -6,7 +6,7 @@
 
 #include <iostream>
 #include <string>
-
+#include <vector>
 #include "ui/DubbyEncoder.h"
 
 #include "./bitmaps/bmps.h"
@@ -14,28 +14,13 @@
 #define AUDIO_BLOCK_SIZE 128 
 
 #define NUM_AUDIO_CHANNELS 4
+#define PI_F 3.1415927410125732421875f
 
 namespace daisy
 {
 class Dubby
 {
   public:
-
-    enum AudioIns
-    {
-        IN1,
-        IN2,
-        IN3, 
-        IN4
-    };
-
-    enum AudioOuts
-    {
-        OUT1,
-        OUT2,
-        OUT3, 
-        OUT4
-    };
 
     enum WindowItems 
     { 
@@ -218,14 +203,6 @@ class Dubby
 
     void Init();
 
-    void SetAudioInGain(AudioIns in, float gain);
-
-    float GetAudioInGain(AudioIns in);
-    
-    void SetAudioOutGain(AudioOuts out, float gain);
-
-    float GetAudioOutGain(AudioOuts out);
-
     void UpdateDisplay();
 
     void DrawLogo();
@@ -274,6 +251,16 @@ class Dubby
 
     void UpdateStatusBar(char* text, StatusBarSide side, int width = 40); // side = 0 => left, side = 1 => right
 
+    int knobCount = 4; 
+    std::vector<std::string> customLabels = {"TRE", "RAT", "ATT", "REL"};
+    void updateKnobValues(const std::vector<float>& values);
+
+    std::vector<float> knobValuesForPrint;
+    std::string algorithmTitle = "COMPRESSOR";
+    void visualizeKnobValues(int numKnobs, const std::vector<std::string>& knobLabels, const std::vector<int>& numDecimals);
+    void visualizeKnobValuesCircle(int numKnobs, const std::vector<std::string>& knobLabels, const std::vector<int>& numDecimals);
+    std::vector<int> numDecimals = {2, 2, 2, 2}; // Assuming you have three knobs with different decimal places
+
     DaisySeed seed; 
 
     WindowItems windowItemSelected = (WindowItems)0;
@@ -312,6 +299,7 @@ class Dubby
 
     int mixerPageSelected = INPUTS;
 
+    float audioGains[2][4] = { { 0.8f, 0.8f, 0.8f, 0.8f}, { 0.8f, 0.8f, 0.8f, 0.8f} }; // 0 => INPUTS, 1 => OUTPUTS 
     
     double sumSquaredIns[4] = { 0.0f };
     double sumSquaredOuts[4] = { 0.0f };
@@ -336,9 +324,6 @@ class Dubby
     bool isEncoderPressed = false;
     bool wasEncoderLongPressed = false;
     unsigned long encoderPressStartTime = 0;
-
-    
-    float audioGains[2][4] = { { 0.8f, 0.8f, 0.8f, 0.8f}, { 0.8f, 0.8f, 0.8f, 0.8f} }; // 0 => INPUTS, 1 => OUTPUTS 
 };
 
 }
