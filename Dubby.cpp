@@ -101,6 +101,8 @@ void Dubby::InitButtons()
     buttons[1].Init(seed.GetPin(PIN_GATE_IN_2), 1000);
     buttons[2].Init(seed.GetPin(PIN_GATE_IN_3), 1000);
     buttons[3].Init(seed.GetPin(PIN_GATE_IN_4), 1000);
+
+    joystickButton.Init(seed.GetPin(PIN_JS_CLICK), 1000);
 }
 
 void Dubby::InitMidi()
@@ -687,6 +689,8 @@ void Dubby::ProcessDigitalControls()
 
     
     for (int i = 0; i < 4; i++) buttons[i].Debounce();
+
+    joystickButton.Debounce();
 }
 
 float Dubby::GetKnobValue(Ctrl k)

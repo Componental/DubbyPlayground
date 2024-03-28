@@ -300,6 +300,8 @@ class Dubby
     AnalogControl analogInputs[CTRL_LAST];
     GateIn gateInputs[GATE_IN_LAST];  
     Switch buttons[4];
+    Switch joystickButton;
+
 
     float scope_buffer[AUDIO_BLOCK_SIZE] = {0.f};
     
