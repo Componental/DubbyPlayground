@@ -9,6 +9,8 @@ using namespace daisysp;
 
 Dubby dubby;
 
+
+
 void MonitorMidi();
 void HandleMidiUartMessage(MidiEvent m);
 void HandleMidiUsbMessage(MidiEvent m);
@@ -35,16 +37,47 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
     SetRMSValues(dubby, sumSquared);
 }
 
+void handleKnobs(){
+    float knob1Value = dubby.GetKnobValue(dubby.CTRL_1); // E.G GAIN
+    float knob2Value = dubby.GetKnobValue(dubby.CTRL_2) ; // E.G RESONANCE
+    float knob3Value = dubby.GetKnobValue(dubby.CTRL_3); // E.G CUTOFF
+    float knob4Value = dubby.GetKnobValue(dubby.CTRL_4); // E.G SOMETHING ELSE
+
+
+/*
+    // Map the knob value to a logarithmic scale for cutoff frequency
+    float minCutoff = 5.0f; // Minimum cutoff frequency in Hz
+    float maxCutoff = 7000.0f; // Maximum cutoff frequency in Hz
+    float mappedCutoff = daisysp::fmap(cutOffKnobValue, minCutoff, maxCutoff, daisysp::Mapping::LOG);
+
+*/
+
+
+
+    std::vector<float>    knobValues = {knob1Value, knob2Value, knob3Value, knob4Value};
+
+    // Update knob values in Dubby class
+    dubby.updateKnobValues(knobValues);
+
+
+}
 
 
 int main(void)
 {
     Init(dubby);
 	dubby.seed.StartAudio(AudioCallback);
+    float sample_rate = dubby.seed.AudioSampleRate();
+
 
 	while(1) { 
         Monitor(dubby);
         MonitorMidi();
+
+        handleKnobs();
+                 if(dubby.buttons[3].TimeHeldMs() > 1000){dubby.ResetToBootloader();}
+
+
 	}
 }
 
