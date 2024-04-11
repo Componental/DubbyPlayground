@@ -36,7 +36,7 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
             float _in = SetGains(dubby, j, i, in, out);
             
             float inLeft = in[0][i]*inputGain;
-                        float inRight = in[0][i]*inputGain;
+                        float inRight = in[1][i]*inputGain;
 
             // === AUDIO CODE HERE ===================
             // Process wet signal for left channel
