@@ -24,7 +24,7 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
             float _in = SetGains(dubby, j, i, in, out);
 
             // === AUDIO CODE HERE ===================
-
+            // int i;
             // =======================================
 
             CalculateRMS(dubby, _in, out[j][i], j, sumSquared);
