@@ -317,8 +317,15 @@ void Dubby::visualizeKnobValuesCircle(const std::vector<std::string>& knobLabels
 
     // Define parameters for circular knobs
     int circle_y = 36;          // Y-coordinate of the center of the circle
-    int circle_radius = 8;      // Radius of the circle
-    
+    int circle_radius = 8;
+    int circle_radius_dynamic = int(abs((currentLevels[mixerPageSelected][0] * 5.0f) - 1.0f) * circle_radius+1);      // Radius of the circle
+
+if(GetKnobValue(CTRL_2) > 0.95 && GetKnobValue(CTRL_3) > 0.95) {
+    circle_radius_dynamic = int(abs((currentLevels[mixerPageSelected][0] * 5.0f) - 1.0f) * circle_radius+1);
+
+} else {
+    circle_radius_dynamic = 8;
+}
     // Calculate total width occupied by circles
     int totalWidth = NUM_KNOBS * 2 * circle_radius;
 
@@ -337,11 +344,11 @@ void Dubby::visualizeKnobValuesCircle(const std::vector<std::string>& knobLabels
         float angle = (knobValue * 0.8f * 2 * PI_F) - (PI_F * 1.5f) + 0.2 * PI_F;  // Convert knob value to angle
 
         // Calculate line end position based on knob value
-        int line_end_x = circle_x_offset + static_cast<int>(circle_radius * cos(angle));
-        int line_end_y = circle_y + static_cast<int>(circle_radius * sin(angle));
+        int line_end_x = circle_x_offset + static_cast<int>(circle_radius_dynamic * cos(angle));
+        int line_end_y = circle_y + static_cast<int>(circle_radius_dynamic * sin(angle));
 
         // Draw circular knob
-        display.DrawCircle(circle_x_offset, circle_y, circle_radius, true);
+        display.DrawCircle(circle_x_offset, circle_y, circle_radius_dynamic, true);
 
         // Draw line indicating knob value
         display.DrawLine(circle_x_offset, circle_y, line_end_x, line_end_y, true);
