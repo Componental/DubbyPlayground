@@ -320,6 +320,7 @@ void Dubby::visualizeKnobValuesCircle(const std::vector<std::string>& knobLabels
     int circle_radius = 8;
     int circle_radius_dynamic = int(abs((currentLevels[mixerPageSelected][0] * 5.0f) - 1.0f) * circle_radius+1);      // Radius of the circle
 
+// IF DRIVE AND MIX IS MORE THAN 95% MAKE MOVES
 if(GetKnobValue(CTRL_2) > 0.95 && GetKnobValue(CTRL_3) > 0.95) {
     circle_radius_dynamic = int(abs((currentLevels[mixerPageSelected][0] * 5.0f) - 1.0f) * circle_radius+1);
 
@@ -353,16 +354,18 @@ if(GetKnobValue(CTRL_2) > 0.95 && GetKnobValue(CTRL_3) > 0.95) {
         // Draw line indicating knob value
         display.DrawLine(circle_x_offset, circle_y, line_end_x, line_end_y, true);
 
-                // Draw custom label above each circle
-        display.SetCursor(circle_x_offset - 8, circle_y - 18);
+             // Calculate the position for the label to be centered above the circle
+        int label_x = circle_x_offset - (knobLabels[i].size() * 4) / 2;  // Assuming each character is 4 pixels wide in the selected font
+        int label_y = circle_y - 20;  // Adjust this value to position the label properly above the circle
+
+        // Draw custom label above each circle
+        display.SetCursor(label_x, label_y);
         display.WriteString(knobLabels[i].c_str(), Font_4x5, true);
 
-          // Draw knob value below the label
         // Draw knob value below the label
-        display.SetCursor(circle_x_offset - 8, circle_y + 15);
-        // Format knob value to have only two decimal places
-        char formattedValue[10]; // Assuming maximum length of formatted value is 5 characters (including decimal point and null terminator)
+        char formattedValue[10];
         snprintf(formattedValue, 10, "%.*f", numDecimals[i], knobValuesForPrint[i]);
+        display.SetCursor(circle_x_offset - 8, circle_y + 15);
         display.WriteString(formattedValue, Font_4x5, true);
     }
 

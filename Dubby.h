@@ -281,7 +281,7 @@ class Dubby
 
     void UpdateStatusBar(char* text, StatusBarSide side, int width = 40); // side = 0 => left, side = 1 => right
 
-    std::vector<std::string> customLabels = {"INPUT", "DRIVE", "MIX", "OUTPUT"};
+    std::vector<std::string> customLabels = {"IN", "DRIVE", "MIX", "OUT"};
     void updateKnobValues(const std::vector<float>& values);
 
     std::vector<float> knobValuesForPrint;
