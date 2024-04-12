@@ -2,12 +2,12 @@
 #include "daisysp.h"
 #include "Dubby.h"
 #include "implementations/includes.h"
-#include "PhaserCustom.cpp"
 #include "PhaserX.h"
 using namespace daisy;
 using namespace daisysp;
 Dubby dubby;
 WhiteNoise noise;
+float outputVolume;
 
 //Phaser  DSY_SDRAM_BSS   phaser;
 
@@ -27,7 +27,7 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
             float _in = SetGains(dubby, j, i, in, out);
 
             // === AUDIO CODE HERE ===================
-            out [j][i]= Phaser_compute(_in);
+            out [j][i]= Phaser_compute(_in)*outputVolume;
             
             // =======================================
 
@@ -47,24 +47,25 @@ void handleKnobs(){
     float knob4Value = dubby.GetKnobValue(dubby.CTRL_4); // E.G CUTOFF
 
 
-        float depth = knob1Value*127;
-    float rate = knob2Value*127;
+    float depth = knob1Value*64;
     float feedback = knob3Value*127;
-    float centerFreq = knob4Value*127;
 
-    // Map the knob value to a logarithmic scale for cutoff frequency
-    float minCenterFreq = 20; // Minimum cutoff frequency in Hz
-    float maxCenterFreq = 127; // Maximum cutoff frequency in Hz
-    float mappedCenterFreq = daisysp::fmap(knob4Value, minCenterFreq, maxCenterFreq, daisysp::Mapping::LINEAR);
 
+    float minRate = 0.3f;
+    float maxRate = 127.f;
+    float rate = daisysp::fmap(knob2Value, minRate, maxRate, daisysp::Mapping::LOG);
+
+
+    float minOutputVolume = 0.001f;
+    float maxOutputVolume = 1.f;
+    outputVolume = daisysp::fmap(knob4Value, minOutputVolume, maxOutputVolume, daisysp::Mapping::LOG);
 
     // Update the PhaserCustom parameters
     
     Phaser_Wet_set(depth);
     Phaser_Rate_set(rate);
     Phaser_Feedback_set(feedback);
-//Phaser_Center_Freq_set(mappedCenterFreq);
-      std::vector<float>    knobValues = {knob1Value, knob2Value, knob3Value, mappedCenterFreq/127 * 15000};
+      std::vector<float>    knobValues = {knob1Value, knob2Value, knob3Value, knob4Value};
 
     // Update knob values in Dubby class
     dubby.updateKnobValues(knobValues);

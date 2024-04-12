@@ -26,13 +26,13 @@
 #include "PhaserX.h"
 
 /*---------------------------------------------------------------------*/
-#define MAX_RATE		1.f // in Hz
+#define MAX_RATE		20.f // in Hz
 #define MIN_RATE		0.01f // in Hz
 
 /*This defines the phaser stages
  that is the number of allpass filters
  */
-#define PH_STAGES 24
+#define PH_STAGES 40
 
 /*---------------------------------------------------------------------*/
 
@@ -50,8 +50,8 @@ static float zm1;
 
 /*---------------------------------------------------------------------*/
 void PhaserInit(void) {
-	f_centerFreq = 1000;
-	f_spreadFreq = 150;
+	f_centerFreq = 900;
+	f_spreadFreq = 100;
 
 	f_min = f_centerFreq-f_spreadFreq;
 	f_max = f_centerFreq+f_spreadFreq;
