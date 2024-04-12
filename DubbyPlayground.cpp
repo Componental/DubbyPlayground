@@ -2,7 +2,7 @@
 #include "daisysp.h"
 #include "Dubby.h"
 #include "Compressor.h"
-
+#include "Gate.h"
 #include "implementations/includes.h"
 
 using namespace daisy;
@@ -80,10 +80,12 @@ void handleKnobs(){
     float knob4Value = dubby.GetKnobValue(dubby.CTRL_4); // E.G SOMETHING ELSE
 
 const float newMinDriveVal = 0.4f;
-const float newMaxDriveVal = 0.98f;
+const float newMaxDriveVal = 0.99f;
 float driveVal = (knob2Value * (newMaxDriveVal - newMinDriveVal)) + newMinDriveVal;
 
-    gainReductionVal = knob2Value > 0.6f ? 0.3f : 0.9f - knob2Value;
+    //gainReductionVal = 1;
+        gainReductionVal = knob2Value > 0.5f ? (1.f-(1.3f*0.5f))+knob2Value*0.3f : 1.f - (1.3f*knob2Value)+knob2Value*0.3f;
+
     // Update the PhaserCustom parameters
          wetDry = knob3Value;
         outputVolume = knob4Value;
@@ -108,7 +110,7 @@ inputGain = minGain * exp(knob1Value * log(maxGain / minGain));
 
 
 
-    std::vector<float>    knobValues = {inputGain, driveVal, knob3Value, knob4Value};
+    std::vector<float>    knobValues = {inputGain, knob2Value, knob3Value, knob4Value};
 
     // Update knob values in Dubby class
     dubby.updateKnobValues(knobValues);

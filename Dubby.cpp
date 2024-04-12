@@ -321,8 +321,8 @@ void Dubby::visualizeKnobValuesCircle(const std::vector<std::string>& knobLabels
     int circle_radius_dynamic = int(abs((currentLevels[mixerPageSelected][0] * 5.0f) - 1.0f) * circle_radius+1);      // Radius of the circle
 
 // IF DRIVE AND MIX IS MORE THAN 95% MAKE MOVES
-if(GetKnobValue(CTRL_2) > 0.95 && GetKnobValue(CTRL_3) > 0.95) {
-    circle_radius_dynamic = int(abs((currentLevels[mixerPageSelected][0] * 5.0f) - 1.0f) * circle_radius+1);
+if(GetKnobValue(CTRL_2) > 0.98 && GetKnobValue(CTRL_3) > 0.98) {
+    circle_radius_dynamic = int(abs(((currentLevels[mixerPageSelected][0] + currentLevels[mixerPageSelected][1] + currentLevels[mixerPageSelected][2]  +currentLevels[mixerPageSelected][3])  * 5.0f) - 1.0f) * circle_radius+1);
 
 } else {
     circle_radius_dynamic = 8;
