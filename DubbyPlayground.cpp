@@ -2,7 +2,6 @@
 #include "daisysp.h"
 #include "Dubby.h"
 #include "Compressor.h"
-#include "Gate.h"
 #include "implementations/includes.h"
 
 using namespace daisy;
