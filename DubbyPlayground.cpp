@@ -9,10 +9,7 @@ using namespace daisysp;
 
 Dubby dubby;
 
-Overdrive driveLeft; // Overdrive object for the left channel
-Overdrive driveRight; // Overdrive object for the right channel
-
-//Compressor comp;
+Overdrive drive[4]; // Array of Overdrive objects for each channel
 
 float wetDry;
 float gainReductionVal;
@@ -34,33 +31,18 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
 
             float _in = SetGains(dubby, j, i, in, out);
             
-            float inLeft = in[0][i]*inputGain;
-                        float inRight = in[1][i]*inputGain;
+            float inSignal = in[j][i] * inputGain;
 
-            // === AUDIO CODE HERE ===================
-            // Process wet signal for left channel
-            float wetSignalLeft = driveLeft.Process(inLeft); // Process left input channel
-
-            // Process wet signal for right channel
-            float wetSignalRight = driveRight.Process(inRight); // Process right input channel
-
+            // Process input signal for each channel
+            float wetSignal = drive[j].Process(inSignal);
 
             // Apply dry/wet mix
             const float dryMix = 1.0f - wetDry; // 0 to 1, where 0 is fully wet and 1 is fully dry
             const float wetMix = wetDry;
 
             // Combine dry and wet signals using the mix values
-            float outputLeft =  (wetSignalLeft * 0.3f)*gainReductionVal;
-            float outputRight =  (wetSignalRight * 0.3f)*gainReductionVal;
-
-            // Assign the output to left and right channels
-
-           // out[0][i] = comp.Process(outputLeft);
-           // out[1][i] = comp.Process(outputRight);;
-            out[0][i] = ((inLeft*dryMix)+(outputLeft*wetMix))*outputVolume;
-           out[1][i] = ((inRight*dryMix)+(outputRight*wetMix))*outputVolume;
-
-
+            float outputSignal = wetSignal * gainReductionVal;
+            out[j][i] = ((inSignal * dryMix) + (outputSignal * wetMix)) * outputVolume;
 
             // =======================================
 
@@ -102,9 +84,12 @@ float maxGain = 3.0f;    // Maximum gain value
 // Logarithmic mapping
 inputGain = minGain * exp(knob1Value * log(maxGain / minGain));
 
-   driveLeft.SetDrive(driveVal);
-   driveRight.SetDrive(driveVal);
 
+for (int i = 0; i < 4; i++)
+    {
+        drive[i].SetDrive(driveVal);
+        // Set other parameters for each Overdrive object if needed
+    }
 
 
 
@@ -123,9 +108,11 @@ int main(void)
     Init(dubby);
 	dubby.seed.StartAudio(AudioCallback);
     float sample_rate = dubby.seed.AudioSampleRate();
-    driveLeft.Init();
-    driveRight.Init();
-
+for (int i = 0; i < 4; i++)
+    {
+        drive[i].Init();
+        // Set other parameters for each Overdrive object if needed
+    }
 /*
  comp.Init(sample_rate);
     comp.SetThreshold(-5.f);
