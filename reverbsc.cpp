@@ -116,7 +116,7 @@ int ReverbSc::InitDelayLine(ReverbScDl *lp, int n)
     /* int     i; */
 
     /* calculate length of delay line */
-    lp->buffer_size = DelayLineMaxSamples(sample_rate_, 1, n);
+    lp->buffer_size = DelayLineMaxSamples(sample_rate_, 10, n);
     lp->dummy       = 0;
     lp->write_pos   = 0;
     /* set random seed */
@@ -164,7 +164,7 @@ int ReverbSc::Process(const float &in1,
     }
 
     /* calculate "resultant junction pressure" and mix to input signals */
-
+ 
     a_in_l = a_out_l = a_out_r = 0.0;
     for(n = 0; n < 8; n++)
     {
