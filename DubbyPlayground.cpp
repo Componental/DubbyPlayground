@@ -3,20 +3,21 @@
 #include "Dubby.h"
 #include "reverbsc.h"
 #include "implementations/includes.h"
-#define MAX_DELAY static_cast<size_t>(48000)
+
+#define MAX_DELAY static_cast<size_t>(24000)
 
 using namespace daisy;
 using namespace daisysp;
 float sample_rate;
 Dubby dubby;
 
-ReverbSc DSY_SDRAM_BSS verbLeft;
-ReverbSc DSY_SDRAM_BSS verbRight;
- DelayLine<float, MAX_DELAY> DSY_SDRAM_BSS preDelayLeft;
- DelayLine<float, MAX_DELAY> DSY_SDRAM_BSS preDelayRight;
+const float smoothingFactor =  .0002f;
+static float smoothedKnob1Value = 0.0f;
+float knob1Value;
+ReverbSc DSY_SDRAM_BSS verbLeft, verbRight;
+DelayLine<float, MAX_DELAY> DSY_SDRAM_BSS preDelayLeft, preDelayRight;
 
-//PitchShifter DSY_SDRAM_BSS  pitchshiftLeft;
-//PitchShifter DSY_SDRAM_BSS  pitchshiftRight;
+float wetVolumeAdjustment = 0.8f; 
 
 void MonitorMidi();
 void HandleMidiUartMessage(MidiEvent m);
@@ -25,6 +26,7 @@ void HandleMidiUsbMessage(MidiEvent m);
 void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, size_t size)
 {
     double sumSquared[2][NUM_AUDIO_CHANNELS] = { 0.0f };
+
 
 	for (size_t i = 0; i < size; i++)
 	{
@@ -51,8 +53,16 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
             float wetLeft = processedSampleLeft;
             float wetRight = processedSampleRight;
 
-            float preDelayedWetLeft = preDelayLeft.Read();
-            float preDelayedWetRight = preDelayRight.Read();
+    fonepole(smoothedKnob1Value, knob1Value, smoothingFactor);
+            if (smoothedKnob1Value < 0.01f) {
+                smoothedKnob1Value = 0.01f;
+            }
+
+            preDelayLeft.SetDelay(smoothedKnob1Value*0.5f*sample_rate);
+            preDelayRight.SetDelay(smoothedKnob1Value*0.5f*sample_rate);
+
+            float preDelayedWetLeft = preDelayLeft.Read()*wetVolumeAdjustment;
+            float preDelayedWetRight = preDelayRight.Read()*wetVolumeAdjustment;
 
             // Dry/Wet mix for left and right channels
             float dryWetLeft = (1.0f - dubby.GetKnobValue(dubby.CTRL_4)) * dryLeft + dubby.GetKnobValue(dubby.CTRL_4) * preDelayedWetLeft;
@@ -75,22 +85,20 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
 }
 
 void handleKnobs(){
-    float knob1Value = dubby.GetKnobValue(dubby.CTRL_1); // E.G GAIN
+     knob1Value = dubby.GetKnobValue(dubby.CTRL_1); // E.G GAIN
     float knob2Value = dubby.GetKnobValue(dubby.CTRL_2) ; // E.G RESONANCE
     float knob3Value = dubby.GetKnobValue(dubby.CTRL_3); // E.G CUTOFF
     float knob4Value = dubby.GetKnobValue(dubby.CTRL_4); // E.G CUTOFF
-
+    
 
  // Map the knob value to a logarithmic scale for cutoff frequency
-    float minFeedback = 0.7f; // Minimum cutoff frequency in Hz
+    float minFeedback = 0.5f; // Minimum cutoff frequency in Hz
     float maxFeedback = 0.999f; // Maximum cutoff frequency in Hz
     float invLogMappedFeedback = maxFeedback - (maxFeedback - minFeedback) * powf(10, -knob2Value * 2); // Adjust exponent as needed
 
 
-
-
     // Map the knob value to a logarithmic scale for cutoff frequency
-    float minCutoff = 5.0f; // Minimum cutoff frequency in Hz
+    float minCutoff = 100.0f; // Minimum cutoff frequency in Hz
     float maxCutoff = 20000.0f; // Maximum cutoff frequency in Hz
     float mappedCutoff = daisysp::fmap(knob3Value, minCutoff, maxCutoff, daisysp::Mapping::LOG);
 
@@ -99,14 +107,7 @@ void handleKnobs(){
     verbRight.SetFeedback(invLogMappedFeedback);
     verbRight.SetLpFreq(mappedCutoff);
 
-    preDelayLeft.SetDelay(sample_rate*knob1Value);
-    preDelayRight.SetDelay(sample_rate*knob1Value);
-
-    //pitchshiftLeft.SetTransposition(mappedShift);
-    //pitchshiftRight.SetTransposition(mappedShift);
-
-
-    std::vector<float>    knobValues = {knob1Value, knob2Value, knob3Value, knob4Value};
+    std::vector<float>    knobValues = {smoothedKnob1Value, knob2Value, knob3Value, knob4Value};
 
     // Update knob values in Dubby class
     dubby.updateKnobValues(knobValues);
@@ -133,6 +134,9 @@ int main(void)
     
     preDelayLeft.Init();
     preDelayRight.Init();
+        preDelayLeft.SetDelay(10.f);
+    preDelayRight.SetDelay(10.f);
+
     //pitchshiftLeft.Init(sample_rate);
     //pitchshiftRight.Init(sample_rate);
 
