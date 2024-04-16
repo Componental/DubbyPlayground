@@ -107,7 +107,7 @@ void handleKnobs(){
     verbRight.SetFeedback(invLogMappedFeedback);
     verbRight.SetLpFreq(mappedCutoff);
 
-    std::vector<float>    knobValues = {smoothedKnob1Value, knob2Value, knob3Value, knob4Value};
+    std::vector<float>    knobValues = {smoothedKnob1Value*0.5f, knob2Value, knob3Value, knob4Value};
 
     // Update knob values in Dubby class
     dubby.updateKnobValues(knobValues);
