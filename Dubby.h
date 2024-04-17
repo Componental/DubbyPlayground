@@ -16,7 +16,7 @@
 #define NUM_AUDIO_CHANNELS 4
 #define PI_F 3.1415927410125732421875f
 
-#define ALGORITHM_TITLE "NAME OF ALGORITHM"
+#define ALGORITHM_TITLE "FLANGER THINGS"
 #define NUM_KNOBS 4
 
 
@@ -281,7 +281,7 @@ class Dubby
 
     void UpdateStatusBar(char* text, StatusBarSide side, int width = 40); // side = 0 => left, side = 1 => right
 
-    std::vector<std::string> customLabels = {"PRM1", "PRM2", "PRM3", "PRM4"};
+    std::vector<std::string> customLabels = {"DEPTH", "RATE", "FB", "MIX"};
     void updateKnobValues(const std::vector<float>& values);
 
     std::vector<float> knobValuesForPrint;

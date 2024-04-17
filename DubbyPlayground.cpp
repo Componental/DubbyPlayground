@@ -8,7 +8,10 @@ using namespace daisy;
 using namespace daisysp;
 
 Dubby dubby;
-
+Flanger flanger[4];
+float knob4Value;
+float dry[NUM_AUDIO_CHANNELS];
+float wet[NUM_AUDIO_CHANNELS];
 
 
 void MonitorMidi();
@@ -26,6 +29,14 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
             float _in = SetGains(dubby, j, i, in, out);
 
             // === AUDIO CODE HERE ===================
+            // Process the dry signal through flanger
+    dry[j] = in[j][i];
+    wet[j] = flanger[j].Process(dry[j]);
+
+            // Mix dry and wet signals based on knob4Value
+            float dryWetMix = knob4Value; // Assuming knob4Value ranges from 0.0 to 1.0
+    out[j][i] = (1.0f - dryWetMix) * dry[j] + dryWetMix * wet[j];
+
 
             // =======================================
 
@@ -41,20 +52,27 @@ void handleKnobs(){
     float knob1Value = dubby.GetKnobValue(dubby.CTRL_1); // E.G GAIN
     float knob2Value = dubby.GetKnobValue(dubby.CTRL_2) ; // E.G RESONANCE
     float knob3Value = dubby.GetKnobValue(dubby.CTRL_3); // E.G CUTOFF
-    float knob4Value = dubby.GetKnobValue(dubby.CTRL_4); // E.G SOMETHING ELSE
+    knob4Value = dubby.GetKnobValue(dubby.CTRL_4); // E.G SOMETHING ELSE
 
-
-/*
     // Map the knob value to a logarithmic scale for cutoff frequency
-    float minCutoff = 5.0f; // Minimum cutoff frequency in Hz
-    float maxCutoff = 7000.0f; // Maximum cutoff frequency in Hz
-    float mappedCutoff = daisysp::fmap(cutOffKnobValue, minCutoff, maxCutoff, daisysp::Mapping::LOG);
+    float minRate = 0.01f; // Minimum cutoff frequency in Hz
+    float maxRate = 5.f; // Maximum cutoff frequency in Hz
+    float mappedRate = daisysp::fmap(knob2Value, minRate, maxRate, daisysp::Mapping::LOG);
 
-*/
+for (int j = 0; j < NUM_AUDIO_CHANNELS; j++){
+    flanger[j].SetLfoDepth(knob1Value);
+    flanger[j].SetLfoFreq(mappedRate);
+    flanger[j].SetFeedback(knob3Value);
+
+
+} 
 
 
 
-    std::vector<float>    knobValues = {knob1Value, knob2Value, knob3Value, knob4Value};
+
+
+
+    std::vector<float>    knobValues = {knob1Value, mappedRate, knob3Value, knob4Value};
 
     // Update knob values in Dubby class
     dubby.updateKnobValues(knobValues);
@@ -68,6 +86,11 @@ int main(void)
     Init(dubby);
 	dubby.seed.StartAudio(AudioCallback);
     float sample_rate = dubby.seed.AudioSampleRate();
+        for (int j = 0; j < NUM_AUDIO_CHANNELS; j++) {
+
+flanger[j].Init(sample_rate);
+        }
+
 
 
 	while(1) { 
