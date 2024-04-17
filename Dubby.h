@@ -8,11 +8,11 @@
 #include <string>
 
 #include "ui/DubbyEncoder.h"
+#include "led.h"
 
 #include "./bitmaps/bmps.h"
 
 #define AUDIO_BLOCK_SIZE 128 
-
 #define NUM_AUDIO_CHANNELS 4
 
 namespace daisy
@@ -337,6 +337,8 @@ class Dubby
 
     bool isEncoderPressed = false;
     bool wasEncoderLongPressed = false;
+    bool wasEncoderJustInHighlightMenu = false;
+    int highlightMenuCounter = 0;
     unsigned long encoderPressStartTime = 0;
 
     

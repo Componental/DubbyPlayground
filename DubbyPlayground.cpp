@@ -8,6 +8,9 @@ using namespace daisy;
 using namespace daisysp;
 
 Dubby dubby;
+const char* USBD_MANUFACTURER_STRING = "Componental";
+const char* USBD_PRODUCT_STRING_HS = "Dubby";
+const char* USBD_PRODUCT_STRING_FS = "Dubby";
 
 void MonitorMidi();
 void HandleMidiUartMessage(MidiEvent m);
@@ -41,6 +44,11 @@ int main(void)
 {
     Init(dubby);
 	dubby.seed.StartAudio(AudioCallback);
+
+    // initLED();
+    // setLED(0, BLUE, 100);
+    // setLED(1, RED, 100);
+    // updateLED();
 
 	while(1) { 
         Monitor(dubby);

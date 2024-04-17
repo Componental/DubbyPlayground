@@ -162,24 +162,40 @@ float Dubby::GetAudioOutGain(AudioOuts out)
 
 void Dubby::UpdateDisplay() 
 { 
-    if (encoder.TimeHeldMs() > ENCODER_LONGPRESS_THRESHOLD) 
-    {
-        if (!windowSelectorActive) 
-        {
-            windowSelectorActive = true;
-            HighlightWindowItem();
-        }
 
-        if (encoder.Increment()) UpdateWindowSelector(encoder.Increment(), true);
+    if (encoder.TimeHeldMs() > ENCODER_LONGPRESS_THRESHOLD && !windowSelectorActive) 
+    {
+        windowSelectorActive = true;
     } 
 
-    
-    if (encoder.TimeHeldMs() < ENCODER_LONGPRESS_THRESHOLD && windowSelectorActive)
+    if (windowSelectorActive) 
     {
-        windowSelectorActive = false;
-        
-        ReleaseWindowSelector();
-        UpdateWindowList();
+        HighlightWindowItem();
+        if (encoder.Increment()) UpdateWindowSelector(encoder.Increment(), true);   
+
+        if (encoder.RisingEdge())
+        {
+            windowSelectorActive = false;
+            
+            ReleaseWindowSelector();
+            UpdateWindowList();
+        }
+
+        if (!wasEncoderJustInHighlightMenu && encoder.FallingEdge())
+            wasEncoderJustInHighlightMenu = true;
+    }
+    
+    if (wasEncoderJustInHighlightMenu && encoder.FallingEdge())
+    {
+        if (highlightMenuCounter < 2)
+        {
+            highlightMenuCounter++;
+        }
+        else 
+        {
+            wasEncoderJustInHighlightMenu = false;
+            highlightMenuCounter = 0;
+        }
     }
 
     switch(windowItemSelected) 
@@ -192,7 +208,7 @@ void Dubby::UpdateDisplay()
             break;
         case WIN3:
 
-            if (encoder.FallingEdge() && !isSubMenuActive && !wasEncoderLongPressed) {
+            if (encoder.FallingEdge() && !isSubMenuActive && !wasEncoderJustInHighlightMenu) {
                 isSubMenuActive = true;
                 DisplayPreferencesMenuList(0);
             }
@@ -203,14 +219,14 @@ void Dubby::UpdateDisplay()
             }
 
             DisplayPreferencesSubMenuList(encoder.Increment(), preferencesMenuItemSelected);
-            if (encoder.FallingEdge() && !wasEncoderLongPressed && preferencesMenuItemSelected == DFUMODE) ResetToBootloader();
+            if (encoder.FallingEdge() && !wasEncoderJustInHighlightMenu && preferencesMenuItemSelected == DFUMODE) ResetToBootloader();
             if (encoder.Increment() && !windowSelectorActive && !isSubMenuActive) UpdatePreferencesMenuList(encoder.Increment());
             else if (encoder.Increment() && !windowSelectorActive && isSubMenuActive) UpdatePreferencesSubMenuList(encoder.Increment(), preferencesMenuItemSelected);
             break;
         default:
             break;
     }
-    
+
 }
 
 void Dubby::DrawLogo() 
@@ -259,7 +275,6 @@ void Dubby::UpdateWindowSelector(int increment, bool higlight)
     display.Fill(false);
 
     if (higlight) HighlightWindowItem();
-    else ReleaseWindowSelector();
     
     UpdateWindowList();
 
@@ -320,7 +335,7 @@ void Dubby::UpdateMixerPane()
     std::string statusStr = GetTextForEnum(MIXERPAGES, mixerPageSelected);
     UpdateStatusBar(&statusStr[0], LEFT);
 
-    if (encoder.FallingEdge() && !wasEncoderLongPressed && !windowSelectorActive)
+    if (encoder.FallingEdge() && !wasEncoderJustInHighlightMenu && !windowSelectorActive)
     {
         isBarSelected = !isBarSelected;
         if (isBarSelected)
@@ -359,7 +374,7 @@ void Dubby::UpdateWindowList()
     {
         case WIN1:    
             statusStr = GetTextForEnum(SCOPE, scopeSelector);
-            UpdateStatusBar(&statusStr[0], LEFT);
+            UpdateStatusBar(&statusStr[0], LEFT, 70);
             UpdateRenderPane();
             break;
         case WIN2:
@@ -426,7 +441,7 @@ void Dubby::UpdateRenderPane()
     if (increment) 
     {
         std::string statusStr = GetTextForEnum(SCOPE, scopeSelector);
-        UpdateStatusBar(&statusStr[0], LEFT);
+        UpdateStatusBar(&statusStr[0], LEFT, 70);
     }
 
     RenderScope();
