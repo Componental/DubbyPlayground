@@ -8,7 +8,7 @@ using namespace daisy;
 using namespace daisysp;
 
 Dubby dubby;
-Flanger flanger[4];
+Chorus DSY_SDRAM_BSS chorus[4];
 float knob4Value;
 float dry[NUM_AUDIO_CHANNELS];
 float wet[NUM_AUDIO_CHANNELS];
@@ -29,9 +29,9 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
             float _in = SetGains(dubby, j, i, in, out);
 
             // === AUDIO CODE HERE ===================
-            // Process the dry signal through flanger
+            // Process the dry signal through chorus
     dry[j] = in[j][i];
-    wet[j] = flanger[j].Process(dry[j]);
+    wet[j] = chorus[j].Process(dry[j]);
 
             // Mix dry and wet signals based on knob4Value
             float dryWetMix = knob4Value; // Assuming knob4Value ranges from 0.0 to 1.0
@@ -60,17 +60,11 @@ void handleKnobs(){
     float mappedRate = daisysp::fmap(knob2Value, minRate, maxRate, daisysp::Mapping::LOG);
 
 for (int j = 0; j < NUM_AUDIO_CHANNELS; j++){
-    flanger[j].SetLfoDepth(knob1Value);
-    flanger[j].SetLfoFreq(mappedRate);
-    flanger[j].SetFeedback(knob3Value);
-
+    chorus[j].SetLfoDepth(knob1Value);
+    chorus[j].SetLfoFreq(mappedRate);
+    chorus[j].SetFeedback(knob3Value);
 
 } 
-
-
-
-
-
 
     std::vector<float>    knobValues = {knob1Value, mappedRate, knob3Value, knob4Value};
 
@@ -86,12 +80,13 @@ int main(void)
     Init(dubby);
 	dubby.seed.StartAudio(AudioCallback);
     float sample_rate = dubby.seed.AudioSampleRate();
-        for (int j = 0; j < NUM_AUDIO_CHANNELS; j++) {
-
-flanger[j].Init(sample_rate);
+    
+    for (int j = 0; j < NUM_AUDIO_CHANNELS; j++) {
+chorus[j].Init(sample_rate);
+chorus[j].SetDelay(0.6+j*0.1f);
         }
 
-
+    
 
 	while(1) { 
         Monitor(dubby);
