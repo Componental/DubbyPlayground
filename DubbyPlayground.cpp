@@ -44,7 +44,7 @@ void handleKnobs(){
     float knob1Value = dubby.GetKnobValue(dubby.CTRL_1); // E.G GAIN
     float knob2Value = dubby.GetKnobValue(dubby.CTRL_2) ; // E.G RESONANCE
     float knob3Value = dubby.GetKnobValue(dubby.CTRL_3); // E.G CUTOFF
-    float knob4Value = dubby.GetKnobValue(dubby.CTRL_4); // E.G CUTOFF
+    float knob4Value = dubby.GetKnobValue(dubby.CTRL_4); // E.G YAYA
 
 
     float depth = knob1Value*64;
