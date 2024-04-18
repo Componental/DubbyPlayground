@@ -20,6 +20,8 @@ float freq;
     float brightness;
 
 float freqs[NUM_STRINGS] = {}; // Array to store frequencies for each string
+int notes[NUM_STRINGS] = {}; // Array to store frequencies for each string
+
 bool triggers[NUM_STRINGS] = {}; // Array to store trigger states for each string
 
 bool triggerString;
@@ -114,10 +116,11 @@ void HandleMidiUartMessage(MidiEvent m)
             for (int i = 0; i < NUM_STRINGS; i++)
             {
                 if (!voiceInUse[i])
-                {
+                {   
+                    notes[i] = p.note;
                     freqs[i] = mtof(p.note);
                     strings[i].SetFreq(freqs[i]);
-                    strings[i].SetBrightness(p.velocity/127.f);
+                    strings[i].SetBrightness(std::max(0.0f, std::min(brightness + (p.velocity /  300.0f), 1.0f)));
                     triggers[i] = true;
                     voiceInUse[i] = true; // Mark the voice as in use
                     assigned = true;
@@ -134,8 +137,9 @@ void HandleMidiUartMessage(MidiEvent m)
                     if (i == oldestPlayingVoice)
                     {
                         freqs[i] = mtof(p.note);
+                        notes[i] = p.note;
                         strings[i].SetFreq(freqs[i]);
-                        strings[i].SetBrightness(p.velocity/127.f);
+                    strings[i].SetBrightness(std::max(0.0f, std::min(brightness + (p.velocity /  300.0f), 1.0f)));
 
                         triggers[i] = true;
                         // Don't update oldestPlayingVoice here, as it's already set
@@ -203,8 +207,9 @@ void HandleMidiUsbMessage(MidiEvent m)
                 if (!voiceInUse[i])
                 {
                     freqs[i] = mtof(p.note);
+                    notes[i] = p.note;
                     strings[i].SetFreq(freqs[i]);
-                    strings[i].SetBrightness(p.velocity/127.f);
+                    strings[i].SetBrightness(std::max(0.0f, std::min(brightness + (p.velocity /  300.0f), 1.0f)));
                     triggers[i] = true;
                     voiceInUse[i] = true; // Mark the voice as in use
                     assigned = true;
@@ -221,6 +226,7 @@ void HandleMidiUsbMessage(MidiEvent m)
                     if (i == oldestPlayingVoice)
                     {
                         freqs[i] = mtof(p.note);
+                        notes[i] = p.note;
                         strings[i].SetFreq(freqs[i]);
                         triggers[i] = true;
                         // Don't update oldestPlayingVoice here, as it's already set
@@ -365,7 +371,7 @@ void handleKnobs(){
         float knob1Value = dubby.GetKnobValue(dubby.CTRL_1); // E.G GAIN
     float knob2Value = dubby.GetKnobValue(dubby.CTRL_2) ; // E.G RESONANCE
     float knob3Value = dubby.GetKnobValue(dubby.CTRL_3); // E.G CUTOFF
-    float knob4Value = dubby.GetKnobValue(dubby.CTRL_3); // E.G CUTOFF
+    float knob4Value = dubby.GetKnobValue(dubby.CTRL_4); // E.G CUTOFF
 
 
 /*
@@ -384,9 +390,9 @@ void handleKnobs(){
 
     
      accent = knob1Value;
-     damping = knob2Value*0.75f;
+     damping = knob2Value*0.7f;
      structure = knob3Value;
-
+brightness = knob4Value;
     
     
 
@@ -453,11 +459,6 @@ int main(void)
 	while(1) { 
         dubby.ProcessAllControls();
         dubby.UpdateDisplay();
-
-        // CPU METER =====
-         std::string str = std::to_string(int(loadMeter.GetAvgCpuLoad() * 100.0f)) + "%"; 
-         dubby.UpdateStatusBar(&str[0], dubby.MIDDLE);
-        // ===============
 
 
         // This should be handled in monitor class
@@ -557,9 +558,6 @@ if (dubby.buttons[1].FallingEdge())
 
     /////////////////////////////////////////////////
     
-          std::string  printStuffMiddle = std::to_string(value1_);
-        
-        dubby.UpdateStatusBar(&printStuffMiddle[0], dubby.MIDDLE, 127); 
     
     
     

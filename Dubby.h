@@ -16,19 +16,41 @@
 #define NUM_AUDIO_CHANNELS 4
 #define PI_F 3.1415927410125732421875f
 
+#define ALGORITHM_TITLE "NO STRINGS ATTACHED"
+#define NUM_KNOBS 4
+
+
 namespace daisy
 {
 class Dubby
 {
   public:
+  
+    enum AudioIns
+    {
+        IN1,
+        IN2,
+        IN3, 
+        IN4
+    };
+
+    enum AudioOuts
+    {
+        OUT1,
+        OUT2,
+        OUT3, 
+        OUT4
+    };
+
 
     enum WindowItems 
     { 
+       
+        WIN5, // knobs
         WIN1, 
         WIN2, 
         WIN3, 
         WIN4, 
-        WIN5, 
         WIN6, 
         WIN7, 
         WIN8, 
@@ -202,6 +224,14 @@ class Dubby
     ~Dubby() {}
 
     void Init();
+    
+    void SetAudioInGain(AudioIns in, float gain);
+
+    float GetAudioInGain(AudioIns in);
+    
+    void SetAudioOutGain(AudioOuts out, float gain);
+
+    float GetAudioOutGain(AudioOuts out);
 
     void UpdateDisplay();
 
@@ -251,14 +281,13 @@ class Dubby
 
     void UpdateStatusBar(char* text, StatusBarSide side, int width = 40); // side = 0 => left, side = 1 => right
 
-    int knobCount = 3; 
-    std::vector<std::string> customLabels = {"ACC", "DAMP", "STRUC", "GAIN"};
+    std::vector<std::string> customLabels = {"ACC", "DAMP", "STRUC", "BRIGHT"};
     void updateKnobValues(const std::vector<float>& values);
 
     std::vector<float> knobValuesForPrint;
-    std::string algorithmTitle = "STRINGULAR SYNTH";
-    void visualizeKnobValues(int numKnobs, const std::vector<std::string>& knobLabels, const std::vector<int>& numDecimals);
-    void visualizeKnobValuesCircle(int numKnobs, const std::vector<std::string>& knobLabels, const std::vector<int>& numDecimals);
+    std::string algorithmTitle = ALGORITHM_TITLE;
+    void visualizeKnobValues( const std::vector<std::string>& knobLabels, const std::vector<int>& numDecimals);
+    void visualizeKnobValuesCircle(const std::vector<std::string>& knobLabels, const std::vector<int>& numDecimals);
     std::vector<int> numDecimals = {2, 2, 2, 2}; // Assuming you have three knobs with different decimal places
 
     DaisySeed seed; 
@@ -299,7 +328,6 @@ class Dubby
 
     int mixerPageSelected = INPUTS;
 
-    float audioGains[2][4] = { { 0.8f, 0.8f, 0.8f, 0.8f}, { 0.8f, 0.8f, 0.8f, 0.8f} }; // 0 => INPUTS, 1 => OUTPUTS 
     
     double sumSquaredIns[4] = { 0.0f };
     double sumSquaredOuts[4] = { 0.0f };
@@ -324,6 +352,8 @@ class Dubby
     bool isEncoderPressed = false;
     bool wasEncoderLongPressed = false;
     unsigned long encoderPressStartTime = 0;
+        float audioGains[2][4] = { { 0.8f, 0.8f, 0.8f, 0.8f}, { 0.8f, 0.8f, 0.8f, 0.8f} }; // 0 => INPUTS, 1 => OUTPUTS 
+
 };
 
 }
