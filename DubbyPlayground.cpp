@@ -411,7 +411,7 @@ float maxFrequency = 500.f;
 
             strings[i].SetFreq(freq);
             //strings[i].SetAccent(accent);
-            strings[i].SetDamping(damping*knob1Value);
+            strings[i].SetDamping(damping*(1.f-knob1Value));
             strings[i].SetSustain(false);
             strings[i].SetStructure(structure);
             strings[i].SetBrightness(brightness);
