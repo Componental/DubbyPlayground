@@ -58,7 +58,7 @@ void handleKnobs(){
      outGain = dubby.GetKnobValue(dubby.CTRL_4)*3;
 
     // Map the knob value to a logarithmic scale for cutoff frequency
-    float minCutoff = 5.0f; // Minimum cutoff frequency in Hz
+    float minCutoff = .05f; // Minimum cutoff frequency in Hz
     float maxCutoff = 17000.f; // Maximum cutoff frequency in Hz
     float mappedCutoff = daisysp::fmap(cutOffKnobValue, minCutoff, maxCutoff, daisysp::Mapping::LOG);
 
