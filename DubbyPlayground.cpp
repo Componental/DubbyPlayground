@@ -110,7 +110,7 @@ void HandleMidiUartMessage(MidiEvent m)
     case NoteOn:
     {
         NoteOnEvent p = m.AsNoteOn();
-        if (p.velocity != 0)
+        if (p.velocity != 0 && p.note < 86)
         {
             // Find the first unused string and assign the MIDI note to it
             bool assigned = false;
@@ -199,7 +199,7 @@ void HandleMidiUsbMessage(MidiEvent m)
     case NoteOn:
     {
         NoteOnEvent p = m.AsNoteOn();
-        if (p.velocity != 0)
+        if (p.velocity != 0 && p.note < 86)
         {
             // Find the first unused string and assign the MIDI note to it
             bool assigned = false;
@@ -394,7 +394,7 @@ void handleKnobs(){
 
 
     
-     damping = knob1Value*0.7f;
+     //damping = knob1Valuef;
      structure = knob2Value;
 brightness = knob3Value;
     
@@ -403,10 +403,15 @@ brightness = knob3Value;
             for (int i = 0; i < NUM_STRINGS; i++)
 {
 freq = freqs[i];
+float minFrequency = 0.f;
+float maxFrequency = 500.f;
+
+        float frequencyRatio = (freq - minFrequency) / (maxFrequency - minFrequency);
+        damping = 0.9f - (frequencyRatio * 0.58f); // Linear interpolation from 1 to 0.5
 
             strings[i].SetFreq(freq);
             //strings[i].SetAccent(accent);
-            strings[i].SetDamping(damping);
+            strings[i].SetDamping(damping*knob1Value);
             strings[i].SetSustain(false);
             strings[i].SetStructure(structure);
             strings[i].SetBrightness(brightness);
