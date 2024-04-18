@@ -18,6 +18,7 @@ float freq;
     float damping;
     float structure;
     float brightness;
+    float outputVolume;
 
 float freqs[NUM_STRINGS] = {}; // Array to store frequencies for each string
 int notes[NUM_STRINGS] = {}; // Array to store frequencies for each string
@@ -67,7 +68,7 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
         {
             mix += strings[j].Process(triggers[j]);
         }
-        out[0][i] = out[1][i] = mix * 0.2f;
+        out[0][i] = out[1][i] = mix * 0.2f * outputVolume;
 
         // Reset all string triggers
         triggerString = false;
@@ -120,7 +121,7 @@ void HandleMidiUartMessage(MidiEvent m)
                     notes[i] = p.note;
                     freqs[i] = mtof(p.note);
                     strings[i].SetFreq(freqs[i]);
-                    strings[i].SetBrightness(std::max(0.0f, std::min(brightness + (p.velocity /  300.0f), 1.0f)));
+                    strings[i].SetAccent(p.velocity / 127.f);
                     triggers[i] = true;
                     voiceInUse[i] = true; // Mark the voice as in use
                     assigned = true;
@@ -139,7 +140,7 @@ void HandleMidiUartMessage(MidiEvent m)
                         freqs[i] = mtof(p.note);
                         notes[i] = p.note;
                         strings[i].SetFreq(freqs[i]);
-                    strings[i].SetBrightness(std::max(0.0f, std::min(brightness + (p.velocity /  300.0f), 1.0f)));
+                    strings[i].SetAccent(p.velocity / 127.f);
 
                         triggers[i] = true;
                         // Don't update oldestPlayingVoice here, as it's already set
@@ -209,7 +210,7 @@ void HandleMidiUsbMessage(MidiEvent m)
                     freqs[i] = mtof(p.note);
                     notes[i] = p.note;
                     strings[i].SetFreq(freqs[i]);
-                    strings[i].SetBrightness(std::max(0.0f, std::min(brightness + (p.velocity /  300.0f), 1.0f)));
+                    strings[i].SetAccent(p.velocity / 127.f);
                     triggers[i] = true;
                     voiceInUse[i] = true; // Mark the voice as in use
                     assigned = true;
@@ -383,16 +384,19 @@ void handleKnobs(){
 */
 
 
+    float minOutput = 0.001f;
+    float maxOutput = 1.f;
+
+    outputVolume = daisysp::fmap(knob4Value, minOutput, maxOutput, Mapping::LOG);
 
     std::vector<float>    knobValues = {knob1Value, knob2Value, knob3Value, knob4Value};
     dubby.updateKnobValues(knobValues);
 
 
     
-     accent = knob1Value;
-     damping = knob2Value*0.7f;
-     structure = knob3Value;
-brightness = knob4Value;
+     damping = knob1Value*0.7f;
+     structure = knob2Value;
+brightness = knob3Value;
     
     
 
@@ -401,11 +405,11 @@ brightness = knob4Value;
 freq = freqs[i];
 
             strings[i].SetFreq(freq);
-            strings[i].SetAccent(accent);
+            //strings[i].SetAccent(accent);
             strings[i].SetDamping(damping);
             strings[i].SetSustain(false);
             strings[i].SetStructure(structure);
-         //   str.SetBrightness(brightness);
+            strings[i].SetBrightness(brightness);
 }
     // Update the parameters
 

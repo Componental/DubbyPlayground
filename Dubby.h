@@ -16,7 +16,7 @@
 #define NUM_AUDIO_CHANNELS 4
 #define PI_F 3.1415927410125732421875f
 
-#define ALGORITHM_TITLE "NO STRINGS ATTACHED"
+#define ALGORITHM_TITLE "STRINGS ATTACHED"
 #define NUM_KNOBS 4
 
 
@@ -281,7 +281,7 @@ class Dubby
 
     void UpdateStatusBar(char* text, StatusBarSide side, int width = 40); // side = 0 => left, side = 1 => right
 
-    std::vector<std::string> customLabels = {"ACC", "DAMP", "STRUC", "BRIGHT"};
+    std::vector<std::string> customLabels = {"DAMP", "STRUC", "BRIGHT", "OUTPUT"};
     void updateKnobValues(const std::vector<float>& values);
 
     std::vector<float> knobValuesForPrint;
