@@ -24,11 +24,11 @@ class Dubby
 
     enum WindowItems 
     { 
-        WIN1, 
+        WIN5, // knobs
         WIN2, 
         WIN3, 
         WIN4, 
-        WIN5, 
+        WIN1, 
         WIN6, 
         WIN7, 
         WIN8, 
@@ -259,7 +259,7 @@ class Dubby
     std::string algorithmTitle = "COMPRESSOR";
     void visualizeKnobValues(int numKnobs, const std::vector<std::string>& knobLabels, const std::vector<int>& numDecimals);
     void visualizeKnobValuesCircle(int numKnobs, const std::vector<std::string>& knobLabels, const std::vector<int>& numDecimals);
-    std::vector<int> numDecimals = {2, 2, 2, 2}; // Assuming you have three knobs with different decimal places
+    std::vector<int> numDecimals = {1, 1, 1, 1}; // Assuming you have three knobs with different decimal places
 
     DaisySeed seed; 
 
