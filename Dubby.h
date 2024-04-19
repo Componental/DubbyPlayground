@@ -13,11 +13,12 @@
 #include "./bitmaps/bmps.h"
 
 #define AUDIO_BLOCK_SIZE 128 
-#define NUM_AUDIO_CHANNELS 4
+#define NUM_AUDIO_CHANNELS 1
 #define PI_F 3.1415927410125732421875f
 
 #define ALGORITHM_TITLE "NAME OF ALGORITHM"
 #define NUM_KNOBS 4
+
 
 
 namespace daisy
@@ -337,6 +338,7 @@ class Dubby
     MidiUsbHandler midi_usb;
 
     int globalBPM = 120;
+std::vector<float> savedKnobValuesForVisuals;
 
   private:
 
