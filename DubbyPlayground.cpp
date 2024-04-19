@@ -118,9 +118,9 @@ void handleKnobs()
     // Set drum parameters based on selected drum and knob values
     if (bassdrumSelected)
     {
-knobValues =  savedKnobValuesBassDrum;
-dubby.savedKnobValuesForVisuals = savedKnobValuesBassDrum;
-
+        knobValues = savedKnobValuesBassDrum;
+        dubby.savedKnobValuesForVisuals = savedKnobValuesBassDrum;
+        dubby.algorithmTitle = "BASS DRUM";
         // Check knob values for bass drum and update parameters accordingly
         if (withinTolerance(knob1Value, savedKnobValuesBassDrum[0]))
         {
@@ -145,8 +145,8 @@ dubby.savedKnobValuesForVisuals = savedKnobValuesBassDrum;
     }
     if (snaredrumSelected)
     {
-knobValues =  savedKnobValuesSnareDrum;
-dubby.savedKnobValuesForVisuals = savedKnobValuesSnareDrum;
+        knobValues = savedKnobValuesSnareDrum;
+        dubby.savedKnobValuesForVisuals = savedKnobValuesSnareDrum;
 
         // Check knob values for snare drum and update parameters accordingly
         if (withinTolerance(knob1Value, savedKnobValuesSnareDrum[0]))
@@ -175,8 +175,8 @@ dubby.savedKnobValuesForVisuals = savedKnobValuesSnareDrum;
     }
     if (tomDrumSelected)
     {
-        knobValues =  savedKnobValuesTomDrum;
-dubby.savedKnobValuesForVisuals = savedKnobValuesTomDrum;
+        knobValues = savedKnobValuesTomDrum;
+        dubby.savedKnobValuesForVisuals = savedKnobValuesTomDrum;
 
         // Check knob values for tom drum and update parameters accordingly
         if (withinTolerance(knob1Value, savedKnobValuesTomDrum[0]))
@@ -184,7 +184,6 @@ dubby.savedKnobValuesForVisuals = savedKnobValuesTomDrum;
             savedKnobValuesTomDrum[0] = knob1Value;
 
             tomDrum.SetFreq((knob1Value * 200.f) + 200.f);
-
         }
         if (withinTolerance(knob2Value, savedKnobValuesTomDrum[1]))
         {
@@ -205,7 +204,6 @@ dubby.savedKnobValuesForVisuals = savedKnobValuesTomDrum;
             tomDrum.SetDirtiness(knob4Value);
         }
     }
-
 
     // Update knob values in Dubby class
     dubby.updateKnobValues(knobValues);
@@ -264,8 +262,8 @@ int main(void)
         Monitor(dubby);
         MonitorMidi();
 
-        std::string str = std::to_string(int(loadMeter.GetAvgCpuLoad() * 100.0f)) + "%";
-        dubby.UpdateStatusBar(&str[0], dubby.MIDDLE);
+        // std::string str = std::to_string(int(loadMeter.GetAvgCpuLoad() * 100.0f)) + "%";
+        // dubby.UpdateStatusBar(&str[0], dubby.MIDDLE);
 
         handleKnobs();
         if (dubby.buttons[3].TimeHeldMs() > 1000)

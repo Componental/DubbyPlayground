@@ -286,7 +286,6 @@ class Dubby
     void updateKnobValues(const std::vector<float>& values);
 
     std::vector<float> knobValuesForPrint;
-    std::string algorithmTitle = ALGORITHM_TITLE;
     void visualizeKnobValues( const std::vector<std::string>& knobLabels, const std::vector<int>& numDecimals);
     void visualizeKnobValuesCircle(const std::vector<std::string>& knobLabels, const std::vector<int>& numDecimals);
     std::vector<int> numDecimals = {2, 2, 2, 2}; // Assuming you have three knobs with different decimal places
@@ -339,6 +338,7 @@ class Dubby
 
     int globalBPM = 120;
 std::vector<float> savedKnobValuesForVisuals;
+    std::string algorithmTitle = ALGORITHM_TITLE;
 
   private:
 
