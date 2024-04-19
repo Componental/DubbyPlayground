@@ -8,6 +8,9 @@ using namespace daisy;
 using namespace daisysp;
 
 Dubby dubby;
+const char* USBD_MANUFACTURER_STRING = "Componental";
+const char* USBD_PRODUCT_STRING_HS = "Dubby";
+const char* USBD_PRODUCT_STRING_FS = "Dubby";
 
 
 
@@ -69,6 +72,11 @@ int main(void)
 	dubby.seed.StartAudio(AudioCallback);
     float sample_rate = dubby.seed.AudioSampleRate();
 
+
+    // initLED();
+    // setLED(0, BLUE, 100);
+    // setLED(1, RED, 100);
+    // updateLED();
 
 	while(1) { 
         Monitor(dubby);

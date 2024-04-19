@@ -8,11 +8,11 @@
 #include <string>
 #include <vector>
 #include "ui/DubbyEncoder.h"
+#include "led.h"
 
 #include "./bitmaps/bmps.h"
 
 #define AUDIO_BLOCK_SIZE 128 
-
 #define NUM_AUDIO_CHANNELS 4
 #define PI_F 3.1415927410125732421875f
 
@@ -316,6 +316,8 @@ class Dubby
     AnalogControl analogInputs[CTRL_LAST];
     GateIn gateInputs[GATE_IN_LAST];  
     Switch buttons[4];
+    Switch joystickButton;
+
 
     float scope_buffer[AUDIO_BLOCK_SIZE] = {0.f};
     
@@ -351,6 +353,8 @@ class Dubby
 
     bool isEncoderPressed = false;
     bool wasEncoderLongPressed = false;
+    bool wasEncoderJustInHighlightMenu = false;
+    int highlightMenuCounter = 0;
     unsigned long encoderPressStartTime = 0;
         float audioGains[2][4] = { { 0.8f, 0.8f, 0.8f, 0.8f}, { 0.8f, 0.8f, 0.8f, 0.8f} }; // 0 => INPUTS, 1 => OUTPUTS 
 
