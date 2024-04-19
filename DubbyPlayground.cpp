@@ -8,9 +8,6 @@ using namespace daisy;
 using namespace daisysp;
 
 Dubby dubby;
-const char* USBD_MANUFACTURER_STRING = "Componental";
-const char* USBD_PRODUCT_STRING_HS = "Dubby";
-const char* USBD_PRODUCT_STRING_FS = "Dubby";
 
 void MonitorMidi();
 void HandleMidiUartMessage(MidiEvent m);
@@ -38,11 +35,11 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
     SetRMSValues(dubby, sumSquared);
 }
 
-
-
 int main(void)
 {
     Init(dubby);
+    InitMidiClock(dubby);
+
 	dubby.seed.StartAudio(AudioCallback);
 
     // initLED();
@@ -70,6 +67,10 @@ void HandleMidiMessage(MidiEvent m)
             NoteOffEvent p = m.AsNoteOff();
             break;
         }
+        case SystemRealTime:
+        {
+            HandleSystemRealTime(m.srt_type);
+        }
         default: break;
     }
 }
@@ -90,3 +91,4 @@ void MonitorMidi()
         HandleMidiMessage(m);
     }
 }
+

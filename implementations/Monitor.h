@@ -16,8 +16,6 @@ void Monitor(Dubby& dubby)
 {
     dubby.ProcessAllControls();
     dubby.UpdateDisplay();
-
-    MidiMonitor(dubby);
 }
 
 } // namespace daisy

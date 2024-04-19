@@ -10,12 +10,13 @@ using namespace daisysp;
 
 // BPM range: 30 - 300
 #define TTEMPO_MIN 30
-#define TTEMPO_MAX 300
+#define TTEMPO_MAX 400
 
 
 namespace daisy
 {
 
+TimerHandle midiClockTimer;
 bool clockRunning = false;
 
 uint16_t tt_count = 0;
@@ -81,27 +82,19 @@ void MIDISendNoteOff(Dubby& dubby, uint8_t channel, uint8_t note)
     MIDIUartSendNoteOff(dubby, channel, note);
 }
 
+int convertRange(int value, int oldMin, int oldMax, int newMin, int newMax) {
+    // First, scale the value from the old range to a value between 0 and 1
+    double scaledValue = static_cast<double>(value - oldMin) / (oldMax - oldMin);
+    
+    // Then, scale this value to the new range
+    int newValue = newMin + static_cast<int>(scaledValue * (newMax - newMin));
+    
+    return newValue;
+}
+
 uint32_t ms_to_bpm(uint32_t ms)
 {
     return 60000 / ms;
-}
-
-// Function to calculate the timing clock interval based on BPM
-uint32_t calculateClockInterval(float bpm) {
-    // Calculate the interval in microseconds between each timing clock message
-    // Note: 24 PPQN corresponds to 24 clock messages per quarter note
-    //bpm = TTEMPO_MIN + (bpm - 30) * (TTEMPO_MAX - TTEMPO_MIN) / (255 - 30);    
-    bpm = bpm * 0.8f;
-
-    float usPerBeat = 60000000.0f / bpm; // Convert BPM to microseconds per beat
-    return static_cast<uint32_t>(usPerBeat / 24.0f); // Divide by 24 for 24 PPQN
-}
-// Function to send MIDI Timing Clock
-void sendTimingClock(Dubby& dubby) {
-    // MIDI timing clock message byte
-    uint8_t timingClockByte[1] = { 0xF8 };
-
-    dubby.midi_usb.SendMessage(timingClockByte, 1); // Send the single byte
 }
 
 void HandleSystemRealTime(uint8_t srt_type)
@@ -116,7 +109,7 @@ void HandleSystemRealTime(uint8_t srt_type)
         // 0xFC - stop
         case Stop: 
             clockRunning = false;
-            break;
+            break;   
 
         // MIDI Clock -  24 clicks per quarter note
         case TimingClock:
@@ -128,51 +121,51 @@ void HandleSystemRealTime(uint8_t srt_type)
                 uint32_t bpm  = ms_to_bpm(diff);
 
                 // std::string stra = std::to_string(bpm);
-                // Dubby::getInstance().UpdateStatusBar(&stra[0], Dubby::getInstance().MIDDLE);
+                // dubby.UpdateStatusBar(&stra[0], dubby.MIDDLE, 127);
 
                 prev_ms = ms;
                 tt_count = 0;
             }
-            break;
-    }
+            break;    }
 }
 
+// Function to send MIDI Timing Clock
+void sendTimingClock(Dubby& dubby) {
+    // MIDI timing clock message byte
+    uint8_t timingClockByte[1] = { 0xF8 };
 
-void MidiMonitor(Dubby& dubby) 
+    dubby.midi_usb.SendMessage(timingClockByte, 1); // Send the single byte
+}
+
+void MidiClockSend(Dubby& dubby) 
 {
-    // This should be handled in monitor class
-    dubby.midi_uart.Listen();
-    dubby.midi_usb.Listen();
-
-    // Handle UART MIDI Events
-    while(dubby.midi_uart.HasEvents())
-    {
-        MidiEvent m = dubby.midi_uart.PopEvent();
-        if(m.type == SystemRealTime)
-            HandleSystemRealTime(m.srt_type);
-    }
-
-    // Handle USB MIDI Events
-    while(dubby.midi_usb.HasEvents())
-    {
-        MidiEvent m = dubby.midi_usb.PopEvent();
-        if(m.type == SystemRealTime)
-            HandleSystemRealTime(m.srt_type);
-    }
-
-    dubby.globalBPM = TTEMPO_MIN + ((TTEMPO_MAX - TTEMPO_MIN) / (1 - 0)) * (dubby.GetKnobValue(dubby.CTRL_1));
     uint32_t currentTime = System::GetUs();
-
-    clockInterval = calculateClockInterval(dubby.globalBPM);
-
     // Check if it's time to send the timing clock
-    if (currentTime - lastTime >= clockInterval) {
-        // Send timing clock
-        sendTimingClock(dubby);
-
+    if (currentTime - lastTime >= ((60000000.0f / dubby.globalBPM) / 24.0f)) {
         // Update the last time
         lastTime = currentTime;
+        // Send timing clock
+        sendTimingClock(dubby);
     }
 }
+
+void MIDICallback(void *dubby) 
+{
+    MidiClockSend(*(Dubby*)dubby);
+}
+
+void InitMidiClock(Dubby& dubby) 
+{
+    TimerHandle::Config config = TimerHandle::Config();
+	config.periph = TimerHandle::Config::Peripheral::TIM_5;
+    config.period = 0x1FFF;
+	config.dir = TimerHandle::Config::CounterDir::UP;
+	config.enable_irq = true;
+
+    midiClockTimer.Init(config);
+	midiClockTimer.SetCallback(MIDICallback, &dubby);
+    midiClockTimer.Start();
+}
+
 
 } // namespace daisy
