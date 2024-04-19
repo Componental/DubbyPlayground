@@ -9,8 +9,6 @@ using namespace daisysp;
 
 Dubby dubby;
 
-
-
 void MonitorMidi();
 void HandleMidiUartMessage(MidiEvent m);
 void HandleMidiUsbMessage(MidiEvent m);
