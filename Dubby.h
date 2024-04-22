@@ -16,7 +16,7 @@
 #define NUM_AUDIO_CHANNELS 1
 #define PI_F 3.1415927410125732421875f
 
-#define ALGORITHM_TITLE "NAME OF ALGORITHM"
+//#define ALGORITHM_TITLE "NAME OF ALGORITHM"
 #define NUM_KNOBS 4
 
 
@@ -338,8 +338,8 @@ class Dubby
 
     int globalBPM = 120;
 std::vector<float> savedKnobValuesForVisuals;
-    std::string algorithmTitle = ALGORITHM_TITLE;
-
+    std::string algorithmTitle = "";
+    void UpdateAlgorithmTitle();
   private:
 
     void InitAudio();

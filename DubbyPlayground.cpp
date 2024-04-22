@@ -96,12 +96,6 @@ void handleKnobs()
     // Check if a button is pressed and update the selected drum accordingly
     if (dubby.buttons[0].Pressed() && !bassdrumSelected)
     {
-        if (bassdrumSelected)
-            savedKnobValuesBassDrum = {knob1Value, knob2Value, knob3Value, knob4Value};
-        else if (snaredrumSelected)
-            savedKnobValuesSnareDrum = {knob1Value, knob2Value, knob3Value, knob4Value};
-        else if (tomDrumSelected)
-            savedKnobValuesTomDrum = {knob1Value, knob2Value, knob3Value, knob4Value};
 
         bassdrumSelected = true;
         snaredrumSelected = false;
@@ -109,24 +103,12 @@ void handleKnobs()
     }
     if (dubby.buttons[1].Pressed() && !snaredrumSelected)
     {
-        if (bassdrumSelected)
-            savedKnobValuesBassDrum = {knob1Value, knob2Value, knob3Value, knob4Value};
-        else if (snaredrumSelected)
-            savedKnobValuesSnareDrum = {knob1Value, knob2Value, knob3Value, knob4Value};
-        else if (tomDrumSelected)
-            savedKnobValuesTomDrum = {knob1Value, knob2Value, knob3Value, knob4Value};
         bassdrumSelected = false;
         snaredrumSelected = true;
         tomDrumSelected = false;
     }
     if (dubby.buttons[2].Pressed() && !tomDrumSelected)
     {
-        if (bassdrumSelected)
-            savedKnobValuesBassDrum = {knob1Value, knob2Value, knob3Value, knob4Value};
-        else if (snaredrumSelected)
-            savedKnobValuesSnareDrum = {knob1Value, knob2Value, knob3Value, knob4Value};
-        else if (tomDrumSelected)
-            savedKnobValuesTomDrum = {knob1Value, knob2Value, knob3Value, knob4Value};
         bassdrumSelected = false;
         snaredrumSelected = false;
         tomDrumSelected = true;
@@ -135,19 +117,23 @@ void handleKnobs()
     // Set drum parameters based on selected drum and knob values
     if (bassdrumSelected)
     {
+        dubby.algorithmTitle = "BASS DRUM";
+        dubby.UpdateAlgorithmTitle();
+
         snareDrumKnob1WithinTolerance = false;
-                snareDrumKnob2WithinTolerance = false;
+        snareDrumKnob2WithinTolerance = false;
         snareDrumKnob3WithinTolerance = false;
         snareDrumKnob4WithinTolerance = false;
 
         tomDrumKnob1WithinTolerance = false;
-                tomDrumKnob2WithinTolerance = false;
+        tomDrumKnob2WithinTolerance = false;
         tomDrumKnob3WithinTolerance = false;
         tomDrumKnob4WithinTolerance = false;
 
 
         knobValues = savedKnobValuesBassDrum;
         dubby.savedKnobValuesForVisuals = savedKnobValuesBassDrum;
+        
         // Check knob values for bass drum and update parameters accordingly
         if (bassDrumKnob1WithinTolerance || withinTolerance(knob1Value, savedKnobValuesBassDrum[0]))
         {
@@ -180,6 +166,9 @@ void handleKnobs()
     }
     if (snaredrumSelected)
     {
+                dubby.algorithmTitle = "SNARE DRUM";
+        dubby.UpdateAlgorithmTitle();
+
                 bassDrumKnob1WithinTolerance = false;
                 bassDrumKnob2WithinTolerance = false;
                 bassDrumKnob3WithinTolerance = false;
@@ -225,6 +214,9 @@ void handleKnobs()
     }
     if (tomDrumSelected)
     {
+        dubby.algorithmTitle = "TOM DRUM";
+        dubby.UpdateAlgorithmTitle();
+
                 bassDrumKnob1WithinTolerance = false;
                 bassDrumKnob2WithinTolerance = false;
                 bassDrumKnob3WithinTolerance = false;
@@ -297,7 +289,6 @@ int main(void)
         Monitor(dubby);
         MonitorMidi();
         handleKnobs();
-
         // Check for bootloader reset
         if (dubby.buttons[3].TimeHeldMs() > 1000)
         {

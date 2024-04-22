@@ -518,6 +518,11 @@ visualizeKnobValues( customLabels, numDecimals);
     display.Update();
 }
 
+void Dubby::UpdateAlgorithmTitle(){
+                UpdateStatusBar(&algorithmTitle[0], LEFT); 
+
+}
+
 void Dubby::UpdateBar(int i) 
 {
     // clear bars
