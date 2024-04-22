@@ -40,8 +40,8 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
             float processedSampleLeft;
             float processedSampleRight;
 
-            float dryLeft = in[0][i];
-            float dryRight = in[1][i];
+            float dryLeft = in[2][i];
+            float dryRight = in[3][i];
 
           //  float shiftedLeft = pitchshiftLeft.Process(dryLeft);
           //  float shiftedRight = pitchshiftRight.Process(dryRight);
@@ -69,8 +69,8 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
             float dryWetRight = (1.0f - dubby.GetKnobValue(dubby.CTRL_4)) * dryRight + dubby.GetKnobValue(dubby.CTRL_4) * preDelayedWetRight;
 
             // Output to both stereo channels
-            out[0][i] = dryWetLeft;
-            out[1][i] = dryWetRight;            // Mix the processed sample with the original input
+            out[2][i] = dryWetLeft;
+            out[3][i] = dryWetRight;            // Mix the processed sample with the original input
             //out[j][i] = in[j][i] + processed_sample;
             preDelayLeft.Write(wetLeft);
             preDelayRight.Write(wetRight);
