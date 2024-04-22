@@ -31,6 +31,23 @@ bool triggerBassDrum = false;
 bool triggerTomDrum = false;
 bool triggerSnareDrum = false;
 
+// Vector of vectors to store whether each knob is within tolerance for each drum
+// Booleans to track tolerance for each knob of each drum
+bool bassDrumKnob1WithinTolerance = false;
+bool bassDrumKnob2WithinTolerance = false;
+bool bassDrumKnob3WithinTolerance = false;
+bool bassDrumKnob4WithinTolerance = false;
+
+bool snareDrumKnob1WithinTolerance = false;
+bool snareDrumKnob2WithinTolerance = false;
+bool snareDrumKnob3WithinTolerance = false;
+bool snareDrumKnob4WithinTolerance = false;
+
+bool tomDrumKnob1WithinTolerance = false;
+bool tomDrumKnob2WithinTolerance = false;
+bool tomDrumKnob3WithinTolerance = false;
+bool tomDrumKnob4WithinTolerance = false;
+
 void MonitorMidi();
 void HandleMidiUartMessage(MidiEvent m);
 void HandleMidiUsbMessage(MidiEvent m);
@@ -118,89 +135,134 @@ void handleKnobs()
     // Set drum parameters based on selected drum and knob values
     if (bassdrumSelected)
     {
+        snareDrumKnob1WithinTolerance = false;
+                snareDrumKnob2WithinTolerance = false;
+        snareDrumKnob3WithinTolerance = false;
+        snareDrumKnob4WithinTolerance = false;
+
+        tomDrumKnob1WithinTolerance = false;
+                tomDrumKnob2WithinTolerance = false;
+        tomDrumKnob3WithinTolerance = false;
+        tomDrumKnob4WithinTolerance = false;
+
+
         knobValues = savedKnobValuesBassDrum;
         dubby.savedKnobValuesForVisuals = savedKnobValuesBassDrum;
-        dubby.algorithmTitle = "BASS DRUM";
         // Check knob values for bass drum and update parameters accordingly
-        if (withinTolerance(knob1Value, savedKnobValuesBassDrum[0]))
+        if (bassDrumKnob1WithinTolerance || withinTolerance(knob1Value, savedKnobValuesBassDrum[0]))
         {
+            bassDrumKnob1WithinTolerance = true;
+
             bassDrum.SetFreq(knob1Value * 200.0f);
             savedKnobValuesBassDrum[0] = knob1Value;
         }
-        if (withinTolerance(knob2Value, savedKnobValuesBassDrum[1]))
+        if (bassDrumKnob2WithinTolerance || withinTolerance(knob2Value, savedKnobValuesBassDrum[1]))
         {
+            bassDrumKnob2WithinTolerance = true;
+
             bassDrum.SetDecay(knob2Value);
             savedKnobValuesBassDrum[1] = knob2Value;
         }
-        if (withinTolerance(knob3Value, savedKnobValuesBassDrum[2]))
+        if (bassDrumKnob3WithinTolerance || withinTolerance(knob3Value, savedKnobValuesBassDrum[2]))
         {
+            bassDrumKnob3WithinTolerance = true;
+
             bassDrum.SetTone(knob3Value);
             savedKnobValuesBassDrum[2] = knob3Value;
         }
-        if (withinTolerance(knob4Value, savedKnobValuesBassDrum[3]))
+        if (bassDrumKnob4WithinTolerance || withinTolerance(knob4Value, savedKnobValuesBassDrum[3]))
         {
+            bassDrumKnob4WithinTolerance = true;
+
             bassDrum.SetDirtiness(knob4Value);
             savedKnobValuesBassDrum[3] = knob4Value;
         }
     }
     if (snaredrumSelected)
     {
+                bassDrumKnob1WithinTolerance = false;
+                bassDrumKnob2WithinTolerance = false;
+                bassDrumKnob3WithinTolerance = false;
+                bassDrumKnob4WithinTolerance = false;
+
+        tomDrumKnob1WithinTolerance = false;
+                tomDrumKnob2WithinTolerance = false;
+        tomDrumKnob3WithinTolerance = false;
+        tomDrumKnob4WithinTolerance = false;
+
         knobValues = savedKnobValuesSnareDrum;
         dubby.savedKnobValuesForVisuals = savedKnobValuesSnareDrum;
 
         // Check knob values for snare drum and update parameters accordingly
-        if (withinTolerance(knob1Value, savedKnobValuesSnareDrum[0]))
+        if (snareDrumKnob1WithinTolerance || withinTolerance(knob1Value, savedKnobValuesSnareDrum[0]))
         {
+            snareDrumKnob1WithinTolerance = true;
+
             snareDrum.SetFreq((knob1Value * 300.f) + 10.f);
             savedKnobValuesSnareDrum[0] = knob1Value;
         }
-        if (withinTolerance(knob2Value, savedKnobValuesSnareDrum[1]))
+        if (snareDrumKnob2WithinTolerance || withinTolerance(knob2Value, savedKnobValuesSnareDrum[1]))
         {
-            savedKnobValuesSnareDrum[1] = knob2Value;
+            snareDrumKnob2WithinTolerance = true;
 
+            savedKnobValuesSnareDrum[1] = knob2Value;
             snareDrum.SetAccent(knob2Value);
         }
-        if (withinTolerance(knob3Value, savedKnobValuesSnareDrum[2]))
+        if (snareDrumKnob3WithinTolerance || withinTolerance(knob3Value, savedKnobValuesSnareDrum[2]))
         {
-            savedKnobValuesSnareDrum[2] = knob3Value;
+            snareDrumKnob3WithinTolerance = true;
 
+            savedKnobValuesSnareDrum[2] = knob3Value;
             snareDrum.SetDecay(knob3Value);
         }
-        if (withinTolerance(knob4Value, savedKnobValuesSnareDrum[3]))
+        if (snareDrumKnob4WithinTolerance || withinTolerance(knob4Value, savedKnobValuesSnareDrum[3]))
         {
-            savedKnobValuesSnareDrum[3] = knob4Value;
+            snareDrumKnob4WithinTolerance = true;
 
+            savedKnobValuesSnareDrum[3] = knob4Value;
             snareDrum.SetSnappy(knob4Value);
         }
     }
     if (tomDrumSelected)
     {
+                bassDrumKnob1WithinTolerance = false;
+                bassDrumKnob2WithinTolerance = false;
+                bassDrumKnob3WithinTolerance = false;
+                bassDrumKnob4WithinTolerance = false;
+
+                snareDrumKnob1WithinTolerance = false;
+                snareDrumKnob2WithinTolerance = false;
+                snareDrumKnob3WithinTolerance = false;
+                snareDrumKnob4WithinTolerance = false;
+
         knobValues = savedKnobValuesTomDrum;
         dubby.savedKnobValuesForVisuals = savedKnobValuesTomDrum;
 
         // Check knob values for tom drum and update parameters accordingly
-        if (withinTolerance(knob1Value, savedKnobValuesTomDrum[0]))
+        if (tomDrumKnob1WithinTolerance || withinTolerance(knob1Value, savedKnobValuesTomDrum[0]))
         {
-            savedKnobValuesTomDrum[0] = knob1Value;
+            tomDrumKnob1WithinTolerance = true;
 
+            savedKnobValuesTomDrum[0] = knob1Value;
             tomDrum.SetFreq((knob1Value * 200.f) + 200.f);
         }
-        if (withinTolerance(knob2Value, savedKnobValuesTomDrum[1]))
+        if (tomDrumKnob2WithinTolerance || withinTolerance(knob2Value, savedKnobValuesTomDrum[1]))
         {
-            savedKnobValuesTomDrum[1] = knob2Value;
+            tomDrumKnob2WithinTolerance = true;
 
+            savedKnobValuesTomDrum[1] = knob2Value;
             tomDrum.SetDecay(knob2Value);
         }
-        if (withinTolerance(knob3Value, savedKnobValuesTomDrum[2]))
+        if (tomDrumKnob3WithinTolerance || withinTolerance(knob3Value, savedKnobValuesTomDrum[2]))
         {
+            tomDrumKnob3WithinTolerance = true;
             savedKnobValuesTomDrum[2] = knob3Value;
-
             tomDrum.SetTone(knob3Value);
         }
-        if (withinTolerance(knob4Value, savedKnobValuesTomDrum[3]))
+        if (tomDrumKnob4WithinTolerance || withinTolerance(knob4Value, savedKnobValuesTomDrum[3]))
         {
+            tomDrumKnob4WithinTolerance = true;
             savedKnobValuesTomDrum[3] = knob4Value;
-
             tomDrum.SetDirtiness(knob4Value);
         }
     }
@@ -226,46 +288,17 @@ int main(void)
     bassDrum.Init(sample_rate);
     tomDrum.Init(sample_rate);
     snareDrum.Init(sample_rate);
-    //  hihat.Init(sample_rate);
 
-    bassDrum.SetDecay(0.2);
-    bassDrum.SetTone(1.f);
-    bassDrum.SetDirtiness(0.5f);
-    bassDrum.SetFreq(100.f);
-    bassDrum.SetFmEnvelopeAmount(0.7f);
-    bassDrum.SetFmEnvelopeDecay(0.7f);
-
-    tomDrum.SetDecay(0.7);
-    tomDrum.SetTone(1.f);
-    tomDrum.SetDirtiness(0.5f);
-    tomDrum.SetFreq(300.f);
-    tomDrum.SetFmEnvelopeAmount(0.7f);
-    tomDrum.SetFmEnvelopeDecay(0.7f);
-
-    snareDrum.SetAccent(0.7f);
-    snareDrum.SetDecay(.7f);
-    snareDrum.SetSnappy(.7f);
-    snareDrum.SetFreq(.7f);
-
-    //   hihat.SetDecay(0.7f);
-    //  hihat.SetSustain(0.8f);
-    //  hihat.SetTone(0.7f);
-    //  hihat.SetNoisiness(0.3f);
-
-    // initLED();
-    // setLED(0, BLUE, 100);
-    // setLED(1, RED, 100);
-    // updateLED();
+    // Set default parameters for each drum
+    // ...
 
     while (1)
     {
         Monitor(dubby);
         MonitorMidi();
-
-        // std::string str = std::to_string(int(loadMeter.GetAvgCpuLoad() * 100.0f)) + "%";
-        // dubby.UpdateStatusBar(&str[0], dubby.MIDDLE);
-
         handleKnobs();
+
+        // Check for bootloader reset
         if (dubby.buttons[3].TimeHeldMs() > 1000)
         {
             dubby.ResetToBootloader();

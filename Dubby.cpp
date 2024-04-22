@@ -491,7 +491,7 @@ void Dubby::UpdateWindowList()
             DisplayPreferencesMenuList(0);
             break;
         case WIN4:
-            //UpdateStatusBar(&algorithmTitle[0], LEFT); 
+            UpdateStatusBar(&algorithmTitle[0], LEFT); 
 visualizeKnobValues( customLabels, numDecimals);
             break;
         case WIN5:
