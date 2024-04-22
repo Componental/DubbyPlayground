@@ -331,8 +331,8 @@ void Dubby::visualizeKnobValuesCircle(const std::vector<std::string>& knobLabels
         int circle_x_offset = circleSpacing * (i + 1) + circle_radius + i * 2 * circle_radius;
 
         // Get knob value
-        float knobValue = GetKnobValue(static_cast<Ctrl>(i));
-
+      //  float knobValue = GetKnobValue(static_cast<Ctrl>(i));
+        float knobValue = savedKnobValuesForVisuals[i];
         // Calculate angle for the current knob
         float angle = (knobValue * 0.8f * 2 * PI_F) - (PI_F * 1.5f) + 0.2 * PI_F;  // Convert knob value to angle
 

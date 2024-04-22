@@ -336,6 +336,7 @@ class Dubby
 
     int globalBPM = 120;
 
+    std::vector<float> savedKnobValuesForVisuals;
   private:
 
     void InitAudio();
