@@ -10,8 +10,7 @@ using namespace daisysp;
 Dubby dubby;
 CpuLoadMeter loadMeter;
 
-SyntheticBassDrum DSY_SDRAM_BSS bassDrum;
-SyntheticBassDrum DSY_SDRAM_BSS tomDrum;
+SyntheticBassDrum DSY_SDRAM_BSS bassDrum, tomDrum;
 SyntheticSnareDrum DSY_SDRAM_BSS snareDrum;
 // HiHat<> DSY_SDRAM_BSS hihat;
 std::vector<float> knobValues;
@@ -55,7 +54,7 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
 
             out[0][i] = out[1][i] = (bassDrum.Process(triggerBassDrum) + tomDrum.Process(triggerTomDrum) + snareDrum.Process(triggerSnareDrum)) * 0.3f; // + hihat.Process(triggerHihat);
             // Reset all drum triggers
-            triggerBassDrum = false;
+            triggerBassDrum= false;
             triggerTomDrum = false;
             triggerSnareDrum = false;
             // =======================================
@@ -74,6 +73,7 @@ bool withinTolerance(float value1, float value2)
 }
 void handleKnobs()
 {
+
     // Get knob values
     float knob1Value = dubby.GetKnobValue(dubby.CTRL_1);
     float knob2Value = dubby.GetKnobValue(dubby.CTRL_2);
@@ -81,6 +81,7 @@ void handleKnobs()
     float knob4Value = dubby.GetKnobValue(dubby.CTRL_4);
 
     // Check if a button is pressed and update the selected drum accordingly
+
     if (dubby.buttons[0].Pressed() && !bassdrumSelected)
     {
 
@@ -150,7 +151,7 @@ void handleKnobs()
     }
     if (snaredrumSelected)
     {
-                dubby.algorithmTitle = "SNARE DRUM";
+        dubby.algorithmTitle = "SNARE DRUM";
         dubby.UpdateAlgorithmTitle();
 
   // Reset tolerance flags for other drums
@@ -245,6 +246,7 @@ void handleKnobs()
 
 int main(void)
 {
+
     Init(dubby);
     InitMidiClock(dubby);
 
