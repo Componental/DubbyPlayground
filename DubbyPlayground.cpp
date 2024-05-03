@@ -10,6 +10,9 @@ using namespace daisysp;
 Dubby dubby;
 CpuLoadMeter loadMeter;
 
+int selectedPage = 0;
+
+
 SyntheticBassDrum DSY_SDRAM_BSS bassDrum, tomDrum;
 SyntheticSnareDrum DSY_SDRAM_BSS snareDrum;
 // HiHat<> DSY_SDRAM_BSS hihat;
@@ -74,6 +77,14 @@ bool withinTolerance(float value1, float value2)
 void handleKnobs()
 {
 
+    // Get encoder value
+    int rotationDirection = dubby.encoder.Increment();
+    if (rotationDirection != 0)
+    {
+        selectedPage = (selectedPage + rotationDirection + NUM_PAGES) % NUM_PAGES;
+
+    }
+
     // Get knob values
     float knob1Value = dubby.GetKnobValue(dubby.CTRL_1);
     float knob2Value = dubby.GetKnobValue(dubby.CTRL_2);
@@ -81,26 +92,27 @@ void handleKnobs()
     float knob4Value = dubby.GetKnobValue(dubby.CTRL_4);
 
     // Check if a button is pressed and update the selected drum accordingly
-
-    if (dubby.buttons[0].Pressed() && !bassdrumSelected)
+    // Set drum parameters based on selected drum and knob values
+    switch (selectedPage)
     {
-
+    case 0: // Bass drum
         bassdrumSelected = true;
         snaredrumSelected = false;
         tomDrumSelected = false;
-    }
-    if (dubby.buttons[1].Pressed() && !snaredrumSelected)
-    {
+        break;
+    case 1: // Snare drum
         bassdrumSelected = false;
         snaredrumSelected = true;
         tomDrumSelected = false;
-    }
-    if (dubby.buttons[2].Pressed() && !tomDrumSelected)
-    {
+        break;
+    case 2: // Tom drum
         bassdrumSelected = false;
         snaredrumSelected = false;
         tomDrumSelected = true;
+        break;
     }
+
+ 
 
     // Set drum parameters based on selected drum and knob values
     if (bassdrumSelected)
