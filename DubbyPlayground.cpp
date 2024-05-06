@@ -12,6 +12,7 @@ CpuLoadMeter loadMeter;
 
 int selectedPage = 0;
 
+float defaultKnobValue = 0.2f;
 SyntheticBassDrum DSY_SDRAM_BSS bassDrum, tomDrum;
 SyntheticSnareDrum DSY_SDRAM_BSS snareDrum;
 Hihat DSY_SDRAM_BSS hihat;
@@ -37,7 +38,7 @@ float hihatAmplitude = 1.f;
 // Vector of vectors to store whether each knob is within tolerance for each drum
 // Booleans to track tolerance for each knob of each drum
 const int NUM_PAGES = 4;                                // assuming 4 types of drums: bass, snare, tom, hihat
-float savedKnobValues[NUM_PAGES][NUM_KNOBS] = {{0.5f}}; // Initialized to 0.5
+float savedKnobValues[NUM_PAGES][NUM_KNOBS] = {{defaultKnobValue}}; // Initialized to 0.5
 bool knobWithinTolerance[NUM_PAGES][NUM_KNOBS] = {{false}};
 
 void MonitorMidi();
@@ -408,7 +409,7 @@ int main(void)
         for (int j = 0; j < NUM_KNOBS; ++j)
         {
             knobWithinTolerance[i][j] = false;
-            savedKnobValues[i][j] = 0.5f;
+            savedKnobValues[i][j] = defaultKnobValue;
         }
     }
     bassDrum.Init(sample_rate);
@@ -416,10 +417,10 @@ int main(void)
     snareDrum.Init(sample_rate);
     hihat.Init(sample_rate);
 
-    bassDrum.SetFreq(0.5f * 150.0f);
-    tomDrum.SetFreq((0.5f * 250.f) + 200.f);
-    snareDrum.SetFreq((0.5f * 300.f) + 10.f);
-    hihat.SetFreq(0.5f);
+    bassDrum.SetFreq(defaultKnobValue * 150.0f);
+    tomDrum.SetFreq((defaultKnobValue * 250.f) + 200.f);
+    snareDrum.SetFreq((defaultKnobValue * 300.f) + 10.f);
+    hihat.SetFreq(defaultKnobValue);
 
     // Set default parameters for each drum
     // ...

@@ -17,7 +17,7 @@ void Hihat::Init(float sample_rate)
 
     bpFilter.SetFreq(1000.0f);
     bpFilter.SetRes(0.5f);
-    
+
 }
 
 float Hihat::Process()
@@ -55,9 +55,14 @@ void Hihat::SetAttack(float attack)
 
 void Hihat::SetDecay(float decay)
 {
-        float decayValueAdjusted = 0.99f * decay + 0.01f;
 
-        env.SetTime(ADENV_SEG_DECAY, decayValueAdjusted);
+         // Map the knob value to a logarithmic scale for cutoff frequency
+    float minDecay = 0.01f; // Minimum cutoff frequency in Hz
+    float maxDecay = 2.0f; // Maximum cutoff frequency in Hz
+    float mappedDecay = daisysp::fmap(decay, minDecay, maxDecay, daisysp::Mapping::LOG);
+
+
+        env.SetTime(ADENV_SEG_DECAY, mappedDecay);
 
 }
 
