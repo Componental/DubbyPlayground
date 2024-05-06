@@ -348,8 +348,8 @@ void Dubby::visualizeKnobValuesCircle(const std::vector<std::string>& knobLabels
         int circle_x_offset = circleSpacing * (i + 1) + circle_radius + i * 2 * circle_radius;
 
         // Get knob value
-      //  float knobValue = GetKnobValue(static_cast<Ctrl>(i));
-float knobValue = savedKnobValuesForVisuals[i];
+        float knobValue = savedKnobValuesForVisuals[i];
+        
         // Calculate angle for the current knob
         float angle = (knobValue * 0.8f * 2 * PI_F) - (PI_F * 1.5f) + 0.2 * PI_F;  // Convert knob value to angle
 
@@ -363,7 +363,7 @@ float knobValue = savedKnobValuesForVisuals[i];
         // Draw line indicating knob value
         display.DrawLine(circle_x_offset, circle_y, line_end_x, line_end_y, true);
 
-               // Calculate the position for the label to be centered above the circle
+        // Calculate the position for the label to be centered above the circle
         int label_x = circle_x_offset - (knobLabels[i].size() * 4) / 2;  // Assuming each character is 4 pixels wide in the selected font
         int label_y = circle_y - 20;  // Adjust this value to position the label properly above the circle
 
@@ -371,17 +371,22 @@ float knobValue = savedKnobValuesForVisuals[i];
         display.SetCursor(label_x, label_y);
         display.WriteString(knobLabels[i].c_str(), Font_4x5, true);
 
-        // Draw knob value below the label
+        // Format knob value as string
         char formattedValue[10];
         snprintf(formattedValue, 10, "%.*f", numDecimals[i], knobValuesForPrint[i]);
-        display.SetCursor(circle_x_offset - 8, circle_y + 15);
+
+        // Calculate the position for the value to be centered under the circle
+        int value_width = strlen(formattedValue) * 4; // Assuming each character is 4 pixels wide in the selected font
+        int value_x = circle_x_offset - value_width / 2;
+
+        // Draw knob value below the label
+        display.SetCursor(value_x, circle_y + 15);
         display.WriteString(formattedValue, Font_4x5, true);
     }
 
     // Update the display
     display.Update();
 }
-
 void Dubby::visualizeKnobValues( const std::vector<std::string>& knobLabels, const std::vector<int>& numDecimals) {
     // Clear the pane
     ClearPane();

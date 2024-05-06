@@ -288,7 +288,7 @@ class Dubby
     std::vector<float> knobValuesForPrint;
     void visualizeKnobValues( const std::vector<std::string>& knobLabels, const std::vector<int>& numDecimals);
     void visualizeKnobValuesCircle(const std::vector<std::string>& knobLabels, const std::vector<int>& numDecimals);
-    std::vector<int> numDecimals = {2, 2, 2, 2}; // Assuming you have three knobs with different decimal places
+    std::vector<int> numDecimals = {1, 1, 1, 1}; // Assuming you have three knobs with different decimal places
 
     DaisySeed seed; 
 
