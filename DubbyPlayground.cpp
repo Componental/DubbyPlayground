@@ -92,13 +92,13 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
 }
 bool withinTolerance(float value1, float value2)
 {
-    return fabs(value1 - value2) <= knobTolerance;
+    return fabs(value1 - value2) <= knobTolerance; // Check if the difference between two values is within a tolerance limit
 }
 
 void handleKnobs()
 {
-    int rotationDirection = dubby.encoder.Increment();
-    if (rotationDirection != 0)
+    int rotationDirection = dubby.encoder.Increment(); // Get the direction of knob rotation
+    if (rotationDirection != 0) // If there was a knob rotation
     {
         // Reset all knobs to false for all drums except the selected one
         for (int i = 0; i < NUM_PAGES; i++)
@@ -107,12 +107,12 @@ void handleKnobs()
             {
                 for (int j = 0; j < NUM_KNOBS; j++)
                 {
-                    knobWithinTolerance[i][j] = false;
+                    knobWithinTolerance[i][j] = false; // Reset tolerance status for all knobs except on the selected page
                 }
             }
         }
 
-        // Change the selected page
+        // Change the selected page based on the rotation direction
         selectedPage = (selectedPage + rotationDirection + NUM_PAGES) % NUM_PAGES;
     }
 
@@ -124,22 +124,22 @@ void handleKnobs()
     // Process knobs for the selected page
     for (int j = 0; j < NUM_KNOBS; j++)
     {
-        float knobValue = dubby.GetKnobValue(static_cast<daisy::Dubby::Ctrl>(j));
+        float knobValue = dubby.GetKnobValue(static_cast<daisy::Dubby::Ctrl>(j)); // Get the value of each knob
         // Only check for tolerance if the knob is not already within tolerance
         if (!knobWithinTolerance[selectedPage][j])
         {
-            if (withinTolerance(knobValue, savedKnobValues[selectedPage][j]))
+            if (withinTolerance(knobValue, savedKnobValues[selectedPage][j])) // Check if knob value is within tolerance
             {
-                knobWithinTolerance[selectedPage][j] = true;
+                knobWithinTolerance[selectedPage][j] = true; // Set knob within tolerance
             }
         }
         // Update the saved value only if it's within tolerance
         if (knobWithinTolerance[selectedPage][j])
         {
-            savedKnobValues[selectedPage][j] = knobValue;
+            savedKnobValues[selectedPage][j] = knobValue; // Update saved knob value
         }
-        knobValues[j] = savedKnobValues[selectedPage][j];
-        dubby.savedKnobValuesForVisuals[j] = savedKnobValues[selectedPage][j];
+        knobValues[j] = savedKnobValues[selectedPage][j]; // Update knob values array
+        dubby.savedKnobValuesForVisuals[j] = savedKnobValues[selectedPage][j]; // Update saved knob values for visuals
     }
 
     // Update the knob values for the visual representation
