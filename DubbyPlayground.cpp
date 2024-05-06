@@ -34,10 +34,24 @@ float bassDrumAmplitude = 1.f;
 float snareDrumAmplitude = 1.f;
 float tomDrumAmplitude = 1.f;
 float hihatAmplitude = 1.f;
+const int NUM_PAGES = 4; // assuming 4 types of drums: bass, snare, tom, hihat
+
+float pagePendendentKnobValue[NUM_PAGES][NUM_KNOBS] = {
+    {0.2f, 0.2f, 0.2f, 0.2f},
+    {0.2f, 0.2f, 0.2f, 0.2f},
+    {0.2f, 0.2f, 0.2f, 0.2f},
+    {0.2f, 0.2f, 0.2f, 0.2f}};
 
 // Vector of vectors to store whether each knob is within tolerance for each drum
 // Booleans to track tolerance for each knob of each drum
-const int NUM_PAGES = 4;                                // assuming 4 types of drums: bass, snare, tom, hihat
+
+const char *algorithmTitles[NUM_PAGES] = {"BASS DRUM", "SNARE DRUM", "TOM DRUM", "HI-HAT"};
+const char *customLabels[NUM_PAGES][NUM_KNOBS] = {
+    {"FREQ", "DECAY", "TONE", "DIRT"},
+    {"FREQ", "DECAY", "ACCENT", "SNAPPY"},
+    {"FREQ", "DECAY", "TONE", "DIRT"},
+    {"ATTACK", "DECAY", "COLOUR", "RESO"}};
+
 float savedKnobValues[NUM_PAGES][NUM_KNOBS] = {{defaultKnobValue}}; // Initialized to 0.5
 bool knobWithinTolerance[NUM_PAGES][NUM_KNOBS] = {{false}};
 
@@ -96,16 +110,16 @@ void handleKnobs()
     page3Selected = selectedPage == 3;
 
     // Get knob values
-    float knob1Value = dubby.GetKnobValue(dubby.CTRL_1);
-    float knob2Value = dubby.GetKnobValue(dubby.CTRL_2);
-    float knob3Value = dubby.GetKnobValue(dubby.CTRL_3);
-    float knob4Value = dubby.GetKnobValue(dubby.CTRL_4);
+    float knob0Value = dubby.GetKnobValue(dubby.CTRL_1);
+    float knob1Value = dubby.GetKnobValue(dubby.CTRL_2);
+    float knob2Value = dubby.GetKnobValue(dubby.CTRL_3);
+    float knob3Value = dubby.GetKnobValue(dubby.CTRL_4);
 
     // Set drum parameters based on selected drum and knob values
     if (page0Selected)
     {
-        dubby.algorithmTitle = "BASS DRUM";
-        dubby.customLabels = {"FREQ", "DECAY", "TONE", "DIRT"};
+        dubby.algorithmTitle = algorithmTitles[0];
+        dubby.customLabels.assign(customLabels[0], customLabels[0] + NUM_KNOBS);
         dubby.UpdateAlgorithmTitle();
 
         // Reset tolerance flags for other drums
@@ -120,63 +134,66 @@ void handleKnobs()
         }
 
         // Check knob values for bass drum and update parameters accordingly
-        if (knobWithinTolerance[0][0] || withinTolerance(knob1Value, savedKnobValues[0][0]))
+        if (knobWithinTolerance[0][0] || withinTolerance(knob0Value, savedKnobValues[0][0]))
         {
             knobWithinTolerance[0][0] = true;
 
             // PAGE 1, KNOB 1
             ////////////////////////////////////////////////
 
-            bassDrum.SetFreq(knob1Value * 150.0f);
+            // bassDrum.SetFreq(knob0Value * 150.0f);
 
+            pagePendendentKnobValue[0][0] = knob0Value;
             ////////////////////////////////////////////////
 
-            savedKnobValues[0][0] = knob1Value;
+            savedKnobValues[0][0] = knob0Value;
         }
-        if (knobWithinTolerance[0][1] || withinTolerance(knob2Value, savedKnobValues[0][1]))
+        if (knobWithinTolerance[0][1] || withinTolerance(knob1Value, savedKnobValues[0][1]))
         {
             knobWithinTolerance[0][1] = true;
 
             // PAGE 1, KNOB 2
             ////////////////////////////////////////////////
 
-            bassDrum.SetDecay(knob2Value);
-
+            // bassDrum.SetDecay(knob1Value);
+            pagePendendentKnobValue[0][1] = knob1Value;
             ////////////////////////////////////////////////
 
-            savedKnobValues[0][1] = knob2Value;
+            savedKnobValues[0][1] = knob1Value;
         }
-        if (knobWithinTolerance[0][2] || withinTolerance(knob3Value, savedKnobValues[0][2]))
+        if (knobWithinTolerance[0][2] || withinTolerance(knob2Value, savedKnobValues[0][2]))
         {
             knobWithinTolerance[0][2] = true;
 
             // PAGE 1, KNOB 3
             ////////////////////////////////////////////////
 
-            bassDrum.SetTone(knob3Value);
+            // bassDrum.SetTone(knob2Value);
+            pagePendendentKnobValue[0][2] = knob2Value;
 
             ////////////////////////////////////////////////
 
-            savedKnobValues[0][2] = knob3Value;
+            savedKnobValues[0][2] = knob2Value;
         }
-        if (knobWithinTolerance[0][3] || withinTolerance(knob4Value, savedKnobValues[0][3]))
+        if (knobWithinTolerance[0][3] || withinTolerance(knob3Value, savedKnobValues[0][3]))
         {
             knobWithinTolerance[0][3] = true;
 
             // PAGE 1, KNOB 4
             ////////////////////////////////////////////////
 
-            bassDrum.SetDirtiness(knob4Value);
+            // bassDrum.SetDirtiness(knob3Value);
+            pagePendendentKnobValue[0][3] = knob3Value;
 
             ////////////////////////////////////////////////
 
-            savedKnobValues[0][3] = knob4Value;
+            savedKnobValues[0][3] = knob3Value;
         }
     }
     if (page1Selected)
     {
-        dubby.algorithmTitle = "SNARE DRUM";
-        dubby.customLabels = {"FREQ", "DECAY", "ACCENT", "SNAPPY"};
+        dubby.algorithmTitle = algorithmTitles[1];
+        dubby.customLabels.assign(customLabels[1], customLabels[1] + NUM_KNOBS);
         dubby.UpdateAlgorithmTitle();
 
         // Reset tolerance flags for other drums
@@ -191,63 +208,63 @@ void handleKnobs()
         }
 
         // Check knob values for snare drum and update parameters accordingly
-        if (knobWithinTolerance[1][0] || withinTolerance(knob1Value, savedKnobValues[1][0]))
+        if (knobWithinTolerance[1][0] || withinTolerance(knob0Value, savedKnobValues[1][0]))
         {
             knobWithinTolerance[1][0] = true;
 
             // PAGE 2, KNOB 1
             ////////////////////////////////////////////////
 
-            snareDrum.SetFreq((knob1Value * 300.f) + 10.f);
-
+            // snareDrum.SetFreq((knob0Value * 300.f) + 10.f);
+            pagePendendentKnobValue[1][0] = knob0Value;
             ////////////////////////////////////////////////
 
-            savedKnobValues[1][0] = knob1Value;
+            savedKnobValues[1][0] = knob0Value;
         }
-        if (knobWithinTolerance[1][1] || withinTolerance(knob2Value, savedKnobValues[1][1]))
+        if (knobWithinTolerance[1][1] || withinTolerance(knob1Value, savedKnobValues[1][1]))
         {
             knobWithinTolerance[1][1] = true;
 
             // PAGE 2, KNOB 2
             ////////////////////////////////////////////////
 
-            snareDrum.SetDecay(knob2Value);
-
+            // snareDrum.SetDecay(knob1Value);
+            pagePendendentKnobValue[1][1] = knob1Value;
             ////////////////////////////////////////////////
 
-            savedKnobValues[1][1] = knob2Value;
+            savedKnobValues[1][1] = knob1Value;
         }
-        if (knobWithinTolerance[1][2] || withinTolerance(knob3Value, savedKnobValues[1][2]))
+        if (knobWithinTolerance[1][2] || withinTolerance(knob2Value, savedKnobValues[1][2]))
         {
             knobWithinTolerance[1][2] = true;
 
             // PAGE 2, KNOB 3
             ////////////////////////////////////////////////
 
-            snareDrum.SetAccent(knob3Value);
-
+            // snareDrum.SetAccent(knob2Value);
+            pagePendendentKnobValue[1][2] = knob2Value;
             ////////////////////////////////////////////////
 
-            savedKnobValues[1][2] = knob3Value;
+            savedKnobValues[1][2] = knob2Value;
         }
-        if (knobWithinTolerance[1][3] || withinTolerance(knob4Value, savedKnobValues[1][3]))
+        if (knobWithinTolerance[1][3] || withinTolerance(knob3Value, savedKnobValues[1][3]))
         {
             knobWithinTolerance[1][3] = true;
 
             // PAGE 2, KNOB 4
             ////////////////////////////////////////////////
 
-            snareDrum.SetSnappy(knob4Value);
-
+            // snareDrum.SetSnappy(knob3Value);
+            pagePendendentKnobValue[1][3] = knob3Value;
             ////////////////////////////////////////////////
 
-            savedKnobValues[1][3] = knob4Value;
+            savedKnobValues[1][3] = knob3Value;
         }
     }
     if (page2Selected)
     {
-        dubby.algorithmTitle = "TOM DRUM";
-        dubby.customLabels = {"FREQ", "DECAY", "TONE", "DIRT"};
+        dubby.algorithmTitle = algorithmTitles[2];
+        dubby.customLabels.assign(customLabels[2], customLabels[2] + NUM_KNOBS);
         dubby.UpdateAlgorithmTitle();
 
         // Reset tolerance flags for other drums
@@ -262,64 +279,65 @@ void handleKnobs()
         }
 
         // Check knob values for tom drum and update parameters accordingly
-        if (knobWithinTolerance[2][0] || withinTolerance(knob1Value, savedKnobValues[2][0]))
+        if (knobWithinTolerance[2][0] || withinTolerance(knob0Value, savedKnobValues[2][0]))
         {
             knobWithinTolerance[2][0] = true;
 
             // PAGE 3, KNOB 1
             ////////////////////////////////////////////////
 
-            tomDrum.SetFreq((knob1Value * 250.f) + 200.f);
+            // tomDrum.SetFreq((knob0Value * 250.f) + 200.f);
+            pagePendendentKnobValue[2][0] = knob0Value;
 
             ////////////////////////////////////////////////
 
-            savedKnobValues[2][0] = knob1Value;
+            savedKnobValues[2][0] = knob0Value;
         }
-        if (knobWithinTolerance[2][1] || withinTolerance(knob2Value, savedKnobValues[2][1]))
+        if (knobWithinTolerance[2][1] || withinTolerance(knob1Value, savedKnobValues[2][1]))
         {
             knobWithinTolerance[2][1] = true;
 
             // PAGE 3, KNOB 2
             ////////////////////////////////////////////////
 
-            tomDrum.SetDecay(knob2Value);
-
+            // tomDrum.SetDecay(knob1Value);
+            pagePendendentKnobValue[2][1] = knob1Value;
             ////////////////////////////////////////////////
 
-            savedKnobValues[2][1] = knob2Value;
+            savedKnobValues[2][1] = knob1Value;
         }
-        if (knobWithinTolerance[2][2] || withinTolerance(knob3Value, savedKnobValues[2][2]))
+        if (knobWithinTolerance[2][2] || withinTolerance(knob2Value, savedKnobValues[2][2]))
         {
             knobWithinTolerance[2][2] = true;
 
             // PAGE 3, KNOB 3
             ////////////////////////////////////////////////
 
-            tomDrum.SetTone(knob3Value);
-
+            // tomDrum.SetTone(knob2Value);
+            pagePendendentKnobValue[2][2] = knob2Value;
             ////////////////////////////////////////////////
 
-            savedKnobValues[2][2] = knob3Value;
+            savedKnobValues[2][2] = knob2Value;
         }
-        if (knobWithinTolerance[2][3] || withinTolerance(knob4Value, savedKnobValues[2][3]))
+        if (knobWithinTolerance[2][3] || withinTolerance(knob3Value, savedKnobValues[2][3]))
         {
             knobWithinTolerance[2][3] = true;
 
             // PAGE 3, KNOB 4
             ////////////////////////////////////////////////
 
-            tomDrum.SetDirtiness(knob4Value);
-
+            // tomDrum.SetDirtiness(knob3Value);
+            pagePendendentKnobValue[2][3] = knob3Value;
             ////////////////////////////////////////////////
 
-            savedKnobValues[2][3] = knob4Value;
+            savedKnobValues[2][3] = knob3Value;
         }
     }
 
     if (page3Selected)
     {
-        dubby.algorithmTitle = "HI-HAT";
-        dubby.customLabels = {"ATTACK", "DECAY", "COLOUR", "RESO"};
+        dubby.algorithmTitle = algorithmTitles[3];
+        dubby.customLabels.assign(customLabels[3], customLabels[3] + NUM_KNOBS);
         dubby.UpdateAlgorithmTitle();
 
         // Reset tolerance flags for other drums
@@ -335,57 +353,57 @@ void handleKnobs()
         }
 
         // Check knob values for hi-hat and update parameters accordingly
-        if (knobWithinTolerance[3][0] || withinTolerance(knob1Value, savedKnobValues[3][0]))
+        if (knobWithinTolerance[3][0] || withinTolerance(knob0Value, savedKnobValues[3][0]))
         {
             knobWithinTolerance[3][0] = true;
 
             // PAGE 4, KNOB 1
             ////////////////////////////////////////////////
 
-            hihat.SetAttack(knob1Value);
-
+            // hihat.SetAttack(knob0Value);
+            pagePendendentKnobValue[3][0] = knob0Value;
             ////////////////////////////////////////////////
 
-            savedKnobValues[3][0] = knob1Value;
+            savedKnobValues[3][0] = knob0Value;
         }
-        if (knobWithinTolerance[3][1] || withinTolerance(knob2Value, savedKnobValues[3][1]))
+        if (knobWithinTolerance[3][1] || withinTolerance(knob1Value, savedKnobValues[3][1]))
         {
             knobWithinTolerance[3][1] = true;
 
             // PAGE 4, KNOB 2
             ////////////////////////////////////////////////
 
-            hihat.SetDecay(knob2Value);
-
+            // hihat.SetDecay(knob1Value);
+            pagePendendentKnobValue[3][1] = knob1Value;
             ////////////////////////////////////////////////
 
-            savedKnobValues[3][1] = knob2Value;
+            savedKnobValues[3][1] = knob1Value;
         }
-        if (knobWithinTolerance[3][2] || withinTolerance(knob3Value, savedKnobValues[3][2]))
+        if (knobWithinTolerance[3][2] || withinTolerance(knob2Value, savedKnobValues[3][2]))
         {
             knobWithinTolerance[3][2] = true;
 
             // PAGE 4, KNOB 3
             ////////////////////////////////////////////////
 
-            hihat.SetFreq(knob3Value);
-
+            // hihat.SetFreq(knob2Value);
+            pagePendendentKnobValue[3][2] = knob2Value;
             ////////////////////////////////////////////////
 
-            savedKnobValues[3][2] = knob3Value;
+            savedKnobValues[3][2] = knob2Value;
         }
-        if (knobWithinTolerance[3][3] || withinTolerance(knob4Value, savedKnobValues[3][3]))
+        if (knobWithinTolerance[3][3] || withinTolerance(knob3Value, savedKnobValues[3][3]))
         {
             knobWithinTolerance[3][3] = true;
 
             // PAGE 4, KNOB 4
             ////////////////////////////////////////////////
 
-            hihat.SetFilterRes(knob4Value);
-
+            // hihat.SetFilterRes(knob3Value);
+            pagePendendentKnobValue[3][3] = knob3Value;
             ////////////////////////////////////////////////
 
-            savedKnobValues[3][3] = knob4Value;
+            savedKnobValues[3][3] = knob3Value;
         }
     }
     // Update knob values in Dubby class
@@ -430,6 +448,28 @@ int main(void)
         Monitor(dubby);
         MonitorMidi();
         handleKnobs();
+
+        // Inside the while loop
+        bassDrum.SetFreq(pagePendendentKnobValue[0][0] * 150.0f);
+        bassDrum.SetDecay(pagePendendentKnobValue[0][1]);
+        bassDrum.SetTone(pagePendendentKnobValue[0][2]);
+        bassDrum.SetDirtiness(pagePendendentKnobValue[0][3]);
+
+        snareDrum.SetFreq((pagePendendentKnobValue[1][0] * 300.f) + 10.f);
+        snareDrum.SetDecay(pagePendendentKnobValue[1][1]);
+        snareDrum.SetAccent(pagePendendentKnobValue[1][2]);
+        snareDrum.SetSnappy(pagePendendentKnobValue[1][3]);
+
+        tomDrum.SetFreq((pagePendendentKnobValue[2][0] * 250.f) + 200.f);
+        tomDrum.SetDecay(pagePendendentKnobValue[2][1]);
+        tomDrum.SetTone(pagePendendentKnobValue[2][2]);
+        tomDrum.SetDirtiness(pagePendendentKnobValue[2][3]);
+
+        hihat.SetAttack(pagePendendentKnobValue[3][0]);
+        hihat.SetDecay(pagePendendentKnobValue[3][1]);
+        hihat.SetFreq(pagePendendentKnobValue[3][2]);
+        hihat.SetFilterRes(pagePendendentKnobValue[3][3]);
+
         // Check for bootloader reset
         if (dubby.buttons[3].TimeHeldMs() > 1000)
         {
