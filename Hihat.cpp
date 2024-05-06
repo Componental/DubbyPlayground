@@ -15,6 +15,9 @@ void Hihat::Init(float sample_rate)
     env.SetMax(0.25);
     env.SetCurve(0); // linear
 
+    bpFilter.SetFreq(1000.0f);
+    bpFilter.SetRes(0.5f);
+    
 }
 
 float Hihat::Process()
