@@ -42,18 +42,8 @@ const char *customLabels[NUM_PAGES][NUM_KNOBS] = {
     {"FREQ", "DECAY", "TONE", "DIRT"},
     {"ATTACK", "DECAY", "COLOUR", "RESO"}};
 
-float savedKnobValues[NUM_PAGES][NUM_KNOBS] = {
-    {defaultKnobValue, defaultKnobValue, defaultKnobValue, defaultKnobValue},
-    {defaultKnobValue, defaultKnobValue, defaultKnobValue, defaultKnobValue},
-    {defaultKnobValue, defaultKnobValue, defaultKnobValue, defaultKnobValue},
-    {defaultKnobValue, defaultKnobValue, defaultKnobValue, defaultKnobValue}
-};
-bool knobWithinTolerance[NUM_PAGES][NUM_KNOBS] = {
-    {false, false, false, false},
-    {false, false, false, false},
-    {false, false, false, false},
-    {false, false, false, false}
-};
+float savedKnobValues[NUM_PAGES][NUM_KNOBS];
+bool knobWithinTolerance[NUM_PAGES][NUM_KNOBS];
 
 void MonitorMidi();
 void HandleMidiUartMessage(MidiEvent m);

@@ -341,52 +341,65 @@ void Dubby::visualizeKnobValuesCircle(const std::vector<std::string>& knobLabels
 
     // Calculate space between circles
     int circleSpacing = (OLED_WIDTH - totalWidth) / (NUM_KNOBS + 1);
+// Loop through each knob value
+for (int i = 0; i < NUM_KNOBS; ++i) {
+    // Calculate knob x-coordinate
+    int circle_x_offset = circleSpacing * (i + 1) + circle_radius + i * 2 * circle_radius;
 
-    // Loop through each knob value
-    for (int i = 0; i < NUM_KNOBS; ++i) {
-        // Calculate knob x-coordinate
-        int circle_x_offset = circleSpacing * (i + 1) + circle_radius + i * 2 * circle_radius;
+    // Get knob value
+    float knobValue = savedKnobValuesForVisuals[i];
+    
+    float knobValueLive = GetKnobValue(static_cast<Ctrl>(i));
+    // Calculate angle for the current knob
+    float angle = (knobValue * 0.8f * 2 * PI_F) - (PI_F * 1.5f) + 0.2 * PI_F;  // Convert knob value to angle
 
-        // Get knob value
-        float knobValue = savedKnobValuesForVisuals[i];
-        
-        // Calculate angle for the current knob
-        float angle = (knobValue * 0.8f * 2 * PI_F) - (PI_F * 1.5f) + 0.2 * PI_F;  // Convert knob value to angle
+    // Calculate angle for knobValueLive
+    float liveAngle = (knobValueLive * 0.8f * 2 * PI_F) - (PI_F * 1.5f) + 0.2 * PI_F;
 
-        // Calculate line end position based on knob value
-        int line_end_x = circle_x_offset + static_cast<int>(circle_radius * cos(angle));
-        int line_end_y = circle_y + static_cast<int>(circle_radius * sin(angle));
+    // Calculate line end position based on knob value
+    int line_end_x = circle_x_offset + static_cast<int>(circle_radius * cos(angle));
+    int line_end_y = circle_y + static_cast<int>(circle_radius * sin(angle));
 
-        // Draw circular knob
-        display.DrawCircle(circle_x_offset, circle_y, circle_radius, true);
+int offset = 1; // Adjust this value to bring the line closer to the circumference
+int live_start_x = circle_x_offset + static_cast<int>((circle_radius - offset) * cos(liveAngle)); // Offset the start position
+int live_start_y = circle_y + static_cast<int>((circle_radius - offset) * sin(liveAngle)); // Offset the start position
 
-        // Draw line indicating knob value
-        display.DrawLine(circle_x_offset, circle_y, line_end_x, line_end_y, true);
+    // Calculate line end position for knobValueLive
+    int live_line_end_x = circle_x_offset + static_cast<int>(circle_radius * cos(liveAngle));
+    int live_line_end_y = circle_y + static_cast<int>(circle_radius * sin(liveAngle));
 
-        // Calculate the position for the label to be centered above the circle
-        int label_x = circle_x_offset - (knobLabels[i].size() * 4) / 2;  // Assuming each character is 4 pixels wide in the selected font
-        int label_y = circle_y - 20;  // Adjust this value to position the label properly above the circle
+    // Draw circular knob
+    display.DrawCircle(circle_x_offset, circle_y, circle_radius, true);
 
-        // Draw custom label above each circle
-        display.SetCursor(label_x, label_y);
-        display.WriteString(knobLabels[i].c_str(), Font_4x5, true);
+    // Draw line indicating knob value
+    display.DrawLine(circle_x_offset, circle_y, line_end_x, line_end_y, true);
 
-        // Format knob value as string
-        char formattedValue[10];
-        snprintf(formattedValue, 10, "%.*f", numDecimals[i], knobValuesForPrint[i]);
+    // Draw line indicating knobValueLive
+    display.DrawLine(live_start_x, live_start_y, live_line_end_x, live_line_end_y, true);
 
-        // Calculate the position for the value to be centered under the circle
-        int value_width = strlen(formattedValue) * 4; // Assuming each character is 4 pixels wide in the selected font
-        int value_x = circle_x_offset - value_width / 2;
+    // Calculate the position for the label to be centered above the circle
+    int label_x = circle_x_offset - (knobLabels[i].size() * 4) / 2;  // Assuming each character is 4 pixels wide in the selected font
+    int label_y = circle_y - 20;  // Adjust this value to position the label properly above the circle
 
-        // Draw knob value below the label
-        display.SetCursor(value_x, circle_y + 15);
-        display.WriteString(formattedValue, Font_4x5, true);
-    }
+    // Draw custom label above each circle
+    display.SetCursor(label_x, label_y);
+    display.WriteString(knobLabels[i].c_str(), Font_4x5, true);
 
-    // Update the display
-    display.Update();
+    // Format knob value as string
+    char formattedValue[10];
+    snprintf(formattedValue, 10, "%.*f", numDecimals[i], knobValuesForPrint[i]);
+
+    // Calculate the position for the value to be centered under the circle
+    int value_width = strlen(formattedValue) * 4; // Assuming each character is 4 pixels wide in the selected font
+    int value_x = circle_x_offset - value_width / 2;
+
+    // Draw knob value below the label
+    display.SetCursor(value_x, circle_y + 15);
+    display.WriteString(formattedValue, Font_4x5, true);
 }
+
+// Update the display
+display.Update();}
 void Dubby::visualizeKnobValues( const std::vector<std::string>& knobLabels, const std::vector<int>& numDecimals) {
     // Clear the pane
     ClearPane();
