@@ -19,7 +19,7 @@ Hihat DSY_SDRAM_BSS hihat;
 
 std::vector<float> knobValues;
 // Define a tolerance for knob adjustment
-const float knobTolerance = 0.05f; // Adjust as needed
+const float knobTolerance = 0.02f; // Adjust as needed
 
 bool triggerBassDrum = false;
 bool triggerTomDrum = false;
@@ -29,18 +29,19 @@ float bassDrumAmplitude = 1.f;
 float snareDrumAmplitude = 1.f;
 float tomDrumAmplitude = 1.f;
 float hihatAmplitude = 1.f;
-const int NUM_PAGES = 4; // assuming 4 types of drums: bass, snare, tom, hihat
+const int NUM_PAGES = 5; // assuming 4 types of drums: bass, snare, tom, hihat
 
 
 // Vector of vectors to store whether each knob is within tolerance for each drum
 // Booleans to track tolerance for each knob of each drum
 
-const char *algorithmTitles[NUM_PAGES] = {"BASS DRUM", "SNARE DRUM", "TOM DRUM", "HI-HAT"};
+const char *algorithmTitles[NUM_PAGES] = {"BASS DRUM", "SNARE DRUM", "TOM DRUM", "HI-HAT", "VOLUME"};
 const char *customLabels[NUM_PAGES][NUM_KNOBS] = {
     {"FREQ", "DECAY", "TONE", "DIRT"},
     {"FREQ", "DECAY", "ACCENT", "SNAPPY"},
     {"FREQ", "DECAY", "TONE", "DIRT"},
-    {"ATTACK", "DECAY", "COLOUR", "RESO"}};
+    {"ATTACK", "DECAY", "COLOUR", "RESO"},
+    {"BD", "SNARE", "TOM", "HI-HAT"}};
 
 float savedKnobValues[NUM_PAGES][NUM_KNOBS];
 bool knobWithinTolerance[NUM_PAGES][NUM_KNOBS];
@@ -63,7 +64,7 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
 
             // === AUDIO CODE HERE ===================
 
-            out[0][i] = out[1][i] = (bassDrum.Process(triggerBassDrum) * bassDrumAmplitude + tomDrum.Process(triggerTomDrum) * tomDrumAmplitude + snareDrum.Process(triggerSnareDrum) * snareDrumAmplitude + hihat.Process() * hihatAmplitude) * 0.3f;
+            out[0][i] = out[1][i] = (bassDrum.Process(triggerBassDrum) * bassDrumAmplitude + tomDrum.Process(triggerTomDrum) * tomDrumAmplitude + snareDrum.Process(triggerSnareDrum) * snareDrumAmplitude + hihat.Process() * hihatAmplitude);
             // Reset all drum triggers
             
             triggerBassDrum = false;
@@ -87,9 +88,36 @@ bool withinTolerance(float value1, float value2)
 
 void handleKnobs()
 {
+
+
+    static bool prevButtonState = false;
+    static int prevPage = 0;
+
     int rotationDirection = dubby.encoder.Increment(); // Get the direction of knob rotation
-    if (rotationDirection != 0) // If there was a knob rotation
-    {
+    bool buttonPressed = dubby.buttons[0].Pressed();    // Check if the button is pressed
+
+    if (buttonPressed && !prevButtonState) {
+        prevPage = selectedPage;
+        selectedPage = 4; // Set selectedPage to 4 if the button is pressed for the first time
+
+         // Reset all knobs to false for all drums except the selected one
+        for (int i = 0; i < NUM_PAGES; i++)
+        {
+            if (i != selectedPage)
+            {
+                for (int j = 0; j < NUM_KNOBS; j++)
+                {
+                    knobWithinTolerance[i][j] = false; // Reset tolerance status for all knobs except on the selected page
+                }
+            }
+        }
+    } else if (!buttonPressed && prevButtonState) {
+        selectedPage = prevPage; // Return to the previous page if the button is released
+    }
+
+    prevButtonState = buttonPressed; // Save the current button state for the next iteration
+
+    if (rotationDirection != 0 && !buttonPressed) {
         // Reset all knobs to false for all drums except the selected one
         for (int i = 0; i < NUM_PAGES; i++)
         {
@@ -101,9 +129,8 @@ void handleKnobs()
                 }
             }
         }
-
-        // Change the selected page based on the rotation direction
-        selectedPage = (selectedPage + rotationDirection + NUM_PAGES) % NUM_PAGES;
+        // If there was a knob rotation and the button is not pressed, change the selected page
+        selectedPage = (selectedPage + rotationDirection + (NUM_PAGES-1)) % (NUM_PAGES-1);
     }
 
     // Update the algorithm title and custom labels for the selected page
@@ -156,6 +183,7 @@ int main(void)
             savedKnobValues[i][j] = defaultKnobValue;
         }
     }
+
     bassDrum.Init(sample_rate);
     tomDrum.Init(sample_rate);
     snareDrum.Init(sample_rate);
@@ -196,6 +224,11 @@ int main(void)
         hihat.SetFreq(savedKnobValues[3][2]);
         hihat.SetFilterRes(savedKnobValues[3][3]);
 
+        bassDrumAmplitude = savedKnobValues[4][0];
+        snareDrumAmplitude = savedKnobValues[4][1];
+        tomDrumAmplitude = savedKnobValues[4][2];
+        hihatAmplitude = savedKnobValues[4][3];
+
         // Check for bootloader reset
         if (dubby.buttons[3].TimeHeldMs() > 1000)
         {
@@ -217,19 +250,19 @@ void HandleMidiMessage(MidiEvent m)
             {
             case 60: // Bass drum
                 triggerBassDrum = true;
-                bassDrumAmplitude = p.velocity / 127.f;
+               // bassDrumAmplitude = p.velocity / 127.f;
                 break;
             case 61: // Snare drum
                 triggerSnareDrum = true;
-                snareDrumAmplitude = p.velocity / 127.f;
+              //  snareDrumAmplitude = p.velocity / 127.f;
                 break;
             case 62: // Tom
                 triggerTomDrum = true;
-                tomDrumAmplitude = p.velocity / 127.f;
+             //   tomDrumAmplitude = p.velocity / 127.f;
                 break;
             case 63: // Hi-hat
                 hihat.Trigger();
-                hihatAmplitude = p.velocity / 127.f;
+            //    hihatAmplitude = p.velocity / 127.f;
                 break;
             default:
                 break;
