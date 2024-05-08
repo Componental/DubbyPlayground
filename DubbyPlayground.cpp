@@ -43,7 +43,13 @@ const char *customLabels[NUM_PAGES][NUM_KNOBS] = {
     {"ATTACK", "DECAY", "COLOUR", "RESO"},
     {"BD", "SNARE", "TOM", "HI-HAT"}};
 
-float savedKnobValues[NUM_PAGES][NUM_KNOBS];
+float savedKnobValues[NUM_PAGES][NUM_KNOBS] = {
+    {.4f, .6f, .4f, .0f}, // default value bass drum
+    {.2f, .4f, .6f, .7f}, // default value snare
+    {.2f, .2f, .2f, .2f}, // default value tom
+    {.0f, .2f, .5f, .3f}, // default value hihat
+    {.7f, .3f, .7f, .7f}}; // default value volume
+
 bool knobWithinTolerance[NUM_PAGES][NUM_KNOBS];
 
 void MonitorMidi();
@@ -180,7 +186,7 @@ int main(void)
         for (int j = 0; j < NUM_KNOBS; ++j)
         {
             knobWithinTolerance[i][j] = false;
-            savedKnobValues[i][j] = defaultKnobValue;
+          //  savedKnobValues[i][j] = defaultKnobValue;
         }
     }
 
