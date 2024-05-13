@@ -337,7 +337,7 @@ class Dubby
     MidiUsbHandler midi_usb;
 
     int globalBPM = 120;
-std::vector<float> savedKnobValuesForVisuals;
+    std::vector<float> savedKnobValuesForVisuals;
     std::string algorithmTitle = "";
     void UpdateAlgorithmTitle();
   private:
