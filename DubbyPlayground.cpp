@@ -138,6 +138,8 @@ void HandleMidiUartMessage(MidiEvent m)
     {
         NoteOnEvent p = m.AsNoteOn();
         p = m.AsNoteOn(); // p.note, p.velocity
+                MIDIUartSendNoteOn(0, p.note, p.velocity);
+
         break;
     }
     case NoteOff:
