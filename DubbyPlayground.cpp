@@ -69,8 +69,8 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
             float dryWetRight = (1.0f - dubby.GetKnobValue(dubby.CTRL_4)) * dryRight + dubby.GetKnobValue(dubby.CTRL_4) * preDelayedWetRight;
 
             // Output to both stereo channels
-            out[2][i] = dryWetLeft;
-            out[3][i] = dryWetRight;            // Mix the processed sample with the original input
+            out[0][i]=out[2][i] = dryWetLeft;
+            out[1][i] = out[3][i] = dryWetRight;            // Mix the processed sample with the original input
             //out[j][i] = in[j][i] + processed_sample;
             preDelayLeft.Write(wetLeft);
             preDelayRight.Write(wetRight);
@@ -145,7 +145,7 @@ int main(void)
         MonitorMidi();
 
         handleKnobs();
-                 if(dubby.buttons[3].TimeHeldMs() > 1000){dubby.ResetToBootloader();}
+                 if(dubby.buttons[3].TimeHeldMs() > 3000){dubby.ResetToBootloader();}
 
 
 	}
