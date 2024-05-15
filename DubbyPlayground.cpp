@@ -664,7 +664,7 @@ void handleButtons()
         }
     }
 
-    if (dubby.buttons[3].TimeHeldMs() > 1000 && dubby.buttons[4].TimeHeldMs() > 1000)
+    if (dubby.buttons[3].TimeHeldMs() > 3000 && dubby.buttons[4].TimeHeldMs() > 3000)
     {
         dubby.ResetToBootloader();
     }
