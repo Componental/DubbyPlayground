@@ -60,7 +60,7 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
         {
             mix += strings[j].Process(triggers[j]);
         }
-        out[2][i] = out[3][i] = mix * 0.2f * outputVolume;
+        out[0][i] = out[1][i] = out[2][i] = out[3][i] = mix * 0.2f * outputVolume;
 
         // Reset all string triggers
         triggerString = false;
@@ -546,7 +546,7 @@ int main(void)
             trigger_save = false;
         }
 
-        if (dubby.buttons[3].TimeHeldMs() > 1000)
+        if (dubby.buttons[3].TimeHeldMs() > 3000)
         {
             dubby.ResetToBootloader();
         }
