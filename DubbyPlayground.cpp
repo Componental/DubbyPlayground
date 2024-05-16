@@ -37,8 +37,8 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
         float outputLeft = fltLeft.Process(_inLeft);
         float outputRight = fltRight.Process(_inRight);
 
-        out[0][i] = outputLeft * outGain;
-        out[1][i] = outputRight * outGain;
+        out[0][i] = out[2][i] = outputLeft * outGain;
+        out[1][i] = out[3][i] = outputRight * outGain;
 
             // =======================================
 
@@ -104,7 +104,7 @@ int main(void)
         handleKnobs();
 
 
-                 if(dubby.buttons[3].TimeHeldMs() > 1000){dubby.ResetToBootloader();}
+                 if(dubby.buttons[3].TimeHeldMs() > 3000){dubby.ResetToBootloader();}
 
 
 	}
