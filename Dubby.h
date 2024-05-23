@@ -6,21 +6,27 @@
 
 #include <iostream>
 #include <string>
-
+#include <vector>
 #include "ui/DubbyEncoder.h"
 #include "led.h"
 
 #include "./bitmaps/bmps.h"
 
 #define AUDIO_BLOCK_SIZE 128 
-#define NUM_AUDIO_CHANNELS 4
+#define NUM_AUDIO_CHANNELS 1
+#define PI_F 3.1415927410125732421875f
+
+//#define ALGORITHM_TITLE "NAME OF ALGORITHM"
+#define NUM_KNOBS 4
+#define NUM_BUTTONS 4
+
 
 namespace daisy
 {
 class Dubby
 {
   public:
-
+  
     enum AudioIns
     {
         IN1,
@@ -37,13 +43,15 @@ class Dubby
         OUT4
     };
 
+
     enum WindowItems 
     { 
+       
+        WIN5, // knobs
         WIN1, 
         WIN2, 
         WIN3, 
         WIN4, 
-        WIN5, 
         WIN6, 
         WIN7, 
         WIN8, 
@@ -217,7 +225,7 @@ class Dubby
     ~Dubby() {}
 
     void Init();
-
+    
     void SetAudioInGain(AudioIns in, float gain);
 
     float GetAudioInGain(AudioIns in);
@@ -274,6 +282,14 @@ class Dubby
 
     void UpdateStatusBar(char* text, StatusBarSide side, int width = 40); // side = 0 => left, side = 1 => right
 
+    std::vector<std::string> customLabels = {"PRM1", "PRM2", "PRM3", "PRM4"};
+    void updateKnobValues(const std::vector<float>& values);
+
+    std::vector<float> knobValuesForPrint;
+    void visualizeKnobValues( const std::vector<std::string>& knobLabels, const std::vector<int>& numDecimals);
+    void visualizeKnobValuesCircle(const std::vector<std::string>& knobLabels, const std::vector<int>& numDecimals);
+    std::vector<int> numDecimals = {1, 1, 1, 1}; // Assuming you have three knobs with different decimal places
+
     DaisySeed seed; 
 
     WindowItems windowItemSelected = (WindowItems)0;
@@ -321,7 +337,9 @@ class Dubby
     MidiUsbHandler midi_usb;
 
     int globalBPM = 120;
-
+    std::vector<float> savedKnobValuesForVisuals;
+    std::string algorithmTitle = "";
+    void UpdateAlgorithmTitle();
   private:
 
     void InitAudio();
@@ -340,10 +358,8 @@ class Dubby
     bool wasEncoderJustInHighlightMenu = false;
     int highlightMenuCounter = 0;
     unsigned long encoderPressStartTime = 0;
+        float audioGains[2][4] = { { 0.8f, 0.8f, 0.8f, 0.8f}, { 0.8f, 0.8f, 0.8f, 0.8f} }; // 0 => INPUTS, 1 => OUTPUTS 
 
-    
-    float audioGains[2][4] = { { 0.8f, 0.8f, 0.8f, 0.8f}, { 0.8f, 0.8f, 0.8f, 0.8f} }; // 0 => INPUTS, 1 => OUTPUTS 
 };
 
 }
-

@@ -132,7 +132,6 @@ void Dubby::InitDisplay()
     /** And Initialize */
     display.Init(disp_cfg);
 }
-
 void Dubby::SetAudioInGain(AudioIns in, float gain)
 {
     if (gain > 1.0f) gain = 1.0f;
@@ -158,7 +157,6 @@ float Dubby::GetAudioOutGain(AudioOuts out)
 {
     return audioGains[1][out];
 }
-
 
 void Dubby::UpdateDisplay() 
 { 
@@ -223,6 +221,12 @@ void Dubby::UpdateDisplay()
             if (encoder.Increment() && !windowSelectorActive && !isSubMenuActive) UpdatePreferencesMenuList(encoder.Increment());
             else if (encoder.Increment() && !windowSelectorActive && isSubMenuActive) UpdatePreferencesSubMenuList(encoder.Increment(), preferencesMenuItemSelected);
             break;
+        case WIN4:
+visualizeKnobValues(customLabels, numDecimals);
+break;
+    case WIN5:
+                visualizeKnobValuesCircle(customLabels, numDecimals);
+
         default:
             break;
     }
@@ -320,6 +324,146 @@ void Dubby::ClearPane()
     display.DrawRect(PANE_X_START - 1, PANE_Y_START - 1, PANE_X_END + 1, PANE_Y_END + 12, false, true);
 }
 
+void Dubby::updateKnobValues(const std::vector<float>& values) {
+    knobValuesForPrint.clear(); // Clear the existing values
+    knobValuesForPrint.insert(knobValuesForPrint.end(), values.begin(), values.end());
+}
+
+void Dubby::visualizeKnobValuesCircle(const std::vector<std::string>& knobLabels, const std::vector<int>& numDecimals) {
+    ClearPane(); // Clear the display area
+
+    // Define parameters for circular knobs
+    int circle_y = 36;          // Y-coordinate of the center of the circle
+    int circle_radius = 8;      // Radius of the circle
+
+    // Calculate total width occupied by circles
+    int totalWidth = NUM_KNOBS * 2 * circle_radius;
+
+    // Calculate space between circles
+    int circleSpacing = (OLED_WIDTH - totalWidth) / (NUM_KNOBS + 1);
+
+    // Loop through each knob value
+    for (int i = 0; i < NUM_KNOBS; ++i) {
+        // Calculate knob x-coordinate
+        int circle_x_offset = circleSpacing * (i + 1) + circle_radius + i * 2 * circle_radius;
+
+        // Get knob value
+        float knobValue = savedKnobValuesForVisuals[i];
+
+        float knobValueLive = GetKnobValue(static_cast<Ctrl>(i));
+        // Calculate angle for the current knob
+        float angle = (knobValue * 0.8f * 2 * PI_F) - (PI_F * 1.5f) + 0.2 * PI_F;  // Convert knob value to angle
+
+        // Calculate angle for knobValueLive
+        float liveAngle = (knobValueLive * 0.8f * 2 * PI_F) - (PI_F * 1.5f) + 0.2 * PI_F;
+
+        // Calculate line end position based on knob value
+        int line_end_x = circle_x_offset + static_cast<int>(circle_radius * cos(angle));
+        int line_end_y = circle_y + static_cast<int>(circle_radius * sin(angle));
+
+        int offset = 2; // Adjust this value to bring the line closer to the circumference
+        int live_start_x = circle_x_offset + static_cast<int>((circle_radius - offset) * cos(liveAngle)); // Offset the start position
+        int live_start_y = circle_y + static_cast<int>((circle_radius - offset) * sin(liveAngle)); // Offset the start position
+
+        // Calculate line end position for knobValueLive
+        int live_line_end_x = circle_x_offset + static_cast<int>(circle_radius * cos(liveAngle));
+        int live_line_end_y = circle_y + static_cast<int>(circle_radius * sin(liveAngle));
+
+        int arc_radius = circle_radius - 1; // Define a smaller radius for the arc
+
+        // Calculate start and end angles for the arc
+float start_arc_angle = -angle;  // Start angle is the same as angle
+float end_arc_angle = -liveAngle;  // End angle is the same as liveAngle
+
+// Draw arc indicating knob value difference
+display.DrawArc(circle_x_offset, circle_y, arc_radius, 
+                static_cast<int>((start_arc_angle ) * 180.0f / PI_F), // Convert to degrees
+                static_cast<int>((end_arc_angle - start_arc_angle) * 180.0f / PI_F), // Sweep angle
+                true);
+
+        // Draw circular knob
+        display.DrawCircle(circle_x_offset, circle_y, circle_radius, true);
+
+        // Draw line indicating knob value
+        display.DrawLine(circle_x_offset, circle_y, line_end_x, line_end_y, true);
+
+        // Draw line indicating knobValueLive
+       // display.DrawLine(live_start_x, live_start_y, live_line_end_x, live_line_end_y, true);
+
+        
+
+        // Calculate the position for the label to be centered above the circle
+        int label_x = circle_x_offset - (knobLabels[i].size() * 4) / 2;  // Assuming each character is 4 pixels wide in the selected font
+        int label_y = circle_y - 20;  // Adjust this value to position the label properly above the circle
+
+        // Draw custom label above each circle
+        display.SetCursor(label_x, label_y);
+        display.WriteString(knobLabels[i].c_str(), Font_4x5, true);
+
+        // Format knob value as string
+        char formattedValue[10];
+        snprintf(formattedValue, 10, "%.*f", numDecimals[i], knobValuesForPrint[i]);
+
+        // Calculate the position for the value to be centered under the circle
+        int value_width = strlen(formattedValue) * 4; // Assuming each character is 4 pixels wide in the selected font
+        int value_x = circle_x_offset - value_width / 2;
+
+        // Draw knob value below the label
+        display.SetCursor(value_x, circle_y + 15);
+        display.WriteString(formattedValue, Font_4x5, true);
+    }
+   
+
+
+    // Update the display
+    display.Update();
+}
+
+void Dubby::visualizeKnobValues( const std::vector<std::string>& knobLabels, const std::vector<int>& numDecimals) {
+    // Clear the pane
+    ClearPane();
+    
+    int barWidth = OLED_WIDTH / (NUM_KNOBS + 1); // Adjusting for number of knobs
+    int barSpacing = (OLED_WIDTH - (NUM_KNOBS * barWidth)) / (NUM_KNOBS - 1);
+
+    // Get knob values based on the number of knobs
+    float knobValues[4] = {0}; // Assuming max 4 knobs
+    for (int i = 0; i < NUM_KNOBS; ++i) {
+        knobValues[i] = GetKnobValue(static_cast<Ctrl>(i));
+    }
+
+    // Draw bars for each knob
+    for (int i = 0; i < NUM_KNOBS; ++i) {
+        int numLines = static_cast<int>(knobValues[i] * (OLED_HEIGHT - 30));
+        int startX = i * (barWidth + barSpacing);
+        int endX = startX + barWidth - 1;
+
+        // Draw the bar
+        for (int j = OLED_HEIGHT - 1; j >= OLED_HEIGHT - numLines; --j) {
+            display.DrawLine(startX, j, endX, j, true);
+        }
+
+        // Draw custom label above each bar
+        display.SetCursor(startX, 14);
+        display.WriteString(knobLabels[i].c_str(), Font_4x5, true);
+    
+            // Draw knob value below the label
+        // Draw knob value below the label
+        display.SetCursor(startX, 24);
+          // Format knob value to have only two decimal places
+        char formattedValue[10]; // Assuming maximum length of formatted value is 5 characters (including decimal point and null terminator)
+        snprintf(formattedValue, 10, "%.*f", numDecimals[i], knobValuesForPrint[i]);
+        display.WriteString(formattedValue, Font_4x5, true);
+    
+
+    }
+
+    
+
+    display.Update();
+}
+
+
 void Dubby::UpdateMixerPane() 
 {
     int increment = encoder.Increment();
@@ -384,11 +528,13 @@ void Dubby::UpdateWindowList()
             DisplayPreferencesMenuList(0);
             break;
         case WIN4:
-            UpdateStatusBar("PANE 4", LEFT); 
+            UpdateStatusBar(&algorithmTitle[0], LEFT); 
+visualizeKnobValues( customLabels, numDecimals);
             break;
         case WIN5:
-            display.SetCursor(10, 15);
-            UpdateStatusBar("PANE 5", LEFT);
+           // display.SetCursor(10, 15);
+            UpdateStatusBar(&algorithmTitle[0], LEFT);
+            visualizeKnobValuesCircle(customLabels, numDecimals);
             break;
         case WIN6:
             display.SetCursor(10, 15);
@@ -407,6 +553,11 @@ void Dubby::UpdateWindowList()
     }
 
     display.Update();
+}
+
+void Dubby::UpdateAlgorithmTitle(){
+                UpdateStatusBar(&algorithmTitle[0], LEFT); 
+
 }
 
 void Dubby::UpdateBar(int i) 
