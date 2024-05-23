@@ -246,6 +246,7 @@ void HandleMidiUsbMessage(MidiEvent m)
         }
         break;
     }
+    
     default:
         break;
     }
@@ -516,25 +517,27 @@ int main(void)
         //////////////////////////////////////////////////
         if (dubby.buttons[2].FallingEdge())
         {
-            value1_++;
+            //value1_++;
         }
 
         if (dubby.buttons[3].FallingEdge())
         {
-            value1_--;
+            //value1_--;
         }
 
         if (dubby.buttons[0].FallingEdge())
         {
-            if (use_preset)
-                use_preset = false;
-            else
-                Load();
+
+
+            // if (use_preset)
+            //     use_preset = false;
+            // else
+            //     Load();
         }
 
         if (dubby.buttons[1].FallingEdge())
         {
-            Save();
+            // Save();
         }
 
         /////////////////////////////////////////////////
