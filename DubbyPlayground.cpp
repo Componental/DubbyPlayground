@@ -71,6 +71,11 @@ void HandleMidiMessage(MidiEvent m)
         {
             HandleSystemRealTime(m.srt_type);
         }
+        case ControlChange:
+        {
+            ControlChangeEvent p = m.AsControlChange();
+            break;
+        }
         default: break;
     }
 }
