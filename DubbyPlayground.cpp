@@ -35,22 +35,29 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
     SetRMSValues(dubby, sumSquared);
 }
 
-int main(void)
-{
-    Init(dubby);
-    InitMidiClock(dubby);
 
-	dubby.seed.StartAudio(AudioCallback);
+ // Previous knob value to detect changes
+float prevKnobValue = 0.0f;
 
-    // initLED();
-    // setLED(0, BLUE, 100);
-    // setLED(1, RED, 100);
-    // updateLED();
+int main(void) {
+  Init(dubby);
+  InitMidiClock(dubby);
 
-	while(1) { 
-        Monitor(dubby);
-        MonitorMidi();
-	}
+  dubby.seed.StartAudio(AudioCallback);
+
+  while (1) {
+    Monitor(dubby);
+    MonitorMidi();
+
+    // Get current knob value
+    float currentKnobValue = dubby.GetKnobValue(dubby.CTRL_1);
+
+    // Send MIDI only if value changed significantly (e.g., by more than 0.1)
+    if (fabs(currentKnobValue - prevKnobValue) > 0.001f) {
+      MIDISendControlChange(dubby, 0, 1, currentKnobValue * 127);
+      prevKnobValue = currentKnobValue;
+    }
+  }
 }
 
 void HandleMidiMessage(MidiEvent m)

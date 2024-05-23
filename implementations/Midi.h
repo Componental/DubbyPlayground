@@ -50,6 +50,27 @@ void MIDIUartSendNoteOff(Dubby& dubby, uint8_t channel, uint8_t note) {
 
 
 
+void MIDIUsbSendControlChange(Dubby& dubby, uint8_t channel, uint8_t controlNumber, uint8_t value) {
+    uint8_t data[3] = { 0 };
+    
+data[0] = (channel & 0x0F) + 0xB0;  // limit channel byte, add status byte for Control Change
+    data[1] = controlNumber & 0x7F;             
+    data[2] = value & 0x7F;
+
+    dubby.midi_usb.SendMessage(data, 3);
+}
+
+void MIDIUartSendControlChange(Dubby& dubby, uint8_t channel, uint8_t controlNumber, uint8_t value) {
+    uint8_t data[3] = { 0 };
+    
+data[0] = (channel & 0x0F) + 0xB0;  // limit channel byte, add status byte for Control Change
+    data[1] = controlNumber & 0x7F;             
+    data[2] = value & 0x7F;
+
+    dubby.midi_uart.SendMessage(data, 3);
+}
+
+
 void MIDIUsbSendNoteOn(Dubby& dubby, uint8_t channel, uint8_t note, uint8_t velocity) {
     uint8_t data[3] = { 0 };
     
@@ -76,11 +97,19 @@ void MIDISendNoteOn(Dubby& dubby, uint8_t channel, uint8_t note, uint8_t velocit
     MIDIUartSendNoteOn(dubby, channel, note, velocity);
 }
 
+
 void MIDISendNoteOff(Dubby& dubby, uint8_t channel, uint8_t note) 
 {
     MIDIUsbSendNoteOff(dubby, channel, note);
     MIDIUartSendNoteOff(dubby, channel, note);
 }
+
+void MIDISendControlChange(Dubby& dubby, uint8_t channel, uint8_t controlNumber, uint8_t value) {
+MIDIUsbSendControlChange(dubby, channel, controlNumber, value);
+MIDIUartSendControlChange(dubby, channel, controlNumber, value);
+
+}
+
 
 int convertRange(int value, int oldMin, int oldMax, int newMin, int newMax) {
     // First, scale the value from the old range to a value between 0 and 1
