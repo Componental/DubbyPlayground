@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 
 #include "ui/DubbyEncoder.h"
 #include "led.h"
@@ -14,6 +15,9 @@
 
 #define AUDIO_BLOCK_SIZE 128 
 #define NUM_AUDIO_CHANNELS 4
+#define PI_F 3.1415927410125732421875f
+
+#define NUM_KNOBS 4
 
 namespace daisy
 {
@@ -274,6 +278,14 @@ class Dubby
 
     void UpdateStatusBar(char* text, StatusBarSide side, int width = 40); // side = 0 => left, side = 1 => right
 
+    void updateKnobValues(const std::vector<float>& values);
+
+    void visualizeKnobValues( const std::vector<std::string>& knobLabels, const std::vector<int>& numDecimals);
+    
+    void visualizeKnobValuesCircle(const std::vector<std::string>& knobLabels, const std::vector<int>& numDecimals);
+    
+    void UpdateAlgorithmTitle();
+
     DaisySeed seed; 
 
     WindowItems windowItemSelected = (WindowItems)0;
@@ -302,7 +314,6 @@ class Dubby
     Switch buttons[4];
     Switch joystickButton;
 
-
     float scope_buffer[AUDIO_BLOCK_SIZE] = {0.f};
     
     float currentLevels[2][4] = { { 0.f }, { 0.f } }; // 0 => INPUTS, 1 => OUTPUTS 
@@ -314,13 +325,19 @@ class Dubby
 
     int mixerPageSelected = INPUTS;
 
-    
     double sumSquaredIns[4] = { 0.0f };
     double sumSquaredOuts[4] = { 0.0f };
 
     MidiUsbHandler midi_usb;
 
     int globalBPM = 120;
+
+    std::vector<std::string> customLabels = {"PRM1", "PRM2", "PRM3", "PRM4"};
+    std::vector<float> knobValuesForPrint;
+    std::vector<int> numDecimals = {1, 1, 1, 1}; // Assuming you have three knobs with different decimal places
+
+    std::vector<float> savedKnobValuesForVisuals;
+    std::string algorithmTitle = "";
 
   private:
 
