@@ -9,18 +9,21 @@ using namespace daisysp;
 
 Dubby dubby;
 
+// SYNTH
+VariableShapeOscillator osc1, osc2;
+
+
+
 const int NUM_PAGES = 4; // assuming 4 types of drums: bass, snare, tom, hihat
 
-float prevKnobValues[NUM_PAGES][NUM_KNOBS + 2] = {};
-int buttonStates[NUM_PAGES][NUM_BUTTONS] = {};
 
 // Vector of vectors to store whether each knob is within tolerance for each drum
 // Booleans to track tolerance for each knob of each drum
 
-const char *algorithmTitles[NUM_PAGES] = {"MIDI CTRL P1", "MIDI CTRL P2", "MIDI CTRL P3", "MIDI CTRL P4"};
+const char *algorithmTitles[NUM_PAGES] = {"OSC. 1", "OSC 2", "MIDI CTRL P3", "MIDI CTRL P4"};
 const char *customLabels[NUM_PAGES][NUM_KNOBS] = {
-    {"PRM 1", "PRM 2", "PRM 3", "PRM 4"},
-    {"PRM 5", "PRM 6", "PRM 7", "PRM 8"},
+    {"SHAPE", "OCTAVE", "FINE", "AMPL."},
+    {"SHAPE", "OCTAVE", "FINE", "AMPL."},
     {"PRM 9", "PRM 10", "PRM 11", "PRM 12"},
     {"PRM 13", "PRM 14", "PRM 15", "PRM 16"}};
 
@@ -45,7 +48,7 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
             float _in = SetGains(dubby, j, i, in, out);
 
             // === AUDIO CODE HERE ===================
-
+                out[0][i] =out[1][i] =out[2][i] = out[3][i] = (osc1.Process() + osc2.Process()) *0.1f;
             // =======================================
 
             CalculateRMS(dubby, _in, out[j][i], j, sumSquared);
@@ -66,70 +69,34 @@ int main(void)
 
     dubby.seed.StartAudio(AudioCallback);
 
+
+    osc1.Init(dubby.seed.AudioSampleRate());
+    osc1.SetWaveshape(0);
+    osc1.SetSync(false);
+
+    osc2.Init(dubby.seed.AudioSampleRate());
+    osc2.SetWaveshape(0);
+    osc2.SetSync(false);
     while (1)
     {
         Monitor(dubby);
         MonitorMidi();
         handleKnobs(dubby, algorithmTitles, customLabels, savedKnobValues);
 
-        // Get current knob value
-        // Determine the current page
-        int currentPage = getSelectedPage(); // Assuming you have a function to get the current page
-        float currentKnobValues[NUM_KNOBS + 2];
+osc1.SetPW(savedKnobValues[0][0]);
+osc1.SetSyncFreq(440.f*savedKnobValues[0][2]);
 
-        // Get current knob values
-        enum Ctrl
-        {
-            CTRL_1,
-            CTRL_2,
-            CTRL_3,
-            CTRL_4
-        };
 
-        // Handle buttons
-        for (int buttonIndex = 0; buttonIndex < NUM_BUTTONS; buttonIndex++)
-        {
-            if (dubby.buttons[buttonIndex].FallingEdge())
-            {
-                // Toggle the button state
-                buttonStates[currentPage][buttonIndex] = !buttonStates[currentPage][buttonIndex];
-                // Send MIDI control change
-                int value = buttonStates[currentPage][buttonIndex] ? 127 : 0;
-                MIDISendControlChange(dubby, 0, 16 + (currentPage * NUM_BUTTONS + buttonIndex), value); // Assuming CC numbers 16-x for the buttons
-            }
-        }
+osc2.SetPW(savedKnobValues[1][0]);
+osc2.SetSyncFreq(440.f*savedKnobValues[1][2]);
 
-        // HANDLE KNOBS
-        for (int knobIndex = 0; knobIndex < NUM_KNOBS; knobIndex++)
-        {
-            currentKnobValues[knobIndex] = dubby.GetKnobValue(static_cast<daisy::Dubby::Ctrl>(knobIndex)); // Assuming Ctrl enum values correspond to knob indices
 
-            if (fabs(currentKnobValues[knobIndex] - prevKnobValues[currentPage][knobIndex]) > 0.005f)
-            {
-                // Calculate the MIDI control change number based on the page and knob index
-                int ccNumber = currentPage * NUM_KNOBS + knobIndex;
-                MIDISendControlChange(dubby, 0, ccNumber, savedKnobValues[currentPage][knobIndex] * 127);
-                prevKnobValues[currentPage][knobIndex] = currentKnobValues[knobIndex];
-            }
-        }
+        
 
-        // HANDLE JOYSTICK
-        for (int i = 0; i < numPages; i++)
-        {
-            if (currentPage == i)
-            {
-                if (fabs(dubby.GetKnobValue(dubby.CTRL_5) - prevKnobValues[currentPage][4]) > 0.005f)
-                {
-                    MIDISendControlChange(dubby, 0, 102 + (i * 2), 127 - (dubby.GetKnobValue(dubby.CTRL_5) * 127));
-                    prevKnobValues[currentPage][4] = dubby.GetKnobValue(dubby.CTRL_5);
-                }
-                if (fabs(dubby.GetKnobValue(dubby.CTRL_6) - prevKnobValues[currentPage][5]) > 0.005f)
-                {
-                    MIDISendControlChange(dubby, 0, 103 + (i * 2), 127 - (dubby.GetKnobValue(dubby.CTRL_6) * 127));
-                    prevKnobValues[currentPage][5] = dubby.GetKnobValue(dubby.CTRL_6);
-                }
-            }
-        }
+  
+
+                      if(dubby.buttons[3].TimeHeldMs() > 300){dubby.ResetToBootloader();}
+
     }
 }
 
