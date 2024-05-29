@@ -412,7 +412,7 @@ display.DrawArc(circle_x_offset, circle_y, arc_radius,
         display.SetCursor(value_x, circle_y + 15);
         display.WriteString(formattedValue, Font_4x5, true);
     }
-   
+      
 
 
     // Update the display
