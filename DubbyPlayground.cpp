@@ -10,8 +10,8 @@ using namespace daisysp;
 Dubby dubby;
 
 // SYNTH
-VariableShapeOscillator osc1, osc2;
- LadderFilter filter;
+static VariableShapeOscillator osc1, osc2;
+static LadderFilter filter;
 
 const int NUM_PAGES = 4; // assuming 4 types of drums: bass, snare, tom, hihat
 
@@ -49,7 +49,7 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
 
             float filterOut = filter.Process(oscOut);
             // === AUDIO CODE HERE ===================
-            out[0][i] = out[1][i] = out[2][i] = out[3][i] = oscOut * 0.1f;
+            out[0][i] = out[1][i] = out[2][i] = out[3][i] = filterOut * 0.1f;
             // =======================================
 
             CalculateRMS(dubby, _in, out[j][i], j, sumSquared);
@@ -107,8 +107,8 @@ int main(void)
         // float roundedCutoff = round(cutOffKnobValue * 1000 + 0.5f)*20.f;
 
         // Update the filter parameters
-        filter.SetInputDrive(inGain);
-        filter.SetRes(res);
+        filter.SetInputDrive(1.f);
+        filter.SetRes(0.7f);
         filter.SetFreq(mappedCutoff);
 
         if (dubby.buttons[3].TimeHeldMs() > 300)
