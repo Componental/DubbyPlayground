@@ -1,7 +1,5 @@
-
 #include "daisysp.h"
 #include "Dubby.h"
-
 #include "implementations/includes.h"
 
 using namespace daisy;
@@ -10,9 +8,8 @@ using namespace daisysp;
 Dubby dubby;
 
 // SYNTH
-static VariableShapeOscillator osc1, osc2;
-static LadderFilter filter;
-
+VariableShapeOscillator osc1, osc2;
+LadderFilter flt;
 const int NUM_PAGES = 4; // assuming 4 types of drums: bass, snare, tom, hihat
 
 // Vector of vectors to store whether each knob is within tolerance for each drum
@@ -37,30 +34,19 @@ void HandleMidiUsbMessage(MidiEvent m);
 
 void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, size_t size)
 {
-    double sumSquared[2][NUM_AUDIO_CHANNELS] = {0.0f};
-
     for (size_t i = 0; i < size; i++)
     {
+        float oscOut = osc1.Process() + osc2.Process(); // Combine oscillator outputs
+
+
         for (int j = 0; j < NUM_AUDIO_CHANNELS; j++)
         {
-            float _in = SetGains(dubby, j, i, in, out);
-
-            float oscOut = osc1.Process() + osc2.Process();
-
-            float filterOut = filter.Process(oscOut);
             // === AUDIO CODE HERE ===================
-            out[0][i] = out[1][i] = out[2][i] = out[3][i] = filterOut * 0.1f;
+            out[0][i] = out [1][i] = out[2][i] = out[3][i] = (oscOut) * 0.1f;
             // =======================================
-
-            CalculateRMS(dubby, _in, out[j][i], j, sumSquared);
         }
-        AssignScopeData(dubby, i, in, out);
     }
-
-    SetRMSValues(dubby, sumSquared);
 }
-
-// Previous knob value to detect changes
 
 int main(void)
 {
@@ -68,19 +54,23 @@ int main(void)
     InitMidiClock(dubby);
     setNumPages(NUM_PAGES);
 
-    dubby.seed.StartAudio(AudioCallback);
+    float sample_rate = dubby.seed.AudioSampleRate();
 
-    osc1.Init(dubby.seed.AudioSampleRate());
+    osc1.Init(sample_rate);
     osc1.SetWaveshape(0);
     osc1.SetSync(false);
+    osc1.SetFreq(440.f); // Set an initial frequency for osc1
 
-    osc2.Init(dubby.seed.AudioSampleRate());
+    osc2.Init(sample_rate);
     osc2.SetWaveshape(0);
     osc2.SetSync(false);
+    osc2.SetFreq(440.f); // Set an initial frequency for osc2
+    
+flt.Init(sample_rate);
+flt.SetFreq(5000.f);
+flt.SetRes(0.7f);
 
-    filter.Init(dubby.seed.AudioSampleRate());
-
-    LadderFilter::FilterMode currentMode = LadderFilter::FilterMode::LP24;
+    dubby.seed.StartAudio(AudioCallback);
 
     while (1)
     {
@@ -88,28 +78,16 @@ int main(void)
         MonitorMidi();
         handleKnobs(dubby, algorithmTitles, customLabels, savedKnobValues);
 
+        // Update oscillators
         osc1.SetPW(savedKnobValues[0][0]);
         osc1.SetSyncFreq(440.f * savedKnobValues[0][2]);
 
         osc2.SetPW(savedKnobValues[1][0]);
         osc2.SetSyncFreq(440.f * savedKnobValues[1][2]);
 
-        // FILTER
-        float inGain = savedKnobValues[2][2] * 4;
-        float res = savedKnobValues[2][1];
-        float cutOffKnobValue = savedKnobValues[2][0];
+        flt.SetFreq(5000.f);
+        flt.SetRes(0.7f);
 
-        // Map the knob value to a logarithmic scale for cutoff frequency
-        float minCutoff = .05f;    // Minimum cutoff frequency in Hz
-        float maxCutoff = 17000.f; // Maximum cutoff frequency in Hz
-        float mappedCutoff = daisysp::fmap(cutOffKnobValue, minCutoff, maxCutoff, daisysp::Mapping::LOG);
-
-        // float roundedCutoff = round(cutOffKnobValue * 1000 + 0.5f)*20.f;
-
-        // Update the filter parameters
-        filter.SetInputDrive(1.f);
-        filter.SetRes(0.7f);
-        filter.SetFreq(mappedCutoff);
 
         if (dubby.buttons[3].TimeHeldMs() > 300)
         {
@@ -135,6 +113,7 @@ void HandleMidiMessage(MidiEvent m)
     case SystemRealTime:
     {
         HandleSystemRealTime(m.srt_type);
+        break;
     }
     case ControlChange:
     {
