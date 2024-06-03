@@ -42,7 +42,7 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
         for (int j = 0; j < NUM_AUDIO_CHANNELS; j++)
         {
             // === AUDIO CODE HERE ===================
-            out[0][i] = out [1][i] = out[2][i] = out[3][i] = (oscOut) * 0.1f;
+            out[0][i] = out [1][i] = out[2][i] = out[3][i] = oscOut * 0.1f;
             // =======================================
         }
     }
@@ -86,7 +86,7 @@ flt.SetRes(0.7f);
         osc2.SetSyncFreq(440.f * savedKnobValues[1][2]);
 
         flt.SetFreq(5000.f);
-        flt.SetRes(0.7f);
+flt.SetRes(0.7f);
 
 
         if (dubby.buttons[3].TimeHeldMs() > 300)
