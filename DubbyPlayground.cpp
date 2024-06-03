@@ -1,7 +1,7 @@
 #include "daisysp.h"
 #include "Dubby.h"
 #include "implementations/includes.h"
-
+#include "SynthVoice.h"
 using namespace daisy;
 using namespace daisysp;
 
@@ -55,6 +55,9 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
             gate = !gate;
         }
 
+
+        // synthVoice.Trigger(gate);
+
         // Use envelope to control the amplitude of the oscillator.
         filterEnvOut = filterEnv.Process(gate);
         ampEnvOut = ampEnv.Process(gate);
@@ -62,12 +65,15 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
         osc1.SetAmp(ampEnvOut);
         osc2.SetAmp(ampEnvOut);
 
+
+
+      //  float output = synthVoice.Process();
         float osc1Out = osc1.Process();
         float osc2Out = osc2.Process();
 
         float oscCombinedOut = osc1Out + osc2Out;
 
-
+        float filterOut = filter.Process(oscCombinedOut);
 
         // left out
         out[0][i] = filter.Process(oscCombinedOut);
