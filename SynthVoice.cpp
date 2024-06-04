@@ -47,38 +47,76 @@ float SynthVoice::Process(){
 	return filterOut;
 }
 
-void SynthVoice::SetOsc1Tune(float knobValue) {
-    // Tuning factor for OSC 2
+void SynthVoice::SetOsc1Tune(float tuneKnobValue, float octaveKnobValue) {
+    // Tuning factor for OSC 1
     const float TUNE_SEMITONES = 7.0f;
     const float SEMITONE_FACTOR = powf(2.0f, 1.0f / 12.0f); // Factor for one semitone
 
     // Calculate the tuning shift in semitones
-    float osc1NoteShift = knobValue * TUNE_SEMITONES;
+    float osc1NoteShift = tuneKnobValue * TUNE_SEMITONES;
+
+    // Calculate the octave shift
+    float octaveShift = CalculateOctaveShift(octaveKnobValue);
 
     // Calculate the frequency multiplier based on the semitone shift
-    float frequencyMultiplier = powf(SEMITONE_FACTOR, osc1NoteShift);
+    float noteShiftMultiplier = powf(SEMITONE_FACTOR, osc1NoteShift);
 
-    // Set the frequency for OSC 2
+    // Calculate the frequency multiplier based on the octave shift
+    float octaveMultiplier = powf(2.0f, octaveShift);
+
+    // Combine both multipliers
+    float frequencyMultiplier = noteShiftMultiplier * octaveMultiplier;
+
+    // Set the frequency for OSC 1
     osc1.SetFreq(oscFreq * frequencyMultiplier);
 }
 
-
-
-void SynthVoice::SetOsc2Tune(float knobValue) {
+void SynthVoice::SetOsc2Tune(float tuneKnobValue, float octaveKnobValue) {
     // Tuning factor for OSC 2
     const float TUNE_SEMITONES = 7.0f;
     const float SEMITONE_FACTOR = powf(2.0f, 1.0f / 12.0f); // Factor for one semitone
 
     // Calculate the tuning shift in semitones
-    float osc2NoteShift = knobValue * TUNE_SEMITONES;
+    float osc2NoteShift = tuneKnobValue * TUNE_SEMITONES;
+
+    // Calculate the octave shift
+    float octaveShift = CalculateOctaveShift(octaveKnobValue);
 
     // Calculate the frequency multiplier based on the semitone shift
-    float frequencyMultiplier = powf(SEMITONE_FACTOR, osc2NoteShift);
+    float noteShiftMultiplier = powf(SEMITONE_FACTOR, osc2NoteShift);
+
+    // Calculate the frequency multiplier based on the octave shift
+    float octaveMultiplier = powf(2.0f, octaveShift);
+
+    // Combine both multipliers
+    float frequencyMultiplier = noteShiftMultiplier * octaveMultiplier;
 
     // Set the frequency for OSC 2
     osc2.SetFreq(oscFreq * frequencyMultiplier);
 }
 
+float SynthVoice::CalculateOctaveShift(float knobValue) {
+    float octaveShift = 0.0f;
+
+    if (knobValue >= 0.0f && knobValue < 0.20f) {
+        // Pitch down 2 octaves
+        octaveShift = -2.0f;
+    } else if (knobValue >= 0.20f && knobValue < 0.40f) {
+        // Pitch down one octave
+        octaveShift = -1.0f;
+    } else if (knobValue >= 0.40f && knobValue < 0.60f) {
+        // Do nothing
+        octaveShift = 0.0f;
+    } else if (knobValue >= 0.60f && knobValue < 0.80f) {
+        // Pitch up one octave
+        octaveShift = 1.0f;
+    } else if (knobValue >= 0.80f && knobValue <= 1.0f) {
+        // Pitch up two octaves
+        octaveShift = 2.0f;
+    }
+
+    return octaveShift;
+}
 
 void SynthVoice::SetFreq(float freq) {
     osc1.SetFreq(freq);

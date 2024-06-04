@@ -6,12 +6,12 @@ using namespace daisy;
 using namespace daisysp;
 
 Dubby dubby;
-const int NUM_VOICES = 5;   // Number of synth voices
+const int NUM_VOICES = 5; // Number of synth voices
 
 SynthVoice synthVoices[NUM_VOICES]; // Array of five synth voices
 
-bool gate[NUM_VOICES];               // Array of gates for each voice
-bool note_on[NUM_VOICES] = {false};  // Track if a note is currently on for each voice
+bool gate[NUM_VOICES];              // Array of gates for each voice
+bool note_on[NUM_VOICES] = {false}; // Track if a note is currently on for each voice
 
 float sample_rate;
 float outGain = 0.1f;
@@ -26,12 +26,11 @@ const char *customLabels[NUM_PAGES][NUM_KNOBS] = {
     {"ATTACK", "DECAY", "SUS", "REL"}};
 
 float savedKnobValues[NUM_PAGES][NUM_KNOBS] = {
-    {.4f, .6f, .0f, .0f}, // default value osc 1
+    {.4f, .6f, .0f, .0f},  // default value osc 1
     {.2f, .4f, .02f, .7f}, // default value osc 2
-    {.2f, .2f, .1f, .6f}, // default value filter
-    {.0f, .3f, .2f, .0f}, // default value filter env
+    {.2f, .2f, .1f, .6f},  // default value filter
+    {.0f, .3f, .2f, .0f},  // default value filter env
     {.0f, .0f, .2f, .0f}}; // default value for amp env
-
 
 void MonitorMidi();
 void HandleMidiUartMessage(MidiEvent m);
@@ -65,7 +64,7 @@ int main(void)
 {
     Init(dubby);
     InitMidiClock(dubby);
-        setNumPages(NUM_PAGES);
+    setNumPages(NUM_PAGES);
 
     dubby.seed.StartAudio(AudioCallback);
 
@@ -81,32 +80,31 @@ int main(void)
     {
         Monitor(dubby);
         MonitorMidi();
-                handleKnobs(dubby, algorithmTitles, customLabels, savedKnobValues);
-
+        handleKnobs(dubby, algorithmTitles, customLabels, savedKnobValues);
 
         // Handle knob changes, if necessary
 
         // Check if any button is held for bootloader reset
-            for (int v = 0; v < NUM_VOICES; v++)
-    {
-        synthVoices[v].SetOsc1Shape(savedKnobValues[0][0]);
-        synthVoices[v].SetOsc2Shape(savedKnobValues[1][0]);
-        synthVoices[v].SetOsc1Tune(savedKnobValues[0][2]);
-        synthVoices[v].SetOsc2Tune(savedKnobValues[1][2]);
-        synthVoices[v].SetFilterDrive(savedKnobValues[2][2]);
-        synthVoices[v].SetFilterRes(savedKnobValues[2][1]);
-        synthVoices[v].SetFilterCutoff(savedKnobValues[2][0], savedKnobValues[2][3]);
+        for (int v = 0; v < NUM_VOICES; v++)
+        {
+            synthVoices[v].SetOsc1Shape(savedKnobValues[0][0]);
+            synthVoices[v].SetOsc2Shape(savedKnobValues[1][0]);
+            synthVoices[v].SetOsc1Tune(savedKnobValues[0][2], savedKnobValues[0][1]);
+            synthVoices[v].SetOsc2Tune(savedKnobValues[1][2], savedKnobValues[1][1]);
 
-        // FILTER ENV
+            synthVoices[v].SetFilterDrive(savedKnobValues[2][2]);
+            synthVoices[v].SetFilterRes(savedKnobValues[2][1]);
+            synthVoices[v].SetFilterCutoff(savedKnobValues[2][0], savedKnobValues[2][3]);
 
-        // Map the knob value to a logarithmic scale for cutoff frequency
+            // FILTER ENV
 
-        synthVoices[v].SetFilterADSR(savedKnobValues[3][0], savedKnobValues[3][1], savedKnobValues[3][2], savedKnobValues[3][3]);
-        synthVoices[v].SetAmpADSR(savedKnobValues[4][0], savedKnobValues[4][1], savedKnobValues[4][2], savedKnobValues[4][3]);
+            // Map the knob value to a logarithmic scale for cutoff frequency
 
-            }
-            
-                    if (dubby.buttons[3].TimeHeldMs() > 300)
+            synthVoices[v].SetFilterADSR(savedKnobValues[3][0], savedKnobValues[3][1], savedKnobValues[3][2], savedKnobValues[3][3]);
+            synthVoices[v].SetAmpADSR(savedKnobValues[4][0], savedKnobValues[4][1], savedKnobValues[4][2], savedKnobValues[4][3]);
+        }
+
+        if (dubby.buttons[3].TimeHeldMs() > 300)
         {
             dubby.ResetToBootloader();
         }
