@@ -1,9 +1,6 @@
 #include "SynthVoice.h"
 
-// Define static members
-daisysp::LadderFilter SynthVoice::filter;
-daisysp::Adsr SynthVoice::filterEnv;
-daisysp::Adsr SynthVoice::ampEnv;
+
 
 SynthVoice::SynthVoice() {
     // Constructor implementation (if needed)
@@ -25,6 +22,7 @@ void SynthVoice::Init(int sample_rate){
 
 }
 void SynthVoice::TriggerEnv(bool gate){
+        
         filterEnvOut = filterEnv.Process(gate);
         ampEnvOut = ampEnv.Process(gate);
 
@@ -46,12 +44,17 @@ float SynthVoice::Process(){
 
 	return filterOut;
 }
-void SynthVoice::SetFreq(float freq)
-{
-	        osc1.SetFreq(freq);
-	        osc2.SetFreq(freq);
-
+void SynthVoice::SetFreq(float freq) {
+    osc1.SetFreq(freq);
+    osc2.SetFreq(freq);
+    oscFreq = freq; // Update the stored frequency value
 }
+
+float SynthVoice::GetFreq() {
+    return oscFreq; // Return the stored frequency value
+}
+
+
 
 void SynthVoice::SetOsc1Shape(float shape){
         osc1.SetWaveform(shape * 6);
