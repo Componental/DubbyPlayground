@@ -26,8 +26,8 @@ const char *customLabels[NUM_PAGES][NUM_KNOBS] = {
     {"ATTACK", "DECAY", "SUS", "REL"}};
 
 float savedKnobValues[NUM_PAGES][NUM_KNOBS] = {
-    {.4f, .6f, .4f, .0f}, // default value osc 1
-    {.2f, .4f, .6f, .7f}, // default value osc 2
+    {.4f, .6f, .0f, .0f}, // default value osc 1
+    {.2f, .4f, .02f, .7f}, // default value osc 2
     {.2f, .2f, .1f, .6f}, // default value filter
     {.0f, .3f, .2f, .0f}, // default value filter env
     {.0f, .0f, .2f, .0f}}; // default value for amp env
@@ -91,7 +91,8 @@ int main(void)
     {
         synthVoices[v].SetOsc1Shape(savedKnobValues[0][0]);
         synthVoices[v].SetOsc2Shape(savedKnobValues[1][0]);
-
+        synthVoices[v].SetOsc1Tune(savedKnobValues[0][2]);
+        synthVoices[v].SetOsc2Tune(savedKnobValues[1][2]);
         synthVoices[v].SetFilterDrive(savedKnobValues[2][2]);
         synthVoices[v].SetFilterRes(savedKnobValues[2][1]);
         synthVoices[v].SetFilterCutoff(savedKnobValues[2][0], savedKnobValues[2][3]);

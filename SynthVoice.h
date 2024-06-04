@@ -9,6 +9,9 @@ public:
     void Init(int sample_rate);
     void TriggerEnv(bool gate);
     float Process();
+    
+    void SetOsc1Tune (float tune);
+    void SetOsc2Tune (float tune);
     void SetFreq(float freq);
     float GetFreq();
 
@@ -23,6 +26,7 @@ public:
 private:
     daisysp::Oscillator osc1, osc2;
     float oscFreq; // Store the current frequency
+    float osc2Tune;
     daisysp::LadderFilter filter;
     daisysp::Adsr filterEnv, ampEnv;
     float filterEnvOut, ampEnvOut;

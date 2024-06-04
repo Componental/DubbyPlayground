@@ -3,6 +3,8 @@
 
 
 SynthVoice::SynthVoice() {
+            osc2Tune = 0.0f; // Initialize osc2Tune to 0
+
     // Constructor implementation (if needed)
 }
 void SynthVoice::Init(int sample_rate){
@@ -44,6 +46,40 @@ float SynthVoice::Process(){
 
 	return filterOut;
 }
+
+void SynthVoice::SetOsc1Tune(float knobValue) {
+    // Tuning factor for OSC 2
+    const float TUNE_SEMITONES = 7.0f;
+    const float SEMITONE_FACTOR = powf(2.0f, 1.0f / 12.0f); // Factor for one semitone
+
+    // Calculate the tuning shift in semitones
+    float osc1NoteShift = knobValue * TUNE_SEMITONES;
+
+    // Calculate the frequency multiplier based on the semitone shift
+    float frequencyMultiplier = powf(SEMITONE_FACTOR, osc1NoteShift);
+
+    // Set the frequency for OSC 2
+    osc1.SetFreq(oscFreq * frequencyMultiplier);
+}
+
+
+
+void SynthVoice::SetOsc2Tune(float knobValue) {
+    // Tuning factor for OSC 2
+    const float TUNE_SEMITONES = 7.0f;
+    const float SEMITONE_FACTOR = powf(2.0f, 1.0f / 12.0f); // Factor for one semitone
+
+    // Calculate the tuning shift in semitones
+    float osc2NoteShift = knobValue * TUNE_SEMITONES;
+
+    // Calculate the frequency multiplier based on the semitone shift
+    float frequencyMultiplier = powf(SEMITONE_FACTOR, osc2NoteShift);
+
+    // Set the frequency for OSC 2
+    osc2.SetFreq(oscFreq * frequencyMultiplier);
+}
+
+
 void SynthVoice::SetFreq(float freq) {
     osc1.SetFreq(freq);
     osc2.SetFreq(freq);
