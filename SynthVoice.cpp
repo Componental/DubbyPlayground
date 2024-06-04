@@ -40,7 +40,7 @@ float SynthVoice::Process(){
         float osc1Out = osc1.Process();
         float osc2Out = osc2.Process();
 
-        float oscCombinedOut = osc1Out + osc2Out;
+        float oscCombinedOut = (osc1Out*osc1Amplitude) + (osc2Out*osc2Amplitude);
 
         float filterOut = filter.Process(oscCombinedOut);
 
@@ -190,5 +190,14 @@ void SynthVoice::SetAmpADSR(float attack, float decay, float sustain, float rele
         ampEnv.SetTime(daisysp::ADSR_SEG_DECAY, decay);
         ampEnv.SetSustainLevel(sustain);
         ampEnv.SetTime(daisysp::ADSR_SEG_RELEASE, release);
+
+}
+
+
+void SynthVoice::SetOsc1Amplitude (float osc1AmplitudeKnobValue){
+        osc1Amplitude = osc1AmplitudeKnobValue;
+}
+void SynthVoice::SetOsc2Amplitude (float osc2AmplitudeKnobValue){
+        osc2Amplitude = osc2AmplitudeKnobValue;
 
 }

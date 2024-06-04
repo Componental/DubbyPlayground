@@ -12,6 +12,9 @@ public:
     
     void SetOsc1Tune (float tuneKnobValue, float octaveKnobValue);
     void SetOsc2Tune (float tuneKnobValue, float octaveKnobValue);
+    void SetOsc1Amplitude (float osc1AmplitudeKnobValue);
+    void SetOsc2Amplitude (float osc2AmplitudeKnobValue);
+
     void SetFreq(float freq);
     float GetFreq();
     float CalculateOctaveShift(float knobValue);
@@ -35,6 +38,7 @@ private:
     daisysp::LadderFilter filter;
     daisysp::Adsr filterEnv, ampEnv;
     float filterEnvOut, ampEnvOut;
+    float osc1Amplitude, osc2Amplitude;
 
     
 };
