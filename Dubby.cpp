@@ -45,7 +45,7 @@ using namespace daisy;
 #define MENULIST_ROWS_ON_SCREEN 5
 
 #define PARAMLIST_X_START 1
-#define PARAMLIST_X_END 123
+#define PARAMLIST_X_END 127
 #define PARAMLIST_Y_START 11
 #define PARAMLIST_Y_END 19
 #define PARAMLIST_SPACING 8
@@ -429,7 +429,7 @@ void Dubby::UpdateWindowList()
             break;
         case WIN4:
             UpdateStatusBar(" PARAM     CTRL  VAL  MIN  MAX  ", LEFT);
-            display.DrawLine(6, 10, 121, 10, true);
+            display.DrawLine(6, 10, 127, 10, true);
 
             DisplayParameterList(0);
              
@@ -692,7 +692,7 @@ void Dubby::DisplayParameterList(int increment)
     // clear bounding box
     //display.DrawRect(PANE_X_START - 1, 1, PANE_X_END, PANE_Y_END, false, true);
 
-    int optionStart = 0;
+    int optionStart = 1;
     if (parameterSelected > (PARAMLIST_ROWS_ON_SCREEN - 1))
     {
         optionStart = parameterSelected - (PARAMLIST_ROWS_ON_SCREEN - 1);
@@ -712,24 +712,23 @@ void Dubby::DisplayParameterList(int increment)
             int x;
 
             if (isParameterSelected) {
-
                 switch (parameterOptionSelected)
                 {
-                case 0:
-                    x = 43;
-                    break;
-                case 1:
-                    x = 68;
-                    break;
-                case 2:
-                    x = 88;
-                    break;
-                case 3:
-                    x = 107;
-                    break;
-                default:
-                    x = 3;
-                    break;
+                    case 0:
+                        x = 43;
+                        break;
+                    case 1:
+                        x = 68;
+                        break;
+                    case 2:
+                        x = 88;
+                        break;
+                    case 3:
+                        x = 108;
+                        break;
+                    default:
+                        x = 3;
+                        break;
                 }
                 
                 display.DrawCircle(x, paramListBoxBounding[j][1] + 4, 1, !isParameterSelected);
@@ -745,17 +744,17 @@ void Dubby::DisplayParameterList(int increment)
         display.SetCursor(45, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
         display.WriteString(controls.ControlsStrings[parameters.GetControlValues(static_cast<DubbyControls>(i)).param], Font_4x5, !(parameterSelected == i && isParameterSelected));
         
-        std::string str = std::to_string(parameters.GetControlValues(static_cast<DubbyControls>(i)).value).substr(0, std::to_string(parameters.GetControlValues(static_cast<DubbyControls>(i)).value).find(".") + 2);
+        std::string str = std::to_string(parameters.GetControlValues(static_cast<DubbyControls>(i)).value).substr(0, std::to_string(parameters.GetControlValues(static_cast<DubbyControls>(i)).value).find(".") + 3);
 
         display.SetCursor(70, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
         display.WriteString(&str[0], Font_4x5, !(parameterSelected == i && isParameterSelected));
 
-        str = std::to_string(parameters.GetControlValues(static_cast<DubbyControls>(i)).min).substr(0, std::to_string(parameters.GetControlValues(static_cast<DubbyControls>(i)).min).find(".") + 2);
+        str = std::to_string(parameters.GetControlValues(static_cast<DubbyControls>(i)).min).substr(0, std::to_string(parameters.GetControlValues(static_cast<DubbyControls>(i)).min).find(".") + 3);
         
         display.SetCursor(90, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
         display.WriteString(&str[0], Font_4x5, !(parameterSelected == i && isParameterSelected));
 
-        str = std::to_string(parameters.GetControlValues(static_cast<DubbyControls>(i)).max).substr(0, std::to_string(parameters.GetControlValues(static_cast<DubbyControls>(i)).max).find(".") + 2);
+        str = std::to_string(parameters.GetControlValues(static_cast<DubbyControls>(i)).max).substr(0, std::to_string(parameters.GetControlValues(static_cast<DubbyControls>(i)).max).find(".") + 3);
         
         display.SetCursor(110, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
         display.WriteString(&str[0], Font_4x5, !(parameterSelected == i && isParameterSelected));
@@ -804,20 +803,20 @@ void Dubby::ProcessAllControls()
     ProcessAnalogControls();
     ProcessDigitalControls();
 
-    parameters.dubbyCtrl[0].value = GetKnobValue(CTRL_1);
-    parameters.dubbyCtrl[1].value = GetKnobValue(CTRL_2);
-    parameters.dubbyCtrl[2].value = GetKnobValue(CTRL_3);
-    parameters.dubbyCtrl[3].value = GetKnobValue(CTRL_4);
+    parameters.dubbyCtrl[1].value = GetKnobValue(CTRL_1);
+    parameters.dubbyCtrl[2].value = GetKnobValue(CTRL_2);
+    parameters.dubbyCtrl[3].value = GetKnobValue(CTRL_3);
+    parameters.dubbyCtrl[4].value = GetKnobValue(CTRL_4);
     
-    parameters.dubbyCtrl[4].value = buttons[0].Pressed();
-    parameters.dubbyCtrl[5].value = buttons[1].Pressed();
-    parameters.dubbyCtrl[6].value = buttons[2].Pressed();
-    parameters.dubbyCtrl[7].value = buttons[3].Pressed();
+    parameters.dubbyCtrl[5].value = buttons[0].Pressed();
+    parameters.dubbyCtrl[6].value = buttons[1].Pressed();
+    parameters.dubbyCtrl[7].value = buttons[2].Pressed();
+    parameters.dubbyCtrl[8].value = buttons[3].Pressed();
     
-    parameters.dubbyCtrl[8].value = GetKnobValue(CTRL_5);
-    parameters.dubbyCtrl[9].value = GetKnobValue(CTRL_6);
+    parameters.dubbyCtrl[9].value = GetKnobValue(CTRL_5);
+    parameters.dubbyCtrl[10].value = GetKnobValue(CTRL_6);
     
-    parameters.dubbyCtrl[10].value = joystickButton.Pressed();
+    parameters.dubbyCtrl[11].value = joystickButton.Pressed();
 }
 
 void Dubby::ProcessAnalogControls()
