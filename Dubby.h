@@ -47,7 +47,7 @@ class Dubby
         WIN2, 
         WIN3, 
         WIN4, 
-        WIN5, 
+        WIN5, // ROUTING TEST
         WIN6, 
         WIN7, 
         WIN8, 
@@ -60,7 +60,7 @@ class Dubby
         "MIXER", 
         "PREFS",
         "WIN4",
-        "WIN5",
+        "ROUTING", // ROUTING
         "WIN6",
         "WIN7",
         "WIN8",
