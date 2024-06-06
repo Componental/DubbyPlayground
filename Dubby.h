@@ -7,10 +7,11 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <cstdlib>
 
 #include "ui/DubbyEncoder.h"
 #include "led.h"
-#include "libDubby/Parameters.h"
+#include "libDubby/Controls.h"
 
 #include "./bitmaps/bmps.h"
 
@@ -216,6 +217,50 @@ class Dubby
         MIXERPAGES,
     };
 
+    const char * ControlsStrings[CONTROLS_LAST] = 
+    { 
+      "-",
+      "KNOB1",
+      "KNOB2", 
+      "KNOB3", 
+      "KNOB4",
+      "BTN1",
+      "BTN2",
+      "BTN3",
+      "BTN4",
+      "JSX",
+      "JSY",
+      "JSSW",
+    };
+
+    const char * ParamsStrings[PARAMS_LAST] = 
+    { 
+      "-",
+      "TIME", 
+      "FEEDBACK", 
+      "MIX", 
+      "CUTOFF", 
+      "IN GAIN", 
+      "OUT GAIN", 
+      "FREEZE", 
+      "MUTE", 
+      "LOOP", 
+      "RES", 
+      "SCRUB",
+      "RATIO",
+      "PREDELAY",
+      "AMOUNT"
+    };
+
+    const char * CurvesStrings[CURVES_LAST]
+    {
+        "LINEAR",
+        "LOGARITH",
+        "EXPONENT",
+        "SIGMOID",
+    };
+
+
 
     Dubby() {}
 
@@ -291,6 +336,10 @@ class Dubby
     
     void UpdateAlgorithmTitle();
 
+    DubbyControls GetParameterControl(Params p);
+
+    float GetParameterValue(Parameters p);
+
     DaisySeed seed; 
 
     WindowItems windowItemSelected = (WindowItems)0;
@@ -300,9 +349,15 @@ class Dubby
     PreferencesRoutingMenuItems preferencesRoutingMenuItemSelected = (PreferencesRoutingMenuItems)0;
     int subMenuSelector = 0;
 
+    DubbyControls prevControl = CONTROL_NONE;
+
     Params parameterSelected = (Params)0;
     bool isParameterSelected = false;
-    int parameterOptionSelected = 0;
+    ParameterOptions parameterOptionSelected = PARAM;
+    bool isListeningControlChange = false;
+    bool isCurveChanging = false;
+
+    bool isEncoderIncrementDisabled = false;
 
     
     bool isSubMenuActive = false;
@@ -351,8 +406,8 @@ class Dubby
     std::vector<float> savedKnobValuesForVisuals;
     std::string algorithmTitle = "";
 
-    Controls controls;
-    Parameters parameters;
+    Controls dubbyCtrls[CONTROLS_LAST];
+    Parameters dubbyParameters[PARAMS_LAST];
 
   private:
 
@@ -362,6 +417,8 @@ class Dubby
     void InitDisplay();
     void InitButtons();
     void InitMidi();
+    void InitDubbyParameters();
+    void InitDubbyControls();
 
     int margin = 8;
     bool windowSelectorActive = false;
@@ -373,7 +430,6 @@ class Dubby
     int highlightMenuCounter = 0;
     unsigned long encoderPressStartTime = 0;
 
-    
     float audioGains[2][4] = { { 0.8f, 0.8f, 0.8f, 0.8f}, { 0.8f, 0.8f, 0.8f, 0.8f} }; // 0 => INPUTS, 1 => OUTPUTS 
 };
 
