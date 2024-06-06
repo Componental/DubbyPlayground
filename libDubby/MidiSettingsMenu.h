@@ -92,6 +92,13 @@ namespace daisy
   class MidiSettingsMenu
   {
   public:
+          int currentMidiClockOption = 0;
+        int currentMidiInOption = 0;
+        int currentMidiInChannelOption = 0;
+        int currentMidiOutOption = 0;
+        int currentMidiOutChannelOption = 0;
+        int currentMidiThruOutOption = 0;
+
     MidiSettings midiSettings;
     const char *MidiSettingsStrings[MIDISETTINGS_LAST] =
         {
@@ -166,8 +173,8 @@ namespace daisy
     {
       setting = c;
     }
+
   private:
     MidiSettings setting;
-
   };
 }

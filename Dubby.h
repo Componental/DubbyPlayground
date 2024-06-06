@@ -373,12 +373,7 @@ namespace daisy
         int highlightMenuCounter = 0;
         unsigned long encoderPressStartTime = 0;
 
-        int currentMidiClockOption = 0;
-        int currentMidiInOption= 0;
-        int currentMidiInChannelOption= 0;
-        int currentMidiOutOption= 0;
-        int currentMidiOutChannelOption= 0;
-        int currentMidiThruOutOption= 0;
+       
         float audioGains[2][4] = {{0.8f, 0.8f, 0.8f, 0.8f}, {0.8f, 0.8f, 0.8f, 0.8f}}; // 0 => INPUTS, 1 => OUTPUTS
     };
 
