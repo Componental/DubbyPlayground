@@ -19,6 +19,7 @@ enum Params {
   RATIO,
   PREDELAY,
   AMOUNT,
+  PARAMS_2ND_LAST, // because of a bug with last element of list, made this one but stays hidden
   PARAMS_LAST
 };
 

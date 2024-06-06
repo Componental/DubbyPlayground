@@ -156,34 +156,34 @@ void Dubby::InitDubbyControls()
     dubbyCtrls[0].Init(CONTROL_NONE, 0);
 
     dubbyCtrls[1].Init(KN1, 0);
-    // dubbyCtrls[1].addParamValue(TIME);
+    dubbyCtrls[1].addParamValue(TIME);
 
     dubbyCtrls[2].Init(KN2, 0);
-    // dubbyCtrls[1].addParamValue(FEEDBACK);
+    dubbyCtrls[1].addParamValue(FEEDBACK);
 
     dubbyCtrls[3].Init(KN3, 0);
-    // dubbyCtrls[3].addParamValue(MIX);
+    dubbyCtrls[3].addParamValue(MIX);
 
     dubbyCtrls[4].Init(KN4, 0);
-    // dubbyCtrls[4].addParamValue(CUTOFF);
+    dubbyCtrls[4].addParamValue(CUTOFF);
 
     dubbyCtrls[5].Init(BTN1, 0);
-    // dubbyCtrls[5].addParamValue(IN_GAIN);
+    dubbyCtrls[5].addParamValue(IN_GAIN);
 
     dubbyCtrls[6].Init(BTN2, 0);
-    // dubbyCtrls[6].addParamValue(OUT_GAIN);
+    dubbyCtrls[6].addParamValue(OUT_GAIN);
 
     dubbyCtrls[7].Init(BTN3, 0);
-    // dubbyCtrls[7].addParamValue(FREEZE);
+    dubbyCtrls[7].addParamValue(FREEZE);
 
     dubbyCtrls[8].Init(BTN4, 0);
-    // dubbyCtrls[8].addParamValue(MUTE);
+    dubbyCtrls[8].addParamValue(MUTE);
 
     dubbyCtrls[9].Init(JSX, 0);
-    // dubbyCtrls[9].addParamValue(LOOP);
+    dubbyCtrls[9].addParamValue(LOOP);
 
     dubbyCtrls[10].Init(JSY, 0);
-    // dubbyCtrls[10].addParamValue(RESONANCE);
+    dubbyCtrls[10].addParamValue(RESONANCE);
     
     dubbyCtrls[11].Init(JSSW, 0);
 
@@ -191,40 +191,41 @@ void Dubby::InitDubbyControls()
 
 void Dubby::InitDubbyParameters()
 {
-    for (int i = 1; i < PARAMS_LAST - 1; i++) 
+    for (int i = 0; i < PARAMS_LAST - 1; i++) 
     {
-        if (i == 1)
+        if (i == 0)
+            dubbyParameters[i].Init(PARAM_NONE, 0, 0, 1, LINEAR);
+        else if (i == 1)
             dubbyParameters[i].Init(Params(i), 0, 0, 1, LOGARITHIMIC);
         else if (i == 2)
             dubbyParameters[i].Init(Params(i), 0, 0, 0.5, EXPONENTIAL);
         else 
-            dubbyParameters[i].Init(Params(i), 0, 0, 1, SIGMOID);
+            dubbyParameters[i].Init(Params(i), 0.6, 0, 1, SIGMOID);
     }
 }
 
 DubbyControls Dubby::GetParameterControl(Params p) 
 {
-    for (int i = 1; i < CONTROLS_LAST; i++) {
-        
+    for (int i = 0; i < CONTROLS_LAST; i++) {
         for (int j = 0; j < PARAMS_LAST; j++) {
             if (p == dubbyCtrls[i].param[j])
                 return dubbyCtrls[i].control;
         }
     }
 
-    return dubbyCtrls[0].control;
+    return CONTROL_NONE;
 }
 
 float Dubby::GetParameterValue(Parameters p)
 {
-    for (int i = 1; i < CONTROLS_LAST; i++) {
+    for (int i = 0; i < CONTROLS_LAST; i++) {
         for (int j = 0; j < PARAMS_LAST; j++) {
             if (p.param == dubbyCtrls[i].param[j])
                 return p.GetRealValue(dubbyCtrls[i].value);
         }
     }
 
-    return 0;
+    return p.value;
 }
 
 void Dubby::SetAudioInGain(AudioIns in, float gain)
@@ -333,10 +334,13 @@ void Dubby::UpdateDisplay()
 
 
             if (isListeningControlChange) {
+
                 for (int i = 0; i < CONTROLS_LAST; i++) {
                     if (abs(dubbyCtrls[i].tempValue - dubbyCtrls[i].value) > 0.1f) {
 
-                        dubbyCtrls[i].removeParamValue(dubbyParameters[parameterSelected].param);
+                        dubbyCtrls[prevControl].removeParamValue(dubbyParameters[parameterSelected].param);
+                        prevControl = CONTROL_NONE;
+
                         dubbyCtrls[i].addParamValue(dubbyParameters[parameterSelected].param);
 
                         DisplayParameterList(0);
@@ -396,11 +400,19 @@ void Dubby::UpdateDisplay()
 
                     for (int i = 0; i < CONTROLS_LAST; i++) {
                         dubbyCtrls[i].tempValue = dubbyCtrls[i].value;
+
+                        for (int j = 0; j < PARAMS_LAST; j++) {
+                            if (dubbyCtrls[i].param[j] == parameterSelected)
+                                prevControl = dubbyCtrls[i].control;
+                        }
                     }
-                } else if (encoder.FallingEdge() && parameterOptionSelected == CURVE) {
-                    UpdateStatusBar("SELECT A CURVE", MIDDLE, 127);
-                    isEncoderIncrementDisabled = true;
-                    isCurveChanging = true;
+                } else if (parameterOptionSelected == CURVE) {
+                    if (EncoderFallingEdgeCustom())
+                    {
+                        UpdateStatusBar("SELECT A CURVE", MIDDLE, 127);
+                        isEncoderIncrementDisabled = true;
+                        isCurveChanging = true;
+                    }
                 } 
                 
             }
@@ -570,8 +582,6 @@ void Dubby::UpdateWindowList()
         case WIN4:
             UpdateStatusBar(" PARAM       CTRL     VALUE   ", LEFT);
             display.DrawLine(6, 10, 127, 10, true);
-
-            display.DrawLine(83, 10, 83, 30, true);
 
             DisplayParameterList(0);
              
@@ -830,7 +840,6 @@ void Dubby::UpdateStatusBar(char* text, StatusBarSide side = LEFT, int width)
 
 void Dubby::DisplayParameterList(int increment)
 {
-        
     // clear bounding box
     //display.DrawRect(PANE_X_START - 1, 1, PANE_X_END, PANE_Y_END, false, true);
 
@@ -912,7 +921,7 @@ void Dubby::DisplayParameterList(int increment)
 
 void Dubby::UpdateParameterList(int increment) 
 {
-    if (((parameterSelected >= 0 && increment == 1 && parameterSelected < PARAMS_LAST - 1) || (increment != 1 && parameterSelected != 0))) 
+    if (((parameterSelected > 0 && increment == 1 && parameterSelected < PARAMS_LAST - 2) || (increment != 1 && parameterSelected != 1))) 
     {
         parameterSelected = (Params)(parameterSelected + increment);
 
@@ -995,7 +1004,6 @@ void Dubby::ProcessDigitalControls()
             }
         }
     }
-
     
     for (int i = 0; i < 4; i++) buttons[i].Debounce();
 
@@ -1006,6 +1014,38 @@ float Dubby::GetKnobValue(Ctrl k)
 {
     return (analogInputs[k].Value());
 }
+
+bool Dubby::EncoderFallingEdgeCustom() 
+{
+    int reading = encoder.FallingEdge(); // Assuming 1 is pressed (falling edge) and 0 is not pressed (resting)
+            
+    if (reading != encoderLastState) {
+        encoderLastDebounceTime = seed.system.GetNow();
+    }
+
+ 
+
+    if ((seed.system.GetNow() - encoderLastDebounceTime) > 50) {
+
+     
+
+        if (reading == 1 && encoderLastState == 0) { // Detect falling edge
+            encoderLastState = reading; // Update state after detecting falling edge
+
+            std::string ss = std::to_string(seed.system.GetNow() - encoderLastDebounceTime);
+            UpdateStatusBar(&ss[0], MIDDLE, 127);
+
+            UpdateStatusBar("TRUE", MIDDLE, 127);
+            
+            return true;
+        }
+    }
+
+    encoderLastState = reading; // Always update the last state
+    return false;
+}
+
+
 
 void Dubby::InitAudio() 
 {

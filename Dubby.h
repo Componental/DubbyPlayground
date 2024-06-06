@@ -249,7 +249,8 @@ class Dubby
       "SCRUB",
       "RATIO",
       "PREDELAY",
-      "AMOUNT"
+      "AMOUNT",
+      "2ND_LAST" // because of a bug
     };
 
     const char * CurvesStrings[CURVES_LAST]
@@ -340,6 +341,8 @@ class Dubby
 
     float GetParameterValue(Parameters p);
 
+    bool EncoderFallingEdgeCustom();
+
     DaisySeed seed; 
 
     WindowItems windowItemSelected = (WindowItems)0;
@@ -351,7 +354,7 @@ class Dubby
 
     DubbyControls prevControl = CONTROL_NONE;
 
-    Params parameterSelected = (Params)0;
+    Params parameterSelected = (Params)1;
     bool isParameterSelected = false;
     ParameterOptions parameterOptionSelected = PARAM;
     bool isListeningControlChange = false;
@@ -429,6 +432,11 @@ class Dubby
     bool wasEncoderJustInHighlightMenu = false;
     int highlightMenuCounter = 0;
     unsigned long encoderPressStartTime = 0;
+
+    bool encoderState = 0; // Previous state of the button
+    bool encoderLastState = 0; // Previous state of the button
+    unsigned long encoderLastDebounceTime = 0; // Time the button was last toggled
+    unsigned long encoderDebounceDelay = 50; // Debounce time in milliseconds
 
     float audioGains[2][4] = { { 0.8f, 0.8f, 0.8f, 0.8f}, { 0.8f, 0.8f, 0.8f, 0.8f} }; // 0 => INPUTS, 1 => OUTPUTS 
 };
