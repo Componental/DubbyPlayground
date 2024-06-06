@@ -39,6 +39,15 @@
     PARAMS_LAST
   };
 
+  // enum MidiSettings {
+  //   MIDICLOCK,   
+  //   MIDIIN,
+  //   MIDIINCHN,
+  //   MIDIOUT,
+  //   MIDIOUTCHN,
+  //   MIDITHRUOUT,
+  //   MIDISETTINGS_LAST
+  // };
 
 namespace daisy
 {
@@ -71,6 +80,17 @@ class Controls
       "PREDELAY",
       "AMOUNT"
     };
+
+//  const char * MidiSettingsStrings[MIDISETTINGS_LAST] = 
+//     { 
+//       "MIDI CLOCK",
+//       "MIDI IN", 
+//       "MIDI IN CHN", 
+//       "MIDI OUT", 
+//       "MIDI OUT CHN", 
+//       "MIDI THRU/OUT"
+//     };
+
 
 
     const char * ControlsStrings[CONTROLS_LAST] = 

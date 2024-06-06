@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include "Controls.h"
+#include "MidiSettingsMenu.h"
 
 namespace daisy
 {

@@ -52,6 +52,10 @@ int main(void)
 	while(1) { 
         Monitor(dubby);
         MonitorMidi();
+
+        if(dubby.buttons[dubby.CTRL_3].TimeHeldMs() > 500){
+            dubby.ResetToBootloader();
+        }
 	}
 }
 

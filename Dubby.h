@@ -61,8 +61,8 @@ class Dubby
         "MIXER", 
         "PREFS",
         "PARAMETERS",
-        "ROUTING", // ROUTING
-        "WIN6",
+        "ROUTING", 
+        "MIDI CONF",
         "WIN7",
         "WIN8",
     };
@@ -255,6 +255,7 @@ class Dubby
 
     void DisplayPreferencesMenuList(int increment);
 
+    
     void UpdatePreferencesMenuList(int increment);
 
     void DisplayPreferencesSubMenuList(int increment, PreferencesMenuItems preferencesMenuItemSelected);
@@ -263,7 +264,11 @@ class Dubby
 
     void DisplayParameterList(int increment);
    
+    void DisplayMidiSettingsList(int increment);
+
     void UpdateParameterList(int increment);
+    void UpdateMidiSettingsList(int increment);
+
 
     void ProcessAllControls();
 
@@ -303,6 +308,11 @@ class Dubby
     Params parameterSelected = (Params)0;
     bool isParameterSelected = false;
     int parameterOptionSelected = 0;
+
+    MidiSettings midiSettingSelected = (MidiSettings)0;
+    bool isMidiSettingSelected = false;
+    int midiOptionSelected = 0;
+
 
     
     bool isSubMenuActive = false;
@@ -352,6 +362,7 @@ class Dubby
     std::string algorithmTitle = "";
 
     Controls controls;
+    MidiSettingsMenu midiSettingsMenu;
     Parameters parameters;
 
   private:

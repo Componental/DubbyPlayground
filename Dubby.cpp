@@ -288,6 +288,39 @@ void Dubby::UpdateDisplay()
             }    
             
             break;
+         case WIN6:
+    DisplayMidiSettingsList(encoder.Increment());
+
+    if (encoder.Increment() && !windowSelectorActive && !isMidiSettingSelected) 
+        UpdateMidiSettingsList(encoder.Increment());
+
+    if (encoder.FallingEdge() && !wasEncoderJustInHighlightMenu && !windowSelectorActive) {
+        if (isMidiSettingSelected) {
+            // If a setting is already selected, unhighlight it
+            isMidiSettingSelected = false;
+        } else {
+            // Otherwise, select the setting
+            isMidiSettingSelected = true;
+            midiOptionSelected = 0;
+        }
+        DisplayMidiSettingsList(encoder.Increment());
+    }
+
+    // If a setting is selected, allow scrolling through options
+    if (isMidiSettingSelected && encoder.Increment()) {
+        midiOptionSelected += encoder.Increment();
+
+        // Check bounds
+        if (midiOptionSelected < 0 || midiOptionSelected > 3) {
+            isMidiSettingSelected = false;
+        }
+
+        DisplayMidiSettingsList(encoder.Increment());
+    }    
+            
+    break;
+
+
     default:
         break;
     }
@@ -470,8 +503,10 @@ void Dubby::UpdateWindowList()
             DrawBitmap(currentBitmapIndex);
             break;
         case WIN6:
-            display.SetCursor(10, 15);
-            UpdateStatusBar("PANE 6", LEFT);
+//            display.SetCursor(10, 15);
+            UpdateStatusBar(" PARAM                SETTING  ", LEFT);
+            display.DrawLine(6, 10, 121, 10, true);
+
             break;
         case WIN7:
             display.SetCursor(10, 15);
@@ -794,6 +829,44 @@ void Dubby::DisplayParameterList(int increment)
     display.Update();
 }
 
+void Dubby::DisplayMidiSettingsList(int increment)
+{
+    // clear bounding box
+    //display.DrawRect(PANE_X_START - 1, 1, PANE_X_END, PANE_Y_END, false, true);
+
+    int optionStart = 0;
+    if (midiSettingSelected > (PARAMLIST_ROWS_ON_SCREEN - 1))
+    {
+        optionStart = midiSettingSelected - (PARAMLIST_ROWS_ON_SCREEN - 1);
+    }
+
+    // display each item, j for text cursor
+    for (int i = optionStart, j = 0; i < optionStart + PARAMLIST_ROWS_ON_SCREEN; i++, j++)
+    {
+        // clear item spaces
+        display.DrawRect(paramListBoxBounding[j][0], paramListBoxBounding[j][1], paramListBoxBounding[j][2], paramListBoxBounding[j][3], false, true);
+
+        if (midiSettingSelected == i)
+        {
+            if (isMidiSettingSelected)
+                display.DrawRect(paramListBoxBounding[j][0], paramListBoxBounding[j][1], paramListBoxBounding[j][2], paramListBoxBounding[j][3], true, true);
+
+            int x = 3;
+            display.DrawCircle(x, paramListBoxBounding[j][1] + 4, 1, !isMidiSettingSelected);
+        }
+
+        display.SetCursor(5, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
+        display.WriteString(midiSettingsMenu.MidiSettingsStrings[i], Font_4x5, !(midiSettingSelected == i && isMidiSettingSelected));
+
+        std::string str = std::to_string(parameters.GetControlValues(static_cast<DubbyControls>(i)).value).substr(0, std::to_string(parameters.GetControlValues(static_cast<DubbyControls>(i)).value).find(".") + 2);
+
+        display.SetCursor(90, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
+        display.WriteString(&str[0], Font_4x5, !(midiSettingSelected == i && isMidiSettingSelected));
+    }
+ 
+    display.Update();
+}
+
 void Dubby::UpdateParameterList(int increment) 
 {
     if (((parameterSelected >= 0 && increment == 1 && parameterSelected < PARAMS_LAST - 1) || (increment != 1 && parameterSelected != 0))) 
@@ -803,6 +876,29 @@ void Dubby::UpdateParameterList(int increment)
         DisplayParameterList(increment);
     }
 }
+
+void Dubby::UpdateMidiSettingsList(int increment) 
+{
+    // Ensure increment is either 1 (move forward) or -1 (move backward)
+    if (increment != 1 && increment != -1) 
+    {
+        return; // Exit if increment is not valid
+    }
+
+    // Check if increment is 1 (moving forward) and within bounds
+    if (increment == 1 && midiSettingSelected < MIDISETTINGS_LAST - 1) 
+    {
+        midiSettingSelected = static_cast<MidiSettings>(midiSettingSelected + increment);
+        DisplayMidiSettingsList(increment);
+    } 
+    // Check if increment is -1 (moving backward) and within bounds
+    else if (increment == -1 && midiSettingSelected > 0) 
+    {
+        midiSettingSelected = static_cast<MidiSettings>(midiSettingSelected + increment);
+        DisplayMidiSettingsList(increment);
+    }
+}
+
 
 void Dubby::ResetToBootloader()
 {
