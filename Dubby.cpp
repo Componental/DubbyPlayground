@@ -44,6 +44,13 @@ using namespace daisy;
 #define MENULIST_SUBMENU_SPACING 63
 #define MENULIST_ROWS_ON_SCREEN 5
 
+#define PARAMLIST_X_START 1
+#define PARAMLIST_X_END 123
+#define PARAMLIST_Y_START 11
+#define PARAMLIST_Y_END 19
+#define PARAMLIST_SPACING 8
+#define PARAMLIST_ROWS_ON_SCREEN 5
+
 #define ENCODER_LONGPRESS_THRESHOLD 300
 
 int currentBitmapIndex = 2; // Initial bitmap index
@@ -64,12 +71,23 @@ void Dubby::Init()
         menuListBoxBounding[i][3] = MENULIST_Y_END + i * MENULIST_SPACING;
     }
 
+
+    for (int i = 0; i < PARAMLIST_ROWS_ON_SCREEN; i++) 
+    {
+        paramListBoxBounding[i][0] = PARAMLIST_X_START;
+        paramListBoxBounding[i][1] = PARAMLIST_Y_START + i * PARAMLIST_SPACING;
+        paramListBoxBounding[i][2] = PARAMLIST_X_END;
+        paramListBoxBounding[i][3] = PARAMLIST_Y_END + i * PARAMLIST_SPACING;
+    }
+
     scrollbarWidth = int(128 / WIN_LAST);
 
     InitDisplay();
     InitEncoder();
     InitAudio();
     InitMidi();
+
+    parameters.Init();
 }
 
 void Dubby::InitControls()
@@ -244,6 +262,32 @@ void Dubby::UpdateDisplay()
         DrawBitmap(currentBitmapIndex); // Redraw bitmap with new index
 
         break;
+        case WIN4:
+            // if (encoder.FallingEdge() && !wasEncoderJustInHighlightMenu) {
+                DisplayParameterList(encoder.Increment());
+
+            if (encoder.Increment() && !windowSelectorActive && !isParameterSelected) UpdateParameterList(encoder.Increment());       
+
+            if (encoder.FallingEdge() && !wasEncoderJustInHighlightMenu && !windowSelectorActive && !isParameterSelected)
+            {
+                isParameterSelected = true;
+                parameterOptionSelected = 0;
+
+                DisplayParameterList(encoder.Increment());
+            }
+
+            if (isParameterSelected && encoder.Increment()) 
+            {
+                parameterOptionSelected += encoder.Increment();
+
+                if (parameterOptionSelected < 0 || parameterOptionSelected > 3) {
+                    isParameterSelected = false;
+                }
+
+                DisplayParameterList(encoder.Increment());
+            }    
+            
+            break;
     default:
         break;
     }
@@ -404,41 +448,41 @@ void Dubby::UpdateWindowList()
 
     switch (windowItemSelected)
     {
-    case WIN1:
-        statusStr = GetTextForEnum(SCOPE, scopeSelector);
-        UpdateStatusBar(&statusStr[0], LEFT, 70);
-        UpdateRenderPane();
-        break;
-    case WIN2:
-        for (int i = 0; i < 4; i++)
-            UpdateBar(i);
-        break;
-    case WIN3:
-        DisplayPreferencesMenuList(0);
-        break;
-    case WIN4:
-        UpdateStatusBar("PANE 4", LEFT);
-        break;
-    case WIN5:
-        display.SetCursor(10, 15);
-        UpdateStatusBar("PANE 5", LEFT);
+        case WIN1:    
+            statusStr = GetTextForEnum(SCOPE, scopeSelector);
+            UpdateStatusBar(&statusStr[0], LEFT, 70);
+            UpdateRenderPane();
+            break;
+        case WIN2:
+            for (int i = 0; i < 4; i++) UpdateBar(i);
+            break;
+        case WIN3:
+            DisplayPreferencesMenuList(0);
+            break;
+        case WIN4:
+            UpdateStatusBar(" PARAM     CTRL  VAL  MIN  MAX  ", LEFT);
+            display.DrawLine(6, 10, 121, 10, true);
 
-        DrawBitmap(currentBitmapIndex); // Redraw bitmap with new index
-        break;
-    case WIN6:
-        display.SetCursor(10, 15);
-        UpdateStatusBar("PANE 6", LEFT);
-        break;
-    case WIN7:
-        display.SetCursor(10, 15);
-        UpdateStatusBar("PANE 7", LEFT);
-        break;
-    case WIN8:
-        display.SetCursor(10, 15);
-        UpdateStatusBar("PANE 8", LEFT);
-        break;
-    default:
-        break;
+            DisplayParameterList(0);
+             
+            break;
+        case WIN5:
+            DrawBitmap(currentBitmapIndex);
+            break;
+        case WIN6:
+            display.SetCursor(10, 15);
+            UpdateStatusBar("PANE 6", LEFT);
+            break;
+        case WIN7:
+            display.SetCursor(10, 15);
+            UpdateStatusBar("PANE 7", LEFT);
+            break;
+        case WIN8:
+            display.SetCursor(10, 15);
+            UpdateStatusBar("PANE 8", LEFT);
+            break;
+        default:
+            break;
     }
 
     display.Update();
@@ -671,6 +715,95 @@ void Dubby::UpdateStatusBar(char *text, StatusBarSide side = LEFT, int width)
     display.Update();
 }
 
+void Dubby::DisplayParameterList(int increment)
+{
+        
+    // clear bounding box
+    //display.DrawRect(PANE_X_START - 1, 1, PANE_X_END, PANE_Y_END, false, true);
+
+    int optionStart = 0;
+    if (parameterSelected > (PARAMLIST_ROWS_ON_SCREEN - 1))
+    {
+        optionStart = parameterSelected - (PARAMLIST_ROWS_ON_SCREEN - 1);
+    }
+    
+    // display each item, j for text cursor
+    for (int i = optionStart, j = 0; i < optionStart + PARAMLIST_ROWS_ON_SCREEN; i++, j++)
+    {
+        // clear item spaces
+        display.DrawRect(paramListBoxBounding[j][0], paramListBoxBounding[j][1], paramListBoxBounding[j][2], paramListBoxBounding[j][3], false, true);
+
+        if (parameterSelected == i) {
+
+            if(isParameterSelected)                
+                display.DrawRect(paramListBoxBounding[j][0], paramListBoxBounding[j][1], paramListBoxBounding[j][2], paramListBoxBounding[j][3], true, true);
+            
+            int x;
+
+            if (isParameterSelected) {
+
+                switch (parameterOptionSelected)
+                {
+                case 0:
+                    x = 43;
+                    break;
+                case 1:
+                    x = 68;
+                    break;
+                case 2:
+                    x = 88;
+                    break;
+                case 3:
+                    x = 107;
+                    break;
+                default:
+                    x = 3;
+                    break;
+                }
+                
+                display.DrawCircle(x, paramListBoxBounding[j][1] + 4, 1, !isParameterSelected);
+            } else {
+                display.DrawCircle(3, paramListBoxBounding[j][1] + 4, 1, !isParameterSelected);
+            }
+        } 
+
+        display.SetCursor(5, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
+        display.WriteString(controls.ParamsStrings[i], Font_4x5, !(parameterSelected == i && isParameterSelected));
+
+
+        display.SetCursor(45, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
+        display.WriteString(controls.ControlsStrings[parameters.GetControlValues(static_cast<DubbyControls>(i)).param], Font_4x5, !(parameterSelected == i && isParameterSelected));
+        
+        std::string str = std::to_string(parameters.GetControlValues(static_cast<DubbyControls>(i)).value).substr(0, std::to_string(parameters.GetControlValues(static_cast<DubbyControls>(i)).value).find(".") + 2);
+
+        display.SetCursor(70, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
+        display.WriteString(&str[0], Font_4x5, !(parameterSelected == i && isParameterSelected));
+
+        str = std::to_string(parameters.GetControlValues(static_cast<DubbyControls>(i)).min).substr(0, std::to_string(parameters.GetControlValues(static_cast<DubbyControls>(i)).min).find(".") + 2);
+        
+        display.SetCursor(90, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
+        display.WriteString(&str[0], Font_4x5, !(parameterSelected == i && isParameterSelected));
+
+        str = std::to_string(parameters.GetControlValues(static_cast<DubbyControls>(i)).max).substr(0, std::to_string(parameters.GetControlValues(static_cast<DubbyControls>(i)).max).find(".") + 2);
+        
+        display.SetCursor(110, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
+        display.WriteString(&str[0], Font_4x5, !(parameterSelected == i && isParameterSelected));
+        
+    }
+
+    display.Update();
+}
+
+void Dubby::UpdateParameterList(int increment) 
+{
+    if (((parameterSelected >= 0 && increment == 1 && parameterSelected < PARAMS_LAST - 1) || (increment != 1 && parameterSelected != 0))) 
+    {
+        parameterSelected = (Params)(parameterSelected + increment);
+
+        DisplayParameterList(increment);
+    }
+}
+
 void Dubby::ResetToBootloader()
 {
     DrawBitmap(1);
@@ -699,6 +832,21 @@ void Dubby::ProcessAllControls()
 {
     ProcessAnalogControls();
     ProcessDigitalControls();
+
+    parameters.dubbyCtrl[0].value = GetKnobValue(CTRL_1);
+    parameters.dubbyCtrl[1].value = GetKnobValue(CTRL_2);
+    parameters.dubbyCtrl[2].value = GetKnobValue(CTRL_3);
+    parameters.dubbyCtrl[3].value = GetKnobValue(CTRL_4);
+    
+    parameters.dubbyCtrl[4].value = buttons[0].Pressed();
+    parameters.dubbyCtrl[5].value = buttons[1].Pressed();
+    parameters.dubbyCtrl[6].value = buttons[2].Pressed();
+    parameters.dubbyCtrl[7].value = buttons[3].Pressed();
+    
+    parameters.dubbyCtrl[8].value = GetKnobValue(CTRL_5);
+    parameters.dubbyCtrl[9].value = GetKnobValue(CTRL_6);
+    
+    parameters.dubbyCtrl[10].value = joystickButton.Pressed();
 }
 
 void Dubby::ProcessAnalogControls()

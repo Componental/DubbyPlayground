@@ -10,6 +10,7 @@
 
 #include "ui/DubbyEncoder.h"
 #include "led.h"
+#include "libDubby/Parameters.h"
 
 #include "./bitmaps/bmps.h"
 
@@ -59,7 +60,7 @@ class Dubby
         "SCOPE", 
         "MIXER", 
         "PREFS",
-        "WIN4",
+        "PARAMETERS",
         "ROUTING", // ROUTING
         "WIN6",
         "WIN7",
@@ -260,6 +261,10 @@ class Dubby
 
     void UpdatePreferencesSubMenuList(int increment, PreferencesMenuItems preferencesMenuItemSelected);
 
+    void DisplayParameterList(int increment);
+   
+    void UpdateParameterList(int increment);
+
     void ProcessAllControls();
 
     void ProcessAnalogControls();
@@ -294,6 +299,11 @@ class Dubby
     PreferencesMidiMenuItems preferencesMidiMenuItemSelected = (PreferencesMidiMenuItems)0;
     PreferencesRoutingMenuItems preferencesRoutingMenuItemSelected = (PreferencesRoutingMenuItems)0;
     int subMenuSelector = 0;
+
+    Params parameterSelected = (Params)0;
+    bool isParameterSelected = false;
+    int parameterOptionSelected = 0;
+
     
     bool isSubMenuActive = false;
 
@@ -301,6 +311,8 @@ class Dubby
     const int windowTextCursors[3][2] = { {3, 55}, {46, 55}, {88, 55} };  
     const int windowBoxBounding[3][4] = { {0, 53, 43, 61}, {43, 53, 85, 61}, {85, 53, 127, 61} }; 
     int menuListBoxBounding[5][4];
+    int paramListBoxBounding[5][4];
+
 
     int scrollbarWidth = 0;
     int barSelector = 0;
@@ -338,6 +350,9 @@ class Dubby
 
     std::vector<float> savedKnobValuesForVisuals;
     std::string algorithmTitle = "";
+
+    Controls controls;
+    Parameters parameters;
 
   private:
 
