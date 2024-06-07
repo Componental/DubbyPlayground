@@ -33,8 +33,8 @@ using namespace daisy;
 
 #define STATUSBAR_X_START 1
 #define STATUSBAR_X_END 127
-#define STATUSBAR_Y_START 1
-#define STATUSBAR_Y_END 11
+#define STATUSBAR_Y_START 0
+#define STATUSBAR_Y_END 6
 
 #define MENULIST_X_START 0
 #define MENULIST_X_END 63
@@ -258,7 +258,12 @@ void Dubby::UpdateDisplay()
         if (currentBitmapIndex > 5)
             currentBitmapIndex = 2;
 
+        if(encoder.Increment()){
         DrawBitmap(currentBitmapIndex); // Redraw bitmap with new index
+                    UpdateStatusBar("IN", LEFT);
+                    UpdateStatusBar("OUT", RIGHT);
+
+        }
 
         break;
     case WIN4:
@@ -486,7 +491,11 @@ void Dubby::UpdateWindowList()
 
         break;
     case WIN5:
+
         DrawBitmap(currentBitmapIndex);
+                    UpdateStatusBar("IN", LEFT);
+                    UpdateStatusBar("OUT", RIGHT);
+                    
         break;
     case WIN6:
         //            display.SetCursor(10, 15);
