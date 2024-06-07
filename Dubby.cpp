@@ -29,7 +29,7 @@ using namespace daisy;
 #define PANE_X_START 1
 #define PANE_X_END 126
 #define PANE_Y_START 10
-#define PANE_Y_END 52
+#define PANE_Y_END 54
 
 #define STATUSBAR_X_START 1
 #define STATUSBAR_X_END 127
@@ -290,7 +290,7 @@ void Dubby::HighlightWindowItem()
         display.SetCursor(windowTextCursors[i % 3][0], windowTextCursors[i % 3][1]);
         int currentText = windowItemSelected + i < WIN_LAST ? windowItemSelected + i : (windowItemSelected + i) % WIN_LAST;
         
-        display.WriteStringAligned(GetTextForEnum(WINDOWS, currentText), Font_4x5, daisy::Rectangle(windowBoxBounding[i][0], windowBoxBounding[i][1] + 3, 43, 7), daisy::Alignment::centered, i == 0 ? false : true);
+        display.WriteStringAligned(GetTextForEnum(WINDOWS, currentText), Font_4x5, daisy::Rectangle(windowBoxBounding[i][0], windowBoxBounding[i][1] + 1, 43, 7), daisy::Alignment::centered, i == 0 ? false : true);
     }
 
     display.DrawLine(PANE_X_START - 1, PANE_Y_START + 1, PANE_X_START - 1, PANE_Y_END + 1, true);
@@ -309,7 +309,7 @@ void Dubby::ReleaseWindowSelector()
     display.DrawRect(windowBoxBounding[0][0], windowBoxBounding[0][1], windowBoxBounding[0][2], windowBoxBounding[0][3], false, false);
 
     display.SetCursor(windowTextCursors[0][0], windowTextCursors[0][1]);
-    display.WriteStringAligned(GetTextForEnum(WINDOWS, windowItemSelected), Font_4x5, daisy::Rectangle(windowBoxBounding[0][0], windowBoxBounding[0][1] + 3, 43, 7), daisy::Alignment::centered, true);
+    display.WriteStringAligned(GetTextForEnum(WINDOWS, windowItemSelected), Font_4x5, daisy::Rectangle(windowBoxBounding[0][0], windowBoxBounding[0][1] + 1, 43, 7), daisy::Alignment::centered, true);
 
     display.Update();
     

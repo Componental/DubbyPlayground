@@ -298,8 +298,8 @@ class Dubby
     bool isSubMenuActive = false;
 
     // const int menuTextCursors[3][2] = { {8, 55}, {50, 55}, {92, 55} }; OLD
-    const int windowTextCursors[3][2] = { {3, 55}, {46, 55}, {88, 55} };  
-    const int windowBoxBounding[3][4] = { {0, 53, 43, 61}, {43, 53, 85, 61}, {85, 53, 127, 61} }; 
+    const int windowTextCursors[3][2] = { {3, 50}, {46, 50}, {88, 50} };  
+    const int windowBoxBounding[3][4] = { {0, 55, 43, 61}, {43, 55, 85, 61}, {85, 55, 127, 61} }; 
     int menuListBoxBounding[5][4];
 
     int scrollbarWidth = 0;
