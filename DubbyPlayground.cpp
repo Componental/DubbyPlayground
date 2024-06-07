@@ -61,6 +61,7 @@ int main(void)
 
 void HandleMidiMessage(MidiEvent m)
 {
+    
     switch(m.type)
     {
         case NoteOn:
@@ -86,6 +87,7 @@ void MonitorMidi()
     // Handle USB MIDI Events
     while(dubby.midi_usb.HasEvents())
     { 
+        
         MidiEvent m = dubby.midi_usb.PopEvent();
         HandleMidiMessage(m);
     }

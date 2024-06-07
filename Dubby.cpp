@@ -258,11 +258,27 @@ void Dubby::UpdateDisplay()
         if (currentBitmapIndex > 5)
             currentBitmapIndex = 2;
 
-        if(encoder.Increment()){
-        DrawBitmap(currentBitmapIndex); // Redraw bitmap with new index
-                    UpdateStatusBar("IN", LEFT);
-                    UpdateStatusBar("OUT", RIGHT);
-
+        if (encoder.Increment())
+        {
+            DrawBitmap(currentBitmapIndex); // Redraw bitmap with new index
+            UpdateStatusBar("IN", LEFT);
+            UpdateStatusBar("OUT", RIGHT);
+if (currentBitmapIndex == 2)
+        {
+            UpdateStatusBar("2x2 IN SERIES", MIDDLE);
+        }
+        else if (currentBitmapIndex == 3)
+        {
+            UpdateStatusBar("1 QUAD", MIDDLE);
+        }
+        else if (currentBitmapIndex == 4)
+        {
+            UpdateStatusBar("2 IN SERIES", MIDDLE);
+        }
+        else if (currentBitmapIndex == 5)
+        {
+            UpdateStatusBar("2 IN PARALLEL", MIDDLE);
+        }
         }
 
         break;
@@ -306,8 +322,6 @@ void Dubby::UpdateDisplay()
 
             UpdateMidiSettingsList(encoder.Increment());
         }
-
-      
 
         break;
 
@@ -493,9 +507,25 @@ void Dubby::UpdateWindowList()
     case WIN5:
 
         DrawBitmap(currentBitmapIndex);
-                    UpdateStatusBar("IN", LEFT);
-                    UpdateStatusBar("OUT", RIGHT);
-                    
+        UpdateStatusBar("IN", LEFT);
+        UpdateStatusBar("OUT", RIGHT);
+        if (currentBitmapIndex == 2)
+        {
+            UpdateStatusBar("2x2 IN SERIES", MIDDLE);
+        }
+        else if (currentBitmapIndex == 3)
+        {
+            UpdateStatusBar("1 QUAD", MIDDLE);
+        }
+        else if (currentBitmapIndex == 4)
+        {
+            UpdateStatusBar("2 IN SERIES", MIDDLE);
+        }
+        else if (currentBitmapIndex == 5)
+        {
+            UpdateStatusBar("2 IN PARALLEL", MIDDLE);
+        }
+
         break;
     case WIN6:
         //            display.SetCursor(10, 15);
@@ -828,7 +858,6 @@ void Dubby::DisplayParameterList(int increment)
     display.Update();
 }
 
-
 void Dubby::UpdateParameterList(int increment)
 {
     if (((parameterSelected >= 0 && increment == 1 && parameterSelected < PARAMS_LAST - 1) || (increment != 1 && parameterSelected != 0)))
@@ -841,34 +870,34 @@ void Dubby::UpdateParameterList(int increment)
 void Dubby::DisplayMidiSettingsList(int increment)
 {
 
-testBool = isMidiSettingSelected;
+    testBool = isMidiSettingSelected;
 
     if (isMidiSettingSelected)
     {
         // Adjust the selected option based on the encoder's input
         switch (midiSettingSelected)
         {
-            case MIDICLOCK:
-                dubbyMidiSettings.currentMidiClockOption = (dubbyMidiSettings.currentMidiClockOption + increment + MIDICLOCKOPTIONS_LAST) % MIDICLOCKOPTIONS_LAST;
-                break;
-            case MIDIIN:
-                dubbyMidiSettings.currentMidiInOption = (dubbyMidiSettings.currentMidiInOption + increment + MIDIINOPTIONS_LAST) % MIDIINOPTIONS_LAST;
-                break;
-            case MIDIINCHN:
-                dubbyMidiSettings.currentMidiInChannelOption = (dubbyMidiSettings.currentMidiInChannelOption + increment + MIDIINCHNOPTIONS_LAST) % MIDIINCHNOPTIONS_LAST;
-                break;
-            case MIDIOUT:
-                dubbyMidiSettings.currentMidiOutOption = (dubbyMidiSettings.currentMidiOutOption + increment + MIDIOUTOPTIONS_LAST) % MIDIOUTOPTIONS_LAST;
-                break;
-            case MIDIOUTCHN:
-                dubbyMidiSettings.currentMidiOutChannelOption = (dubbyMidiSettings.currentMidiOutChannelOption + increment + MIDIOUTCHNOPTIONS_LAST) % MIDIOUTCHNOPTIONS_LAST;
-                break;
-            case MIDITHRUOUT:
-                dubbyMidiSettings.currentMidiThruOutOption = (dubbyMidiSettings.currentMidiThruOutOption + increment + MIDITHRUOUT_LAST) % MIDITHRUOUT_LAST;
-                break;
-            default:
-                // Add default action if needed
-                break;
+        case MIDICLOCK:
+            dubbyMidiSettings.currentMidiClockOption = (dubbyMidiSettings.currentMidiClockOption + increment + MIDICLOCKOPTIONS_LAST) % MIDICLOCKOPTIONS_LAST;
+            break;
+        case MIDIIN:
+            dubbyMidiSettings.currentMidiInOption = (dubbyMidiSettings.currentMidiInOption + increment + MIDIINOPTIONS_LAST) % MIDIINOPTIONS_LAST;
+            break;
+        case MIDIINCHN:
+            dubbyMidiSettings.currentMidiInChannelOption = (dubbyMidiSettings.currentMidiInChannelOption + increment + MIDIINCHNOPTIONS_LAST) % MIDIINCHNOPTIONS_LAST;
+            break;
+        case MIDIOUT:
+            dubbyMidiSettings.currentMidiOutOption = (dubbyMidiSettings.currentMidiOutOption + increment + MIDIOUTOPTIONS_LAST) % MIDIOUTOPTIONS_LAST;
+            break;
+        case MIDIOUTCHN:
+            dubbyMidiSettings.currentMidiOutChannelOption = (dubbyMidiSettings.currentMidiOutChannelOption + increment + MIDIOUTCHNOPTIONS_LAST) % MIDIOUTCHNOPTIONS_LAST;
+            break;
+        case MIDITHRUOUT:
+            dubbyMidiSettings.currentMidiThruOutOption = (dubbyMidiSettings.currentMidiThruOutOption + increment + MIDITHRUOUT_LAST) % MIDITHRUOUT_LAST;
+            break;
+        default:
+            // Add default action if needed
+            break;
         }
     }
 
@@ -898,33 +927,33 @@ testBool = isMidiSettingSelected;
         switch (i)
 
         {
-            case MIDICLOCK:
-                display.SetCursor(90, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
-                display.WriteString(dubbyMidiSettings.MidiClockOptionsStrings[dubbyMidiSettings.currentMidiClockOption], Font_4x5, !(midiSettingSelected == i && isMidiSettingSelected));
-                break;
-            case MIDIIN:
-                display.SetCursor(90, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
-                display.WriteString(dubbyMidiSettings.MidiInOptionsStrings[dubbyMidiSettings.currentMidiInOption], Font_4x5, !(midiSettingSelected == i && isMidiSettingSelected));
-                break;
-            case MIDIINCHN:
-                display.SetCursor(90, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
-                display.WriteString(dubbyMidiSettings.MidiInChannelOptionsStrings[dubbyMidiSettings.currentMidiInChannelOption], Font_4x5, !(midiSettingSelected == i && isMidiSettingSelected));
-                break;
-            case MIDIOUT:
-                display.SetCursor(90, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
-                display.WriteString(dubbyMidiSettings.MidiOutOptionsStrings[dubbyMidiSettings.currentMidiOutOption], Font_4x5, !(midiSettingSelected == i && isMidiSettingSelected));
-                break;
-            case MIDIOUTCHN:
-                display.SetCursor(90, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
-                display.WriteString(dubbyMidiSettings.MidiOutChannelOptionsStrings[dubbyMidiSettings.currentMidiOutChannelOption], Font_4x5, !(midiSettingSelected == i && isMidiSettingSelected));
-                break;
-            case MIDITHRUOUT:
-                display.SetCursor(90, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
-                display.WriteString(dubbyMidiSettings.MidiThruOutOptionsStrings[dubbyMidiSettings.currentMidiThruOutOption], Font_4x5, !(midiSettingSelected == i && isMidiSettingSelected));
-break;
-            default:
-                // Add default action if needed
-                break;
+        case MIDICLOCK:
+            display.SetCursor(90, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
+            display.WriteString(dubbyMidiSettings.MidiClockOptionsStrings[dubbyMidiSettings.currentMidiClockOption], Font_4x5, !(midiSettingSelected == i && isMidiSettingSelected));
+            break;
+        case MIDIIN:
+            display.SetCursor(90, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
+            display.WriteString(dubbyMidiSettings.MidiInOptionsStrings[dubbyMidiSettings.currentMidiInOption], Font_4x5, !(midiSettingSelected == i && isMidiSettingSelected));
+            break;
+        case MIDIINCHN:
+            display.SetCursor(90, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
+            display.WriteString(dubbyMidiSettings.MidiInChannelOptionsStrings[dubbyMidiSettings.currentMidiInChannelOption], Font_4x5, !(midiSettingSelected == i && isMidiSettingSelected));
+            break;
+        case MIDIOUT:
+            display.SetCursor(90, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
+            display.WriteString(dubbyMidiSettings.MidiOutOptionsStrings[dubbyMidiSettings.currentMidiOutOption], Font_4x5, !(midiSettingSelected == i && isMidiSettingSelected));
+            break;
+        case MIDIOUTCHN:
+            display.SetCursor(90, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
+            display.WriteString(dubbyMidiSettings.MidiOutChannelOptionsStrings[dubbyMidiSettings.currentMidiOutChannelOption], Font_4x5, !(midiSettingSelected == i && isMidiSettingSelected));
+            break;
+        case MIDITHRUOUT:
+            display.SetCursor(90, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
+            display.WriteString(dubbyMidiSettings.MidiThruOutOptionsStrings[dubbyMidiSettings.currentMidiThruOutOption], Font_4x5, !(midiSettingSelected == i && isMidiSettingSelected));
+            break;
+        default:
+            // Add default action if needed
+            break;
         }
     }
 
@@ -933,7 +962,7 @@ break;
 
 void Dubby::UpdateMidiSettingsList(int increment)
 {
-      
+
     // Check if increment is 1 (moving forward) and within bounds
     if ((increment == 1 && midiSettingSelected < MIDISETTINGS_LAST - 1) || (increment == -1 && midiSettingSelected > 0))
     {
