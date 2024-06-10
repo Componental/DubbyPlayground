@@ -110,8 +110,8 @@ void HandleMidiUartMessage(MidiEvent m)
             {
                 if (!voiceInUse[i])
                 {
-                    notes[i] = p.note;
                     freqs[i] = mtof(p.note);
+                    notes[i] = p.note;
                     strings[i].SetFreq(freqs[i]);
                     strings[i].SetAccent(p.velocity / 127.f);
                     triggers[i] = true;
@@ -132,8 +132,6 @@ void HandleMidiUartMessage(MidiEvent m)
                         freqs[i] = mtof(p.note);
                         notes[i] = p.note;
                         strings[i].SetFreq(freqs[i]);
-                        strings[i].SetAccent(p.velocity / 127.f);
-
                         triggers[i] = true;
                         // Don't update oldestPlayingVoice here, as it's already set
                         break;
@@ -158,6 +156,7 @@ void HandleMidiUartMessage(MidiEvent m)
         }
         break;
     }
+    
     default:
         break;
     }
