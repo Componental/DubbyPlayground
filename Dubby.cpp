@@ -44,6 +44,13 @@ using namespace daisy;
 #define MENULIST_SUBMENU_SPACING 63
 #define MENULIST_ROWS_ON_SCREEN 5
 
+#define PARAMLIST_X_START 1
+#define PARAMLIST_X_END 127
+#define PARAMLIST_Y_START 11
+#define PARAMLIST_Y_END 19
+#define PARAMLIST_SPACING 8
+#define PARAMLIST_ROWS_ON_SCREEN 5
+
 #define ENCODER_LONGPRESS_THRESHOLD 300
 
 void Dubby::Init() 
@@ -62,12 +69,23 @@ void Dubby::Init()
         menuListBoxBounding[i][3] = MENULIST_Y_END + i * MENULIST_SPACING;
     }
 
+
+    for (int i = 0; i < PARAMLIST_ROWS_ON_SCREEN; i++) 
+    {
+        paramListBoxBounding[i][0] = PARAMLIST_X_START;
+        paramListBoxBounding[i][1] = PARAMLIST_Y_START + i * PARAMLIST_SPACING;
+        paramListBoxBounding[i][2] = PARAMLIST_X_END;
+        paramListBoxBounding[i][3] = PARAMLIST_Y_END + i * PARAMLIST_SPACING;
+    }
+
     scrollbarWidth = int(128 / WIN_LAST);
 
     InitDisplay();
     InitEncoder();
     InitAudio();
     InitMidi();
+    InitDubbyParameters();
+    InitDubbyControls();
 }
 
 void Dubby::InitControls()
@@ -131,6 +149,83 @@ void Dubby::InitDisplay()
     disp_cfg.driver_config.transport_config.pin_config.reset = seed.GetPin(31);
     /** And Initialize */
     display.Init(disp_cfg);
+}
+
+void Dubby::InitDubbyControls()
+{
+    dubbyCtrls[0].Init(CONTROL_NONE, 0);
+
+    dubbyCtrls[1].Init(KN1, 0);
+    dubbyCtrls[1].addParamValue(TIME);
+
+    dubbyCtrls[2].Init(KN2, 0);
+    dubbyCtrls[1].addParamValue(FEEDBACK);
+
+    dubbyCtrls[3].Init(KN3, 0);
+    dubbyCtrls[3].addParamValue(MIX);
+
+    dubbyCtrls[4].Init(KN4, 0);
+    dubbyCtrls[4].addParamValue(CUTOFF);
+
+    dubbyCtrls[5].Init(BTN1, 0);
+    dubbyCtrls[5].addParamValue(IN_GAIN);
+
+    dubbyCtrls[6].Init(BTN2, 0);
+    dubbyCtrls[6].addParamValue(OUT_GAIN);
+
+    dubbyCtrls[7].Init(BTN3, 0);
+    dubbyCtrls[7].addParamValue(FREEZE);
+
+    dubbyCtrls[8].Init(BTN4, 0);
+    dubbyCtrls[8].addParamValue(MUTE);
+
+    dubbyCtrls[9].Init(JSX, 0);
+    dubbyCtrls[9].addParamValue(LOOP);
+
+    dubbyCtrls[10].Init(JSY, 0);
+    dubbyCtrls[10].addParamValue(RESONANCE);
+    
+    dubbyCtrls[11].Init(JSSW, 0);
+
+}
+
+void Dubby::InitDubbyParameters()
+{
+    for (int i = 0; i < PARAMS_LAST - 1; i++) 
+    {
+        if (i == 0)
+            dubbyParameters[i].Init(PARAM_NONE, 0, 0, 1, LINEAR);
+        else if (i == 1)
+            dubbyParameters[i].Init(Params(i), 0, 0, 1, LOGARITHIMIC);
+        else if (i == 2)
+            dubbyParameters[i].Init(Params(i), 0, 0, 0.5, EXPONENTIAL);
+        else 
+            dubbyParameters[i].Init(Params(i), 0.6, 0, 1, SIGMOID);
+    }
+}
+
+DubbyControls Dubby::GetParameterControl(Params p) 
+{
+    for (int i = 0; i < CONTROLS_LAST; i++) {
+        for (int j = 0; j < PARAMS_LAST; j++) {
+            if (p == dubbyCtrls[i].param[j])
+                return dubbyCtrls[i].control;
+        }
+    }
+
+    return CONTROL_NONE;
+}
+
+float Dubby::GetParameterValue(Parameters p)
+{
+    for (int i = 0; i < CONTROLS_LAST; i++) {
+        for (int j = 0; j < PARAMS_LAST; j++) {
+            if (p.param == dubbyCtrls[i].param[j])
+                return p.GetRealValue(dubbyCtrls[i].value);
+        }
+    }
+
+    return p.value;
 }
 
 void Dubby::SetAudioInGain(AudioIns in, float gain)
@@ -222,6 +317,107 @@ void Dubby::UpdateDisplay()
             if (encoder.FallingEdge() && !wasEncoderJustInHighlightMenu && preferencesMenuItemSelected == DFUMODE) ResetToBootloader();
             if (encoder.Increment() && !windowSelectorActive && !isSubMenuActive) UpdatePreferencesMenuList(encoder.Increment());
             else if (encoder.Increment() && !windowSelectorActive && isSubMenuActive) UpdatePreferencesSubMenuList(encoder.Increment(), preferencesMenuItemSelected);
+            break;
+        case WIN4:
+            // if (encoder.FallingEdge() && !wasEncoderJustInHighlightMenu) {
+                DisplayParameterList(encoder.Increment());
+
+            if (encoder.Increment() && !isEncoderIncrementDisabled && !windowSelectorActive && !isParameterSelected) UpdateParameterList(encoder.Increment());       
+
+            if (encoder.FallingEdge() && !wasEncoderJustInHighlightMenu && !windowSelectorActive && !isParameterSelected)
+            {
+                isParameterSelected = true;
+                parameterOptionSelected = PARAM;
+
+                DisplayParameterList(encoder.Increment());
+            }
+
+
+            if (isListeningControlChange) {
+
+                for (int i = 0; i < CONTROLS_LAST; i++) {
+                    if (abs(dubbyCtrls[i].tempValue - dubbyCtrls[i].value) > 0.1f) {
+
+                        dubbyCtrls[prevControl].removeParamValue(dubbyParameters[parameterSelected].param);
+                        prevControl = CONTROL_NONE;
+
+                        dubbyCtrls[i].addParamValue(dubbyParameters[parameterSelected].param);
+
+                        DisplayParameterList(0);
+                        UpdateStatusBar(" PARAM       CTRL     VALUE   ", LEFT);
+
+                        isListeningControlChange = false;
+                        isEncoderIncrementDisabled = false;
+                    }
+                }
+            } else if (isCurveChanging) {
+                if (encoder.Increment()) {  
+                    if (dubbyParameters[parameterSelected].curve == CURVES_LAST - 1 && encoder.Increment() == 1)
+                        dubbyParameters[parameterSelected].curve = (Curves)0;
+                    else if (dubbyParameters[parameterSelected].curve == 0 && encoder.Increment() == -1)
+                        dubbyParameters[parameterSelected].curve = (Curves)(CURVES_LAST - 1);
+                    else
+                        dubbyParameters[parameterSelected].curve = static_cast<Curves>(static_cast<int>(dubbyParameters[parameterSelected].curve) + encoder.Increment());
+                }
+                if (encoder.FallingEdge()) {
+                    isCurveChanging = false;
+                    isEncoderIncrementDisabled = false;
+                    UpdateStatusBar(" PARAM       CTRL     CURVE   ", LEFT);
+                }
+            }
+
+            if (isParameterSelected) {
+                if (encoder.Increment() && !isEncoderIncrementDisabled) 
+                {
+                    parameterOptionSelected = static_cast<ParameterOptions>(static_cast<int>(parameterOptionSelected) + encoder.Increment());
+
+                    if (parameterOptionSelected < PARAM || parameterOptionSelected >= POPTIONS_LAST) {
+                        isParameterSelected = false;
+                    }
+
+                    switch (parameterOptionSelected)
+                    {
+                        case MIN: 
+                            UpdateStatusBar(" PARAM       CTRL     MIN   ", LEFT);      
+                            break;
+                        case MAX:
+                            UpdateStatusBar(" PARAM       CTRL     MAX   ", LEFT);
+                            break;
+                        case CURVE:
+                            UpdateStatusBar(" PARAM       CTRL     CURVE ", LEFT);
+                            break;
+                        default:
+                            UpdateStatusBar(" PARAM       CTRL     VALUE   ", LEFT);
+                            break;
+                    }
+
+                    DisplayParameterList(encoder.Increment());
+
+                } else if (encoder.FallingEdge() && parameterOptionSelected == CTRL) {
+                    UpdateStatusBar("SELECT A CONTROL", MIDDLE, 127);
+                    isListeningControlChange = true;
+                    isEncoderIncrementDisabled = true;
+
+                    for (int i = 0; i < CONTROLS_LAST; i++) {
+                        dubbyCtrls[i].tempValue = dubbyCtrls[i].value;
+
+                        for (int j = 0; j < PARAMS_LAST; j++) {
+                            if (dubbyCtrls[i].param[j] == parameterSelected)
+                                prevControl = dubbyCtrls[i].control;
+                        }
+                    }
+                } else if (parameterOptionSelected == CURVE) {
+                    if (EncoderFallingEdgeCustom())
+                    {
+                        UpdateStatusBar("SELECT A CURVE", MIDDLE, 127);
+                        isEncoderIncrementDisabled = true;
+                        isCurveChanging = true;
+                    }
+                } 
+                
+            }
+            
+            
             break;
         default:
             break;
@@ -384,7 +580,11 @@ void Dubby::UpdateWindowList()
             DisplayPreferencesMenuList(0);
             break;
         case WIN4:
-            UpdateStatusBar("PANE 4", LEFT); 
+            UpdateStatusBar(" PARAM       CTRL     VALUE   ", LEFT);
+            display.DrawLine(6, 10, 127, 10, true);
+
+            DisplayParameterList(0);
+             
             break;
         case WIN5:
             display.SetCursor(10, 15);
@@ -550,7 +750,7 @@ void Dubby::DisplayPreferencesSubMenuList(int increment, PreferencesMenuItems pr
         break;
     }
 
-    int optionStart = 0;
+    int optionStart = 1;
     if (subMenuSelector > (MENULIST_ROWS_ON_SCREEN - 1))
     {
         optionStart = subMenuSelector - (MENULIST_ROWS_ON_SCREEN - 1);
@@ -570,7 +770,7 @@ void Dubby::DisplayPreferencesSubMenuList(int increment, PreferencesMenuItems pr
                 display.DrawRect(menuListBoxBounding[j + 1][0] + MENULIST_SUBMENU_SPACING, menuListBoxBounding[j + 1][1], menuListBoxBounding[j + 1][2] + MENULIST_SUBMENU_SPACING, menuListBoxBounding[j + 1][3], false);
             else if(optionStart == 0 && j > 0)
                 display.DrawRect(menuListBoxBounding[j - 1][0] + MENULIST_SUBMENU_SPACING, menuListBoxBounding[j - 1][1], menuListBoxBounding[j - 1][2] + MENULIST_SUBMENU_SPACING, menuListBoxBounding[j - 1][3], false);
-            
+                
             if (isSubMenuActive)
                 display.DrawRect(menuListBoxBounding[j][0] + MENULIST_SUBMENU_SPACING, menuListBoxBounding[j][1], menuListBoxBounding[j][2] + MENULIST_SUBMENU_SPACING, menuListBoxBounding[j][3], true);
         } 
@@ -638,6 +838,97 @@ void Dubby::UpdateStatusBar(char* text, StatusBarSide side = LEFT, int width)
     display.Update();
 }
 
+void Dubby::DisplayParameterList(int increment)
+{
+    // clear bounding box
+    //display.DrawRect(PANE_X_START - 1, 1, PANE_X_END, PANE_Y_END, false, true);
+
+    int optionStart = 1;
+    if (parameterSelected > (PARAMLIST_ROWS_ON_SCREEN - 1))
+    {
+        optionStart = parameterSelected - (PARAMLIST_ROWS_ON_SCREEN - 1);
+    }
+    
+    // display each item, j for text cursor
+    for (int i = optionStart, j = 0; i < optionStart + PARAMLIST_ROWS_ON_SCREEN; i++, j++)
+    {
+        // clear item spaces
+        display.DrawRect(paramListBoxBounding[j][0], paramListBoxBounding[j][1], paramListBoxBounding[j][2], paramListBoxBounding[j][3], false, true);
+
+        if (parameterSelected == i) {
+
+            if(isParameterSelected)                
+                display.DrawRect(paramListBoxBounding[j][0], paramListBoxBounding[j][1], paramListBoxBounding[j][2], paramListBoxBounding[j][3], true, true);
+            
+            int x;
+
+            if (isParameterSelected) {
+                switch (parameterOptionSelected)
+                {
+                    case CTRL:
+                        x = 51;
+                        break;
+                    case VALUE:
+                    case MIN:
+                    case MAX: 
+                    case CURVE:
+                        x = 87;
+                        break;
+                    default:
+                        x = 3;
+                        break;
+                }
+                
+                display.DrawCircle(x, paramListBoxBounding[j][1] + 4, 1, !isParameterSelected);
+            } else {
+                display.DrawCircle(3, paramListBoxBounding[j][1] + 4, 1, !isParameterSelected);
+            }
+        } 
+
+        display.SetCursor(5, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
+        display.WriteString(ParamsStrings[i], Font_4x5, !(parameterSelected == i && isParameterSelected));
+
+
+        display.SetCursor(53, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
+        display.WriteString(ControlsStrings[GetParameterControl(dubbyParameters[i].param)], Font_4x5, !(parameterSelected == i && isParameterSelected));
+
+        std::string str = std::to_string(GetParameterValue(dubbyParameters[i])).substr(0, std::to_string(GetParameterValue(dubbyParameters[i])).find(".") + 3);
+        switch (parameterOptionSelected)
+        {
+            case MIN:
+                str = std::to_string(dubbyParameters[i].min).substr(0, std::to_string(dubbyParameters[i].min).find(".") + 3);    
+                break;
+            case MAX:
+                str = std::to_string(dubbyParameters[i].max).substr(0, std::to_string(dubbyParameters[i].max).find(".") + 3);
+                break;
+            case CURVE:
+                str = CurvesStrings[dubbyParameters[i].curve];
+                break;
+            default:
+                str = std::to_string(GetParameterValue(dubbyParameters[i])).substr(0, std::to_string(GetParameterValue(dubbyParameters[i])).find(".") + 3);
+                // UpdateStatusBar(" PARAM       CTRL     VALUE   ", LEFT);
+                break;
+        }
+        
+
+        display.SetCursor(89, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
+        display.WriteString(&str[0], Font_4x5, !(parameterSelected == i && isParameterSelected));
+        
+    }
+
+    display.Update();
+}
+
+void Dubby::UpdateParameterList(int increment) 
+{
+    if (((parameterSelected > 0 && increment == 1 && parameterSelected < PARAMS_LAST - 2) || (increment != 1 && parameterSelected != 1))) 
+    {
+        parameterSelected = (Params)(parameterSelected + increment);
+
+        DisplayParameterList(increment);
+    }
+}
+
 void Dubby::ResetToBootloader() 
 {
     DrawBitmap(1);
@@ -666,6 +957,18 @@ void Dubby::ProcessAllControls()
 {
     ProcessAnalogControls();
     ProcessDigitalControls();
+
+    dubbyCtrls[1].value = GetKnobValue(CTRL_1);
+    dubbyCtrls[2].value = GetKnobValue(CTRL_2);
+    dubbyCtrls[3].value = GetKnobValue(CTRL_3);
+    dubbyCtrls[4].value = GetKnobValue(CTRL_4);
+    dubbyCtrls[5].value = buttons[0].Pressed();
+    dubbyCtrls[6].value = buttons[1].Pressed();
+    dubbyCtrls[7].value = buttons[2].Pressed();
+    dubbyCtrls[8].value = buttons[3].Pressed();
+    dubbyCtrls[9].value = GetKnobValue(CTRL_5);
+    dubbyCtrls[10].value = GetKnobValue(CTRL_6);
+    dubbyCtrls[11].value = joystickButton.Pressed();
 }
 
 void Dubby::ProcessAnalogControls()
@@ -701,7 +1004,6 @@ void Dubby::ProcessDigitalControls()
             }
         }
     }
-
     
     for (int i = 0; i < 4; i++) buttons[i].Debounce();
 
@@ -712,6 +1014,38 @@ float Dubby::GetKnobValue(Ctrl k)
 {
     return (analogInputs[k].Value());
 }
+
+bool Dubby::EncoderFallingEdgeCustom() 
+{
+    int reading = encoder.FallingEdge(); // Assuming 1 is pressed (falling edge) and 0 is not pressed (resting)
+            
+    if (reading != encoderLastState) {
+        encoderLastDebounceTime = seed.system.GetNow();
+    }
+
+ 
+
+    if ((seed.system.GetNow() - encoderLastDebounceTime) > 50) {
+
+     
+
+        if (reading == 1 && encoderLastState == 0) { // Detect falling edge
+            encoderLastState = reading; // Update state after detecting falling edge
+
+            std::string ss = std::to_string(seed.system.GetNow() - encoderLastDebounceTime);
+            UpdateStatusBar(&ss[0], MIDDLE, 127);
+
+            UpdateStatusBar("TRUE", MIDDLE, 127);
+            
+            return true;
+        }
+    }
+
+    encoderLastState = reading; // Always update the last state
+    return false;
+}
+
+
 
 void Dubby::InitAudio() 
 {

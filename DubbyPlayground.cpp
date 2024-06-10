@@ -25,6 +25,8 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
 
             // === AUDIO CODE HERE ===================
 
+                out[j][i] = _in;
+
             // =======================================
 
             CalculateRMS(dubby, _in, out[j][i], j, sumSquared);
@@ -42,9 +44,9 @@ int main(void)
 
 	dubby.seed.StartAudio(AudioCallback);
 
-    // initLED();
-    // setLED(0, BLUE, 100);
-    // setLED(1, RED, 100);
+    // initLED();   
+    // setLED(0, BLUE, 0);
+    // setLED(1, RED, 0);
     // updateLED();
 
 	while(1) { 
