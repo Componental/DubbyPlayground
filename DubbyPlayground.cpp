@@ -104,39 +104,50 @@ void HandleMidiUartMessage(MidiEvent m)
         NoteOnEvent p = m.AsNoteOn();
         if (p.velocity != 0 && p.note < 86)
         {
-            // Find the first unused string and assign the MIDI note to it
             bool assigned = false;
+            // Check if the note is already being played
             for (int i = 0; i < NUM_STRINGS; i++)
             {
-                if (!voiceInUse[i])
+                if (notes[i] == p.note)
                 {
                     freqs[i] = mtof(p.note);
-                    notes[i] = p.note;
                     strings[i].SetFreq(freqs[i]);
                     strings[i].SetAccent(p.velocity / 127.f);
                     triggers[i] = true;
-                    voiceInUse[i] = true; // Mark the voice as in use
+                    voiceInUse[i] = true;
                     assigned = true;
                     break;
+                }
+            }
+
+            // If the note is not already being played, find the first unused string
+            if (!assigned)
+            {
+                for (int i = 0; i < NUM_STRINGS; i++)
+                {
+                    if (!voiceInUse[i])
+                    {
+                        freqs[i] = mtof(p.note);
+                        notes[i] = p.note;
+                        strings[i].SetFreq(freqs[i]);
+                        strings[i].SetAccent(p.velocity / 127.f);
+                        triggers[i] = true;
+                        voiceInUse[i] = true; // Mark the voice as in use
+                        assigned = true;
+                        break;
+                    }
                 }
             }
 
             // If no unused string is found, assign the note to the oldest playing voice
             if (!assigned)
             {
-                // Find the oldest playing voice and assign the MIDI note to it
-                for (int i = 0; i < NUM_STRINGS; i++)
-                {
-                    if (i == oldestPlayingVoice)
-                    {
-                        freqs[i] = mtof(p.note);
-                        notes[i] = p.note;
-                        strings[i].SetFreq(freqs[i]);
-                        triggers[i] = true;
-                        // Don't update oldestPlayingVoice here, as it's already set
-                        break;
-                    }
-                }
+                freqs[oldestPlayingVoice] = mtof(p.note);
+                notes[oldestPlayingVoice] = p.note;
+                strings[oldestPlayingVoice].SetFreq(freqs[oldestPlayingVoice]);
+                triggers[oldestPlayingVoice] = true;
+                // Update the oldest playing voice (round-robin)
+                oldestPlayingVoice = (oldestPlayingVoice + 1) % NUM_STRINGS;
             }
         }
         break;
@@ -147,10 +158,11 @@ void HandleMidiUartMessage(MidiEvent m)
         // Turn off triggering for the string with matching MIDI note
         for (int i = 0; i < NUM_STRINGS; i++)
         {
-            if (mtof(p.note) == freqs[i])
+            if (notes[i] == p.note)
             {
                 triggers[i] = false;
                 voiceInUse[i] = false; // Mark the voice as unused
+                notes[i] = 0;          // Reset the note value
                 break;
             }
         }
@@ -184,6 +196,7 @@ void MIDIUsbSendNoteOff(uint8_t channel, uint8_t note)
     dubby.midi_usb.SendMessage(data, 3);
 }
 
+
 void HandleMidiUsbMessage(MidiEvent m)
 {
     switch (m.type)
@@ -193,39 +206,50 @@ void HandleMidiUsbMessage(MidiEvent m)
         NoteOnEvent p = m.AsNoteOn();
         if (p.velocity != 0 && p.note < 86)
         {
-            // Find the first unused string and assign the MIDI note to it
             bool assigned = false;
+            // Check if the note is already being played
             for (int i = 0; i < NUM_STRINGS; i++)
             {
-                if (!voiceInUse[i])
+                if (notes[i] == p.note)
                 {
                     freqs[i] = mtof(p.note);
-                    notes[i] = p.note;
                     strings[i].SetFreq(freqs[i]);
                     strings[i].SetAccent(p.velocity / 127.f);
                     triggers[i] = true;
-                    voiceInUse[i] = true; // Mark the voice as in use
+                    voiceInUse[i] = true;
                     assigned = true;
                     break;
+                }
+            }
+
+            // If the note is not already being played, find the first unused string
+            if (!assigned)
+            {
+                for (int i = 0; i < NUM_STRINGS; i++)
+                {
+                    if (!voiceInUse[i])
+                    {
+                        freqs[i] = mtof(p.note);
+                        notes[i] = p.note;
+                        strings[i].SetFreq(freqs[i]);
+                        strings[i].SetAccent(p.velocity / 127.f);
+                        triggers[i] = true;
+                        voiceInUse[i] = true; // Mark the voice as in use
+                        assigned = true;
+                        break;
+                    }
                 }
             }
 
             // If no unused string is found, assign the note to the oldest playing voice
             if (!assigned)
             {
-                // Find the oldest playing voice and assign the MIDI note to it
-                for (int i = 0; i < NUM_STRINGS; i++)
-                {
-                    if (i == oldestPlayingVoice)
-                    {
-                        freqs[i] = mtof(p.note);
-                        notes[i] = p.note;
-                        strings[i].SetFreq(freqs[i]);
-                        triggers[i] = true;
-                        // Don't update oldestPlayingVoice here, as it's already set
-                        break;
-                    }
-                }
+                freqs[oldestPlayingVoice] = mtof(p.note);
+                notes[oldestPlayingVoice] = p.note;
+                strings[oldestPlayingVoice].SetFreq(freqs[oldestPlayingVoice]);
+                triggers[oldestPlayingVoice] = true;
+                // Update the oldest playing voice (round-robin)
+                oldestPlayingVoice = (oldestPlayingVoice + 1) % NUM_STRINGS;
             }
         }
         break;
@@ -236,10 +260,11 @@ void HandleMidiUsbMessage(MidiEvent m)
         // Turn off triggering for the string with matching MIDI note
         for (int i = 0; i < NUM_STRINGS; i++)
         {
-            if (mtof(p.note) == freqs[i])
+            if (notes[i] == p.note)
             {
                 triggers[i] = false;
                 voiceInUse[i] = false; // Mark the voice as unused
+                notes[i] = 0;          // Reset the note value
                 break;
             }
         }
@@ -250,7 +275,6 @@ void HandleMidiUsbMessage(MidiEvent m)
         break;
     }
 }
-
 float bpm_to_freq(uint32_t tempo)
 {
     return tempo / 60.0f;
