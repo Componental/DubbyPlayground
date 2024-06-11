@@ -1,5 +1,5 @@
 # Project Name
-TARGET = DubbyPlayground
+TARGET = Strings
 
 APP_TYPE=BOOT_SRAM
 
