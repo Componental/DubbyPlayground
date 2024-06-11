@@ -9,8 +9,7 @@ using namespace daisysp;
 
 Dubby dubby;
 
-static LadderFilter fltLeft;
-static LadderFilter fltRight;
+static LadderFilter flt[4]; // Four filters, one for each channel
 
 float outGain;
 
@@ -27,18 +26,12 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
 	{
         for (int j = 0; j < NUM_AUDIO_CHANNELS; j++) 
         {
-                        float _in = SetGains(dubby, j, i, in, out);
-
-            float _inLeft = SetGains(dubby, 0, i, in, out);
-            float _inRight = SetGains(dubby, 1, i, in, out);
+                  float _in = SetGains(dubby, j, i, in, out);
 
             // === AUDIO CODE HERE ===================
+            float output = flt[j].Process(_in);
 
-        float outputLeft = fltLeft.Process(_inLeft);
-        float outputRight = fltRight.Process(_inRight);
-
-        out[0][i] = out[2][i] = outputLeft * outGain;
-        out[1][i] = out[3][i] = outputRight * outGain;
+            out[j][i] = output * outGain;
 
             // =======================================
 
@@ -64,14 +57,13 @@ void handleKnobs(){
 
     float roundedCutoff = round(cutOffKnobValue * 1000 + 0.5f)*20.f;
 
-    // Update the filter parameters
-        fltLeft.SetInputDrive(inGain);
-        fltLeft.SetRes(res);
-        fltLeft.SetFreq(mappedCutoff);
 
-        fltRight.SetInputDrive(inGain);
-        fltRight.SetRes(res);
-        fltRight.SetFreq(mappedCutoff);
+    // Update the filter parameters for each filter
+    for (int i = 0; i < 4; i++) {
+        flt[i].SetInputDrive(inGain);
+        flt[i].SetRes(res);
+        flt[i].SetFreq(mappedCutoff);
+    }
 
     std::vector<float>    knobValues = {inGain, res, roundedCutoff,outGain};
     // Update knob values in Dubby class
@@ -88,9 +80,10 @@ int main(void)
 	dubby.seed.StartAudio(AudioCallback);
     float sample_rate = dubby.seed.AudioSampleRate();
   // initialize Moogladder object
-    fltLeft.Init(sample_rate);
-    fltRight.Init(sample_rate);
-
+    // Initialize the LadderFilter objects
+    for (int i = 0; i < 4; i++) {
+        flt[i].Init(sample_rate);
+    }
 
 
     LadderFilter::FilterMode currentMode = LadderFilter::FilterMode::LP24;
