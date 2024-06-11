@@ -5,20 +5,11 @@
 
 enum Params {
   PARAM_NONE,
-  TIME,
-  FEEDBACK,
-  MIX, 
-  CUTOFF,
-  IN_GAIN,
-  OUT_GAIN,
-  FREEZE,
-  MUTE, 
-  LOOP,
-  RESONANCE,
-  SCRUB,
-  RATIO,
-  PREDELAY,
-  AMOUNT,
+  DAMP,
+  STRUC,
+  BRIGHT, 
+  ACCENT,
+  OUTPUT,
   PARAMS_2ND_LAST, // because of a bug with last element of list, made this one but stays hidden
   PARAMS_LAST
 };

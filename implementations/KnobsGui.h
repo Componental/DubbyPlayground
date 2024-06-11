@@ -74,7 +74,7 @@ namespace daisy
         // Update the algorithm title and custom labels for the selected page
         dubby.algorithmTitle = algorithmTitles[selectedPage];
         dubby.customLabels.assign(customLabels[selectedPage], customLabels[selectedPage] + NUM_KNOBS);
-        dubby.UpdateAlgorithmTitle();
+        //dubby.UpdateAlgorithmTitle();
 
         // Process knobs for the selected page
         for (int j = 0; j < NUM_KNOBS; j++)

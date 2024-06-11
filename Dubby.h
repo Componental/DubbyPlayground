@@ -21,6 +21,8 @@
 
 #define NUM_KNOBS 4
 
+//#define ALGORITHM_TITLE "STRINGS ATTACHED"
+#define NUM_BUTTONS 4
 namespace daisy
 {
 class Dubby
@@ -43,9 +45,10 @@ class Dubby
         OUT4
     };
 
-    enum WindowItems 
+     enum WindowItems 
     { 
-        WIN1, 
+       
+        WIN1, // knobs
         WIN2, 
         WIN3, 
         WIN4, 
@@ -55,6 +58,7 @@ class Dubby
         WIN8, 
         WIN_LAST // used to know the size of enum
     };
+    
     
     const char * WindowItemsStrings[WIN_LAST] = 
     { 
@@ -236,20 +240,11 @@ class Dubby
     const char * ParamsStrings[PARAMS_LAST] = 
     { 
       "-",
-      "TIME", 
-      "FEEDBACK", 
-      "MIX", 
-      "CUTOFF", 
-      "IN GAIN", 
-      "OUT GAIN", 
-      "FREEZE", 
-      "MUTE", 
-      "LOOP", 
-      "RES", 
-      "SCRUB",
-      "RATIO",
-      "PREDELAY",
-      "AMOUNT",
+      "DAMP", 
+      "STRUC", 
+      "BRIGHT", 
+      "ACCENT",
+      "OUTPUT", 
       "2ND_LAST" // because of a bug
     };
 
