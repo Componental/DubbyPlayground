@@ -57,8 +57,8 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
         {
             mix += strings[j].Process(triggers[j]);
         }
-        out[0][i] = out[1][i] = (mix * 0.2f * outputVolume) + _inLeft;
-        out[2][i] = out[3][i] = (mix * 0.2f * outputVolume) + _inRight;
+        out[0][i] = out[2][i] = (mix * 0.2f * outputVolume) + _inLeft;
+        out[1][i] = out[3][i] = (mix * 0.2f * outputVolume) + _inRight;
         // Reset all string triggers
         triggerString = false;
         for (int j = 0; j < NUM_STRINGS; j++)
