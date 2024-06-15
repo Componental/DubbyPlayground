@@ -89,7 +89,7 @@ int main(void)
         // Handle buttons
         for (int buttonIndex = 0; buttonIndex < NUM_BUTTONS; buttonIndex++)
         {
-            if (dubby.buttons[buttonIndex].FallingEdge())
+            if (dubby.buttons[buttonIndex].RisingEdge())
             {
                 // Toggle the button state
                 buttonStates[currentPage][buttonIndex] = !buttonStates[currentPage][buttonIndex];
