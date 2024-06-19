@@ -490,7 +490,6 @@ void handleScales()
 
 void handleKnobs()
 {
-
     knobValue1 = (dubby.GetKnobValue(dubby.CTRL_1) * maxLengthsVal) + 1; // Adjust knob 1 to start from 1 and have a maximum of 32
     knobValue2 = dubby.GetKnobValue(dubby.CTRL_2) * maxEventsVal;
     knobValue3 = (dubby.GetKnobValue(dubby.CTRL_3) * 6); // Adjust knob 3 to start from 1 and have a maximum of 32
@@ -501,7 +500,17 @@ void handleKnobs()
     knobValue2 = std::min(knobValue2, maxEventsVal);
     knobValue3 = std::min(knobValue3, 6 - 1);
     knobValue4 = std::min(knobValue4, numOctaves - 1);
+
+    // Ensure events do not exceed lengths
+    for (int i = 0; i < MAX_RHYTHMS; ++i)
+    {
+        if (events[i] > lengths[i])
+        {
+            events[i] = lengths[i];
+        }
+    }
 }
+
 void shiftNotesAndOctaves()
 {
 
@@ -576,14 +585,14 @@ void handleJoystick()
     if (dubby.GetKnobValue(dubby.CTRL_6) < firstThreshold)
     {
         // Quadruple the events1 value temporarily
-        eventsTemp[0] = std::min(events[0] * maxMultiplicationFactor, 32);
-        eventsTemp[4] = std::min(events[4] * maxMultiplicationFactor, 32);
+        eventsTemp[0] = std::min(events[0] * maxMultiplicationFactor, lengths[0]);
+        eventsTemp[4] = std::min(events[4] * maxMultiplicationFactor, lengths[4]);
     }
     else if (dubby.GetKnobValue(dubby.CTRL_6) < secondThreshold)
     {
         // Double the events1 value temporarily
-        eventsTemp[0] = std::min(events[0] * halfMaxMultiplicationFactor, 32);
-        eventsTemp[4] = std::min(events[4] * halfMaxMultiplicationFactor, 32);
+        eventsTemp[0] = std::min(events[0] * halfMaxMultiplicationFactor, lengths[0]);
+        eventsTemp[4] = std::min(events[4] * halfMaxMultiplicationFactor, lengths[4]);
     }
     else
     {
@@ -596,14 +605,14 @@ void handleJoystick()
     if (dubby.GetKnobValue(dubby.CTRL_5) < firstThreshold)
     {
         // Quadruple the events2 value temporarily
-        eventsTemp[1] = std::min(events[1] * maxMultiplicationFactor, 32);
-        eventsTemp[5] = std::min(events[5] * maxMultiplicationFactor, 32);
+        eventsTemp[1] = std::min(events[1] * maxMultiplicationFactor, lengths[1]);
+        eventsTemp[5] = std::min(events[5] * maxMultiplicationFactor, lengths[5]);
     }
     else if (dubby.GetKnobValue(dubby.CTRL_5) < secondThreshold)
     {
         // Double the events2 value temporarily
-        eventsTemp[1] = std::min(events[1] * halfMaxMultiplicationFactor, 32);
-        eventsTemp[5] = std::min(events[5] * halfMaxMultiplicationFactor, 32);
+        eventsTemp[1] = std::min(events[1] * halfMaxMultiplicationFactor, lengths[1]);
+        eventsTemp[5] = std::min(events[5] * halfMaxMultiplicationFactor, lengths[5]);
     }
     else
     {
@@ -616,14 +625,14 @@ void handleJoystick()
     if (dubby.GetKnobValue(dubby.CTRL_6) > firstThresholdInverse)
     {
         // Quadruple the events3 value temporarily
-        eventsTemp[2] = std::min(events[2] * maxMultiplicationFactor, 32);
-        eventsTemp[6] = std::min(events[6] * maxMultiplicationFactor, 32);
+        eventsTemp[2] = std::min(events[2] * maxMultiplicationFactor, lengths[2]);
+        eventsTemp[6] = std::min(events[6] * maxMultiplicationFactor, lengths[6]);
     }
     else if (dubby.GetKnobValue(dubby.CTRL_6) > secondThresholdInverse)
     {
         // Double the events3 value temporarily
-        eventsTemp[2] = std::min(events[2] * halfMaxMultiplicationFactor, 32);
-        eventsTemp[6] = std::min(events[6] * halfMaxMultiplicationFactor, 32);
+        eventsTemp[2] = std::min(events[2] * halfMaxMultiplicationFactor, lengths[2]);
+        eventsTemp[6] = std::min(events[6] * halfMaxMultiplicationFactor, lengths[6]);
     }
     else
     {
@@ -636,14 +645,14 @@ void handleJoystick()
     if (dubby.GetKnobValue(dubby.CTRL_5) > firstThresholdInverse)
     {
         // Quadruple the events4 value temporarily
-        eventsTemp[3] = std::min(events[3] * maxMultiplicationFactor, 32);
-        eventsTemp[7] = std::min(events[7] * maxMultiplicationFactor, 32);
+        eventsTemp[3] = std::min(events[3] * maxMultiplicationFactor, lengths[3]);
+        eventsTemp[7] = std::min(events[7] * maxMultiplicationFactor, lengths[7]);
     }
     else if (dubby.GetKnobValue(dubby.CTRL_5) > secondThresholdInverse)
     {
         // Double the events4 value temporarily
-        eventsTemp[3] = std::min(events[3] * halfMaxMultiplicationFactor, 32);
-        eventsTemp[7] = std::min(events[7] * halfMaxMultiplicationFactor, 32);
+        eventsTemp[3] = std::min(events[3] * halfMaxMultiplicationFactor, lengths[3]);
+        eventsTemp[7] = std::min(events[7] * halfMaxMultiplicationFactor, lengths[7]);
     }
     else
     {
@@ -652,6 +661,7 @@ void handleJoystick()
         eventsTemp[7] = events[7];
     }
 }
+
 void handleButtons()
 {
     // Check if button[2] is pressed and held for more than 2000 ms
@@ -673,24 +683,13 @@ void generateRhythms()
 {
     for (int i = 0; i < MAX_RHYTHMS; ++i)
     {
-
-        // IF STATEMENT IF U ONLY WANT FIRST FOUR TO BE AFFECTED BY JOYSTICK
-        /*
-         if(i < 4)
-          {
-              dubby.rhythms[i]
-                  = euclideanRhythm(lengths[i], eventsTemp[i], offsets[i]);
-          }
-          else
-          {
-              dubby.rhythms[i]
-                  = euclideanRhythm(lengths[i], events[i], offsets[i]);
-          }
-        */
-
-        // COUPLED TOGETHER 0+4, 1+5, 2+6, 3+7
+        // Ensure events do not exceed lengths
+        if (eventsTemp[i] > lengths[i])
+        {
+            eventsTemp[i] = lengths[i];
+        }
+        
         dubby.rhythms[i] = euclideanRhythm(lengths[i], eventsTemp[i], offsets[i]);
-
         dubby.lengths[i] = lengths[i];
     }
 }

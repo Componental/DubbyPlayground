@@ -318,8 +318,8 @@ void Dubby::Sequencer()
             for (int i = 0; i < MAX_RHYTHMS; ++i)
             {
                 desiredLength[i] = lengths[i] * stepsOnDisplay;
-                startIndex[i] = (startIndex[i] + stepsOnDisplay) % desiredLength[i];
-                endIndex[i] = (startIndex[i] + stepsOnDisplay);
+                startIndex[i] = (startIndex[i] +stepsOnDisplay) % desiredLength[i];
+                endIndex[i] = (startIndex[i]+stepsOnDisplay) % desiredLength[i];
             }
             // print0 = verticalLinePosition;
         }
@@ -347,7 +347,6 @@ void Dubby::Sequencer()
         if (currentLength < desiredLength[i])
         {
             int repetitions = desiredLength[i] / currentLength;
-            int remainder = desiredLength[i] % currentLength;
 
             std::vector<int> extendedRhythm;
             for (int k = 0; k < repetitions; ++k)
@@ -355,12 +354,7 @@ void Dubby::Sequencer()
                 extendedRhythm.insert(extendedRhythm.end(), currentRhythm.begin(), currentRhythm.end());
             }
 
-            // Append the remainder if it exists
-            if (remainder > 0)
-            {
-                extendedRhythm.insert(extendedRhythm.end(), currentRhythm.begin(), currentRhythm.begin() + remainder);
-            }
-
+          
             // Update current rhythm and length
             currentRhythm = extendedRhythm;
             currentLength = desiredLength[i];
@@ -386,6 +380,7 @@ void Dubby::Sequencer()
         // Visualize the rhythm with vertical lines for each 1 in the vector
         for (int j = startIndex[i]; j < endIndex[i] && j < currentLength; ++j)
         {
+            
             // Calculate the x position of the vertical line
             float columnWidth = static_cast<float>(OLED_WIDTH) / static_cast<float>(stepsOnDisplay);
             int vLinePosition = static_cast<int>((j - startIndex[i]) * columnWidth);
