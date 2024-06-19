@@ -37,7 +37,7 @@ enum ParameterOptions
 enum Curves
 {
   LINEAR,
-  LOGARITHIMIC,
+  LOGARITHMIC,
   EXPONENTIAL,
   SIGMOID,
   CURVES_LAST
@@ -66,12 +66,37 @@ class Parameters
 
     float GetRealValue(float controlValue) 
     {
-      value = min + ((controlValue - 0.0f) * (max - min) / (1.0f - 0.0f));
-      return value;
+        float normalizedValue = (controlValue - 0.0f) / (1.0f - 0.0f);
+
+        switch(curve)
+        {
+            case LINEAR:
+                value = min + normalizedValue * (max - min);
+                break;
+            case LOGARITHMIC:
+                if (normalizedValue <= 0.0f) {
+                    value = min;
+                } else {
+                    value = min + (std::log(normalizedValue * 9.0f + 1.0f) / std::log(10.0f)) * (max - min);
+                }
+                break;
+            case EXPONENTIAL:
+                value = min + ((std::exp(normalizedValue) - 1.0f) / (std::exp(1.0f) - 1.0f)) * (max - min);
+                break;
+            case SIGMOID:
+                {
+                    float sigmoidValue = 1.0f / (1.0f + std::exp(-12.0f * (normalizedValue - 0.5f)));
+                    value = min + sigmoidValue * (max - min);
+                }
+                break;
+            default:
+                value = min; // Default to minimum value for unknown curve type
+                break;
+        }
+        return value;
     }
 
   private:
-    
     
 };
 

@@ -29,16 +29,16 @@ using namespace daisy;
 #define PANE_X_START 1
 #define PANE_X_END 126
 #define PANE_Y_START 10
-#define PANE_Y_END 54
+#define PANE_Y_END 55
 
 #define STATUSBAR_X_START 1
 #define STATUSBAR_X_END 127
-#define STATUSBAR_Y_START 1
-#define STATUSBAR_Y_END 11
+#define STATUSBAR_Y_START 0
+#define STATUSBAR_Y_END 7
 
 #define MENULIST_X_START 0
 #define MENULIST_X_END 63
-#define MENULIST_Y_START 11
+#define MENULIST_Y_START 8
 #define MENULIST_Y_END 19
 #define MENULIST_SPACING 8
 #define MENULIST_SUBMENU_SPACING 63
@@ -46,10 +46,10 @@ using namespace daisy;
 
 #define PARAMLIST_X_START 1
 #define PARAMLIST_X_END 127
-#define PARAMLIST_Y_START 11
-#define PARAMLIST_Y_END 19
-#define PARAMLIST_SPACING 8
-#define PARAMLIST_ROWS_ON_SCREEN 5
+#define PARAMLIST_Y_START 8
+#define PARAMLIST_Y_END 15
+#define PARAMLIST_SPACING 6
+#define PARAMLIST_ROWS_ON_SCREEN 8
 
 #define ENCODER_LONGPRESS_THRESHOLD 300
 
@@ -196,7 +196,7 @@ void Dubby::InitDubbyParameters()
         if (i == 0)
             dubbyParameters[i].Init(PARAM_NONE, 0, 0, 1, LINEAR);
         else if (i == 1)
-            dubbyParameters[i].Init(Params(i), 0, 0, 1, LOGARITHIMIC);
+            dubbyParameters[i].Init(Params(i), 0, 0, 1, LOGARITHMIC);
         else if (i == 2)
             dubbyParameters[i].Init(Params(i), 0, 0, 0.5, EXPONENTIAL);
         else 
@@ -359,10 +359,28 @@ void Dubby::UpdateDisplay()
                     else
                         dubbyParameters[parameterSelected].curve = static_cast<Curves>(static_cast<int>(dubbyParameters[parameterSelected].curve) + encoder.Increment());
                 }
-                if (encoder.FallingEdge()) {
+                if (EncoderFallingEdgeCustom()) {
                     isCurveChanging = false;
                     isEncoderIncrementDisabled = false;
                     UpdateStatusBar(" PARAM       CTRL     CURVE   ", LEFT);
+                }
+            } else if (isMinChanging) {
+                if (encoder.Increment()) {  
+                    dubbyParameters[parameterSelected].min += encoder.Increment();
+                }
+                if (EncoderFallingEdgeCustom()) {
+                    isMinChanging = false;
+                    isEncoderIncrementDisabled = false;
+                    UpdateStatusBar(" PARAM       CTRL     MIN   ", LEFT);  
+                }
+            } else if (isMaxChanging) {
+                if (encoder.Increment()) {  
+                    dubbyParameters[parameterSelected].max += encoder.Increment();
+                }
+                if (EncoderFallingEdgeCustom()) {
+                    isMaxChanging = false;
+                    isEncoderIncrementDisabled = false;
+                    UpdateStatusBar(" PARAM       CTRL     MAX   ", LEFT);  
                 }
             }
 
@@ -412,6 +430,20 @@ void Dubby::UpdateDisplay()
                         UpdateStatusBar("SELECT A CURVE", MIDDLE, 127);
                         isEncoderIncrementDisabled = true;
                         isCurveChanging = true;
+                    }
+                } else if (parameterOptionSelected == MIN) {
+                    if (EncoderFallingEdgeCustom())
+                    {
+                        UpdateStatusBar("SELECT MIN VALUE", MIDDLE, 127);
+                        isEncoderIncrementDisabled = true;
+                        isMinChanging = true;
+                    }
+                } else if (parameterOptionSelected == MAX) {
+                    if (EncoderFallingEdgeCustom())
+                    {
+                        UpdateStatusBar("SELECT MAX VALUE", MIDDLE, 127);
+                        isEncoderIncrementDisabled = true;
+                        isMaxChanging = true;
                     }
                 } 
                 
@@ -581,7 +613,7 @@ void Dubby::UpdateWindowList()
             break;
         case WIN4:
             UpdateStatusBar(" PARAM       CTRL     VALUE   ", LEFT);
-            display.DrawLine(6, 10, 127, 10, true);
+            display.DrawLine(6, 7, 127, 7, true);
 
             DisplayParameterList(0);
              
@@ -820,17 +852,17 @@ void Dubby::UpdateStatusBar(char* text, StatusBarSide side = LEFT, int width)
 
     if (side == LEFT)
     {
-        display.DrawRect(STATUSBAR_X_START, STATUSBAR_Y_START, width, STATUSBAR_Y_END - 3, false, true);
+        display.DrawRect(STATUSBAR_X_START, STATUSBAR_Y_START, width, STATUSBAR_Y_END - 1, false, true);
         display.WriteStringAligned(&text[0], Font_4x5, barRec, daisy::Alignment::centeredLeft, true);
     }
     else if (side == MIDDLE)
     {
-        display.DrawRect(64 - (width/2), STATUSBAR_Y_START, 64 + (width/2), STATUSBAR_Y_END - 3, false, true);
+        display.DrawRect(64 - (width/2), STATUSBAR_Y_START, 64 + (width/2), STATUSBAR_Y_END - 1, false, true);
         display.WriteStringAligned(&text[0], Font_4x5, barRec, daisy::Alignment::centered, true);
     }
     else if (side == RIGHT)
     {
-        display.DrawRect(STATUSBAR_X_END - width, STATUSBAR_Y_START, STATUSBAR_X_END, STATUSBAR_Y_END - 3, false, true);
+        display.DrawRect(STATUSBAR_X_END - width, STATUSBAR_Y_START, STATUSBAR_X_END, STATUSBAR_Y_END - 1, false, true);
         display.WriteStringAligned(&text[0], Font_4x5, barRec, daisy::Alignment::centeredRight, true);
     }
     
@@ -879,17 +911,17 @@ void Dubby::DisplayParameterList(int increment)
                         break;
                 }
                 
-                display.DrawCircle(x, paramListBoxBounding[j][1] + 4, 1, !isParameterSelected);
+                display.DrawCircle(x, paramListBoxBounding[j][1] + 3, 1, !isParameterSelected);
             } else {
-                display.DrawCircle(3, paramListBoxBounding[j][1] + 4, 1, !isParameterSelected);
+                display.DrawCircle(3, paramListBoxBounding[j][1] + 3, 1, !isParameterSelected);
             }
         } 
 
-        display.SetCursor(5, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
+        display.SetCursor(5, PARAMLIST_Y_START + 1 + (j * PARAMLIST_SPACING));
         display.WriteString(ParamsStrings[i], Font_4x5, !(parameterSelected == i && isParameterSelected));
 
 
-        display.SetCursor(53, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
+        display.SetCursor(53, PARAMLIST_Y_START + 1 + (j * PARAMLIST_SPACING));
         display.WriteString(ControlsStrings[GetParameterControl(dubbyParameters[i].param)], Font_4x5, !(parameterSelected == i && isParameterSelected));
 
         std::string str = std::to_string(GetParameterValue(dubbyParameters[i])).substr(0, std::to_string(GetParameterValue(dubbyParameters[i])).find(".") + 3);
@@ -911,7 +943,7 @@ void Dubby::DisplayParameterList(int increment)
         }
         
 
-        display.SetCursor(89, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
+        display.SetCursor(89, PARAMLIST_Y_START + 1 + (j * PARAMLIST_SPACING));
         display.WriteString(&str[0], Font_4x5, !(parameterSelected == i && isParameterSelected));
         
     }
@@ -1017,33 +1049,45 @@ float Dubby::GetKnobValue(Ctrl k)
 
 bool Dubby::EncoderFallingEdgeCustom() 
 {
-    int reading = encoder.FallingEdge(); // Assuming 1 is pressed (falling edge) and 0 is not pressed (resting)
-            
+    bool reading = encoder.Pressed(); // Read the encoder button state, assuming true is pressed
+
     if (reading != encoderLastState) {
         encoderLastDebounceTime = seed.system.GetNow();
     }
 
- 
+    if ((seed.system.GetNow() - encoderLastDebounceTime) > encoderDebounceDelay) {
+        
+        
 
-    if ((seed.system.GetNow() - encoderLastDebounceTime) > 50) {
+        if (reading != encoderState) {
+            encoderState = reading;
 
-     
-
-        if (reading == 1 && encoderLastState == 0) { // Detect falling edge
-            encoderLastState = reading; // Update state after detecting falling edge
-
-            std::string ss = std::to_string(seed.system.GetNow() - encoderLastDebounceTime);
-            UpdateStatusBar(&ss[0], MIDDLE, 127);
-
-            UpdateStatusBar("TRUE", MIDDLE, 127);
             
-            return true;
+            if (reading) {
+            std::string str = std::to_string(reading);
+            UpdateStatusBar(&str[0], LEFT, 55);   
+        } 
+        
+        if (encoderState) {
+        std::string str = std::to_string(encoderState);
+        UpdateStatusBar(&str[0], RIGHT, 55); 
+        }
+
+
+
+            if (encoderState == true) { // Encoder button pressed
+            
+            UpdateStatusBar("TRUEEEE", MIDDLE, 127);
+                return true;
+            }
         }
     }
 
-    encoderLastState = reading; // Always update the last state
+    encoderLastState = reading;
+
     return false;
 }
+
 
 
 
