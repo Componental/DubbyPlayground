@@ -359,6 +359,8 @@ class Dubby
     ParameterOptions parameterOptionSelected = PARAM;
     bool isListeningControlChange = false;
     bool isCurveChanging = false;
+    bool isMinChanging = false;
+    bool isMaxChanging = false;
 
     bool isEncoderIncrementDisabled = false;
 
@@ -366,10 +368,10 @@ class Dubby
     bool isSubMenuActive = false;
 
     // const int menuTextCursors[3][2] = { {8, 55}, {50, 55}, {92, 55} }; OLD
-    const int windowTextCursors[3][2] = { {3, 50}, {46, 50}, {88, 50} };  
-    const int windowBoxBounding[3][4] = { {0, 55, 43, 61}, {43, 55, 85, 61}, {85, 55, 127, 61} }; 
+    const int windowTextCursors[3][2] = { {3, 52}, {46, 52}, {88, 52} };  
+    const int windowBoxBounding[3][4] = { {0, 56, 43, 61}, {43, 56, 85, 61}, {85, 56, 127, 61} }; 
     int menuListBoxBounding[5][4];
-    int paramListBoxBounding[5][4];
+    int paramListBoxBounding[8][4];
 
 
     int scrollbarWidth = 0;
@@ -433,8 +435,8 @@ class Dubby
     int highlightMenuCounter = 0;
     unsigned long encoderPressStartTime = 0;
 
-    bool encoderState = 0; // Previous state of the button
-    bool encoderLastState = 0; // Previous state of the button
+    bool encoderState = false; // Previous state of the button
+    bool encoderLastState = true; // Previous state of the button
     unsigned long encoderLastDebounceTime = 0; // Time the button was last toggled
     unsigned long encoderDebounceDelay = 50; // Debounce time in milliseconds
 
