@@ -9,6 +9,27 @@ using namespace daisysp;
 
 Dubby dubby;
     int outChannel;
+    int inChannel = 3;
+
+
+// Define a mapping table where inChannel is the row and outChannel is the column
+// Define a mapping table where inChannel is the row and outChannel is the column
+
+// Define a mapping table where inChannel is the row and outChannel is the column
+int channelMapping[NUM_AUDIO_CHANNELS][NUM_AUDIO_CHANNELS] = {
+    // inChannel = 0
+    {0, 1, 1, 1},   // input 0 -> output 0, input 0 -> output 1, input 0 -> output 2, input 0 -> output 3
+    
+    // inChannel = 1
+    {1, 1, 1, 1},   // input 1 -> output 0, input 1 -> output 1, input 1 -> output 2, input 1 -> output 3
+    
+    // inChannel = 2
+    {2, 2, 2, 2},   // input 2 -> output 0, input 2 -> output 1, input 2 -> output 2, input 2 -> output 3
+    
+    // inChannel = 3
+    {1, 3, 0, 2}    // input 3 -> output 0, input 3 -> output 1, input 3 -> output 2, input 3 -> output 3
+};
+
 
 void MonitorMidi();
 void HandleMidiUartMessage(MidiEvent m);
@@ -16,28 +37,21 @@ void HandleMidiUsbMessage(MidiEvent m);
 
 void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, size_t size)
 {
-    double sumSquared[2][NUM_AUDIO_CHANNELS] = { 0.0f };
-    if(dubby.GetKnobValue(dubby.CTRL_1) > 0.5f){
-        outChannel = 0;
-    } else if(dubby.GetKnobValue(dubby.CTRL_1) <= 0.5f){
-        outChannel = 1;
-    }
-	for (size_t i = 0; i < size; i++)
-	{
-        for (int j = 0; j < NUM_AUDIO_CHANNELS; j++) 
+    // Loop through all input channels
+    for (size_t i = 0; i < size; i++)
+    {
+        // Loop through all output channels
+        for (int j = 0; j < NUM_AUDIO_CHANNELS; j++)
         {
-            //float _in = SetGains(dubby, j, i, in, out);
+            // Determine the target output channel for the current input channel
+            int targetOutput = channelMapping[j][inChannel]; // Adjust inChannel as needed
 
-            // === AUDIO CODE HERE ===================
-            out[0][i] = in[0][i];
-            // =======================================
+            // Assign input value to the corresponding output channel
+            out[targetOutput][i] = in[j][i];
 
-            //CalculateRMS(dubby, _in, out[j][i], j, sumSquared);
-        } 
-        AssignScopeData(dubby, i, in, out);
-	}
-
-    SetRMSValues(dubby, sumSquared);
+            // Additional audio processing code can be added here
+        }
+    }
 }
 
 int main(void)
@@ -55,6 +69,8 @@ int main(void)
 	while(1) { 
         Monitor(dubby);
         MonitorMidi();
+                 if(dubby.buttons[3].TimeHeldMs() > 400){dubby.ResetToBootloader();}
+
 	}
 }
 
