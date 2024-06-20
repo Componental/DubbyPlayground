@@ -8,6 +8,7 @@ using namespace daisy;
 using namespace daisysp;
 
 Dubby dubby;
+    int outChannel;
 
 void MonitorMidi();
 void HandleMidiUartMessage(MidiEvent m);
@@ -16,18 +17,22 @@ void HandleMidiUsbMessage(MidiEvent m);
 void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, size_t size)
 {
     double sumSquared[2][NUM_AUDIO_CHANNELS] = { 0.0f };
-
+    if(dubby.GetKnobValue(dubby.CTRL_1) > 0.5f){
+        outChannel = 0;
+    } else if(dubby.GetKnobValue(dubby.CTRL_1) <= 0.5f){
+        outChannel = 1;
+    }
 	for (size_t i = 0; i < size; i++)
 	{
         for (int j = 0; j < NUM_AUDIO_CHANNELS; j++) 
         {
-            float _in = SetGains(dubby, j, i, in, out);
+            //float _in = SetGains(dubby, j, i, in, out);
 
             // === AUDIO CODE HERE ===================
-
+            out[0][i] = in[0][i];
             // =======================================
 
-            CalculateRMS(dubby, _in, out[j][i], j, sumSquared);
+            //CalculateRMS(dubby, _in, out[j][i], j, sumSquared);
         } 
         AssignScopeData(dubby, i, in, out);
 	}
