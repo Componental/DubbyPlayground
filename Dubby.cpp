@@ -235,13 +235,13 @@ void Dubby::UpdateDisplay()
             UpdatePreferencesSubMenuList(encoder.Increment(), preferencesMenuItemSelected);
         break;
     case WIN5:
-        currentBitmapIndex += encoder.Increment();
-        if (currentBitmapIndex < 2)
-            currentBitmapIndex = 5;
-        if (currentBitmapIndex > 5)
-            currentBitmapIndex = 2;
+        // currentBitmapIndex += encoder.Increment();
+        // if (currentBitmapIndex < 2)
+        //     currentBitmapIndex = 5;
+        // if (currentBitmapIndex > 5)
+        //     currentBitmapIndex = 2;
 
-        DrawBitmap(currentBitmapIndex); // Redraw bitmap with new index
+        // DrawBitmap(currentBitmapIndex); // Redraw bitmap with new index
 
         break;
     default:
@@ -423,7 +423,7 @@ void Dubby::UpdateWindowList()
         display.SetCursor(10, 15);
         UpdateStatusBar("PANE 5", LEFT);
 
-        DrawBitmap(currentBitmapIndex); // Redraw bitmap with new index
+       // DrawBitmap(currentBitmapIndex); // Redraw bitmap with new index
         break;
     case WIN6:
         display.SetCursor(10, 15);
