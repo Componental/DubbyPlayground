@@ -361,6 +361,7 @@ class Dubby
     bool isCurveChanging = false;
     bool isMinChanging = false;
     bool isMaxChanging = false;
+    bool isValueChanging = false;
 
     bool isEncoderIncrementDisabled = false;
 
