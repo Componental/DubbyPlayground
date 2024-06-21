@@ -9,26 +9,17 @@ using namespace daisysp;
 
 Dubby dubby;
     int outChannel;
-    int inChannel = 3;
+    int inChannel = 0;
 
 
-// Define a mapping table where inChannel is the row and outChannel is the column
-// Define a mapping table where inChannel is the row and outChannel is the column
-
-// Define a mapping table where inChannel is the row and outChannel is the column
-int channelMapping[NUM_AUDIO_CHANNELS][NUM_AUDIO_CHANNELS] = {
-    // inChannel = 0
-    {0, 1, 1, 1},   // input 0 -> output 0, input 0 -> output 1, input 0 -> output 2, input 0 -> output 3
-    
-    // inChannel = 1
-    {1, 1, 1, 1},   // input 1 -> output 0, input 1 -> output 1, input 1 -> output 2, input 1 -> output 3
-    
-    // inChannel = 2
-    {2, 2, 2, 2},   // input 2 -> output 0, input 2 -> output 1, input 2 -> output 2, input 2 -> output 3
-    
-    // inChannel = 3
-    {1, 3, 0, 2}    // input 3 -> output 0, input 3 -> output 1, input 3 -> output 2, input 3 -> output 3
+bool channelMapping[NUM_AUDIO_CHANNELS][NUM_AUDIO_CHANNELS] = {
+    // Input channels:      0, 1, 2, 3
+    /* Output channel 0 */ {1, 0, 0, 0}, 
+    /* Output channel 1 */ {0, 1, 0, 0},  
+    /* Output channel 2 */ {1, 0, 0, 0},   
+    /* Output channel 3 */ {0, 1, 0, 0}  
 };
+
 
 
 void MonitorMidi();
@@ -37,19 +28,28 @@ void HandleMidiUsbMessage(MidiEvent m);
 
 void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, size_t size)
 {
-    // Loop through all input channels
+    // Loop through each sample
     for (size_t i = 0; i < size; i++)
     {
-        // Loop through all output channels
+        // Clear the output buffer for each sample
         for (int j = 0; j < NUM_AUDIO_CHANNELS; j++)
         {
-            // Determine the target output channel for the current input channel
-            int targetOutput = channelMapping[j][inChannel]; // Adjust inChannel as needed
+            out[j][i] = 0.0f; // Initialize output to 0 for each sample
+        }
 
-            // Assign input value to the corresponding output channel
-            out[targetOutput][i] = in[j][i];
-
-            // Additional audio processing code can be added here
+        // Loop through each output channel
+        for (int j = 0; j < NUM_AUDIO_CHANNELS; j++)
+        {
+            // Loop through each input channel
+            for (int inChannel = 0; inChannel < NUM_AUDIO_CHANNELS; inChannel++)
+            {
+                // Check if the input channel is mapped to the output channel
+                if (channelMapping[j][inChannel])
+                {
+                    // Assign input value to the corresponding output channel
+                    out[j][i] += in[inChannel][i];
+                }
+            }
         }
     }
 }
@@ -59,19 +59,17 @@ int main(void)
     Init(dubby);
     InitMidiClock(dubby);
 
-	dubby.seed.StartAudio(AudioCallback);
+    dubby.seed.StartAudio(AudioCallback);
 
-    // initLED();
-    // setLED(0, BLUE, 100);
-    // setLED(1, RED, 100);
-    // updateLED();
-
-	while(1) { 
+    while (1) 
+    { 
         Monitor(dubby);
         MonitorMidi();
-                 if(dubby.buttons[3].TimeHeldMs() > 400){dubby.ResetToBootloader();}
-
-	}
+        if (dubby.buttons[3].TimeHeldMs() > 400) 
+        {
+            dubby.ResetToBootloader();
+        }
+    }
 }
 
 void HandleMidiMessage(MidiEvent m)
@@ -112,4 +110,3 @@ void MonitorMidi()
         HandleMidiMessage(m);
     }
 }
-

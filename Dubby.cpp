@@ -164,14 +164,18 @@ float Dubby::GetAudioOutGain(AudioOuts out)
 {
     return audioGains[1][out];
 }
-
 void Dubby::UpdateDisplay()
 {
-    int rectWidth = 50;  // Width of each rectangle
-    int rectHeight = 8;  // Height of each rectangle
-    int verticalSpacing = 2;  // Spacing between rectangles (increased to 2 pixels)
-    int numRectangles = 4;  // Number of rectangles
+    int rectWidth = 50;      // Width of each rectangle
+    int rectHeight = 8;      // Height of each rectangle
+    int verticalSpacing = 2; // Spacing between rectangles (increased to 2 pixels)
+    int numRectangles = 4;   // Number of rectangles
 
+    int leftNumberTextX;
+    int leftNumberTextY;
+
+    int rightNumberTextX;
+    int rightNumberTextY;
     // Calculate startX to center the rectangles horizontally
     int startX = (128 - rectWidth) / 2;
 
@@ -182,8 +186,11 @@ void Dubby::UpdateDisplay()
     int startY = (64 - totalHeight) / 2;
 
     // Labels for FX and numbers
-    const char* fxLabels[] = {"FX1", "FX2", "FX3", "FX4"};
-    const char* numberLabels[] = {"1", "2", "3", "4"};
+    const char *fxLabels[] = {"PASSTHRU", "PASSTHRU", "PASSTHRU", "PASSTHRU"};
+
+    // Integer arrays for ins and outs
+    int ins[] = {1, 2, 3, 4};
+    int outs[] = {1, 2, 3, 4};
 
     if (encoder.TimeHeldMs() > ENCODER_LONGPRESS_THRESHOLD && !windowSelectorActive)
     {
@@ -222,86 +229,79 @@ void Dubby::UpdateDisplay()
 
     switch (windowItemSelected)
     {
-        case WIN1:
-            UpdateRenderPane();
-            break;
-        case WIN2:
-            UpdateMixerPane();
-            break;
-        case WIN3:
-            if (encoder.FallingEdge() && !isSubMenuActive && !wasEncoderJustInHighlightMenu)
-            {
-                isSubMenuActive = true;
-                DisplayPreferencesMenuList(0);
-            }
+    case WIN1:
+        UpdateRenderPane();
+        break;
+    case WIN2:
+        UpdateMixerPane();
+        break;
+    case WIN3:
+        if (encoder.FallingEdge() && !isSubMenuActive && !wasEncoderJustInHighlightMenu)
+        {
+            isSubMenuActive = true;
+            DisplayPreferencesMenuList(0);
+        }
 
-            if (windowSelectorActive)
-            {
-                isSubMenuActive = false;
-                DisplayPreferencesMenuList(0);
-            }
+        if (windowSelectorActive)
+        {
+            isSubMenuActive = false;
+            DisplayPreferencesMenuList(0);
+        }
 
-            DisplayPreferencesSubMenuList(encoder.Increment(), preferencesMenuItemSelected);
-            if (encoder.FallingEdge() && !wasEncoderJustInHighlightMenu && preferencesMenuItemSelected == DFUMODE)
-                ResetToBootloader();
-            if (encoder.Increment() && !windowSelectorActive && !isSubMenuActive)
-                UpdatePreferencesMenuList(encoder.Increment());
-            else if (encoder.Increment() && !windowSelectorActive && isSubMenuActive)
-                UpdatePreferencesSubMenuList(encoder.Increment(), preferencesMenuItemSelected);
-            break;
-        case WIN5:
-            // Loop to draw four rectangles with centered FX labels
-            for (int i = 0; i < numRectangles; i++) {
-                int rectY = startY + i * (rectHeight + verticalSpacing);
-                display.DrawRect(startX, rectY, startX + rectWidth, rectY + rectHeight, true, false);
+        DisplayPreferencesSubMenuList(encoder.Increment(), preferencesMenuItemSelected);
+        if (encoder.FallingEdge() && !wasEncoderJustInHighlightMenu && preferencesMenuItemSelected == DFUMODE)
+            ResetToBootloader();
+        if (encoder.Increment() && !windowSelectorActive && !isSubMenuActive)
+            UpdatePreferencesMenuList(encoder.Increment());
+        else if (encoder.Increment() && !windowSelectorActive && isSubMenuActive)
+            UpdatePreferencesSubMenuList(encoder.Increment(), preferencesMenuItemSelected);
+        break;
+    case WIN5:
+        // Loop to draw four rectangles with centered FX labels
+        for (int i = 0; i < numRectangles; i++)
+        {
+            int rectY = startY + i * (rectHeight + verticalSpacing);
+            display.DrawRect(startX, rectY, startX + rectWidth, rectY + rectHeight, true, false);
 
-                // Calculate text width and height (assuming fixed-width Font_4x5 font)
-                int fxTextWidth = 3 * 4; // 4 characters, each 6 pixels wide (Font_4x5 assumed)
-                int fxTextHeight = 5; // Assuming the font height is 5 pixels (Font_4x5 assumed)
+            // Calculate text width and height (assuming fixed-width Font_4x5 font)
+            int fxTextWidth = 3 * 4; // 4 characters, each 6 pixels wide (Font_4x5 assumed)
+            int fxTextHeight = 5;    // Assuming the font height is 5 pixels (Font_4x5 assumed)
 
-                // Calculate position to center the FX text (moved 1 pixel down)
-                int fxTextX = startX + (rectWidth - fxTextWidth) / 2;
-                int fxTextY = rectY + (rectHeight - fxTextHeight) / 2 + 1; // Moved down by 1 pixel
+            // Calculate position to center the FX text (moved 1 pixel down)
+            int fxTextX = startX + (rectWidth - fxTextWidth) / 2;
+            int fxTextY = rectY + (rectHeight - fxTextHeight) / 2 + 1; // Moved down by 1 pixel
 
-                // Set cursor and draw the FX text
-                display.SetCursor(fxTextX, fxTextY);
-                display.WriteString(fxLabels[i], Font_4x5, true);
+            // Set cursor and draw the FX text
+            display.SetCursor(fxTextX, fxTextY);
+            display.WriteString(fxLabels[i], Font_4x5, true);
 
-                // Draw horizontal lines between the numbers and the edge of the box
-                int lineY = rectY;
-                int lineXLeft = 1; // Adjust as needed based on your display layout
-                int lineXRight = 128 - 1; // Adjust as needed based on your display layout
+            // Number text width and height (Font_4x5 assumed)
+            int numberTextWidth = 3;  // Single digit width
+            int numberTextHeight = 5; // Assuming the font height is 5 pixels (Font_4x5 assumed)
 
-                // Draw left line
-                display.DrawLine(lineXLeft, lineY, startX, lineY, true);
+            // Calculate position for the left number label (aligned to the left of the display)
+            leftNumberTextX = 1;
+            leftNumberTextY = rectY + (rectHeight - numberTextHeight) / 2;
 
-                // Draw right line
-                display.DrawLine(startX + rectWidth, lineY, lineXRight, lineY, true);
+            // Calculate position for the right number label (aligned to the right of the display)
+            rightNumberTextX = 128 - numberTextWidth - 1; // Assuming 128 is the display width
+            rightNumberTextY = rectY + (rectHeight - numberTextHeight) / 2;
 
-                // Number text width and height (Font_4x5 assumed)
-                int numberTextWidth = 3; // Single digit width
-                int numberTextHeight = 5; // Assuming the font height is 5 pixels (Font_4x5 assumed)
+            // Draw left and right number labels
+            display.SetCursor(leftNumberTextX, leftNumberTextY);
+            display.WriteString(std::to_string(ins[i]).c_str(), Font_4x5, true);
 
-                // Calculate position for the left number label (aligned to the left of the display)
-                int leftNumberTextX = 1;
-                int leftNumberTextY = rectY + (rectHeight - numberTextHeight) / 2;
+            display.SetCursor(rightNumberTextX, rightNumberTextY);
+            display.WriteString(std::to_string(outs[i]).c_str(), Font_4x5, true);
 
-                // Calculate position for the right number label (aligned to the right of the display)
-                int rightNumberTextX = 128 - numberTextWidth - 1; // Assuming 128 is the display width
-                int rightNumberTextY = rectY + (rectHeight - numberTextHeight) / 2;
+            
+        }
+    display.DrawRect(leftNumberTextX, leftNumberTextY, leftNumberTextX + 4, leftNumberTextY + 5, true, false);
 
-                // Draw left and right number labels
-                display.SetCursor(leftNumberTextX, leftNumberTextY);
-                display.WriteString(numberLabels[i], Font_4x5, true);
-
-                display.SetCursor(rightNumberTextX, rightNumberTextY);
-                display.WriteString(numberLabels[i], Font_4x5, true);
-            }
-
-            display.Update();
-            break;
-        default:
-            break;
+        display.Update();
+        break;
+    default:
+        break;
     }
 }
 
@@ -479,7 +479,7 @@ void Dubby::UpdateWindowList()
         display.SetCursor(10, 15);
         UpdateStatusBar("PANE 5", LEFT);
 
-       // DrawBitmap(currentBitmapIndex); // Redraw bitmap with new index
+        // DrawBitmap(currentBitmapIndex); // Redraw bitmap with new index
         break;
     case WIN6:
         display.SetCursor(10, 15);
