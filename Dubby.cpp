@@ -382,6 +382,15 @@ void Dubby::UpdateDisplay()
                     isEncoderIncrementDisabled = false;
                     UpdateStatusBar(" PARAM       CTRL     MAX   ", LEFT);  
                 }
+            } else if (isValueChanging) {
+                if (encoder.Increment()) {  
+                    dubbyParameters[parameterSelected].value += encoder.Increment();
+                }
+                if (EncoderFallingEdgeCustom()) {
+                    isValueChanging = false;
+                    isEncoderIncrementDisabled = false;
+                    UpdateStatusBar(" PARAM       CTRL     VALUE ", LEFT);  
+                }
             }
 
             if (isParameterSelected) {
@@ -444,6 +453,13 @@ void Dubby::UpdateDisplay()
                         UpdateStatusBar("SELECT MAX VALUE", MIDDLE, 127);
                         isEncoderIncrementDisabled = true;
                         isMaxChanging = true;
+                    }
+                } else if (parameterOptionSelected == VALUE && GetParameterControl(dubbyParameters[parameterSelected].param) == CONTROL_NONE) {
+                    if (EncoderFallingEdgeCustom())
+                    {
+                        UpdateStatusBar("SELECT A VALUE", MIDDLE, 127);
+                        isEncoderIncrementDisabled = true;
+                        isValueChanging = true;
                     }
                 } 
                 
