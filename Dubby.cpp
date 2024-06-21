@@ -196,9 +196,11 @@ void Dubby::InitDubbyParameters()
         if (i == 0)
             dubbyParameters[i].Init(PARAM_NONE, 0, 0, 1, LINEAR);
         else if (i == 1)
-            dubbyParameters[i].Init(Params(i), 0, 0, 1, LOGARITHMIC);
+            dubbyParameters[i].Init(Params(i), 0, 0, 1, LINEAR, true, -10, true, 8);
         else if (i == 2)
-            dubbyParameters[i].Init(Params(i), 0, 0, 0.5, EXPONENTIAL);
+            dubbyParameters[i].Init(Params(i), 0, 0, 1, LINEAR, true, -10, false, 8);
+        else if (i == 3)
+            dubbyParameters[i].Init(Params(i), 0, 0, 1, LINEAR, false, -10, true, 8);
         else 
             dubbyParameters[i].Init(Params(i), 0.6, 0, 1, SIGMOID);
     }
@@ -366,7 +368,20 @@ void Dubby::UpdateDisplay()
                 }
             } else if (isMinChanging) {
                 if (encoder.Increment()) {  
-                    dubbyParameters[parameterSelected].min += encoder.Increment();
+                    int incrementValue = encoder.Increment();
+                    float newValue = dubbyParameters[parameterSelected].min + incrementValue;
+
+                    // Check min limit
+                    if (dubbyParameters[parameterSelected].hasMinLimit && newValue < dubbyParameters[parameterSelected].minLimit) 
+                        newValue = dubbyParameters[parameterSelected].minLimit;
+                    
+
+                    // Check max limit
+                    if (dubbyParameters[parameterSelected].hasMaxLimit && newValue > dubbyParameters[parameterSelected].maxLimit) 
+                        newValue = dubbyParameters[parameterSelected].maxLimit;
+
+                    // Apply the new value
+                    dubbyParameters[parameterSelected].min = newValue;
                 }
                 if (EncoderFallingEdgeCustom()) {
                     isMinChanging = false;
@@ -374,9 +389,22 @@ void Dubby::UpdateDisplay()
                     UpdateStatusBar(" PARAM       CTRL     MIN   ", LEFT);  
                 }
             } else if (isMaxChanging) {
-                if (encoder.Increment()) {  
-                    dubbyParameters[parameterSelected].max += encoder.Increment();
+                if (encoder.Increment()) {
+                    int incrementValue = encoder.Increment();
+                    float newValue = dubbyParameters[parameterSelected].max + incrementValue;
+
+                    // Check min limit
+                    if (dubbyParameters[parameterSelected].hasMinLimit && newValue < dubbyParameters[parameterSelected].minLimit)
+                        newValue = dubbyParameters[parameterSelected].minLimit;
+
+                    // Check max limit
+                    if (dubbyParameters[parameterSelected].hasMaxLimit && newValue > dubbyParameters[parameterSelected].maxLimit)
+                        newValue = dubbyParameters[parameterSelected].maxLimit;
+
+                    // Apply the new value
+                    dubbyParameters[parameterSelected].max = newValue;
                 }
+                            
                 if (EncoderFallingEdgeCustom()) {
                     isMaxChanging = false;
                     isEncoderIncrementDisabled = false;
@@ -384,7 +412,14 @@ void Dubby::UpdateDisplay()
                 }
             } else if (isValueChanging) {
                 if (encoder.Increment()) {  
-                    dubbyParameters[parameterSelected].value += encoder.Increment();
+
+                    if (encoder.Increment() == -1 && dubbyParameters[parameterSelected].value > dubbyParameters[parameterSelected].minLimit && dubbyParameters[parameterSelected].hasMinLimit)
+                        dubbyParameters[parameterSelected].value += encoder.Increment();
+                    else if (encoder.Increment() == 1 && dubbyParameters[parameterSelected].value < dubbyParameters[parameterSelected].maxLimit && dubbyParameters[parameterSelected].hasMaxLimit)
+                        dubbyParameters[parameterSelected].value += encoder.Increment();
+                    else 
+                        dubbyParameters[parameterSelected].value += encoder.Increment();
+                     
                 }
                 if (EncoderFallingEdgeCustom()) {
                     isValueChanging = false;
