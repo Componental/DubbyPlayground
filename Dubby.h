@@ -343,6 +343,8 @@ class Dubby
 
     bool EncoderFallingEdgeCustom();
 
+    void UpdateChannelMappingMenu();
+
     DaisySeed seed; 
 
     WindowItems windowItemSelected = (WindowItems)0;
@@ -362,10 +364,19 @@ class Dubby
     bool isMinChanging = false;
     bool isMaxChanging = false;
 
+
+    
     bool isEncoderIncrementDisabled = false;
 
     
     bool isSubMenuActive = false;
+
+
+
+        ChannelMappings channelMappingSelected = (ChannelMappings)0;
+        bool isChannelMappingSelected = false;
+        bool testBool = false;
+
 
     // const int menuTextCursors[3][2] = { {8, 55}, {50, 55}, {92, 55} }; OLD
     const int windowTextCursors[3][2] = { {3, 52}, {46, 52}, {88, 52} };  
@@ -413,6 +424,7 @@ class Dubby
 
     Controls dubbyCtrls[CONTROLS_LAST];
     Parameters dubbyParameters[PARAMS_LAST];
+    ChannelMappingMenu dubbyChannelMapping[CHANNELMAPPINGS_LAST];
 
   private:
 

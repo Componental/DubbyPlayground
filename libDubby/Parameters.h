@@ -2,6 +2,7 @@
 #pragma once
 
 #include <iostream>
+#include "ChannelMappingMenu.h"
 
 enum Params {
   PARAM_NONE,
