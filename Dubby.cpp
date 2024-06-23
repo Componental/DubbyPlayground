@@ -29,20 +29,27 @@ using namespace daisy;
 #define PANE_X_START 1
 #define PANE_X_END 126
 #define PANE_Y_START 10
-#define PANE_Y_END 52
+#define PANE_Y_END 55
 
 #define STATUSBAR_X_START 1
 #define STATUSBAR_X_END 127
-#define STATUSBAR_Y_START 1
-#define STATUSBAR_Y_END 11
+#define STATUSBAR_Y_START 0
+#define STATUSBAR_Y_END 7
 
 #define MENULIST_X_START 0
 #define MENULIST_X_END 63
-#define MENULIST_Y_START 11
+#define MENULIST_Y_START 8
 #define MENULIST_Y_END 19
 #define MENULIST_SPACING 8
 #define MENULIST_SUBMENU_SPACING 63
 #define MENULIST_ROWS_ON_SCREEN 5
+
+#define PARAMLIST_X_START 1
+#define PARAMLIST_X_END 127
+#define PARAMLIST_Y_START 8
+#define PARAMLIST_Y_END 15
+#define PARAMLIST_SPACING 6
+#define PARAMLIST_ROWS_ON_SCREEN 8
 
 #define ENCODER_LONGPRESS_THRESHOLD 300
 
@@ -64,12 +71,23 @@ void Dubby::Init()
         menuListBoxBounding[i][3] = MENULIST_Y_END + i * MENULIST_SPACING;
     }
 
+
+    for (int i = 0; i < PARAMLIST_ROWS_ON_SCREEN; i++) 
+    {
+        paramListBoxBounding[i][0] = PARAMLIST_X_START;
+        paramListBoxBounding[i][1] = PARAMLIST_Y_START + i * PARAMLIST_SPACING;
+        paramListBoxBounding[i][2] = PARAMLIST_X_END;
+        paramListBoxBounding[i][3] = PARAMLIST_Y_END + i * PARAMLIST_SPACING;
+    }
+
     scrollbarWidth = int(128 / WIN_LAST);
 
     InitDisplay();
     InitEncoder();
     InitAudio();
     InitMidi();
+    InitDubbyParameters();
+    InitDubbyControls();
 }
 
 void Dubby::InitControls()
@@ -135,6 +153,83 @@ void Dubby::InitDisplay()
     display.Init(disp_cfg);
 }
 
+void Dubby::InitDubbyControls()
+{
+    dubbyCtrls[0].Init(CONTROL_NONE, 0);
+
+    dubbyCtrls[1].Init(KN1, 0);
+    dubbyCtrls[1].addParamValue(TIME);
+
+    dubbyCtrls[2].Init(KN2, 0);
+    dubbyCtrls[1].addParamValue(FEEDBACK);
+
+    dubbyCtrls[3].Init(KN3, 0);
+    dubbyCtrls[3].addParamValue(MIX);
+
+    dubbyCtrls[4].Init(KN4, 0);
+    dubbyCtrls[4].addParamValue(CUTOFF);
+
+    dubbyCtrls[5].Init(BTN1, 0);
+    dubbyCtrls[5].addParamValue(IN_GAIN);
+
+    dubbyCtrls[6].Init(BTN2, 0);
+    dubbyCtrls[6].addParamValue(OUT_GAIN);
+
+    dubbyCtrls[7].Init(BTN3, 0);
+    dubbyCtrls[7].addParamValue(FREEZE);
+
+    dubbyCtrls[8].Init(BTN4, 0);
+    dubbyCtrls[8].addParamValue(MUTE);
+
+    dubbyCtrls[9].Init(JSX, 0);
+    dubbyCtrls[9].addParamValue(LOOP);
+
+    dubbyCtrls[10].Init(JSY, 0);
+    dubbyCtrls[10].addParamValue(RESONANCE);
+    
+    dubbyCtrls[11].Init(JSSW, 0);
+
+}
+
+void Dubby::InitDubbyParameters()
+{
+    for (int i = 0; i < PARAMS_LAST - 1; i++) 
+    {
+        if (i == 0)
+            dubbyParameters[i].Init(PARAM_NONE, 0, 0, 1, LINEAR);
+        else if (i == 1)
+            dubbyParameters[i].Init(Params(i), 0, 0, 1, LOGARITHMIC);
+        else if (i == 2)
+            dubbyParameters[i].Init(Params(i), 0, 0, 0.5, EXPONENTIAL);
+        else 
+            dubbyParameters[i].Init(Params(i), 0.6, 0, 1, SIGMOID);
+    }
+}
+
+DubbyControls Dubby::GetParameterControl(Params p) 
+{
+    for (int i = 0; i < CONTROLS_LAST; i++) {
+        for (int j = 0; j < PARAMS_LAST; j++) {
+            if (p == dubbyCtrls[i].param[j])
+                return dubbyCtrls[i].control;
+        }
+    }
+
+    return CONTROL_NONE;
+}
+
+float Dubby::GetParameterValue(Parameters p)
+{
+    for (int i = 0; i < CONTROLS_LAST; i++) {
+        for (int j = 0; j < PARAMS_LAST; j++) {
+            if (p.param == dubbyCtrls[i].param[j])
+                return p.GetRealValue(dubbyCtrls[i].value);
+        }
+    }
+
+    return p.value;
+}
+
 void Dubby::SetAudioInGain(AudioIns in, float gain)
 {
     if (gain > 1.0f)
@@ -166,31 +261,6 @@ float Dubby::GetAudioOutGain(AudioOuts out)
 }
 void Dubby::UpdateDisplay()
 {
-    int rectWidth = 50;      // Width of each rectangle
-    int rectHeight = 8;      // Height of each rectangle
-    int verticalSpacing = 2; // Spacing between rectangles (increased to 2 pixels)
-    int numRectangles = 4;   // Number of rectangles
-
-    int leftNumberTextX;
-    int leftNumberTextY;
-
-    int rightNumberTextX;
-    int rightNumberTextY;
-    // Calculate startX to center the rectangles horizontally
-    int startX = (128 - rectWidth) / 2;
-
-    // Calculate total height occupied by rectangles and spacings
-    int totalHeight = numRectangles * rectHeight + (numRectangles - 1) * verticalSpacing;
-
-    // Calculate startY to center the rectangles vertically
-    int startY = (64 - totalHeight) / 2;
-
-    // Labels for FX and numbers
-    const char *fxLabels[] = {"PASSTHRU", "PASSTHRU", "PASSTHRU", "PASSTHRU"};
-
-    // Integer arrays for ins and outs
-    int ins[] = {1, 2, 3, 4};
-    int outs[] = {1, 2, 3, 4};
 
     if (encoder.TimeHeldMs() > ENCODER_LONGPRESS_THRESHOLD && !windowSelectorActive)
     {
@@ -248,61 +318,277 @@ void Dubby::UpdateDisplay()
             DisplayPreferencesMenuList(0);
         }
 
-        DisplayPreferencesSubMenuList(encoder.Increment(), preferencesMenuItemSelected);
-        if (encoder.FallingEdge() && !wasEncoderJustInHighlightMenu && preferencesMenuItemSelected == DFUMODE)
-            ResetToBootloader();
-        if (encoder.Increment() && !windowSelectorActive && !isSubMenuActive)
-            UpdatePreferencesMenuList(encoder.Increment());
-        else if (encoder.Increment() && !windowSelectorActive && isSubMenuActive)
-            UpdatePreferencesSubMenuList(encoder.Increment(), preferencesMenuItemSelected);
-        break;
-    case WIN5:
-        // Loop to draw four rectangles with centered FX labels
-        for (int i = 0; i < numRectangles; i++)
-        {
-            int rectY = startY + i * (rectHeight + verticalSpacing);
-            display.DrawRect(startX, rectY, startX + rectWidth, rectY + rectHeight, true, false);
+            DisplayPreferencesSubMenuList(encoder.Increment(), preferencesMenuItemSelected);
+            if (encoder.FallingEdge() && !wasEncoderJustInHighlightMenu && preferencesMenuItemSelected == DFUMODE) ResetToBootloader();
+            if (encoder.Increment() && !windowSelectorActive && !isSubMenuActive) UpdatePreferencesMenuList(encoder.Increment());
+            else if (encoder.Increment() && !windowSelectorActive && isSubMenuActive) UpdatePreferencesSubMenuList(encoder.Increment(), preferencesMenuItemSelected);
+            break;
+        case WIN4:
+            // if (encoder.FallingEdge() && !wasEncoderJustInHighlightMenu) {
+                DisplayParameterList(encoder.Increment());
 
-            // Calculate text width and height (assuming fixed-width Font_4x5 font)
-            int fxTextWidth = 3 * 4; // 4 characters, each 6 pixels wide (Font_4x5 assumed)
-            int fxTextHeight = 5;    // Assuming the font height is 5 pixels (Font_4x5 assumed)
+            if (encoder.Increment() && !isEncoderIncrementDisabled && !windowSelectorActive && !isParameterSelected) UpdateParameterList(encoder.Increment());       
 
-            // Calculate position to center the FX text (moved 1 pixel down)
-            int fxTextX = startX + (rectWidth - fxTextWidth) / 2;
-            int fxTextY = rectY + (rectHeight - fxTextHeight) / 2 + 1; // Moved down by 1 pixel
+            if (encoder.FallingEdge() && !wasEncoderJustInHighlightMenu && !windowSelectorActive && !isParameterSelected)
+            {
+                isParameterSelected = true;
+                parameterOptionSelected = PARAM;
 
-            // Set cursor and draw the FX text
-            display.SetCursor(fxTextX, fxTextY);
-            display.WriteString(fxLabels[i], Font_4x5, true);
+                DisplayParameterList(encoder.Increment());
+            }
 
-            // Number text width and height (Font_4x5 assumed)
-            int numberTextWidth = 3;  // Single digit width
-            int numberTextHeight = 5; // Assuming the font height is 5 pixels (Font_4x5 assumed)
 
-            // Calculate position for the left number label (aligned to the left of the display)
-            leftNumberTextX = 1;
-            leftNumberTextY = rectY + (rectHeight - numberTextHeight) / 2;
+            if (isListeningControlChange) {
 
-            // Calculate position for the right number label (aligned to the right of the display)
-            rightNumberTextX = 128 - numberTextWidth - 1; // Assuming 128 is the display width
-            rightNumberTextY = rectY + (rectHeight - numberTextHeight) / 2;
+                for (int i = 0; i < CONTROLS_LAST; i++) {
+                    if (abs(dubbyCtrls[i].tempValue - dubbyCtrls[i].value) > 0.1f) {
 
-            // Draw left and right number labels
-            display.SetCursor(leftNumberTextX, leftNumberTextY);
-            display.WriteString(std::to_string(ins[i]).c_str(), Font_4x5, true);
+                        dubbyCtrls[prevControl].removeParamValue(dubbyParameters[parameterSelected].param);
+                        prevControl = CONTROL_NONE;
 
-            display.SetCursor(rightNumberTextX, rightNumberTextY);
-            display.WriteString(std::to_string(outs[i]).c_str(), Font_4x5, true);
+                        dubbyCtrls[i].addParamValue(dubbyParameters[parameterSelected].param);
 
+                        DisplayParameterList(0);
+                        UpdateStatusBar(" PARAM       CTRL     VALUE   ", LEFT);
+
+                        isListeningControlChange = false;
+                        isEncoderIncrementDisabled = false;
+                    }
+                }
+            } else if (isCurveChanging) {
+                if (encoder.Increment()) {  
+                    if (dubbyParameters[parameterSelected].curve == CURVES_LAST - 1 && encoder.Increment() == 1)
+                        dubbyParameters[parameterSelected].curve = (Curves)0;
+                    else if (dubbyParameters[parameterSelected].curve == 0 && encoder.Increment() == -1)
+                        dubbyParameters[parameterSelected].curve = (Curves)(CURVES_LAST - 1);
+                    else
+                        dubbyParameters[parameterSelected].curve = static_cast<Curves>(static_cast<int>(dubbyParameters[parameterSelected].curve) + encoder.Increment());
+                }
+                if (EncoderFallingEdgeCustom()) {
+                    isCurveChanging = false;
+                    isEncoderIncrementDisabled = false;
+                    UpdateStatusBar(" PARAM       CTRL     CURVE   ", LEFT);
+                }
+            } else if (isMinChanging) {
+                if (encoder.Increment()) {  
+                    dubbyParameters[parameterSelected].min += encoder.Increment();
+                }
+                if (EncoderFallingEdgeCustom()) {
+                    isMinChanging = false;
+                    isEncoderIncrementDisabled = false;
+                    UpdateStatusBar(" PARAM       CTRL     MIN   ", LEFT);  
+                }
+            } else if (isMaxChanging) {
+                if (encoder.Increment()) {  
+                    dubbyParameters[parameterSelected].max += encoder.Increment();
+                }
+                if (EncoderFallingEdgeCustom()) {
+                    isMaxChanging = false;
+                    isEncoderIncrementDisabled = false;
+                    UpdateStatusBar(" PARAM       CTRL     MAX   ", LEFT);  
+                }
+            }
+
+            if (isParameterSelected) {
+                if (encoder.Increment() && !isEncoderIncrementDisabled) 
+                {
+                    parameterOptionSelected = static_cast<ParameterOptions>(static_cast<int>(parameterOptionSelected) + encoder.Increment());
+
+                    if (parameterOptionSelected < PARAM || parameterOptionSelected >= POPTIONS_LAST) {
+                        isParameterSelected = false;
+                    }
+
+                    switch (parameterOptionSelected)
+                    {
+                        case MIN: 
+                            UpdateStatusBar(" PARAM       CTRL     MIN   ", LEFT);      
+                            break;
+                        case MAX:
+                            UpdateStatusBar(" PARAM       CTRL     MAX   ", LEFT);
+                            break;
+                        case CURVE:
+                            UpdateStatusBar(" PARAM       CTRL     CURVE ", LEFT);
+                            break;
+                        default:
+                            UpdateStatusBar(" PARAM       CTRL     VALUE   ", LEFT);
+                            break;
+                    }
+
+                    DisplayParameterList(encoder.Increment());
+
+                } else if (encoder.FallingEdge() && parameterOptionSelected == CTRL) {
+                    UpdateStatusBar("SELECT A CONTROL", MIDDLE, 127);
+                    isListeningControlChange = true;
+                    isEncoderIncrementDisabled = true;
+
+                    for (int i = 0; i < CONTROLS_LAST; i++) {
+                        dubbyCtrls[i].tempValue = dubbyCtrls[i].value;
+
+                        for (int j = 0; j < PARAMS_LAST; j++) {
+                            if (dubbyCtrls[i].param[j] == parameterSelected)
+                                prevControl = dubbyCtrls[i].control;
+                        }
+                    }
+                } else if (parameterOptionSelected == CURVE) {
+                    if (EncoderFallingEdgeCustom())
+                    {
+                        UpdateStatusBar("SELECT A CURVE", MIDDLE, 127);
+                        isEncoderIncrementDisabled = true;
+                        isCurveChanging = true;
+                    }
+                } else if (parameterOptionSelected == MIN) {
+                    if (EncoderFallingEdgeCustom())
+                    {
+                        UpdateStatusBar("SELECT MIN VALUE", MIDDLE, 127);
+                        isEncoderIncrementDisabled = true;
+                        isMinChanging = true;
+                    }
+                } else if (parameterOptionSelected == MAX) {
+                    if (EncoderFallingEdgeCustom())
+                    {
+                        UpdateStatusBar("SELECT MAX VALUE", MIDDLE, 127);
+                        isEncoderIncrementDisabled = true;
+                        isMaxChanging = true;
+                    }
+                } 
+                
+            }
             
-        }
-    display.DrawRect(leftNumberTextX, leftNumberTextY, leftNumberTextX + 4, leftNumberTextY + 5, true, false);
-
-        display.Update();
-        break;
-    default:
-        break;
+            break;
+        case WIN5:
+            UpdateChannelMappingMenu();
+            break;
+        default:
+            break;
     }
+}
+
+void Dubby::UpdateChannelMappingMenu() {
+    const int numRows = 4;
+    const int numCols = 4;
+    const int cellWidth = 23;   // Adjust according to your display size
+    const int cellHeight = 8;   // Adjust according to your display size
+    const int gridWidth = numCols * cellWidth;
+    const int gridHeight = numRows * cellHeight;
+    
+    // Calculate startX and startY to center the grid in a 128x64 display
+    const int startX = ((128 - gridWidth) / 2) + 4;
+    const int startY = ((64 - gridHeight) / 2) + 2;
+    
+    // Row labels above each row
+    const char* rowLabels[numRows] = {"IN1", "IN2", "IN3", "IN4"};
+    
+    // Column labels to the left of each column
+    const char* colLabels[numCols] = {"OUT1", "OUT2", "OUT3", "OUT4"};
+    
+     char* options[numRows][numCols] = {
+        {"NONE", "PASS", "FXFX", "SNTH"},
+        {"SNTH", "NONE", "PASS", "FXFX"},
+        {"FXFX", "SNTH", "NONE", "PASS"},
+        {"PASS", "FXFX", "SNTH", "NONE"}
+    };
+    
+    // Display row labels above the grid
+    for (int row = 0; row < numRows; row++) {
+        int labelX = startX + 5 + (cellWidth * row); // Adjust position for centering
+        int labelY = startY - 6; // Adjust based on your display layout
+        display.SetCursor(labelX, labelY);
+        display.WriteString(rowLabels[row], Font_4x5, true); // Display row label
+    }
+    
+    // Display column labels to the left of the grid
+    for (int col = 0; col < numCols; col++) {
+        int labelX = startX - 16; // Adjust based on your display layout
+        int labelY = startY + (cellHeight * col) + 3; // Adjust position for centering
+        display.SetCursor(labelX, labelY);
+        display.WriteString(colLabels[col], Font_4x5, true); // Display column label
+    }
+    
+    // Display options in the grid
+    for (int row = 0; row < numRows; row++) {
+        for (int col = 0; col < numCols; col++) {
+            int x = startX + col * cellWidth;
+            int y = startY + row * cellHeight;
+            display.DrawRect(x, y, x + cellWidth, y + cellHeight, false, true); // Clear cell
+            
+            // Example of displaying text (adjust parameters as per your display library)
+            display.SetCursor(x + 5, y + 3); // Adjust text positioning for centering
+            display.WriteString(options[row][col], Font_4x5, true); // Display option text
+        }
+    }
+    
+    display.Update(); // Update the display after drawing all elements
+
+
+
+    // int rectWidth = 50;      // Width of each rectangle
+    // int rectHeight = 8;      // Height of each rectangle
+    // int verticalSpacing = 2; // Spacing between rectangles (increased to 2 pixels)
+    // int numRectangles = 4;   // Number of rectangles
+
+    // int leftNumberTextX;
+    // int leftNumberTextY;
+
+    // int rightNumberTextX;
+    // int rightNumberTextY;
+    // // Calculate startX to center the rectangles horizontally
+    // int startX = (128 - rectWidth) / 2;
+
+    // // Calculate total height occupied by rectangles and spacings
+    // int totalHeight = numRectangles * rectHeight + (numRectangles - 1) * verticalSpacing;
+
+    // // Calculate startY to center the rectangles vertically
+    // int startY = (64 - totalHeight) / 2;
+
+    // // Labels for FX and numbers
+    // const char *fxLabels[] = {"PASSTHRU", "PASSTHRU", "PASSTHRU", "PASSTHRU"};
+
+    // // Integer arrays for ins and outs
+    // int ins[] = {1, 2, 3, 4};
+    // int outs[] = {1, 2, 3, 4};
+
+
+    //       // Loop to draw four rectangles with centered FX labels
+    //         for (int i = 0; i < numRectangles; i++)
+    //         {
+    //             int rectY = startY + i * (rectHeight + verticalSpacing);
+    //             display.DrawRect(startX, rectY, startX + rectWidth, rectY + rectHeight, true, false);
+
+    //             // Calculate text width and height (assuming fixed-width Font_4x5 font)
+    //             int fxTextWidth = 3 * 4; // 4 characters, each 6 pixels wide (Font_4x5 assumed)
+    //             int fxTextHeight = 5;    // Assuming the font height is 5 pixels (Font_4x5 assumed)
+
+    //             // Calculate position to center the FX text (moved 1 pixel down)
+    //             int fxTextX = startX + (rectWidth - fxTextWidth) / 2;
+    //             int fxTextY = rectY + (rectHeight - fxTextHeight) / 2 + 1; // Moved down by 1 pixel
+
+    //             // Set cursor and draw the FX text
+    //             display.SetCursor(fxTextX, fxTextY);
+    //             display.WriteString(fxLabels[i], Font_4x5, true);
+
+    //             // Number text width and height (Font_4x5 assumed)
+    //             int numberTextWidth = 3;  // Single digit width
+    //             int numberTextHeight = 5; // Assuming the font height is 5 pixels (Font_4x5 assumed)
+
+    //             // Calculate position for the left number label (aligned to the left of the display)
+    //             leftNumberTextX = 1;
+    //             leftNumberTextY = rectY + (rectHeight - numberTextHeight) / 2;
+
+    //             // Calculate position for the right number label (aligned to the right of the display)
+    //             rightNumberTextX = 128 - numberTextWidth - 1; // Assuming 128 is the display width
+    //             rightNumberTextY = rectY + (rectHeight - numberTextHeight) / 2;
+
+    //             // Draw left and right number labels
+    //             display.SetCursor(leftNumberTextX, leftNumberTextY);
+    //             display.WriteString(std::to_string(ins[i]).c_str(), Font_4x5, true);
+
+    //             display.SetCursor(rightNumberTextX, rightNumberTextY);
+    //             display.WriteString(std::to_string(outs[i]).c_str(), Font_4x5, true);
+
+                
+    //         }
+    //     display.DrawRect(leftNumberTextX, leftNumberTextY, leftNumberTextX + 4, leftNumberTextY + 5, true, false);
+
 }
 
 void Dubby::DrawLogo()
@@ -373,8 +659,8 @@ void Dubby::HighlightWindowItem()
     {
         display.SetCursor(windowTextCursors[i % 3][0], windowTextCursors[i % 3][1]);
         int currentText = windowItemSelected + i < WIN_LAST ? windowItemSelected + i : (windowItemSelected + i) % WIN_LAST;
-
-        display.WriteStringAligned(GetTextForEnum(WINDOWS, currentText), Font_4x5, daisy::Rectangle(windowBoxBounding[i][0], windowBoxBounding[i][1] + 3, 43, 7), daisy::Alignment::centered, i == 0 ? false : true);
+        
+        display.WriteStringAligned(GetTextForEnum(WINDOWS, currentText), Font_4x5, daisy::Rectangle(windowBoxBounding[i][0], windowBoxBounding[i][1] + 1, 43, 7), daisy::Alignment::centered, i == 0 ? false : true);
     }
 
     display.DrawLine(PANE_X_START - 1, PANE_Y_START + 1, PANE_X_START - 1, PANE_Y_END + 1, true);
@@ -393,7 +679,7 @@ void Dubby::ReleaseWindowSelector()
     display.DrawRect(windowBoxBounding[0][0], windowBoxBounding[0][1], windowBoxBounding[0][2], windowBoxBounding[0][3], false, false);
 
     display.SetCursor(windowTextCursors[0][0], windowTextCursors[0][1]);
-    display.WriteStringAligned(GetTextForEnum(WINDOWS, windowItemSelected), Font_4x5, daisy::Rectangle(windowBoxBounding[0][0], windowBoxBounding[0][1] + 3, 43, 7), daisy::Alignment::centered, true);
+    display.WriteStringAligned(GetTextForEnum(WINDOWS, windowItemSelected), Font_4x5, daisy::Rectangle(windowBoxBounding[0][0], windowBoxBounding[0][1] + 1, 43, 7), daisy::Alignment::centered, true);
 
     display.Update();
 }
@@ -460,41 +746,42 @@ void Dubby::UpdateWindowList()
 
     switch (windowItemSelected)
     {
-    case WIN1:
-        statusStr = GetTextForEnum(SCOPE, scopeSelector);
-        UpdateStatusBar(&statusStr[0], LEFT, 70);
-        UpdateRenderPane();
-        break;
-    case WIN2:
-        for (int i = 0; i < 4; i++)
-            UpdateBar(i);
-        break;
-    case WIN3:
-        DisplayPreferencesMenuList(0);
-        break;
-    case WIN4:
-        UpdateStatusBar("PANE 4", LEFT);
-        break;
-    case WIN5:
-        display.SetCursor(10, 15);
-        UpdateStatusBar("PANE 5", LEFT);
+        case WIN1:    
+            statusStr = GetTextForEnum(SCOPE, scopeSelector);
+            UpdateStatusBar(&statusStr[0], LEFT, 70);
+            UpdateRenderPane();
+            break;
+        case WIN2:
+            for (int i = 0; i < 4; i++) UpdateBar(i);
+            break;
+        case WIN3:
+            DisplayPreferencesMenuList(0);
+            break;
+        case WIN4:
+            UpdateStatusBar(" PARAM       CTRL     VALUE   ", LEFT);
+            display.DrawLine(6, 7, 127, 7, true);
 
-        // DrawBitmap(currentBitmapIndex); // Redraw bitmap with new index
-        break;
-    case WIN6:
-        display.SetCursor(10, 15);
-        UpdateStatusBar("PANE 6", LEFT);
-        break;
-    case WIN7:
-        display.SetCursor(10, 15);
-        UpdateStatusBar("PANE 7", LEFT);
-        break;
-    case WIN8:
-        display.SetCursor(10, 15);
-        UpdateStatusBar("PANE 8", LEFT);
-        break;
-    default:
-        break;
+            DisplayParameterList(0);
+             
+            break;
+        case WIN5:
+            display.SetCursor(10, 15);
+            UpdateStatusBar("PANE 5", LEFT);
+            break;
+        case WIN6:
+            display.SetCursor(10, 15);
+            UpdateStatusBar("PANE 6", LEFT);
+            break;
+        case WIN7:
+            display.SetCursor(10, 15);
+            UpdateStatusBar("PANE 7", LEFT);
+            break;
+        case WIN8:
+            display.SetCursor(10, 15);
+            UpdateStatusBar("PANE 8", LEFT);
+            break;
+        default:
+            break;
     }
 
     display.Update();
@@ -641,7 +928,7 @@ void Dubby::DisplayPreferencesSubMenuList(int increment, PreferencesMenuItems pr
         break;
     }
 
-    int optionStart = 0;
+    int optionStart = 1;
     if (subMenuSelector > (MENULIST_ROWS_ON_SCREEN - 1))
     {
         optionStart = subMenuSelector - (MENULIST_ROWS_ON_SCREEN - 1);
@@ -710,21 +997,112 @@ void Dubby::UpdateStatusBar(char *text, StatusBarSide side = LEFT, int width)
 
     if (side == LEFT)
     {
-        display.DrawRect(STATUSBAR_X_START, STATUSBAR_Y_START, width, STATUSBAR_Y_END - 3, false, true);
+        display.DrawRect(STATUSBAR_X_START, STATUSBAR_Y_START, width, STATUSBAR_Y_END - 1, false, true);
         display.WriteStringAligned(&text[0], Font_4x5, barRec, daisy::Alignment::centeredLeft, true);
     }
     else if (side == MIDDLE)
     {
-        display.DrawRect(64 - (width / 2), STATUSBAR_Y_START, 64 + (width / 2), STATUSBAR_Y_END - 3, false, true);
+        display.DrawRect(64 - (width/2), STATUSBAR_Y_START, 64 + (width/2), STATUSBAR_Y_END - 1, false, true);
         display.WriteStringAligned(&text[0], Font_4x5, barRec, daisy::Alignment::centered, true);
     }
     else if (side == RIGHT)
     {
-        display.DrawRect(STATUSBAR_X_END - width, STATUSBAR_Y_START, STATUSBAR_X_END, STATUSBAR_Y_END - 3, false, true);
+        display.DrawRect(STATUSBAR_X_END - width, STATUSBAR_Y_START, STATUSBAR_X_END, STATUSBAR_Y_END - 1, false, true);
         display.WriteStringAligned(&text[0], Font_4x5, barRec, daisy::Alignment::centeredRight, true);
     }
 
     display.Update();
+}
+
+void Dubby::DisplayParameterList(int increment)
+{
+    // clear bounding box
+    //display.DrawRect(PANE_X_START - 1, 1, PANE_X_END, PANE_Y_END, false, true);
+
+    int optionStart = 1;
+    if (parameterSelected > (PARAMLIST_ROWS_ON_SCREEN - 1))
+    {
+        optionStart = parameterSelected - (PARAMLIST_ROWS_ON_SCREEN - 1);
+    }
+    
+    // display each item, j for text cursor
+    for (int i = optionStart, j = 0; i < optionStart + PARAMLIST_ROWS_ON_SCREEN; i++, j++)
+    {
+        // clear item spaces
+        display.DrawRect(paramListBoxBounding[j][0], paramListBoxBounding[j][1], paramListBoxBounding[j][2], paramListBoxBounding[j][3], false, true);
+
+        if (parameterSelected == i) {
+
+            if(isParameterSelected)                
+                display.DrawRect(paramListBoxBounding[j][0], paramListBoxBounding[j][1], paramListBoxBounding[j][2], paramListBoxBounding[j][3], true, true);
+            
+            int x;
+
+            if (isParameterSelected) {
+                switch (parameterOptionSelected)
+                {
+                    case CTRL:
+                        x = 51;
+                        break;
+                    case VALUE:
+                    case MIN:
+                    case MAX: 
+                    case CURVE:
+                        x = 87;
+                        break;
+                    default:
+                        x = 3;
+                        break;
+                }
+                
+                display.DrawCircle(x, paramListBoxBounding[j][1] + 3, 1, !isParameterSelected);
+            } else {
+                display.DrawCircle(3, paramListBoxBounding[j][1] + 3, 1, !isParameterSelected);
+            }
+        } 
+
+        display.SetCursor(5, PARAMLIST_Y_START + 1 + (j * PARAMLIST_SPACING));
+        display.WriteString(ParamsStrings[i], Font_4x5, !(parameterSelected == i && isParameterSelected));
+
+
+        display.SetCursor(53, PARAMLIST_Y_START + 1 + (j * PARAMLIST_SPACING));
+        display.WriteString(ControlsStrings[GetParameterControl(dubbyParameters[i].param)], Font_4x5, !(parameterSelected == i && isParameterSelected));
+
+        std::string str = std::to_string(GetParameterValue(dubbyParameters[i])).substr(0, std::to_string(GetParameterValue(dubbyParameters[i])).find(".") + 3);
+        switch (parameterOptionSelected)
+        {
+            case MIN:
+                str = std::to_string(dubbyParameters[i].min).substr(0, std::to_string(dubbyParameters[i].min).find(".") + 3);    
+                break;
+            case MAX:
+                str = std::to_string(dubbyParameters[i].max).substr(0, std::to_string(dubbyParameters[i].max).find(".") + 3);
+                break;
+            case CURVE:
+                str = CurvesStrings[dubbyParameters[i].curve];
+                break;
+            default:
+                str = std::to_string(GetParameterValue(dubbyParameters[i])).substr(0, std::to_string(GetParameterValue(dubbyParameters[i])).find(".") + 3);
+                // UpdateStatusBar(" PARAM       CTRL     VALUE   ", LEFT);
+                break;
+        }
+        
+
+        display.SetCursor(89, PARAMLIST_Y_START + 1 + (j * PARAMLIST_SPACING));
+        display.WriteString(&str[0], Font_4x5, !(parameterSelected == i && isParameterSelected));
+        
+    }
+
+    display.Update();
+}
+
+void Dubby::UpdateParameterList(int increment) 
+{
+    if (((parameterSelected > 0 && increment == 1 && parameterSelected < PARAMS_LAST - 2) || (increment != 1 && parameterSelected != 1))) 
+    {
+        parameterSelected = (Params)(parameterSelected + increment);
+
+        DisplayParameterList(increment);
+    }
 }
 
 void Dubby::ResetToBootloader()
@@ -755,6 +1133,18 @@ void Dubby::ProcessAllControls()
 {
     ProcessAnalogControls();
     ProcessDigitalControls();
+
+    dubbyCtrls[1].value = GetKnobValue(CTRL_1);
+    dubbyCtrls[2].value = GetKnobValue(CTRL_2);
+    dubbyCtrls[3].value = GetKnobValue(CTRL_3);
+    dubbyCtrls[4].value = GetKnobValue(CTRL_4);
+    dubbyCtrls[5].value = buttons[0].Pressed();
+    dubbyCtrls[6].value = buttons[1].Pressed();
+    dubbyCtrls[7].value = buttons[2].Pressed();
+    dubbyCtrls[8].value = buttons[3].Pressed();
+    dubbyCtrls[9].value = GetKnobValue(CTRL_5);
+    dubbyCtrls[10].value = GetKnobValue(CTRL_6);
+    dubbyCtrls[11].value = joystickButton.Pressed();
 }
 
 void Dubby::ProcessAnalogControls()
@@ -808,6 +1198,50 @@ float Dubby::GetKnobValue(Ctrl k)
 {
     return (analogInputs[k].Value());
 }
+
+bool Dubby::EncoderFallingEdgeCustom() 
+{
+    bool reading = encoder.Pressed(); // Read the encoder button state, assuming true is pressed
+
+    if (reading != encoderLastState) {
+        encoderLastDebounceTime = seed.system.GetNow();
+    }
+
+    if ((seed.system.GetNow() - encoderLastDebounceTime) > encoderDebounceDelay) {
+        
+        
+
+        if (reading != encoderState) {
+            encoderState = reading;
+
+            
+            if (reading) {
+            std::string str = std::to_string(reading);
+            UpdateStatusBar(&str[0], LEFT, 55);   
+        } 
+        
+        if (encoderState) {
+        std::string str = std::to_string(encoderState);
+        UpdateStatusBar(&str[0], RIGHT, 55); 
+        }
+
+
+
+            if (encoderState == true) { // Encoder button pressed
+            
+            UpdateStatusBar("TRUEEEE", MIDDLE, 127);
+                return true;
+            }
+        }
+    }
+
+    encoderLastState = reading;
+
+    return false;
+}
+
+
+
 
 void Dubby::InitAudio()
 {

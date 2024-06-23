@@ -37,10 +37,10 @@
 #define LED_DATA_CNT_OFFSET			600
 
 #define WHITE					0x00FFFFFF
-#define RED						0x00FF0000
+#define RED						0x0000FF00
 #define BLUE					0x000000FF
 #define RAND_COLOR				0x0088FF88
-#define GREEN					0x0000FF00
+#define GREEN					0x00FF0000
 #define NAVY					0x00000080
 #define PURPLE					0x00008080
 #define YELLOW					0x00FFFF00
@@ -59,6 +59,7 @@ typedef struct
 	uint32_t blue_color;
 	uint32_t tx_cnt;
 	uint32_t tx_buff[LED_DMA_NMBR_OF_TRANS];
+	//uint32_t * tx_buff;
 	uint32_t led_buffer[LED_NUMBER];
 } LED_INFO;
 

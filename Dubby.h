@@ -7,9 +7,11 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <cstdlib>
 
 #include "ui/DubbyEncoder.h"
 #include "led.h"
+#include "libDubby/Controls.h"
 
 #include "./bitmaps/bmps.h"
 
@@ -59,7 +61,7 @@ class Dubby
         "SCOPE", 
         "MIXER", 
         "PREFS",
-        "WIN4",
+        "PARAMETERS",
         "ROUTING", // ROUTING
         "WIN6",
         "WIN7",
@@ -215,6 +217,51 @@ class Dubby
         MIXERPAGES,
     };
 
+    const char * ControlsStrings[CONTROLS_LAST] = 
+    { 
+      "-",
+      "KNOB1",
+      "KNOB2", 
+      "KNOB3", 
+      "KNOB4",
+      "BTN1",
+      "BTN2",
+      "BTN3",
+      "BTN4",
+      "JSX",
+      "JSY",
+      "JSSW",
+    };
+
+    const char * ParamsStrings[PARAMS_LAST] = 
+    { 
+      "-",
+      "TIME", 
+      "FEEDBACK", 
+      "MIX", 
+      "CUTOFF", 
+      "IN GAIN", 
+      "OUT GAIN", 
+      "FREEZE", 
+      "MUTE", 
+      "LOOP", 
+      "RES", 
+      "SCRUB",
+      "RATIO",
+      "PREDELAY",
+      "AMOUNT",
+      "2ND_LAST" // because of a bug
+    };
+
+    const char * CurvesStrings[CURVES_LAST]
+    {
+        "LINEAR",
+        "LOGARITH",
+        "EXPONENT",
+        "SIGMOID",
+    };
+
+
 
     Dubby() {}
 
@@ -260,6 +307,10 @@ class Dubby
 
     void UpdatePreferencesSubMenuList(int increment, PreferencesMenuItems preferencesMenuItemSelected);
 
+    void DisplayParameterList(int increment);
+   
+    void UpdateParameterList(int increment);
+
     void ProcessAllControls();
 
     void ProcessAnalogControls();
@@ -286,6 +337,12 @@ class Dubby
     
     void UpdateAlgorithmTitle();
 
+    DubbyControls GetParameterControl(Params p);
+
+    float GetParameterValue(Parameters p);
+
+    bool EncoderFallingEdgeCustom();
+
     DaisySeed seed; 
 
     WindowItems windowItemSelected = (WindowItems)0;
@@ -294,13 +351,28 @@ class Dubby
     PreferencesMidiMenuItems preferencesMidiMenuItemSelected = (PreferencesMidiMenuItems)0;
     PreferencesRoutingMenuItems preferencesRoutingMenuItemSelected = (PreferencesRoutingMenuItems)0;
     int subMenuSelector = 0;
+
+    DubbyControls prevControl = CONTROL_NONE;
+
+    Params parameterSelected = (Params)1;
+    bool isParameterSelected = false;
+    ParameterOptions parameterOptionSelected = PARAM;
+    bool isListeningControlChange = false;
+    bool isCurveChanging = false;
+    bool isMinChanging = false;
+    bool isMaxChanging = false;
+
+    bool isEncoderIncrementDisabled = false;
+
     
     bool isSubMenuActive = false;
 
     // const int menuTextCursors[3][2] = { {8, 55}, {50, 55}, {92, 55} }; OLD
-    const int windowTextCursors[3][2] = { {3, 55}, {46, 55}, {88, 55} };  
-    const int windowBoxBounding[3][4] = { {0, 53, 43, 61}, {43, 53, 85, 61}, {85, 53, 127, 61} }; 
+    const int windowTextCursors[3][2] = { {3, 52}, {46, 52}, {88, 52} };  
+    const int windowBoxBounding[3][4] = { {0, 56, 43, 61}, {43, 56, 85, 61}, {85, 56, 127, 61} }; 
     int menuListBoxBounding[5][4];
+    int paramListBoxBounding[8][4];
+
 
     int scrollbarWidth = 0;
     int barSelector = 0;
@@ -339,6 +411,9 @@ class Dubby
     std::vector<float> savedKnobValuesForVisuals;
     std::string algorithmTitle = "";
 
+    Controls dubbyCtrls[CONTROLS_LAST];
+    Parameters dubbyParameters[PARAMS_LAST];
+
   private:
 
     void InitAudio();
@@ -347,6 +422,8 @@ class Dubby
     void InitDisplay();
     void InitButtons();
     void InitMidi();
+    void InitDubbyParameters();
+    void InitDubbyControls();
 
     int margin = 8;
     bool windowSelectorActive = false;
@@ -358,7 +435,11 @@ class Dubby
     int highlightMenuCounter = 0;
     unsigned long encoderPressStartTime = 0;
 
-    
+    bool encoderState = false; // Previous state of the button
+    bool encoderLastState = true; // Previous state of the button
+    unsigned long encoderLastDebounceTime = 0; // Time the button was last toggled
+    unsigned long encoderDebounceDelay = 50; // Debounce time in milliseconds
+
     float audioGains[2][4] = { { 0.8f, 0.8f, 0.8f, 0.8f}, { 0.8f, 0.8f, 0.8f, 0.8f} }; // 0 => INPUTS, 1 => OUTPUTS 
 };
 

@@ -12,13 +12,8 @@ Dubby dubby;
     int inChannel = 0;
 
 
-bool channelMapping[NUM_AUDIO_CHANNELS][NUM_AUDIO_CHANNELS] = {
-    // Input channels:      0, 1, 2, 3
-    /* Output channel 0 */ {1, 0, 0, 0}, 
-    /* Output channel 1 */ {0, 1, 0, 0},  
-    /* Output channel 2 */ {1, 0, 0, 0},   
-    /* Output channel 3 */ {0, 1, 0, 0}  
-};
+static LadderFilter flt[4]; // Four filters, one for each channel
+
 
 
 
@@ -26,34 +21,47 @@ void MonitorMidi();
 void HandleMidiUartMessage(MidiEvent m);
 void HandleMidiUsbMessage(MidiEvent m);
 
-void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, size_t size)
-{
+int channelMapping[NUM_AUDIO_CHANNELS][NUM_AUDIO_CHANNELS] = {
+    // 0: NOT ASSIGNED
+    // 1: PASSTHROUGH
+    // 2: FX
+    
+    // Input channels:       0     1     2     3
+    /* Output channel 0 */ {PASS, NONE, FXFX, NONE}, 
+    /* Output channel 1 */ {NONE, PASS, NONE, FXFX},  
+    /* Output channel 2 */ {PASS, NONE, NONE, NONE},   
+    /* Output channel 3 */ {NONE, PASS, NONE, NONE}  
+};
+
+
+
+
+void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, size_t size) {
     // Loop through each sample
-    for (size_t i = 0; i < size; i++)
-    {
+    for (size_t i = 0; i < size; i++) {
         // Clear the output buffer for each sample
-        for (int j = 0; j < NUM_AUDIO_CHANNELS; j++)
-        {
+        for (int j = 0; j < NUM_AUDIO_CHANNELS; j++) {
             out[j][i] = 0.0f; // Initialize output to 0 for each sample
         }
 
         // Loop through each output channel
-        for (int j = 0; j < NUM_AUDIO_CHANNELS; j++)
-        {
+        for (int j = 0; j < NUM_AUDIO_CHANNELS; j++) {
             // Loop through each input channel
-            for (int inChannel = 0; inChannel < NUM_AUDIO_CHANNELS; inChannel++)
-            {
+            for (int inChannel = 0; inChannel < NUM_AUDIO_CHANNELS; inChannel++) {
                 // Check if the input channel is mapped to the output channel
-                if (channelMapping[j][inChannel])
-                {
-                    // Assign input value to the corresponding output channel
+                if (channelMapping[j][inChannel] == 1) {
+                    // Directly assign input to output channel
                     out[j][i] += in[inChannel][i];
+                } else if (channelMapping[j][inChannel] == 2) {
+                    // Apply effect (like filter) to input and then assign to output channel
+                    float output = flt[j].Process(in[inChannel][i]);
+                    out[j][i] += output;
                 }
+                // If channelMapping[j][inChannel] == 0, do nothing (channel not assigned)
             }
         }
     }
 }
-
 int main(void)
 {
     Init(dubby);
@@ -61,8 +69,28 @@ int main(void)
 
     dubby.seed.StartAudio(AudioCallback);
 
-    while (1) 
-    { 
+    // initLED();   
+    // setLED(0, BLUE, 0);
+    // setLED(1, RED, 0);
+    // updateLED();
+    // Update the filter parameters for each filter
+              float sample_rate = dubby.seed.AudioSampleRate();
+
+    for (int i = 0; i < 4; i++) {
+  // initialize Moogladder object
+    // Initialize the LadderFilter objects
+        flt[i].Init(sample_rate);
+    
+
+  flt[i].SetInputDrive(1.f);
+        flt[i].SetRes(0.f);
+        flt[i].SetFreq(2000.f);
+
+    }
+
+                LadderFilter::FilterMode currentMode = LadderFilter::FilterMode::LP24;
+
+	while(1) { 
         Monitor(dubby);
         MonitorMidi();
         if (dubby.buttons[3].TimeHeldMs() > 400) 
