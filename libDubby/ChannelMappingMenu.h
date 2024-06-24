@@ -34,7 +34,7 @@ namespace daisy
         ChannelMappings channelMappings;
         const char *ChannelMappingsStrings[CHANNELMAPPINGS_LAST] =
             {
-                "NONE",
+                "----",
                 "PASS",
                 "EFCT",
                 "SYNT",

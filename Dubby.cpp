@@ -514,24 +514,18 @@ void Dubby::UpdateChannelMappingMenu()
 
     static int currentRow = 0; // Track the current selected row
     static int currentCol = 0; // Track the current selected column
-    static bool selectIndexMode = true; // Flag to toggle between index mode and grid mode
+    static bool selectIndexMode = false; // Flag to toggle between index mode and grid mode
 
     // Toggle mode when encoder is pressed
-    if (encoder.FallingEdge()) {
+    if (encoder.FallingEdge()  && !windowSelectorActive) {
         selectIndexMode = !selectIndexMode;
     }
 
     if (selectIndexMode) {
-        // In index selection mode
-        if (increment != 0) {
-            // Update the channel mapping value at the selected row and column
-            int &currentMapping = channelMapping[currentRow][currentCol];
-            currentMapping = (currentMapping + increment + CHANNELMAPPINGS_LAST) % CHANNELMAPPINGS_LAST;
-        }
-    } else {
-        // In grid navigation mode
-        // Update currentCol and currentRow based on encoder input
-        if (increment != 0) {
+            //        UpdateStatusBar("                  ", LEFT);
+                UpdateStatusBar("SELECT JUNCTION", LEFT);
+
+        if (increment != 0  && !windowSelectorActive) {
             // Adjust the increment direction for smooth navigation
             if (increment > 0) {
                 currentCol++;
@@ -553,6 +547,18 @@ void Dubby::UpdateChannelMappingMenu()
                 }
             }
         }
+    } else {
+           // UpdateStatusBar("                  ", LEFT);
+            UpdateStatusBar("ASSIGN ROUTING ", LEFT);
+ // In index selection mode
+        if (increment != 0  && !windowSelectorActive) {
+            // Update the channel mapping value at the selected row and column
+            int &currentMapping = channelMapping[currentRow][currentCol];
+            currentMapping = (currentMapping + increment + CHANNELMAPPINGS_LAST) % CHANNELMAPPINGS_LAST;
+        }
+        // In grid navigation mode
+        // Update currentCol and currentRow based on encoder input
+       
     }
 
         // Display row labels above the grid
@@ -562,6 +568,13 @@ void Dubby::UpdateChannelMappingMenu()
         int labelY = startY - 6;                     // Adjust based on your display layout
         display.SetCursor(labelX, labelY);
         display.WriteString(rowLabels[row], Font_4x5, true); // Display row label
+
+                // Draw horizontal line under the row labels
+        int lineStartX = startX + 2;
+        int lineEndX = lineStartX + (cellWidth*4)-5;
+        int lineY = startY ;
+        display.DrawLine(lineStartX, lineY, lineEndX, lineY, true); // Draw a white line
+
     }
 
     // Display column labels to the left of the grid
@@ -571,6 +584,13 @@ void Dubby::UpdateChannelMappingMenu()
         int labelY = startY + (cellHeight * col) + 3; // Adjust position for centering
         display.SetCursor(labelX, labelY);
         display.WriteString(colLabels[col], Font_4x5, true); // Display column label
+
+                // Draw vertical line next to the column labels
+        int lineX = startX + 2 ;
+        int lineStartY = startY;
+        int lineEndY = lineStartY + (cellHeight * 4) - 1;
+        display.DrawLine(lineX, lineStartY, lineX, lineEndY, true); // Draw a white line
+
     }
 
     // Display options in the grid based on channelMapping
@@ -585,7 +605,7 @@ void Dubby::UpdateChannelMappingMenu()
             bool fillCell = (row == currentRow && col == currentCol); // Fill the selected cell with white only in grid mode
 
             // Draw the cell with or without filling
-            display.DrawRect(x+5, y+2, x + cellWidth-2 , y + cellHeight, fillCell, fillCell);
+            display.DrawRect(x+4, y+2, x + cellWidth-1 , y + cellHeight, fillCell, fillCell);
 
             // Look up the string based on the channelMapping value
             const char *mappingString = dubbyChannelMapping->ChannelMappingsStrings[channelMapping[row][col]];
@@ -596,77 +616,16 @@ void Dubby::UpdateChannelMappingMenu()
             // Example of displaying text (adjust parameters as per your display library)
             display.SetCursor(x + 5, y + 3);                     // Adjust text positioning for centering
             display.WriteString(mappingString, Font_4x5, !negativeFill); // Display mapping text with negative fill if selected in grid mode
+
+                        // Draw a vertical line 6 pixels to the left of the right border of the rectangle
+            int lineX = x + cellWidth - 2;
+            display.DrawLine(lineX, y + 3, lineX, y + cellHeight-1 , negativeFill); // Draw line with inverse fill
+
         }
     }
 
     display.Update(); // Update the display after drawing all elements
 
- // Update the display after drawing all elements
-    // int rectWidth = 50;      // Width of each rectangle
-    // int rectHeight = 8;      // Height of each rectangle
-    // int verticalSpacing = 2; // Spacing between rectangles (increased to 2 pixels)
-    // int numRectangles = 4;   // Number of rectangles
-
-    // int leftNumberTextX;
-    // int leftNumberTextY;
-
-    // int rightNumberTextX;
-    // int rightNumberTextY;
-    // // Calculate startX to center the rectangles horizontally
-    // int startX = (128 - rectWidth) / 2;
-
-    // // Calculate total height occupied by rectangles and spacings
-    // int totalHeight = numRectangles * rectHeight + (numRectangles - 1) * verticalSpacing;
-
-    // // Calculate startY to center the rectangles vertically
-    // int startY = (64 - totalHeight) / 2;
-
-    // // Labels for FX and numbers
-    // const char *fxLabels[] = {"PASSTHRU", "PASSTHRU", "PASSTHRU", "PASSTHRU"};
-
-    // // Integer arrays for ins and outs
-    // int ins[] = {1, 2, 3, 4};
-    // int outs[] = {1, 2, 3, 4};
-
-    //       // Loop to draw four rectangles with centered FX labels
-    //         for (int i = 0; i < numRectangles; i++)
-    //         {
-    //             int rectY = startY + i * (rectHeight + verticalSpacing);
-    //             display.DrawRect(startX, rectY, startX + rectWidth, rectY + rectHeight, true, false);
-
-    //             // Calculate text width and height (assuming fixed-width Font_4x5 font)
-    //             int fxTextWidth = 3 * 4; // 4 characters, each 6 pixels wide (Font_4x5 assumed)
-    //             int fxTextHeight = 5;    // Assuming the font height is 5 pixels (Font_4x5 assumed)
-
-    //             // Calculate position to center the FX text (moved 1 pixel down)
-    //             int fxTextX = startX + (rectWidth - fxTextWidth) / 2;
-    //             int fxTextY = rectY + (rectHeight - fxTextHeight) / 2 + 1; // Moved down by 1 pixel
-
-    //             // Set cursor and draw the FX text
-    //             display.SetCursor(fxTextX, fxTextY);
-    //             display.WriteString(fxLabels[i], Font_4x5, true);
-
-    //             // Number text width and height (Font_4x5 assumed)
-    //             int numberTextWidth = 3;  // Single digit width
-    //             int numberTextHeight = 5; // Assuming the font height is 5 pixels (Font_4x5 assumed)
-
-    //             // Calculate position for the left number label (aligned to the left of the display)
-    //             leftNumberTextX = 1;
-    //             leftNumberTextY = rectY + (rectHeight - numberTextHeight) / 2;
-
-    //             // Calculate position for the right number label (aligned to the right of the display)
-    //             rightNumberTextX = 128 - numberTextWidth - 1; // Assuming 128 is the display width
-    //             rightNumberTextY = rectY + (rectHeight - numberTextHeight) / 2;
-
-    //             // Draw left and right number labels
-    //             display.SetCursor(leftNumberTextX, leftNumberTextY);
-    //             display.WriteString(std::to_string(ins[i]).c_str(), Font_4x5, true);
-
-    //             display.SetCursor(rightNumberTextX, rightNumberTextY);
-    //             display.WriteString(std::to_string(outs[i]).c_str(), Font_4x5, true);
-
-    //         }
-    //     display.DrawRect(leftNumberTextX, leftNumberTextY, leftNumberTextX + 4, leftNumberTextY + 5, true, false);
 }
 
 void Dubby::DrawLogo()
@@ -845,7 +804,7 @@ void Dubby::UpdateWindowList()
         break;
     case WIN5:
         display.SetCursor(10, 15);
-        UpdateStatusBar("PANE 5", LEFT);
+       // UpdateStatusBar("PANE 5", LEFT);
         break;
     case WIN6:
         display.SetCursor(10, 15);
