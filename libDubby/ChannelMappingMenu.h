@@ -35,9 +35,9 @@ namespace daisy
         const char *ChannelMappingsStrings[CHANNELMAPPINGS_LAST] =
             {
                 "NONE",
-                "PASSTHRU",
-                "FX",
-                "SYNTH",
+                "PASS",
+                "EFCT",
+                "SYNT",
                 };
 
         const char *InOutChannelsStrings[INOUTCHANNELS_LAST] =

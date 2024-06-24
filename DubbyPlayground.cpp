@@ -21,17 +21,6 @@ void MonitorMidi();
 void HandleMidiUartMessage(MidiEvent m);
 void HandleMidiUsbMessage(MidiEvent m);
 
-int channelMapping[NUM_AUDIO_CHANNELS][NUM_AUDIO_CHANNELS] = {
-    // 0: NOT ASSIGNED
-    // 1: PASSTHROUGH
-    // 2: FX
-    
-    // Input channels:       0     1     2     3
-    /* Output channel 0 */ {PASS, NONE, FXFX, NONE}, 
-    /* Output channel 1 */ {NONE, PASS, NONE, FXFX},  
-    /* Output channel 2 */ {PASS, NONE, NONE, NONE},   
-    /* Output channel 3 */ {NONE, PASS, NONE, NONE}  
-};
 
 
 
@@ -49,10 +38,10 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
             // Loop through each input channel
             for (int inChannel = 0; inChannel < NUM_AUDIO_CHANNELS; inChannel++) {
                 // Check if the input channel is mapped to the output channel
-                if (channelMapping[j][inChannel] == 1) {
+                if (dubby.channelMapping[j][inChannel] == 1) {
                     // Directly assign input to output channel
                     out[j][i] += in[inChannel][i];
-                } else if (channelMapping[j][inChannel] == 2) {
+                } else if (dubby.channelMapping[j][inChannel] == 2) {
                     // Apply effect (like filter) to input and then assign to output channel
                     float output = flt[j].Process(in[inChannel][i]);
                     out[j][i] += output;
