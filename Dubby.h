@@ -337,6 +337,9 @@ class Dubby
     
     void UpdateAlgorithmTitle();
 
+void ResetBall();
+void UpdateGame();
+void RenderGame();
     DubbyControls GetParameterControl(Params p);
 
     float GetParameterValue(Parameters p);

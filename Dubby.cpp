@@ -255,6 +255,99 @@ float Dubby::GetAudioOutGain(AudioOuts out)
 }
 
 
+// Pong game variables
+int ball_x = 64, ball_y = 32;         // Ball position
+int ball_dx = 1, ball_dy = 1;         // Ball velocity
+int paddle1_y = 30, paddle2_y = 30;   // Paddle positions
+const int paddle_height = 10;         // Paddle height
+const int paddle_width = 2;           // Paddle width
+const int screen_width = 128;         // Screen width
+const int screen_height = 58;         // Screen height
+int score1 = 0, score2 = 0;           // Scores
+bool isPongInitialized = false;       // Initialization flag
+int frame_counter = 0;
+    char score_text[20];
+
+// Function to reset the ball position
+void Dubby::ResetBall() {
+    ball_x = screen_width / 2;
+    ball_y = screen_height / 2;
+    ball_dx = (rand() % 2 == 0) ? 1 : -1;
+    ball_dy = (rand() % 2 == 0) ? 1 : -1;
+}
+
+// Function to render the game
+void Dubby::RenderGame() {
+    // Assuming UpdateRenderPane clears the screen
+ //   UpdateRenderPane(); 
+    //display.DrawRect(PANE_X_START + MENULIST_SUBMENU_SPACING - 1, PANE_Y_START + 1, PANE_X_END, PANE_Y_END - 1, false, true);
+
+    // Draw the ball
+    display.DrawRect(ball_x, ball_y, ball_x + 1, ball_y + 1, true, true);
+
+    // Draw the paddles
+    display.DrawRect(2, paddle1_y, 2 + paddle_width, paddle1_y + paddle_height, true, true);
+    display.DrawRect(screen_width - 4, paddle2_y, screen_width - 4 + paddle_width, paddle2_y + paddle_height, true, true);
+
+    // Display scores on the status bar
+    sprintf(score_text, "P1: %d - P2: %d", score1, score2);
+    UpdateStatusBar(score_text, LEFT);
+}
+void Dubby::UpdateGame() {
+    // Increment frame counter
+    frame_counter++;
+
+    // Move the ball every 3 frames
+    if (frame_counter >= 5) {
+        // Reset frame counter
+        frame_counter = 0;
+
+        // Update ball position
+        ball_x += ball_dx;
+        ball_y += ball_dy;
+
+        // Ball collision with top and bottom
+        if (ball_y <= 15 || ball_y >= screen_height - STATUSBAR_Y_END) {
+            ball_dy = -ball_dy;
+        }
+
+        // Ball collision with paddles
+        if (ball_x <= 4 && ball_y >= paddle1_y && ball_y <= paddle1_y + paddle_height) {
+            ball_dx = -ball_dx;
+        }
+        if (ball_x >= screen_width - 6 && ball_y >= paddle2_y && ball_y <= paddle2_y + paddle_height) {
+            ball_dx = -ball_dx;
+        }
+
+        // Ball out of bounds
+        if (ball_x <= 0) {
+            score2++;
+            ResetBall();
+        }
+        if (ball_x >= screen_width - 2) {
+            score1++;
+            ResetBall();
+        }
+    //display.Update();
+
+    }
+
+    // Update paddle positions based on encoder input (assuming encoder for paddle1 and paddle2)
+    int encoder_increment = encoder.Increment();
+
+    // Update paddle1 position (left paddle)
+    if (encoder_increment) {
+        paddle1_y += encoder_increment * 3; // Adjust as needed
+        if (paddle1_y < 15) paddle1_y = 15;
+        if (paddle1_y > screen_height - paddle_height - STATUSBAR_Y_END) paddle1_y = screen_height - paddle_height-STATUSBAR_Y_END;
+    }
+
+    // Assuming second paddle is controlled by another encoder, here it is controlled automatically for simplicity
+    paddle2_y = ball_y - paddle_height / 2;
+    if (paddle2_y < 0) paddle2_y = 0;
+    if (paddle2_y > screen_height - paddle_height) paddle2_y = screen_height - paddle_height;
+}
+
 void Dubby::UpdateDisplay() 
 { 
 
@@ -451,6 +544,13 @@ void Dubby::UpdateDisplay()
             
             
             break;
+        case WIN5:
+
+             //display.Update();
+             ClearPane();
+                    RenderGame();    // Render the Pong game
+            UpdateGame();    // Update the Pong game state
+ 
         default:
             break;
     }
@@ -621,6 +721,8 @@ void Dubby::UpdateWindowList()
         case WIN5:
             display.SetCursor(10, 15);
             UpdateStatusBar("PANE 5", LEFT);
+               //         UpdateRenderPane();
+
             break;
         case WIN6:
             display.SetCursor(10, 15);
