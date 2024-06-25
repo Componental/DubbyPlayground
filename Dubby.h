@@ -18,7 +18,6 @@
 #define AUDIO_BLOCK_SIZE 128
 #define NUM_AUDIO_CHANNELS 4
 #define PI_F 3.1415927410125732421875f
-
 #define NUM_KNOBS 4
 
 namespace daisy
@@ -348,6 +347,7 @@ namespace daisy
         float GetParameterValue(Parameters p);
 
         bool EncoderFallingEdgeCustom();
+        bool EncoderRisingEdgeCustom();
 
         void UpdateChannelMappingMenu();
 

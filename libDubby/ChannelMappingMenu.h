@@ -8,7 +8,7 @@ enum ChannelMappings
 {
     NONE,
     PASS,
-    FXFX,
+    EFCT,
     SNTH,
     CHANNELMAPPINGS_LAST
 };
@@ -38,15 +38,20 @@ namespace daisy
                 "PASS",
                 "EFCT",
                 "SYNT",
-                };
+            };
+
+        bool hasNone = true;
+        bool hasPass = true;
+        bool hasEfct = true;
+        bool hasSynth = false;
 
         const char *InOutChannelsStrings[INOUTCHANNELS_LAST] =
             {
                 "1",
                 "2", 
                 "3",
-                "4",};
-
+                "4",
+            };
 
         void Init(ChannelMappings c)
         {

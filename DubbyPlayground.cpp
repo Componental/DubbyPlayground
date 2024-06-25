@@ -38,13 +38,17 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
             // Loop through each input channel
             for (int inChannel = 0; inChannel < NUM_AUDIO_CHANNELS; inChannel++) {
                 // Check if the input channel is mapped to the output channel
-                if (dubby.channelMapping[j][inChannel] == 1) {
+                if (dubby.channelMapping[j][inChannel] == PASS) {
                     // Directly assign input to output channel
                     out[j][i] += in[inChannel][i];
-                } else if (dubby.channelMapping[j][inChannel] == 2) {
+                } else if (dubby.channelMapping[j][inChannel] == EFCT) {
                     // Apply effect (like filter) to input and then assign to output channel
                     float output = flt[j].Process(in[inChannel][i]);
                     out[j][i] += output;
+                } else if (dubby.channelMapping[j][inChannel] == SNTH) {
+                    // Apply effect (like filter) to input and then assign to output channel
+                    //float output = synth[j].SidechainInput(in[inChannel][i]);
+                    //out[j][i] += output;
                 }
                 // If channelMapping[j][inChannel] == 0, do nothing (channel not assigned)
             }
@@ -58,10 +62,10 @@ int main(void)
 
     dubby.seed.StartAudio(AudioCallback);
 
-    // initLED();   
-    // setLED(0, BLUE, 0);
-    // setLED(1, RED, 0);
-    // updateLED();
+     initLED();   
+     setLED(0, BLUE, 0);
+    setLED(1, RED, 0);
+     updateLED();
     // Update the filter parameters for each filter
               float sample_rate = dubby.seed.AudioSampleRate();
 
