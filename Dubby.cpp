@@ -956,7 +956,11 @@ void Dubby::DisplayMidiSettingsList(int increment)
             break;
         }
     }
-
+    if(dubbyMidiSettings.currentMidiThruOutOption == MIDI_THRU){
+    SwitchMIDIOutThru(true);
+    } else if (dubbyMidiSettings.currentMidiThruOutOption == MIDI_OUT){
+        SwitchMIDIOutThru(false);
+    }
     display.Update();
 }
 

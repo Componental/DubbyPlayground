@@ -289,7 +289,7 @@ namespace daisy
         void visualizeKnobValuesCircle(const std::vector<std::string> &knobLabels, const std::vector<int> &numDecimals);
 
         void UpdateAlgorithmTitle();
-
+        
         DaisySeed seed;
 
         WindowItems windowItemSelected = (WindowItems)0;
