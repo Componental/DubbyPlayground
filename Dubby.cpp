@@ -516,7 +516,7 @@ void Dubby::UpdateChannelMappingMenu()
     // Static variables to keep track of the current position and mode
     static int currentRow = 0;  // Current selected row
     static int currentCol = 0;  // Current selected column
-    static bool selectIndexMode = false;  // Flag to toggle between index mode and grid mode
+    static bool selectIndexMode = true;  // Flag to toggle between index mode and grid mode
 
     // Toggle mode when the encoder is pressed
     if (EncoderRisingEdgeCustom() && !windowSelectorActive) {
@@ -557,8 +557,6 @@ void Dubby::UpdateChannelMappingMenu()
         // Update the channel mapping value at the selected row and column
         if (increment != 0 && !windowSelectorActive) {
             // Determine the valid range for channel mappings
-            int startMapping = 0;
-            int endMapping = CHANNELMAPPINGS_LAST - 1;
 
             // Determine the direction of navigation (forward or backward)
             int direction = (increment > 0) ? 1 : -1;

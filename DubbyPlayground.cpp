@@ -46,7 +46,7 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
                     float output = flt[j].Process(in[inChannel][i]);
                     out[j][i] += output;
                 } else if (dubby.channelMapping[j][inChannel] == SNTH) {
-                    // Apply effect (like filter) to input and then assign to output channel
+                    // Apply input to synth
                     //float output = synth[j].SidechainInput(in[inChannel][i]);
                     //out[j][i] += output;
                 }
