@@ -263,22 +263,22 @@ void Dubby::UpdateDisplay()
             DrawBitmap(currentBitmapIndex); // Redraw bitmap with new index
             UpdateStatusBar("IN", LEFT);
             UpdateStatusBar("OUT", RIGHT);
-if (currentBitmapIndex == 2)
-        {
-            UpdateStatusBar("2x2 IN SERIES", MIDDLE);
-        }
-        else if (currentBitmapIndex == 3)
-        {
-            UpdateStatusBar("1 QUAD", MIDDLE);
-        }
-        else if (currentBitmapIndex == 4)
-        {
-            UpdateStatusBar("2 IN SERIES", MIDDLE);
-        }
-        else if (currentBitmapIndex == 5)
-        {
-            UpdateStatusBar("2 IN PARALLEL", MIDDLE);
-        }
+            if (currentBitmapIndex == 2)
+            {
+                UpdateStatusBar("2x2 IN SERIES", MIDDLE);
+            }
+            else if (currentBitmapIndex == 3)
+            {
+                UpdateStatusBar("1 QUAD", MIDDLE);
+            }
+            else if (currentBitmapIndex == 4)
+            {
+                UpdateStatusBar("2 IN SERIES", MIDDLE);
+            }
+            else if (currentBitmapIndex == 5)
+            {
+                UpdateStatusBar("2 IN PARALLEL", MIDDLE);
+            }
         }
 
         break;

@@ -31,8 +31,6 @@ enum MidiInOptions
 
 enum MidiInChannelOptions
 {
-  MIDI_IN_CHN_ALL,
-  MIDI_IN_CHN0,
   MIDI_IN_CHN1,
   MIDI_IN_CHN2,
   MIDI_IN_CHN3,
@@ -48,6 +46,7 @@ enum MidiInChannelOptions
   MIDI_IN_CHN13,
   MIDI_IN_CHN14,
   MIDI_IN_CHN15,
+  MIDI_IN_CHN16,
   MIDIINCHNOPTIONS_LAST
 };
 
@@ -60,8 +59,6 @@ enum MidiOutOptions
 
 enum MidiOutChannelOptions
 {
-  MIDI_OUT_CHN_ALL,
-  MIDI_OUT_CHN0,
   MIDI_OUT_CHN1,
   MIDI_OUT_CHN2,
   MIDI_OUT_CHN3,
@@ -77,6 +74,7 @@ enum MidiOutChannelOptions
   MIDI_OUT_CHN13,
   MIDI_OUT_CHN14,
   MIDI_OUT_CHN15,
+  MIDI_OUT_CHN16,
   MIDIOUTCHNOPTIONS_LAST
 };
 
@@ -92,12 +90,12 @@ namespace daisy
   class MidiSettingsMenu
   {
   public:
-          int currentMidiClockOption = 0;
-        int currentMidiInOption = 0;
-        int currentMidiInChannelOption = 0;
-        int currentMidiOutOption = 0;
-        int currentMidiOutChannelOption = 0;
-        int currentMidiThruOutOption = 0;
+    int currentMidiClockOption = 0;
+    int currentMidiInOption = 0;
+    int currentMidiInChannelOption = 0;
+    int currentMidiOutOption = 0;
+    int currentMidiOutChannelOption = 0;
+    int currentMidiThruOutOption = 0;
 
     MidiSettings midiSettings;
     const char *MidiSettingsStrings[MIDISETTINGS_LAST] =
@@ -121,8 +119,6 @@ namespace daisy
 
     const char *MidiInChannelOptionsStrings[MIDIINCHNOPTIONS_LAST] =
         {
-            "ALL",
-            "0",
             "1",
             "2",
             "3",
@@ -137,7 +133,8 @@ namespace daisy
             "12",
             "13",
             "14",
-            "15"};
+            "15",
+            "16"};
 
     const char *MidiOutOptionsStrings[MIDIOUTOPTIONS_LAST] =
         {
@@ -146,8 +143,6 @@ namespace daisy
 
     const char *MidiOutChannelOptionsStrings[MIDIOUTCHNOPTIONS_LAST] =
         {
-            "ALL",
-            "0",
             "1",
             "2",
             "3",
@@ -162,16 +157,18 @@ namespace daisy
             "12",
             "13",
             "14",
-            "15"};
+            "15",
+            "16"};
 
     const char *MidiThruOutOptionsStrings[MIDITHRUOUT_LAST] =
         {
             "OUT",
             "THRU"};
 
-        void Init(MidiSettings c)
+    void Init(MidiSettings c)
     {
       setting = c;
+      
     }
 
   private:
