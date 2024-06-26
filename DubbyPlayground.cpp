@@ -55,7 +55,6 @@ int main(void)
         MonitorMidi();
         MIDISendNoteOn(dubby, 46, 120);
 
-
         if (dubby.buttons[dubby.CTRL_3].TimeHeldMs() > 500)
         {
             dubby.ResetToBootloader();
@@ -71,11 +70,9 @@ void HandleMidiMessage(MidiEvent m)
     case NoteOn:
     {
         NoteOnEvent p = m.AsNoteOn();
-        p = m.AsNoteOn(); // p.note, p.velocity
-
         break;
     }
-   case NoteOff:
+    case NoteOff:
     {
         NoteOffEvent p = m.AsNoteOff();
         break;
@@ -94,15 +91,26 @@ void MonitorMidi()
     // Handle USB MIDI Events
     while (dubby.midi_usb.HasEvents())
     {
-
         MidiEvent m = dubby.midi_usb.PopEvent();
-        HandleMidiMessage(m);
+        if (dubby.dubbyMidiSettings.currentMidiInOption == MIDIIN_ON)
+        {
+            if (m.channel == dubby.dubbyMidiSettings.currentMidiInChannelOption)
+            {
+                HandleMidiMessage(m);
+            }
+        }
     }
 
     // Handle UART MIDI Events
     while (dubby.midi_uart.HasEvents())
     {
         MidiEvent m = dubby.midi_uart.PopEvent();
-        HandleMidiMessage(m);
+        if (dubby.dubbyMidiSettings.currentMidiInOption == MIDIIN_ON)
+        {
+            if (m.channel == dubby.dubbyMidiSettings.currentMidiInChannelOption)
+            {
+                HandleMidiMessage(m);
+            }
+        }
     }
 }
