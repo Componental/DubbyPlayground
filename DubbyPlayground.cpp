@@ -57,7 +57,7 @@ int main(void)
         MonitorMidi();
         MIDISendNoteOn(dubby, 46, 120);
 
-      if (dubby.buttons[dubby.CTRL_1].FallingEdge())
+       if (dubby.buttons[dubby.CTRL_1].FallingEdge())
     {
         if (midiClockStarted)
         {
@@ -66,23 +66,25 @@ int main(void)
         }
         else
         {
-            MIDISendContinue(dubby);
+            if (midiClockStoppedByButton2)
+            {
+                MIDISendStart(dubby);
+                midiClockStoppedByButton2 = false;
+            }
+            else
+            {
+                MIDISendContinue(dubby);
+            }
             midiClockStarted = true;
         }
     }
 
     if (dubby.buttons[dubby.CTRL_2].FallingEdge())
     {
-        if (midiClockStarted)
-        {
             MIDISendStop(dubby);
             midiClockStarted = false;
-        }
-        else
-        {
-            MIDISendStart(dubby);
-            midiClockStarted = true;
-        }
+            midiClockStoppedByButton2 = true;
+        
     }
 
         if (dubby.buttons[dubby.CTRL_3].TimeHeldMs() > 1000)
@@ -109,7 +111,7 @@ void HandleMidiMessage(MidiEvent m)
     }
     case SystemRealTime:
     {
-        HandleSystemRealTime(m.srt_type);
+        HandleSystemRealTime(m.srt_type, dubby);
     }
     default:
         break;

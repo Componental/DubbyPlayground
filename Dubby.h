@@ -343,7 +343,7 @@ namespace daisy
         MidiUsbHandler midi_usb;
 
         int globalBPM = 120;
-
+       // uint32_t bpm = 120;
         std::vector<std::string> customLabels = {"PRM1", "PRM2", "PRM3", "PRM4"};
         std::vector<float> knobValuesForPrint;
         std::vector<int> numDecimals = {1, 1, 1, 1}; // Assuming you have three knobs with different decimal places

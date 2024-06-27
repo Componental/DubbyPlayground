@@ -191,11 +191,13 @@ void MIDISendContinue(Dubby &dubby)
                 uint32_t diff = ms - prev_ms;
                 uint32_t bpm = ms_to_bpm(diff);
 
-                // std::string stra = std::to_string(bpm);
-                // dubby.UpdateStatusBar(&stra[0], dubby.MIDDLE, 127);
+                //  std::string stra = std::to_string(bpm);
+                //  dubby.UpdateStatusBar(&stra[0], dubby.MIDDLE, 127);
 
+                
                 prev_ms = ms;
                 tt_count = 0;
+
             }
             break;
         }
