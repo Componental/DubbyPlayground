@@ -55,37 +55,36 @@ int main(void)
     {
         Monitor(dubby);
         MonitorMidi();
-        MIDISendNoteOn(dubby, 46, 120);
+        //   MIDISendNoteOn(dubby, 46, 120);
 
-       if (dubby.buttons[dubby.CTRL_1].FallingEdge())
-    {
-        if (midiClockStarted)
+        if (dubby.buttons[dubby.CTRL_1].FallingEdge())
         {
-            MIDISendStop(dubby);
-            midiClockStarted = false;
-        }
-        else
-        {
-            if (midiClockStoppedByButton2)
+            if (midiClockStarted)
             {
-                MIDISendStart(dubby);
-                midiClockStoppedByButton2 = false;
+                MIDISendStop(dubby);
+                midiClockStarted = false;
             }
             else
             {
-                MIDISendContinue(dubby);
+                if (midiClockStoppedByButton2)
+                {
+                    MIDISendStart(dubby);
+                    midiClockStoppedByButton2 = false;
+                }
+                else
+                {
+                    MIDISendContinue(dubby);
+                }
+                midiClockStarted = true;
             }
-            midiClockStarted = true;
         }
-    }
 
-    if (dubby.buttons[dubby.CTRL_2].FallingEdge())
-    {
+        if (dubby.buttons[dubby.CTRL_2].FallingEdge())
+        {
             MIDISendStop(dubby);
             midiClockStarted = false;
             midiClockStoppedByButton2 = true;
-        
-    }
+        }
 
         if (dubby.buttons[dubby.CTRL_3].TimeHeldMs() > 1000)
         {
@@ -101,17 +100,35 @@ void HandleMidiMessage(MidiEvent m)
     {
     case NoteOn:
     {
-        NoteOnEvent p = m.AsNoteOn();
+        if (dubby.dubbyMidiSettings.currentMidiInOption == MIDIIN_ON)
+        {
+            if (m.channel == dubby.dubbyMidiSettings.currentMidiInChannelOption)
+            {
+                NoteOnEvent p = m.AsNoteOn();
+            }
+        }
         break;
     }
     case NoteOff:
     {
-        NoteOffEvent p = m.AsNoteOff();
+        if (dubby.dubbyMidiSettings.currentMidiInOption == MIDIIN_ON)
+        {
+            if (m.channel == dubby.dubbyMidiSettings.currentMidiInChannelOption)
+            {
+                NoteOffEvent p = m.AsNoteOff();
+            }
+        }
         break;
     }
     case SystemRealTime:
     {
-        HandleSystemRealTime(m.srt_type, dubby);
+        if (dubby.dubbyMidiSettings.currentMidiClockOption == FOLLOWER)
+        {
+
+            HandleSystemRealTime(m.srt_type, dubby);
+            // std::string stra = std::to_string(dubby.receivedBPM);
+            // dubby.UpdateStatusBar(&stra[0], dubby.MIDDLE, 127);
+        }
     }
     default:
         break;
@@ -124,13 +141,7 @@ void MonitorMidi()
     while (dubby.midi_usb.HasEvents())
     {
         MidiEvent m = dubby.midi_usb.PopEvent();
-        if (dubby.dubbyMidiSettings.currentMidiInOption == MIDIIN_ON)
-        {
-            if (m.channel == dubby.dubbyMidiSettings.currentMidiInChannelOption)
-            {
-                HandleMidiMessage(m);
-            }
-        }
+        HandleMidiMessage(m);
     }
 
     // Handle UART MIDI Events

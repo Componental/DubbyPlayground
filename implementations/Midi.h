@@ -3,7 +3,6 @@
 
 #include "daisysp.h"
 #include "../Dubby.h"
-
 using namespace daisy;
 using namespace daisysp;
 
@@ -63,7 +62,7 @@ void MIDIUsbSendContinue(Dubby &dubby)
 
 void MIDISendStart(Dubby &dubby)
 {
-    if (dubby.dubbyMidiSettings.currentMidiOutOption == MIDIOUT_ON)
+    if (dubby.dubbyMidiSettings.currentMidiClockOption == LEADER)
     {
         MIDIUsbSendStart(dubby);
         MIDIUartSendStart(dubby);
@@ -72,7 +71,7 @@ void MIDISendStart(Dubby &dubby)
 
 void MIDISendStop(Dubby &dubby)
 {
-    if (dubby.dubbyMidiSettings.currentMidiOutOption == MIDIOUT_ON)
+    if (dubby.dubbyMidiSettings.currentMidiClockOption == LEADER)
     {
         MIDIUsbSendStop(dubby);
         MIDIUartSendStop(dubby);
@@ -81,7 +80,7 @@ void MIDISendStop(Dubby &dubby)
 
 void MIDISendContinue(Dubby &dubby)
 {
-    if (dubby.dubbyMidiSettings.currentMidiOutOption == MIDIOUT_ON)
+    if (dubby.dubbyMidiSettings.currentMidiClockOption == LEADER)
     {
         MIDIUsbSendContinue(dubby);
         MIDIUartSendContinue(dubby);
@@ -168,7 +167,7 @@ void MIDISendContinue(Dubby &dubby)
         return 60000 / ms;
     }
 
-    void HandleSystemRealTime(uint8_t srt_type)
+    void HandleSystemRealTime(uint8_t srt_type, Dubby &dubby)
     {
         switch (srt_type)
         {
@@ -189,7 +188,7 @@ void MIDISendContinue(Dubby &dubby)
             {
                 uint32_t ms = System::GetNow();
                 uint32_t diff = ms - prev_ms;
-                uint32_t bpm = ms_to_bpm(diff);
+                dubby.receivedBPM = ms_to_bpm(diff);
 
                 //  std::string stra = std::to_string(bpm);
                 //  dubby.UpdateStatusBar(&stra[0], dubby.MIDDLE, 127);

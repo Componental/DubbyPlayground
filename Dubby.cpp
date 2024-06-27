@@ -871,6 +871,11 @@ void Dubby::DisplayMidiSettingsList(int increment)
 {
 
     testBool = isMidiSettingSelected;
+    if (dubbyMidiSettings.currentMidiClockOption == FOLLOWER)
+    {
+
+        dubbyMidiSettings.currentBpm = receivedBPM;
+    }
 
     if (isMidiSettingSelected)
     {
@@ -880,6 +885,22 @@ void Dubby::DisplayMidiSettingsList(int increment)
         case MIDICLOCK:
             dubbyMidiSettings.currentMidiClockOption = (dubbyMidiSettings.currentMidiClockOption + increment + MIDICLOCKOPTIONS_LAST) % MIDICLOCKOPTIONS_LAST;
             break;
+        case BPM:
+            if (dubbyMidiSettings.currentMidiClockOption == LEADER)
+            {
+
+                dubbyMidiSettings.currentBpm += increment;
+                if (dubbyMidiSettings.currentBpm < 20)
+                    dubbyMidiSettings.currentBpm = 20;
+                else if (dubbyMidiSettings.currentBpm > 300)
+                    dubbyMidiSettings.currentBpm = 300;
+            }
+            else
+            {
+                dubbyMidiSettings.currentBpm = receivedBPM;
+            }
+            break;
+
         case MIDIIN:
             dubbyMidiSettings.currentMidiInOption = (dubbyMidiSettings.currentMidiInOption + increment + MIDIINOPTIONS_LAST) % MIDIINOPTIONS_LAST;
             break;
@@ -899,14 +920,6 @@ void Dubby::DisplayMidiSettingsList(int increment)
             else if (dubbyMidiSettings.currentMidiThruOutOption > 1)
                 dubbyMidiSettings.currentMidiThruOutOption = 1;
             break;
-        case BPM:
-            dubbyMidiSettings.currentBpm += increment;
-            if (dubbyMidiSettings.currentBpm < 20)
-                dubbyMidiSettings.currentBpm = 20;
-            else if (dubbyMidiSettings.currentBpm > 300)
-                dubbyMidiSettings.currentBpm = 300;
-            break;
-
         default:
             // Add default action if needed
             break;
@@ -943,6 +956,13 @@ void Dubby::DisplayMidiSettingsList(int increment)
             display.SetCursor(90, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
             display.WriteString(dubbyMidiSettings.MidiClockOptionsStrings[dubbyMidiSettings.currentMidiClockOption], Font_4x5, !(midiSettingSelected == i && isMidiSettingSelected));
             break;
+        case BPM:
+            display.SetCursor(90, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
+            char bpmStr[4];
+            snprintf(bpmStr, 4, "%d", dubbyMidiSettings.currentBpm);
+            display.WriteString(bpmStr, Font_4x5, !(midiSettingSelected == i && isMidiSettingSelected));
+            break;
+
         case MIDIIN:
             display.SetCursor(90, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
             display.WriteString(dubbyMidiSettings.MidiInOptionsStrings[dubbyMidiSettings.currentMidiInOption], Font_4x5, !(midiSettingSelected == i && isMidiSettingSelected));
@@ -963,12 +983,6 @@ void Dubby::DisplayMidiSettingsList(int increment)
             display.SetCursor(90, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
             display.WriteString(dubbyMidiSettings.MidiThruOutOptionsStrings[dubbyMidiSettings.currentMidiThruOutOption], Font_4x5, !(midiSettingSelected == i && isMidiSettingSelected));
             break;
-        case BPM:
-            display.SetCursor(90, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
-            char bpmStr[4];
-            snprintf(bpmStr, 4, "%d", dubbyMidiSettings.currentBpm);
-            display.WriteString(bpmStr, Font_4x5, !(midiSettingSelected == i && isMidiSettingSelected));
-            break;
         default:
             // Add default action if needed
             break;
@@ -986,7 +1000,7 @@ void Dubby::DisplayMidiSettingsList(int increment)
         SwitchMIDIOutThru(false);
     }
 
-        globalBPM = dubbyMidiSettings.currentBpm;
+    globalBPM = dubbyMidiSettings.currentBpm;
 
     display.Update();
 }
@@ -1000,7 +1014,6 @@ void Dubby::UpdateMidiSettingsList(int increment)
         midiSettingSelected = static_cast<MidiSettings>(midiSettingSelected + increment);
         DisplayMidiSettingsList(increment);
     }
-
 }
 
 void Dubby::ResetToBootloader()
