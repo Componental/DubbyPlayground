@@ -25,6 +25,69 @@ namespace daisy
     // Initialize a timer variable
     uint32_t lastTime; // = System::GetUs();
 
+void MIDIUartSendStart(Dubby &dubby)
+{
+    uint8_t data[1] = {0xFA};
+    dubby.midi_uart.SendMessage(data, 1);
+}
+
+void MIDIUartSendStop(Dubby &dubby)
+{
+    uint8_t data[1] = {0xFC};
+    dubby.midi_uart.SendMessage(data, 1);
+}
+
+void MIDIUartSendContinue(Dubby &dubby)
+{
+    uint8_t data[1] = {0xFB};
+    dubby.midi_uart.SendMessage(data, 1);
+}
+
+void MIDIUsbSendStart(Dubby &dubby)
+{
+    uint8_t data[1] = {0xFA};
+    dubby.midi_usb.SendMessage(data, 1);
+}
+
+void MIDIUsbSendStop(Dubby &dubby)
+{
+    uint8_t data[1] = {0xFC};
+    dubby.midi_usb.SendMessage(data, 1);
+}
+
+void MIDIUsbSendContinue(Dubby &dubby)
+{
+    uint8_t data[1] = {0xFB};
+    dubby.midi_usb.SendMessage(data, 1);
+}
+
+void MIDISendStart(Dubby &dubby)
+{
+    if (dubby.dubbyMidiSettings.currentMidiOutOption == MIDIOUT_ON)
+    {
+        MIDIUsbSendStart(dubby);
+        MIDIUartSendStart(dubby);
+    }
+}
+
+void MIDISendStop(Dubby &dubby)
+{
+    if (dubby.dubbyMidiSettings.currentMidiOutOption == MIDIOUT_ON)
+    {
+        MIDIUsbSendStop(dubby);
+        MIDIUartSendStop(dubby);
+    }
+}
+
+void MIDISendContinue(Dubby &dubby)
+{
+    if (dubby.dubbyMidiSettings.currentMidiOutOption == MIDIOUT_ON)
+    {
+        MIDIUsbSendContinue(dubby);
+        MIDIUartSendContinue(dubby);
+    }
+}
+
     void MIDIUartSendNoteOn(Dubby &dubby, uint8_t channel, uint8_t note, uint8_t velocity)
     {
         uint8_t data[3] = {0};

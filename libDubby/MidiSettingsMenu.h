@@ -12,9 +12,9 @@ enum MidiSettings
   MIDIOUT,
   MIDIOUTCHN,
   MIDITHRUOUT,
+  BPM,  
   MIDISETTINGS_LAST
 };
-
 enum MidiClockOptions
 {
   LEADER,
@@ -96,6 +96,7 @@ namespace daisy
     int currentMidiOutOption = 0;
     int currentMidiOutChannelOption = 0;
     int currentMidiThruOutOption = 0;
+    int currentBpm = 120;  // Default BPM value
 
     MidiSettings midiSettings;
     const char *MidiSettingsStrings[MIDISETTINGS_LAST] =
@@ -105,7 +106,8 @@ namespace daisy
             "MIDI IN CHN",
             "MIDI OUT",
             "MIDI OUT CHN",
-            "MIDI THRU/OUT"};
+            "MIDI THRU/OUT",
+            "BPM"};  // Add BPM to the list
 
     const char *MidiClockOptionsStrings[MIDICLOCKOPTIONS_LAST] =
         {

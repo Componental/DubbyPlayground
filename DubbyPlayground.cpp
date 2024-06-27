@@ -8,6 +8,8 @@ using namespace daisy;
 using namespace daisysp;
 
 Dubby dubby;
+bool midiClockStarted = false;
+bool midiClockStoppedByButton2 = false;
 
 void MonitorMidi();
 void HandleMidiUartMessage(MidiEvent m);
@@ -55,7 +57,35 @@ int main(void)
         MonitorMidi();
         MIDISendNoteOn(dubby, 46, 120);
 
-        if (dubby.buttons[dubby.CTRL_3].TimeHeldMs() > 500)
+      if (dubby.buttons[dubby.CTRL_1].FallingEdge())
+    {
+        if (midiClockStarted)
+        {
+            MIDISendStop(dubby);
+            midiClockStarted = false;
+        }
+        else
+        {
+            MIDISendContinue(dubby);
+            midiClockStarted = true;
+        }
+    }
+
+    if (dubby.buttons[dubby.CTRL_2].FallingEdge())
+    {
+        if (midiClockStarted)
+        {
+            MIDISendStop(dubby);
+            midiClockStarted = false;
+        }
+        else
+        {
+            MIDISendStart(dubby);
+            midiClockStarted = true;
+        }
+    }
+
+        if (dubby.buttons[dubby.CTRL_3].TimeHeldMs() > 1000)
         {
             dubby.ResetToBootloader();
         }

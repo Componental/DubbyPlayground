@@ -893,8 +893,20 @@ void Dubby::DisplayMidiSettingsList(int increment)
             dubbyMidiSettings.currentMidiOutChannelOption = (dubbyMidiSettings.currentMidiOutChannelOption + increment + MIDIOUTCHNOPTIONS_LAST) % MIDIOUTCHNOPTIONS_LAST;
             break;
         case MIDITHRUOUT:
-            dubbyMidiSettings.currentMidiThruOutOption = (dubbyMidiSettings.currentMidiThruOutOption + increment + MIDITHRUOUT_LAST) % MIDITHRUOUT_LAST;
+            dubbyMidiSettings.currentMidiThruOutOption += increment;
+            if (dubbyMidiSettings.currentMidiThruOutOption < 0)
+                dubbyMidiSettings.currentMidiThruOutOption = 0;
+            else if (dubbyMidiSettings.currentMidiThruOutOption > 1)
+                dubbyMidiSettings.currentMidiThruOutOption = 1;
             break;
+        case BPM:
+            dubbyMidiSettings.currentBpm += increment;
+            if (dubbyMidiSettings.currentBpm < 20)
+                dubbyMidiSettings.currentBpm = 20;
+            else if (dubbyMidiSettings.currentBpm > 300)
+                dubbyMidiSettings.currentBpm = 300;
+            break;
+
         default:
             // Add default action if needed
             break;
@@ -951,16 +963,31 @@ void Dubby::DisplayMidiSettingsList(int increment)
             display.SetCursor(90, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
             display.WriteString(dubbyMidiSettings.MidiThruOutOptionsStrings[dubbyMidiSettings.currentMidiThruOutOption], Font_4x5, !(midiSettingSelected == i && isMidiSettingSelected));
             break;
+        case BPM:
+            display.SetCursor(90, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
+            char bpmStr[4];
+            snprintf(bpmStr, 4, "%d", dubbyMidiSettings.currentBpm);
+            display.WriteString(bpmStr, Font_4x5, !(midiSettingSelected == i && isMidiSettingSelected));
+            break;
         default:
             // Add default action if needed
             break;
         }
     }
-    if(dubbyMidiSettings.currentMidiThruOutOption == MIDI_THRU){
-    SwitchMIDIOutThru(true);
-    } else if (dubbyMidiSettings.currentMidiThruOutOption == MIDI_OUT){
+
+    // CONTROL MIDI OUT/ THRU RELAY
+    if (dubbyMidiSettings.currentMidiThruOutOption == MIDI_THRU)
+    {
+        SwitchMIDIOutThru(true);
+    }
+
+    if (dubbyMidiSettings.currentMidiThruOutOption == MIDI_OUT)
+    {
         SwitchMIDIOutThru(false);
     }
+
+        globalBPM = dubbyMidiSettings.currentBpm;
+
     display.Update();
 }
 
@@ -973,6 +1000,7 @@ void Dubby::UpdateMidiSettingsList(int increment)
         midiSettingSelected = static_cast<MidiSettings>(midiSettingSelected + increment);
         DisplayMidiSettingsList(increment);
     }
+
 }
 
 void Dubby::ResetToBootloader()
