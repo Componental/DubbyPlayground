@@ -23,6 +23,34 @@
 
 namespace daisy
 {
+
+
+//Setting Struct containing parameters we want to save to flash
+struct PersistantMemorySettings {
+
+    Parameters savedParams[PARAMS_LAST];
+
+    // Overloading the != operator
+    // This is necessary as this operator is used in the PersistentStorage source code
+    bool operator!=(const PersistantMemorySettings& a) const {
+        for (int i = 0; i < PARAMS_LAST; ++i) {
+            if (savedParams[i].param != a.savedParams[i].param ||
+                savedParams[i].value != a.savedParams[i].value ||
+                savedParams[i].min != a.savedParams[i].min ||
+                savedParams[i].max != a.savedParams[i].max ||
+                savedParams[i].minLimit != a.savedParams[i].minLimit ||
+                savedParams[i].maxLimit != a.savedParams[i].maxLimit ||
+                savedParams[i].hasMinLimit != a.savedParams[i].hasMinLimit ||
+                savedParams[i].hasMaxLimit != a.savedParams[i].hasMaxLimit ||
+                savedParams[i].curve != a.savedParams[i].curve) {
+                return true;
+            }
+        }
+        return false;
+    }
+};
+
+
 class Dubby
 {
   public:
@@ -343,6 +371,10 @@ class Dubby
 
     bool EncoderFallingEdgeCustom();
 
+    void LoadFromQspi();
+
+    void SaveToQspi(int paramIndex);
+
     DaisySeed seed; 
 
     WindowItems windowItemSelected = (WindowItems)0;
@@ -414,6 +446,11 @@ class Dubby
 
     Controls dubbyCtrls[CONTROLS_LAST];
     Parameters dubbyParameters[PARAMS_LAST];
+
+    PersistentStorage<PersistantMemorySettings>* saved_settings_ptr;
+
+    bool use_preset = false;
+    bool trigger_save = false;
 
   private:
 

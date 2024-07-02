@@ -86,6 +86,48 @@ void Dubby::Init()
     InitMidi();
     InitDubbyParameters();
     InitDubbyControls();
+
+    saved_settings_ptr = new PersistentStorage<PersistantMemorySettings>(seed.qspi);
+}
+
+
+void Dubby::LoadFromQspi() {
+
+	//Reference to local copy of settings stored in flash
+	PersistantMemorySettings &LocalSettings = saved_settings_ptr->GetSettings();
+	
+	float a = LocalSettings.savedParams[1].max;
+
+    for (int i = 1; i < PARAMS_LAST; i++) {
+        dubbyParameters[i].value = LocalSettings.savedParams[i].value;
+        dubbyParameters[i].min = LocalSettings.savedParams[i].min;
+        dubbyParameters[i].max = LocalSettings.savedParams[i].max;
+        dubbyParameters[i].curve = LocalSettings.savedParams[i].curve;
+    }
+
+	use_preset = true;
+}
+
+void Dubby::SaveToQspi(int paramIndex) {
+
+	//Reference to local copy of settings stored in flash
+	PersistantMemorySettings &LocalSettings = saved_settings_ptr->GetSettings();
+
+	LocalSettings.savedParams[paramIndex].value = dubbyParameters[paramIndex].value;
+	LocalSettings.savedParams[paramIndex].min = dubbyParameters[paramIndex].min;
+	LocalSettings.savedParams[paramIndex].max = dubbyParameters[paramIndex].max;
+	LocalSettings.savedParams[paramIndex].curve = dubbyParameters[paramIndex].curve;
+
+
+    saved_settings_ptr->Save(); // Writing locally stored settings to the external flash
+
+    PersistantMemorySettings &LocalSettingss = saved_settings_ptr->GetSettings();
+    
+    std::string str = std::to_string(LocalSettingss.savedParams[paramIndex].min);
+
+    UpdateStatusBar(&str[0], MIDDLE, 127);
+    
+	trigger_save = true;
 }
 
 void Dubby::InitControls()
@@ -97,6 +139,7 @@ void Dubby::InitControls()
     cfg[CTRL_2].InitSingle(seed.GetPin(PIN_KNOB_2));
     cfg[CTRL_3].InitSingle(seed.GetPin(PIN_KNOB_3));
     cfg[CTRL_4].InitSingle(seed.GetPin(PIN_KNOB_4));
+    
     cfg[CTRL_5].InitSingle(seed.GetPin(PIN_JS_H));
     cfg[CTRL_6].InitSingle(seed.GetPin(PIN_JS_V));
 
@@ -194,16 +237,42 @@ void Dubby::InitDubbyParameters()
     for (int i = 0; i < PARAMS_LAST - 1; i++) 
     {
         if (i == 0)
-            dubbyParameters[i].Init(PARAM_NONE, 0, 0, 1, LINEAR);
+            dubbyParameters[i].Init(PARAM_NONE, 2, -5, 10, LINEAR);
         else if (i == 1)
-            dubbyParameters[i].Init(Params(i), 0, 0, 1, LINEAR, true, -10, true, 8);
+            dubbyParameters[i].Init(Params(i), 2, -5, 10, LINEAR, true, -10, true, 8);
         else if (i == 2)
-            dubbyParameters[i].Init(Params(i), 0, 0, 1, LINEAR, true, -10, false, 8);
+            dubbyParameters[i].Init(Params(i), 2, -5, 10, LINEAR, true, -10, false, 8);
         else if (i == 3)
-            dubbyParameters[i].Init(Params(i), 0, 0, 1, LINEAR, false, -10, true, 8);
+            dubbyParameters[i].Init(Params(i), 2, -5, 10, LINEAR, false, -10, true, 8);
         else 
-            dubbyParameters[i].Init(Params(i), 0.6, 0, 1, SIGMOID);
+            dubbyParameters[i].Init(Params(i), 0.6, -5, 10, SIGMOID);
     }
+
+    Parameters initParamValues[PARAMS_LAST];
+
+    for (int i = 0; i < PARAMS_LAST - 1; i++) 
+    {
+        if (i == 0)
+            initParamValues[i].Init(PARAM_NONE, 2, -5, 10, LINEAR);
+        else if (i == 1)
+            initParamValues[i].Init(Params(i), 2, -5, 10, LINEAR, true, -10, true, 8);
+        else if (i == 2)
+            initParamValues[i].Init(Params(i), 2, -5, 10, LINEAR, true, -10, false, 8);
+        else if (i == 3)
+            initParamValues[i].Init(Params(i), 2, -5, 10, LINEAR, false, -10, true, 8);
+        else 
+            initParamValues[i].Init(Params(i), 0.6, -5, 10, SIGMOID);
+    }
+
+
+    PersistantMemorySettings DefaultSettings;
+
+    for (int i = 0; i < PARAMS_LAST - 1; i++) 
+    {
+        DefaultSettings.savedParams[i] = initParamValues[i];
+    }
+
+	saved_settings_ptr->Init(DefaultSettings);
 }
 
 DubbyControls Dubby::GetParameterControl(Params p) 
@@ -350,6 +419,9 @@ void Dubby::UpdateDisplay()
 
                         isListeningControlChange = false;
                         isEncoderIncrementDisabled = false;
+
+                        
+                        SaveToQspi(parameterSelected);
                     }
                 }
             } else if (isCurveChanging) {
@@ -365,6 +437,8 @@ void Dubby::UpdateDisplay()
                     isCurveChanging = false;
                     isEncoderIncrementDisabled = false;
                     UpdateStatusBar(" PARAM       CTRL     CURVE   ", LEFT);
+
+                    SaveToQspi(parameterSelected);
                 }
             } else if (isMinChanging) {
                 if (encoder.Increment()) {  
@@ -387,6 +461,8 @@ void Dubby::UpdateDisplay()
                     isMinChanging = false;
                     isEncoderIncrementDisabled = false;
                     UpdateStatusBar(" PARAM       CTRL     MIN   ", LEFT);  
+                    
+                    SaveToQspi(parameterSelected);
                 }
             } else if (isMaxChanging) {
                 if (encoder.Increment()) {
@@ -409,6 +485,8 @@ void Dubby::UpdateDisplay()
                     isMaxChanging = false;
                     isEncoderIncrementDisabled = false;
                     UpdateStatusBar(" PARAM       CTRL     MAX   ", LEFT);  
+                    
+                    SaveToQspi(parameterSelected);
                 }
             } else if (isValueChanging) {
                 if (encoder.Increment()) {  
@@ -425,6 +503,8 @@ void Dubby::UpdateDisplay()
                     isValueChanging = false;
                     isEncoderIncrementDisabled = false;
                     UpdateStatusBar(" PARAM       CTRL     VALUE ", LEFT);  
+                    
+                    SaveToQspi(parameterSelected);
                 }
             }
 
