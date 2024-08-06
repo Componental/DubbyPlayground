@@ -20,6 +20,11 @@
 #define PI_F 3.1415927410125732421875f
 
 #define NUM_KNOBS 4
+#define NUM_BUTTONS 4
+#define NUM_PAGES 4
+
+
+
 
 namespace daisy
 {
@@ -56,13 +61,13 @@ class Dubby
         WIN_LAST // used to know the size of enum
     };
     
-    const char * WindowItemsStrings[WIN_LAST] = 
+    const char * WindowItemsStrings[WIN_LAST] = // the label seen on the display
     { 
+        "WIN1",
         "SCOPE", 
         "MIXER", 
         "PREFS",
         "PARAMETERS",
-        "WIN5",
         "WIN6",
         "WIN7",
         "WIN8",
@@ -329,13 +334,15 @@ class Dubby
 
     void UpdateStatusBar(char* text, StatusBarSide side, int width = 40); // side = 0 => left, side = 1 => right
 
-    void updateKnobValues(const std::vector<float>& values);
-
-    void visualizeKnobValues( const std::vector<std::string>& knobLabels, const std::vector<int>& numDecimals);
+    void UpdateKnobValues(const std::vector<float>& values);
     
-    void visualizeKnobValuesCircle(const std::vector<std::string>& knobLabels, const std::vector<int>& numDecimals);
+    void UpdateKnobWindow(const std::vector<std::string>& knobLabels, const std::vector<int>& numDecimals);
     
     void UpdateAlgorithmTitle();
+
+
+    std::vector<int> numDecimals = {1, 1, 1, 1}; // Assuming you have three knobs with different decimal places
+
 
     DubbyControls GetParameterControl(Params p);
 
@@ -407,13 +414,28 @@ class Dubby
 
     std::vector<std::string> customLabels = {"PRM1", "PRM2", "PRM3", "PRM4"};
     std::vector<float> knobValuesForPrint;
-    std::vector<int> numDecimals = {1, 1, 1, 1}; // Assuming you have three knobs with different decimal places
 
     std::vector<float> savedKnobValuesForVisuals;
     std::string algorithmTitle = "";
 
     Controls dubbyCtrls[CONTROLS_LAST];
     Parameters dubbyParameters[PARAMS_LAST];
+
+
+const char *algorithmTitles[NUM_PAGES] = {"KNOB PAGE 1", "KNOB PAGE 2", "KNOB PAGE 3", "KNOB PAGE 4"};
+
+const char *knobLabels[NUM_PAGES][NUM_KNOBS] = {
+    {"PRM 1", "PRM 2", "PRM 3", "PRM 4"},
+    {"PRM 5", "PRM 6", "PRM 7", "PRM 8"},
+    {"PRM 9", "PRM 10", "PRM 11", "PRM 12"},
+    {"PRM 13", "PRM 14", "PRM 15", "PRM 16"}};
+
+float savedKnobValues[NUM_PAGES][NUM_KNOBS] = {
+    {.4f, .6f, .4f, .0f}, // default value bass drum
+    {.2f, .4f, .6f, .7f}, // default value snare
+    {.2f, .2f, .2f, .2f}, // default value tom
+    {.0f, .2f, .5f, .3f}};
+    bool windowSelectorActive = false;
 
   private:
 
@@ -427,7 +449,6 @@ class Dubby
     void InitDubbyControls();
 
     int margin = 8;
-    bool windowSelectorActive = false;
     uint32_t screen_update_last_, screen_update_period_;
 
     bool isEncoderPressed = false;

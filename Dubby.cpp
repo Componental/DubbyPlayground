@@ -308,12 +308,15 @@ void Dubby::UpdateDisplay()
     switch (windowItemSelected)
     {
     case WIN1:
+                UpdateKnobWindow(customLabels, numDecimals);
+    break;
+    case WIN2:
         UpdateRenderPane(); // Update the render pane for window 1
         break;
-    case WIN2:
+    case WIN3:
         UpdateMixerPane(); // Update the mixer pane for window 2
         break;
-    case WIN3:
+    case WIN4:
         // Handle the case where the encoder has a falling edge and no submenu is active
         if (encoder.FallingEdge() && !isSubMenuActive && !wasEncoderJustInHighlightMenu)
         {
@@ -339,7 +342,7 @@ void Dubby::UpdateDisplay()
         else if (encoder.Increment() && !windowSelectorActive && isSubMenuActive)
             UpdatePreferencesSubMenuList(encoder.Increment(), preferencesMenuItemSelected);
         break;
-    case WIN4:
+    case WIN5:
         // Display the parameter list with the encoder increment
         DisplayParameterList(encoder.Increment());
 
@@ -627,7 +630,11 @@ void Dubby::ReleaseWindowSelector()
 
 void Dubby::ClearPane()
 {
+    
     display.DrawRect(PANE_X_START - 1, PANE_Y_START - 1, PANE_X_END + 1, PANE_Y_END + 12, false, true);
+ //      display.DrawRect(PANE_X_START, PANE_Y_START, PANE_X_END, PANE_Y_END, false, true);
+
+    
 }
 
 void Dubby::UpdateMixerPane()
@@ -687,28 +694,29 @@ void Dubby::UpdateWindowList()
 
     switch (windowItemSelected)
     {
-    case WIN1:
+        case WIN1:
+     //   display.SetCursor(10, 15);
+         //   UpdateStatusBar(&algorithmTitle[0], LEFT);
+            UpdateKnobWindow(customLabels, numDecimals);
+        break;
+    case WIN2:
         statusStr = GetTextForEnum(SCOPE, scopeSelector);
         UpdateStatusBar(&statusStr[0], LEFT, 70);
         UpdateRenderPane();
         break;
-    case WIN2:
+    case WIN3:
         for (int i = 0; i < 4; i++)
             UpdateBar(i);
         break;
-    case WIN3:
+    case WIN4:
         DisplayPreferencesMenuList(0);
         break;
-    case WIN4:
+    case WIN5:
         UpdateStatusBar(" PARAM       CTRL     VALUE   ", LEFT);
         display.DrawLine(6, 7, 127, 7, true);
 
         DisplayParameterList(0);
 
-        break;
-    case WIN5:
-        display.SetCursor(10, 15);
-        UpdateStatusBar("PANE 5", LEFT);
         break;
     case WIN6:
         display.SetCursor(10, 15);
@@ -955,6 +963,92 @@ void Dubby::UpdateStatusBar(char *text, StatusBarSide side = LEFT, int width)
 
     display.Update();
 }
+
+void Dubby::UpdateKnobWindow(const std::vector<std::string>& knobLabels, const std::vector<int>& numDecimals) {
+        display.DrawRect(PANE_X_START, PANE_Y_START, PANE_X_END, PANE_Y_END, false, true);
+
+    // Define parameters for circular knobs
+    int circle_y = 34;          // Y-coordinate of the center of the circle
+    int circle_radius = 8;      // Radius of the circle
+
+    // Calculate total width occupied by circles
+    int totalWidth = NUM_KNOBS * 2 * circle_radius;
+
+    // Calculate space between circles
+    int circleSpacing = (OLED_WIDTH - totalWidth) / (NUM_KNOBS + 1);
+
+    // Loop through each knob value
+    for (int i = 0; i < NUM_KNOBS; ++i) {
+        // Calculate knob x-coordinate
+        int circle_x_offset = circleSpacing * (i + 1) + circle_radius + i * 2 * circle_radius;
+
+        // Get knob value
+        float knobValue = savedKnobValuesForVisuals[i];
+
+        float knobValueLive = GetKnobValue(static_cast<Ctrl>(i));
+        // Calculate angle for the current knob
+        float angle = (knobValue * 0.8f * 2 * PI_F) - (PI_F * 1.5f) + 0.2 * PI_F;  // Convert knob value to angle
+
+        // Calculate angle for knobValueLive
+        float liveAngle = (knobValueLive * 0.8f * 2 * PI_F) - (PI_F * 1.5f) + 0.2 * PI_F;
+
+        // Calculate line end position based on knob value
+        int line_end_x = circle_x_offset + static_cast<int>(circle_radius * cos(angle));
+        int line_end_y = circle_y + static_cast<int>(circle_radius * sin(angle));
+
+
+        int arc_radius = circle_radius - 1; // Define a smaller radius for the arc
+
+        // Calculate start and end angles for the arc
+float start_arc_angle = -angle;  // Start angle is the same as angle
+float end_arc_angle = -liveAngle;  // End angle is the same as liveAngle
+
+// Draw arc indicating knob value difference
+display.DrawArc(circle_x_offset, circle_y, arc_radius, 
+                static_cast<int>((start_arc_angle ) * 180.0f / PI_F), // Convert to degrees
+                static_cast<int>((end_arc_angle - start_arc_angle) * 180.0f / PI_F), // Sweep angle
+                true);
+
+        // Draw circular knob
+        display.DrawCircle(circle_x_offset, circle_y, circle_radius, true);
+
+        // Draw line indicating knob value
+        display.DrawLine(circle_x_offset, circle_y, line_end_x, line_end_y, true);
+        
+
+        // Calculate the position for the label to be centered above the circle
+        int label_x = circle_x_offset - (knobLabels[i].size() * 4) / 2;  // Assuming each character is 4 pixels wide in the selected font
+        int label_y = circle_y - 20;  // Adjust this value to position the label properly above the circle
+
+        // Draw custom label above each circle
+        display.SetCursor(label_x, label_y);
+        display.WriteString(knobLabels[i].c_str(), Font_4x5, true);
+
+        // Format knob value as string
+        char formattedValue[10];
+        snprintf(formattedValue, 10, "%.*f", numDecimals[i], knobValuesForPrint[i]);
+
+        // Calculate the position for the value to be centered under the circle
+        int value_width = strlen(formattedValue) * 4; // Assuming each character is 4 pixels wide in the selected font
+        int value_x = circle_x_offset - value_width / 2;
+
+        // Draw knob value below the label
+        display.SetCursor(value_x, circle_y + 15);
+        display.WriteString(formattedValue, Font_4x5, true);
+    }
+   
+}
+
+void Dubby::UpdateAlgorithmTitle(){
+                UpdateStatusBar(&algorithmTitle[0], LEFT); 
+
+}
+
+void Dubby::UpdateKnobValues(const std::vector<float>& values) {
+    knobValuesForPrint.clear(); // Clear the existing values
+    knobValuesForPrint.insert(knobValuesForPrint.end(), values.begin(), values.end());
+}
+
 
 void Dubby::DisplayParameterList(int increment)
 {

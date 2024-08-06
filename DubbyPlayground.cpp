@@ -8,7 +8,6 @@ using namespace daisy;
 using namespace daisysp;
 
 Dubby dubby;
-
 void MonitorMidi();
 void HandleMidiUartMessage(MidiEvent m);
 void HandleMidiUsbMessage(MidiEvent m);
@@ -51,6 +50,8 @@ int main(void)
 
 	while(1) { 
         Monitor(dubby);
+                handleKnobs(dubby, dubby.algorithmTitles, dubby.knobLabels, dubby.savedKnobValues);
+
         MonitorMidi();
 	}
 }
@@ -82,7 +83,7 @@ void MonitorMidi()
     // Handle USB MIDI Events
     while(dubby.midi_usb.HasEvents())
     { 
-        MidiEvent m = dubby.midi_usb.PopEvent();
+        MidiEvent m = dubby.midi_usb.PopEvent(); 
         HandleMidiMessage(m);
     }
 

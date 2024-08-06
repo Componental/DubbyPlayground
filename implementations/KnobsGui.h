@@ -7,18 +7,15 @@
 using namespace daisy;
 using namespace daisysp;
 
+
 namespace daisy
 {
     int selectedPage = 0;
-    int numPages = 0;
     const float knobTolerance = 0.02f; // Define a tolerance for knob adjustment, Adjust as needed
     bool knobWithinTolerance[5][NUM_KNOBS] = { 0 };
     std::vector<float> knobValues;
 
-    void setNumPages(int num) 
-    {
-        numPages = num;
-    }
+    
 
     bool withinTolerance(float value1, float value2)
     {
@@ -39,7 +36,7 @@ namespace daisy
             selectedPage = 4; // Set selectedPage to 4 if the button is pressed for the first time
 
             // Reset all knobs to false for all drums except the selected one
-            for (int i = 0; i < numPages; i++)
+            for (int i = 0; i < NUM_PAGES; i++)
             {
                 if (i != selectedPage)
                 {
@@ -55,9 +52,9 @@ namespace daisy
 
         prevButtonState = buttonPressed; // Save the current button state for the next iteration
 
-        if (rotationDirection != 0 && !buttonPressed) {
+        if (rotationDirection != 0 && !buttonPressed && !dubby.windowSelectorActive && dubby.windowItemSelected == dubby.WIN1) {
             // Reset all knobs to false for all drums except the selected one
-            for (int i = 0; i < numPages; i++)
+            for (int i = 0; i < NUM_PAGES; i++)
             {
                 if (i != selectedPage)
                 {
@@ -68,14 +65,15 @@ namespace daisy
                 }
             }
             // If there was a knob rotation and the button is not pressed, change the selected page
-            selectedPage = (selectedPage + rotationDirection + (numPages-1)) % (numPages-1);
+            selectedPage = (selectedPage + rotationDirection + (NUM_PAGES)) % (NUM_PAGES);
         }
 
         // Update the algorithm title and custom labels for the selected page
         dubby.algorithmTitle = algorithmTitles[selectedPage];
         dubby.customLabels.assign(customLabels[selectedPage], customLabels[selectedPage] + NUM_KNOBS);
+        if(dubby.windowItemSelected == dubby.WIN1){
         dubby.UpdateAlgorithmTitle();
-
+        }
         // Process knobs for the selected page
         for (int j = 0; j < NUM_KNOBS; j++)
         {
@@ -98,7 +96,7 @@ namespace daisy
         }
 
         // Update the knob values for the visual representation
-        dubby.updateKnobValues(knobValues);
+        dubby.UpdateKnobValues(knobValues);
     }
 
 
