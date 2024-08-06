@@ -17,7 +17,7 @@ float knob1Value;
 ReverbSc DSY_SDRAM_BSS verbLeft, verbRight;
 DelayLine<float, MAX_DELAY> DSY_SDRAM_BSS preDelayLeft, preDelayRight;
 
-float wetVolumeAdjustment = 0.8f; 
+float wetVolumeAdjustment = 0.5f; 
 
 void MonitorMidi();
 void HandleMidiUartMessage(MidiEvent m);
