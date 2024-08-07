@@ -1106,7 +1106,7 @@ void Dubby::DisplayParameterList(int increment)
     // display.DrawRect(PANE_X_START - 1, 1, PANE_X_END, PANE_Y_END, false, true);
     int ctrlColumnPos = 43;
     int valMinMaxCurveColumnPos = 99;
-    int pageColumnPos = 75;
+    int pageColumnPos = 71;
 
     int optionStart = 1;
     if (parameterSelected > (PARAMLIST_ROWS_ON_SCREEN - 1))
