@@ -1236,6 +1236,11 @@ void Dubby::ProcessAllControls()
     dubbyCtrls[2].value = GetKnobValue(CTRL_2);
     dubbyCtrls[3].value = GetKnobValue(CTRL_3);
     dubbyCtrls[4].value = GetKnobValue(CTRL_4);
+    // dubbyCtrls[1].value = getKnobValueMatrix[0][0];
+    // dubbyCtrls[2].value = getKnobValueMatrix[0][1];
+    // dubbyCtrls[3].value = getKnobValueMatrix[0][2];
+    // dubbyCtrls[4].value = getKnobValueMatrix[0][3];
+
     dubbyCtrls[5].value = buttons[0].Pressed();
     dubbyCtrls[6].value = buttons[1].Pressed();
     dubbyCtrls[7].value = buttons[2].Pressed();

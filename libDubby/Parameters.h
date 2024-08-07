@@ -46,6 +46,14 @@ enum Pages
   SIX, 
   SEVEN,
   EIGHT, 
+  NINE, 
+  TEN,
+  ELEVEN, 
+  TWELWE, 
+  THIRTEEN,
+  FOURTEEN,
+  FIFTEEN,
+  SIXTEEN,
   PAGES_LAST
 };
 
