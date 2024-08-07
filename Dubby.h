@@ -232,6 +232,18 @@ namespace daisy
                 "JSSW",
         };
 
+        const char *PagesStrings[CONTROLS_LAST] =
+            {
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+        };
+
         const char *ParamsStrings[PARAMS_LAST] =
             {
                 "-",

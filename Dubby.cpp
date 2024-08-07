@@ -1065,7 +1065,7 @@ void Dubby::DisplayParameterList(int increment)
     // display.DrawRect(PANE_X_START - 1, 1, PANE_X_END, PANE_Y_END, false, true);
     int ctrlColumnPos = 43;
     int valMinMaxCurveColumnPos = 99;
-    int pageColumnPos = 75; // not in use yet
+    int pageColumnPos = 75; 
 
     int optionStart = 1;
     if (parameterSelected > (PARAMLIST_ROWS_ON_SCREEN - 1))
@@ -1094,6 +1094,9 @@ void Dubby::DisplayParameterList(int increment)
                 case CTRL:
                     x = ctrlColumnPos;
                     break;
+                case PAGE: // handle PAGE selection
+                    x = pageColumnPos;
+                    break;
                 case VALUE:
                 case MIN:
                 case MAX:
@@ -1118,6 +1121,9 @@ void Dubby::DisplayParameterList(int increment)
 
         display.SetCursor(ctrlColumnPos + 2, PARAMLIST_Y_START + 1 + (j * PARAMLIST_SPACING));
         display.WriteString(ControlsStrings[GetParameterControl(dubbyParameters[i].param)], Font_4x5, !(parameterSelected == i && isParameterSelected));
+
+        display.SetCursor(pageColumnPos + 2, PARAMLIST_Y_START + 1 + (j * PARAMLIST_SPACING));
+        display.WriteString("HEJ", Font_4x5, !(parameterSelected == i && isParameterSelected));
 
         std::string str = std::to_string(GetParameterValue(dubbyParameters[i])).substr(0, std::to_string(GetParameterValue(dubbyParameters[i])).find(".") + 3);
         switch (parameterOptionSelected)

@@ -35,6 +35,19 @@ enum ParameterOptions
   POPTIONS_LAST
 };
 
+enum Pages 
+{
+  ONE,
+  TWO,
+  THREE,
+  FOUR,
+  FIVE,
+  SIX, 
+  SEVEN,
+  EIGHT, 
+  PAGES_LAST
+};
+
 
 enum Curves
 {
@@ -58,10 +71,9 @@ class Parameters
     float max;
     Curves curve;
 
-    void Init(Params p, int pg, float v, float mi, float ma, Curves c) 
+    void Init(Params p, float v, float mi, float ma, Curves c) 
     {
       param = p;
-      page = pg; 
       value = v;
       min = mi;
       max = ma;
