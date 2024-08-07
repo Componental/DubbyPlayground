@@ -308,8 +308,8 @@ void Dubby::UpdateDisplay()
     switch (windowItemSelected)
     {
     case WIN1:
-                UpdateKnobWindow(customLabels, numDecimals);
-    break;
+        UpdateKnobWindow(customLabels, numDecimals);
+        break;
     case WIN2:
         UpdateRenderPane(); // Update the render pane for window 1
         break;
@@ -370,7 +370,8 @@ void Dubby::UpdateDisplay()
                     prevControl = CONTROL_NONE;
                     dubbyCtrls[i].addParamValue(dubbyParameters[parameterSelected].param);
                     DisplayParameterList(0);
-                    UpdateStatusBar(" PARAM       CTRL     VALUE   ", LEFT);
+                    fullParameterStatusbar = parameterWindowStatusbarBase + "VALUE";
+                    UpdateStatusBar(&fullParameterStatusbar[0], LEFT);
                     isListeningControlChange = false;
                     isEncoderIncrementDisabled = false;
                 }
@@ -393,7 +394,8 @@ void Dubby::UpdateDisplay()
             {
                 isCurveChanging = false;
                 isEncoderIncrementDisabled = false;
-                UpdateStatusBar(" PARAM       CTRL     CURVE   ", LEFT);
+                fullParameterStatusbar = parameterWindowStatusbarBase + "CURVE";
+                UpdateStatusBar(&fullParameterStatusbar[0], LEFT);
             }
         }
         // Handle minimum value changing
@@ -407,7 +409,8 @@ void Dubby::UpdateDisplay()
             {
                 isMinChanging = false;
                 isEncoderIncrementDisabled = false;
-                UpdateStatusBar(" PARAM       CTRL     MIN   ", LEFT);
+                fullParameterStatusbar = parameterWindowStatusbarBase + "MIN    ";
+                UpdateStatusBar(&fullParameterStatusbar[0], LEFT);
             }
         }
         // Handle maximum value changing
@@ -421,7 +424,9 @@ void Dubby::UpdateDisplay()
             {
                 isMaxChanging = false;
                 isEncoderIncrementDisabled = false;
-                UpdateStatusBar(" PARAM       CTRL     MAX   ", LEFT);
+                fullParameterStatusbar = parameterWindowStatusbarBase + "MAX    ";
+
+                UpdateStatusBar(&fullParameterStatusbar[0], LEFT);
             }
         }
         // Handle parameter value changing
@@ -435,7 +440,9 @@ void Dubby::UpdateDisplay()
             {
                 isValueChanging = false;
                 isEncoderIncrementDisabled = false;
-                UpdateStatusBar(" PARAM       CTRL     VALUE ", LEFT);
+                fullParameterStatusbar = parameterWindowStatusbarBase + "VALUE";
+
+                UpdateStatusBar(&fullParameterStatusbar[0], LEFT);
             }
         }
 
@@ -455,16 +462,20 @@ void Dubby::UpdateDisplay()
                 switch (parameterOptionSelected)
                 {
                 case MIN:
-                    UpdateStatusBar(" PARAM       CTRL     MIN   ", LEFT);
+                    fullParameterStatusbar = parameterWindowStatusbarBase + "MIN    ";
+                    UpdateStatusBar(&fullParameterStatusbar[0], LEFT);
                     break;
                 case MAX:
-                    UpdateStatusBar(" PARAM       CTRL     MAX   ", LEFT);
+                    fullParameterStatusbar = parameterWindowStatusbarBase + "MAX    ";
+                    UpdateStatusBar(&fullParameterStatusbar[0], LEFT);
                     break;
                 case CURVE:
-                    UpdateStatusBar(" PARAM       CTRL     CURVE ", LEFT);
+                    fullParameterStatusbar = parameterWindowStatusbarBase + "CURVE";
+                    UpdateStatusBar(&fullParameterStatusbar[0], LEFT);
                     break;
                 default:
-                    UpdateStatusBar(" PARAM       CTRL     VALUE   ", LEFT);
+                    fullParameterStatusbar = parameterWindowStatusbarBase + "VALUE";
+                    UpdateStatusBar(&fullParameterStatusbar[0], LEFT);
                     break;
                 }
 
@@ -630,11 +641,9 @@ void Dubby::ReleaseWindowSelector()
 
 void Dubby::ClearPane()
 {
-    
-    display.DrawRect(PANE_X_START - 1, PANE_Y_START - 1, PANE_X_END + 1, PANE_Y_END + 12, false, true);
- //      display.DrawRect(PANE_X_START, PANE_Y_START, PANE_X_END, PANE_Y_END, false, true);
 
-    
+    display.DrawRect(PANE_X_START - 1, PANE_Y_START - 1, PANE_X_END + 1, PANE_Y_END + 12, false, true);
+    //      display.DrawRect(PANE_X_START, PANE_Y_START, PANE_X_END, PANE_Y_END, false, true);
 }
 
 void Dubby::UpdateMixerPane()
@@ -694,10 +703,10 @@ void Dubby::UpdateWindowList()
 
     switch (windowItemSelected)
     {
-        case WIN1:
-     //   display.SetCursor(10, 15);
-         //   UpdateStatusBar(&algorithmTitle[0], LEFT);
-            UpdateKnobWindow(customLabels, numDecimals);
+    case WIN1:
+        //   display.SetCursor(10, 15);
+        //   UpdateStatusBar(&algorithmTitle[0], LEFT);
+        UpdateKnobWindow(customLabels, numDecimals);
         break;
     case WIN2:
         statusStr = GetTextForEnum(SCOPE, scopeSelector);
@@ -712,7 +721,8 @@ void Dubby::UpdateWindowList()
         DisplayPreferencesMenuList(0);
         break;
     case WIN5:
-        UpdateStatusBar(" PARAM       CTRL     VALUE   ", LEFT);
+        fullParameterStatusbar = parameterWindowStatusbarBase + "VALUE";
+        UpdateStatusBar(&fullParameterStatusbar[0], LEFT);
         display.DrawLine(6, 7, 127, 7, true);
 
         DisplayParameterList(0);
@@ -964,12 +974,13 @@ void Dubby::UpdateStatusBar(char *text, StatusBarSide side = LEFT, int width)
     display.Update();
 }
 
-void Dubby::UpdateKnobWindow(const std::vector<std::string>& knobLabels, const std::vector<int>& numDecimals) {
-        display.DrawRect(PANE_X_START, PANE_Y_START, PANE_X_END, PANE_Y_END, false, true);
+void Dubby::UpdateKnobWindow(const std::vector<std::string> &knobLabels, const std::vector<int> &numDecimals)
+{
+    display.DrawRect(PANE_X_START, PANE_Y_START, PANE_X_END, PANE_Y_END, false, true);
 
     // Define parameters for circular knobs
-    int circle_y = 34;          // Y-coordinate of the center of the circle
-    int circle_radius = 8;      // Radius of the circle
+    int circle_y = 34;     // Y-coordinate of the center of the circle
+    int circle_radius = 8; // Radius of the circle
 
     // Calculate total width occupied by circles
     int totalWidth = NUM_KNOBS * 2 * circle_radius;
@@ -978,7 +989,8 @@ void Dubby::UpdateKnobWindow(const std::vector<std::string>& knobLabels, const s
     int circleSpacing = (OLED_WIDTH - totalWidth) / (NUM_KNOBS + 1);
 
     // Loop through each knob value
-    for (int i = 0; i < NUM_KNOBS; ++i) {
+    for (int i = 0; i < NUM_KNOBS; ++i)
+    {
         // Calculate knob x-coordinate
         int circle_x_offset = circleSpacing * (i + 1) + circle_radius + i * 2 * circle_radius;
 
@@ -987,7 +999,7 @@ void Dubby::UpdateKnobWindow(const std::vector<std::string>& knobLabels, const s
 
         float knobValueLive = GetKnobValue(static_cast<Ctrl>(i));
         // Calculate angle for the current knob
-        float angle = (knobValue * 0.8f * 2 * PI_F) - (PI_F * 1.5f) + 0.2 * PI_F;  // Convert knob value to angle
+        float angle = (knobValue * 0.8f * 2 * PI_F) - (PI_F * 1.5f) + 0.2 * PI_F; // Convert knob value to angle
 
         // Calculate angle for knobValueLive
         float liveAngle = (knobValueLive * 0.8f * 2 * PI_F) - (PI_F * 1.5f) + 0.2 * PI_F;
@@ -996,29 +1008,27 @@ void Dubby::UpdateKnobWindow(const std::vector<std::string>& knobLabels, const s
         int line_end_x = circle_x_offset + static_cast<int>(circle_radius * cos(angle));
         int line_end_y = circle_y + static_cast<int>(circle_radius * sin(angle));
 
-
         int arc_radius = circle_radius - 1; // Define a smaller radius for the arc
 
         // Calculate start and end angles for the arc
-float start_arc_angle = -angle;  // Start angle is the same as angle
-float end_arc_angle = -liveAngle;  // End angle is the same as liveAngle
+        float start_arc_angle = -angle;   // Start angle is the same as angle
+        float end_arc_angle = -liveAngle; // End angle is the same as liveAngle
 
-// Draw arc indicating knob value difference
-display.DrawArc(circle_x_offset, circle_y, arc_radius, 
-                static_cast<int>((start_arc_angle ) * 180.0f / PI_F), // Convert to degrees
-                static_cast<int>((end_arc_angle - start_arc_angle) * 180.0f / PI_F), // Sweep angle
-                true);
+        // Draw arc indicating knob value difference
+        display.DrawArc(circle_x_offset, circle_y, arc_radius,
+                        static_cast<int>((start_arc_angle) * 180.0f / PI_F),                 // Convert to degrees
+                        static_cast<int>((end_arc_angle - start_arc_angle) * 180.0f / PI_F), // Sweep angle
+                        true);
 
         // Draw circular knob
         display.DrawCircle(circle_x_offset, circle_y, circle_radius, true);
 
         // Draw line indicating knob value
         display.DrawLine(circle_x_offset, circle_y, line_end_x, line_end_y, true);
-        
 
         // Calculate the position for the label to be centered above the circle
-        int label_x = circle_x_offset - (knobLabels[i].size() * 4) / 2;  // Assuming each character is 4 pixels wide in the selected font
-        int label_y = circle_y - 20;  // Adjust this value to position the label properly above the circle
+        int label_x = circle_x_offset - (knobLabels[i].size() * 4) / 2; // Assuming each character is 4 pixels wide in the selected font
+        int label_y = circle_y - 20;                                    // Adjust this value to position the label properly above the circle
 
         // Draw custom label above each circle
         display.SetCursor(label_x, label_y);
@@ -1036,24 +1046,26 @@ display.DrawArc(circle_x_offset, circle_y, arc_radius,
         display.SetCursor(value_x, circle_y + 15);
         display.WriteString(formattedValue, Font_4x5, true);
     }
-   
 }
 
-void Dubby::UpdateAlgorithmTitle(){
-                UpdateStatusBar(&algorithmTitle[0], LEFT); 
-
+void Dubby::UpdateAlgorithmTitle()
+{
+    UpdateStatusBar(&algorithmTitle[0], LEFT);
 }
 
-void Dubby::UpdateKnobValues(const std::vector<float>& values) {
+void Dubby::UpdateKnobValues(const std::vector<float> &values)
+{
     knobValuesForPrint.clear(); // Clear the existing values
     knobValuesForPrint.insert(knobValuesForPrint.end(), values.begin(), values.end());
 }
-
 
 void Dubby::DisplayParameterList(int increment)
 {
     // clear bounding box
     // display.DrawRect(PANE_X_START - 1, 1, PANE_X_END, PANE_Y_END, false, true);
+    int ctrlColumnPos = 43;
+    int valMinMaxCurveColumnPos = 99;
+    int pageColumnPos = 75; // not in use yet
 
     int optionStart = 1;
     if (parameterSelected > (PARAMLIST_ROWS_ON_SCREEN - 1))
@@ -1080,13 +1092,13 @@ void Dubby::DisplayParameterList(int increment)
                 switch (parameterOptionSelected)
                 {
                 case CTRL:
-                    x = 51;
+                    x = ctrlColumnPos;
                     break;
                 case VALUE:
                 case MIN:
                 case MAX:
                 case CURVE:
-                    x = 87;
+                    x = valMinMaxCurveColumnPos;
                     break;
                 default:
                     x = 3;
@@ -1104,7 +1116,7 @@ void Dubby::DisplayParameterList(int increment)
         display.SetCursor(5, PARAMLIST_Y_START + 1 + (j * PARAMLIST_SPACING));
         display.WriteString(ParamsStrings[i], Font_4x5, !(parameterSelected == i && isParameterSelected));
 
-        display.SetCursor(53, PARAMLIST_Y_START + 1 + (j * PARAMLIST_SPACING));
+        display.SetCursor(ctrlColumnPos + 2, PARAMLIST_Y_START + 1 + (j * PARAMLIST_SPACING));
         display.WriteString(ControlsStrings[GetParameterControl(dubbyParameters[i].param)], Font_4x5, !(parameterSelected == i && isParameterSelected));
 
         std::string str = std::to_string(GetParameterValue(dubbyParameters[i])).substr(0, std::to_string(GetParameterValue(dubbyParameters[i])).find(".") + 3);
@@ -1121,11 +1133,11 @@ void Dubby::DisplayParameterList(int increment)
             break;
         default:
             str = std::to_string(GetParameterValue(dubbyParameters[i])).substr(0, std::to_string(GetParameterValue(dubbyParameters[i])).find(".") + 3);
-            // UpdateStatusBar(" PARAM       CTRL     VALUE   ", LEFT);
+            // UpdateStatusBar(&fullParameterStatusbar[0], LEFT); %VALUE   ", LEFT);
             break;
         }
 
-        display.SetCursor(89, PARAMLIST_Y_START + 1 + (j * PARAMLIST_SPACING));
+        display.SetCursor(valMinMaxCurveColumnPos + 2, PARAMLIST_Y_START + 1 + (j * PARAMLIST_SPACING));
         display.WriteString(&str[0], Font_4x5, !(parameterSelected == i && isParameterSelected));
     }
 

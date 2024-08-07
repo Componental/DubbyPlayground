@@ -63,7 +63,7 @@ class Dubby
     
     const char * WindowItemsStrings[WIN_LAST] = // the label seen on the display
     { 
-        "WIN1",
+        "CONTROLS",
         "SCOPE", 
         "MIXER", 
         "PREFS",
@@ -260,13 +260,19 @@ class Dubby
 
     const char * CurvesStrings[CURVES_LAST]
     {
-        "LINEAR",
-        "LOGARITH",
-        "EXPONENT",
-        "SIGMOID",
+        "LIN",
+        "LOG",
+        "EXP",
+        "SIG",
+
+        // "LINEAR",
+        // "LOGARITH",
+        // "EXPONENT",
+        // "SIGMOID",
     };
 
-
+    std::string parameterWindowStatusbarBase = " PARAM     CTRL   PAGE   ";
+std::string fullParameterStatusbar = "";
 
     Dubby() {}
 
@@ -430,7 +436,7 @@ const char *knobLabels[NUM_PAGES][NUM_KNOBS] = {
     {"PRM 9", "PRM 10", "PRM 11", "PRM 12"},
     {"PRM 13", "PRM 14", "PRM 15", "PRM 16"}};
 
-float savedKnobValues[NUM_PAGES][NUM_KNOBS] = {
+float getKnobValueMatrix[NUM_PAGES][NUM_KNOBS] = {
     {.4f, .6f, .4f, .0f}, // default value bass drum
     {.2f, .4f, .6f, .7f}, // default value snare
     {.2f, .2f, .2f, .2f}, // default value tom
