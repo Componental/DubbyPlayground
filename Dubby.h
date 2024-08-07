@@ -234,6 +234,7 @@ namespace daisy
 
         const char *PagesStrings[CONTROLS_LAST] =
             {
+                "ALL",
                 "1",
                 "2",
                 "3",
@@ -374,6 +375,7 @@ namespace daisy
         bool isParameterSelected = false;
         ParameterOptions parameterOptionSelected = PARAM;
         bool isListeningControlChange = false;
+        bool isPageChanging = false;
         bool isCurveChanging = false;
         bool isMinChanging = false;
         bool isMaxChanging = false;

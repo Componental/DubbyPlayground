@@ -37,6 +37,7 @@ enum ParameterOptions
 
 enum Pages 
 {
+  ALL,
   ONE,
   TWO,
   THREE,
