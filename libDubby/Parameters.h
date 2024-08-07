@@ -27,12 +27,14 @@ enum ParameterOptions
 {
   PARAM,
   CTRL,
+  PAGE,
   VALUE,
   MIN,
   MAX, 
   CURVE,
   POPTIONS_LAST
 };
+
 
 enum Curves
 {
@@ -50,14 +52,16 @@ class Parameters
   public:
 
     Params param;
+    int page;
     float value;
     float min;
     float max;
     Curves curve;
 
-    void Init(Params p, float v, float mi, float ma, Curves c) 
+    void Init(Params p, int pg, float v, float mi, float ma, Curves c) 
     {
       param = p;
+      page = pg; 
       value = v;
       min = mi;
       max = ma;
