@@ -236,20 +236,14 @@ class Dubby
     const char * ParamsStrings[PARAMS_LAST] = 
     { 
       "-",
-      "TIME", 
-      "FEEDBACK", 
-      "MIX", 
-      "CUTOFF", 
-      "IN GAIN", 
+      "DLY TIME", 
+      "DLY FB", 
+      "DLY DIV", 
+      "DLY SPREAD",
+      "MIX",
+      "LPF CUTOFF",
+      "LPF RES",
       "OUT GAIN", 
-      "FREEZE", 
-      "MUTE", 
-      "LOOP", 
-      "RES", 
-      "SCRUB",
-      "RATIO",
-      "PREDELAY",
-      "AMOUNT",
       "2ND_LAST" // because of a bug
     };
 

@@ -1,3 +1,9 @@
+// HOW TO USE PARAMS: 
+// 1. ADD PARAMS TO ENUM LIST BELOW
+// 2. UPDATE PARAMSSTRINGS IN Dubby.h WITH THE SAME ORDER AS THE ENUM
+// 3. INITIALIZE IN USING .Init() IN InitDubbyParameters() IN Dubby.cpp
+// 4. EVENTUALLY ASSIGN THE PARAMETER TO A CONTROL IN InitDubbyControls();
+// 5. USE THE VARIABLE IN DubbyPlayground.cpp, GET THE VALUE USING: dubby.GetParameterValue(dubby.dubbyParameters[FLT_CUTOFF]
 
 #pragma once
 
@@ -5,20 +11,14 @@
 
 enum Params {
   PARAM_NONE,
-  TIME,
-  FEEDBACK,
-  MIX, 
-  CUTOFF,
-  IN_GAIN,
+  DLY_TIME,
+  DLY_FEEDBACK,
+  DLY_DIVISION,
+  DLY_SPREAD,
+  DLY_MIX,
+  FLT_CUTOFF,
+  FLT_RESONANCE,
   OUT_GAIN,
-  FREEZE,
-  MUTE, 
-  LOOP,
-  RESONANCE,
-  SCRUB,
-  RATIO,
-  PREDELAY,
-  AMOUNT,
   PARAMS_2ND_LAST, // because of a bug with last element of list, made this one but stays hidden
   PARAMS_LAST
 };
