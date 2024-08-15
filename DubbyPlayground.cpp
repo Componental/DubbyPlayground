@@ -13,6 +13,9 @@ void MonitorMidi();
 void HandleMidiUartMessage(MidiEvent m);
 void HandleMidiUsbMessage(MidiEvent m);
 
+//Persistent Storage Declaration. Using type Settings and passed the devices qspi handle
+PersistentStorage<PersistantMemoryParameterSettings> SavedParameterSettings(dubby.seed.qspi);
+
 void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, size_t size)
 {
     double sumSquared[2][NUM_AUDIO_CHANNELS] = {0.0f};
@@ -41,8 +44,7 @@ int main(void)
 {
     Init(dubby);
     InitMidiClock(dubby);
-
-    // dubby.LoadFromQspi();
+    InitPersistantMemory(dubby, SavedParameterSettings);
 
     dubby.seed.StartAudio(AudioCallback);
 
@@ -51,16 +53,11 @@ int main(void)
     // setLED(1, RED, 0);
     // updateLED();
 
-    PersistantMemorySettings &LocalSettingss = dubby.saved_settings_ptr->GetSettings();
-
-    std::string str = std::to_string(LocalSettingss.savedParams[1].min);
-
-    dubby.UpdateStatusBar(&str[0], dubby.MIDDLE, 127);
-
     while (1)
     {
         Monitor(dubby);
         MonitorMidi();
+        MonitorPersistantMemory(dubby, SavedParameterSettings);
     }
 }
 

@@ -87,47 +87,6 @@ void Dubby::Init()
     InitDubbyParameters();
     InitDubbyControls();
 
-    saved_settings_ptr = new PersistentStorage<PersistantMemorySettings>(seed.qspi);
-}
-
-
-void Dubby::LoadFromQspi() {
-
-	//Reference to local copy of settings stored in flash
-	PersistantMemorySettings &LocalSettings = saved_settings_ptr->GetSettings();
-	
-	float a = LocalSettings.savedParams[1].max;
-
-    for (int i = 1; i < PARAMS_LAST; i++) {
-        dubbyParameters[i].value = LocalSettings.savedParams[i].value;
-        dubbyParameters[i].min = LocalSettings.savedParams[i].min;
-        dubbyParameters[i].max = LocalSettings.savedParams[i].max;
-        dubbyParameters[i].curve = LocalSettings.savedParams[i].curve;
-    }
-
-	use_preset = true;
-}
-
-void Dubby::SaveToQspi(int paramIndex) {
-
-	//Reference to local copy of settings stored in flash
-	PersistantMemorySettings &LocalSettings = saved_settings_ptr->GetSettings();
-
-	LocalSettings.savedParams[paramIndex].value = dubbyParameters[paramIndex].value;
-	LocalSettings.savedParams[paramIndex].min = dubbyParameters[paramIndex].min;
-	LocalSettings.savedParams[paramIndex].max = dubbyParameters[paramIndex].max;
-	LocalSettings.savedParams[paramIndex].curve = dubbyParameters[paramIndex].curve;
-
-
-    saved_settings_ptr->Save(); // Writing locally stored settings to the external flash
-
-    PersistantMemorySettings &LocalSettingss = saved_settings_ptr->GetSettings();
-    
-    std::string str = std::to_string(LocalSettingss.savedParams[paramIndex].min);
-
-    UpdateStatusBar(&str[0], MIDDLE, 127);
-    
-	trigger_save = true;
 }
 
 void Dubby::InitControls()
@@ -197,106 +156,25 @@ void Dubby::InitDisplay()
 void Dubby::InitDubbyControls()
 {
     dubbyCtrls[0].Init(CONTROL_NONE, 0);
-
     dubbyCtrls[1].Init(KN1, 0);
-    dubbyCtrls[1].addParamValue(TIME);
-
     dubbyCtrls[2].Init(KN2, 0);
-    dubbyCtrls[1].addParamValue(FEEDBACK);
-
     dubbyCtrls[3].Init(KN3, 0);
-    dubbyCtrls[3].addParamValue(MIX);
-
     dubbyCtrls[4].Init(KN4, 0);
-    dubbyCtrls[4].addParamValue(CUTOFF);
-
     dubbyCtrls[5].Init(BTN1, 0);
-    dubbyCtrls[5].addParamValue(IN_GAIN);
-
     dubbyCtrls[6].Init(BTN2, 0);
-    dubbyCtrls[6].addParamValue(OUT_GAIN);
-
     dubbyCtrls[7].Init(BTN3, 0);
-    dubbyCtrls[7].addParamValue(FREEZE);
-
     dubbyCtrls[8].Init(BTN4, 0);
-    dubbyCtrls[8].addParamValue(MUTE);
-
     dubbyCtrls[9].Init(JSX, 0);
-    dubbyCtrls[9].addParamValue(LOOP);
-
     dubbyCtrls[10].Init(JSY, 0);
-    dubbyCtrls[10].addParamValue(RESONANCE);
-    
     dubbyCtrls[11].Init(JSSW, 0);
-
 }
 
 void Dubby::InitDubbyParameters()
 {
     for (int i = 0; i < PARAMS_LAST - 1; i++) 
     {
-        if (i == 0)
-            dubbyParameters[i].Init(PARAM_NONE, 2, -5, 10, LINEAR);
-        else if (i == 1)
-            dubbyParameters[i].Init(Params(i), 2, -5, 10, LINEAR, true, -10, true, 8);
-        else if (i == 2)
-            dubbyParameters[i].Init(Params(i), 2, -5, 10, LINEAR, true, -10, false, 8);
-        else if (i == 3)
-            dubbyParameters[i].Init(Params(i), 2, -5, 10, LINEAR, false, -10, true, 8);
-        else 
-            dubbyParameters[i].Init(Params(i), 0.6, -5, 10, SIGMOID);
+        dubbyParameters[i].Init(Params(i), CONTROL_NONE, 0, 0, 1, LINEAR);
     }
-
-    Parameters initParamValues[PARAMS_LAST];
-
-    for (int i = 0; i < PARAMS_LAST - 1; i++) 
-    {
-        if (i == 0)
-            initParamValues[i].Init(PARAM_NONE, 2, -5, 10, LINEAR);
-        else if (i == 1)
-            initParamValues[i].Init(Params(i), 2, -5, 10, LINEAR, true, -10, true, 8);
-        else if (i == 2)
-            initParamValues[i].Init(Params(i), 2, -5, 10, LINEAR, true, -10, false, 8);
-        else if (i == 3)
-            initParamValues[i].Init(Params(i), 2, -5, 10, LINEAR, false, -10, true, 8);
-        else 
-            initParamValues[i].Init(Params(i), 0.6, -5, 10, SIGMOID);
-    }
-
-
-    PersistantMemorySettings DefaultSettings;
-
-    for (int i = 0; i < PARAMS_LAST - 1; i++) 
-    {
-        DefaultSettings.savedParams[i] = initParamValues[i];
-    }
-
-	saved_settings_ptr->Init(DefaultSettings);
-}
-
-DubbyControls Dubby::GetParameterControl(Params p) 
-{
-    for (int i = 0; i < CONTROLS_LAST; i++) {
-        for (int j = 0; j < PARAMS_LAST; j++) {
-            if (p == dubbyCtrls[i].param[j])
-                return dubbyCtrls[i].control;
-        }
-    }
-
-    return CONTROL_NONE;
-}
-
-float Dubby::GetParameterValue(Parameters p)
-{
-    for (int i = 0; i < CONTROLS_LAST; i++) {
-        for (int j = 0; j < PARAMS_LAST; j++) {
-            if (p.param == dubbyCtrls[i].param[j])
-                return p.GetRealValue(dubbyCtrls[i].value);
-        }
-    }
-
-    return p.value;
 }
 
 void Dubby::SetAudioInGain(AudioIns in, float gain)
@@ -409,19 +287,14 @@ void Dubby::UpdateDisplay()
                 for (int i = 0; i < CONTROLS_LAST; i++) {
                     if (abs(dubbyCtrls[i].tempValue - dubbyCtrls[i].value) > 0.1f) {
 
-                        dubbyCtrls[prevControl].removeParamValue(dubbyParameters[parameterSelected].param);
-                        prevControl = CONTROL_NONE;
-
-                        dubbyCtrls[i].addParamValue(dubbyParameters[parameterSelected].param);
+                        dubbyParameters[parameterSelected].control = (DubbyControls)i;
 
                         DisplayParameterList(0);
                         UpdateStatusBar(" PARAM       CTRL     VALUE   ", LEFT);
 
                         isListeningControlChange = false;
                         isEncoderIncrementDisabled = false;
-
-                        
-                        SaveToQspi(parameterSelected);
+                        trigger_save_parameters_qspi = true;
                     }
                 }
             } else if (isCurveChanging) {
@@ -438,7 +311,7 @@ void Dubby::UpdateDisplay()
                     isEncoderIncrementDisabled = false;
                     UpdateStatusBar(" PARAM       CTRL     CURVE   ", LEFT);
 
-                    SaveToQspi(parameterSelected);
+                    trigger_save_parameters_qspi = true;
                 }
             } else if (isMinChanging) {
                 if (encoder.Increment()) {  
@@ -462,7 +335,7 @@ void Dubby::UpdateDisplay()
                     isEncoderIncrementDisabled = false;
                     UpdateStatusBar(" PARAM       CTRL     MIN   ", LEFT);  
                     
-                    SaveToQspi(parameterSelected);
+                    trigger_save_parameters_qspi = true;
                 }
             } else if (isMaxChanging) {
                 if (encoder.Increment()) {
@@ -486,7 +359,7 @@ void Dubby::UpdateDisplay()
                     isEncoderIncrementDisabled = false;
                     UpdateStatusBar(" PARAM       CTRL     MAX   ", LEFT);  
                     
-                    SaveToQspi(parameterSelected);
+                    trigger_save_parameters_qspi = true;
                 }
             } else if (isValueChanging) {
                 if (encoder.Increment()) {  
@@ -504,7 +377,7 @@ void Dubby::UpdateDisplay()
                     isEncoderIncrementDisabled = false;
                     UpdateStatusBar(" PARAM       CTRL     VALUE ", LEFT);  
                     
-                    SaveToQspi(parameterSelected);
+                    trigger_save_parameters_qspi = true;
                 }
             }
 
@@ -543,10 +416,10 @@ void Dubby::UpdateDisplay()
                     for (int i = 0; i < CONTROLS_LAST; i++) {
                         dubbyCtrls[i].tempValue = dubbyCtrls[i].value;
 
-                        for (int j = 0; j < PARAMS_LAST; j++) {
-                            if (dubbyCtrls[i].param[j] == parameterSelected)
-                                prevControl = dubbyCtrls[i].control;
-                        }
+                        // for (int j = 0; j < PARAMS_LAST; j++) {
+                        //     if (dubbyCtrls[i].param[j] == parameterSelected)
+                        //         prevControl = dubbyCtrls[i].control;
+                        // }
                     }
                 } else if (parameterOptionSelected == CURVE) {
                     if (EncoderFallingEdgeCustom())
@@ -569,7 +442,7 @@ void Dubby::UpdateDisplay()
                         isEncoderIncrementDisabled = true;
                         isMaxChanging = true;
                     }
-                } else if (parameterOptionSelected == VALUE && GetParameterControl(dubbyParameters[parameterSelected].param) == CONTROL_NONE) {
+                } else if (parameterOptionSelected == VALUE && dubbyParameters[parameterSelected].control == CONTROL_NONE) {
                     if (EncoderFallingEdgeCustom())
                     {
                         UpdateStatusBar("SELECT A VALUE", MIDDLE, 127);
@@ -1053,9 +926,9 @@ void Dubby::DisplayParameterList(int increment)
 
 
         display.SetCursor(53, PARAMLIST_Y_START + 1 + (j * PARAMLIST_SPACING));
-        display.WriteString(ControlsStrings[GetParameterControl(dubbyParameters[i].param)], Font_4x5, !(parameterSelected == i && isParameterSelected));
+        display.WriteString(ControlsStrings[dubbyParameters[i].control], Font_4x5, !(parameterSelected == i && isParameterSelected));
 
-        std::string str = std::to_string(GetParameterValue(dubbyParameters[i])).substr(0, std::to_string(GetParameterValue(dubbyParameters[i])).find(".") + 3);
+        std::string str;
         switch (parameterOptionSelected)
         {
             case MIN:
@@ -1068,7 +941,7 @@ void Dubby::DisplayParameterList(int increment)
                 str = CurvesStrings[dubbyParameters[i].curve];
                 break;
             default:
-                str = std::to_string(GetParameterValue(dubbyParameters[i])).substr(0, std::to_string(GetParameterValue(dubbyParameters[i])).find(".") + 3);
+                str = std::to_string(dubbyParameters[i].GetRealValue(dubbyCtrls[dubbyParameters[i].control].value)).substr(0, std::to_string(dubbyParameters[i].GetRealValue(dubbyCtrls[dubbyParameters[i].control].value)).find(".") + 3);
                 // UpdateStatusBar(" PARAM       CTRL     VALUE   ", LEFT);
                 break;
         }
