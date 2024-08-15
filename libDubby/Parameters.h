@@ -2,6 +2,9 @@
 #pragma once
 
 #include <iostream>
+#include <vector>
+#include <algorithm> // for std::find
+#include "Controls.h"
 
 enum Params {
   PARAM_NONE,
@@ -50,23 +53,30 @@ class Parameters
   public:
 
     Params param;
-    float value;
-    float min;
-    float max;
+    DubbyControls control = CONTROL_NONE;
+    float value, min, max, minLimit, maxLimit;
+    bool hasMinLimit, hasMaxLimit;
     Curves curve;
 
-    void Init(Params p, float v, float mi, float ma, Curves c) 
+    void Init(Params p, DubbyControls con, float v, float mi, float ma, Curves c, bool hasMinL = false, float minL = 0.0f, bool hasMaxL = false, float maxL = 1.0f) 
     {
       param = p;
+      control = con;
       value = v;
       min = mi;
       max = ma;
       curve = c;
+
+      hasMinLimit = hasMinL;
+      hasMaxLimit = hasMaxL;
+
+      if (hasMinL) minLimit = minL;
+      if (hasMaxL) maxLimit = maxL;
     }
 
-    float GetRealValue(float controlValue) 
+    float GetRealValue(float vv) 
     {
-        float normalizedValue = (controlValue - 0.0f) / (1.0f - 0.0f);
+        float normalizedValue = (vv - 0.0f) / (1.0f - 0.0f);
 
         switch(curve)
         {

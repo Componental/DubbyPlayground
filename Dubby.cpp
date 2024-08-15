@@ -86,6 +86,7 @@ void Dubby::Init()
     InitMidi();
     InitDubbyParameters();
     InitDubbyControls();
+
 }
 
 void Dubby::InitControls()
@@ -97,6 +98,7 @@ void Dubby::InitControls()
     cfg[CTRL_2].InitSingle(seed.GetPin(PIN_KNOB_2));
     cfg[CTRL_3].InitSingle(seed.GetPin(PIN_KNOB_3));
     cfg[CTRL_4].InitSingle(seed.GetPin(PIN_KNOB_4));
+    
     cfg[CTRL_5].InitSingle(seed.GetPin(PIN_JS_H));
     cfg[CTRL_6].InitSingle(seed.GetPin(PIN_JS_V));
 
@@ -154,78 +156,25 @@ void Dubby::InitDisplay()
 void Dubby::InitDubbyControls()
 {
     dubbyCtrls[0].Init(CONTROL_NONE, 0);
-
     dubbyCtrls[1].Init(KN1, 0);
-    dubbyCtrls[1].addParamValue(TIME);
-
     dubbyCtrls[2].Init(KN2, 0);
-    dubbyCtrls[1].addParamValue(FEEDBACK);
-
     dubbyCtrls[3].Init(KN3, 0);
-    dubbyCtrls[3].addParamValue(MIX);
-
     dubbyCtrls[4].Init(KN4, 0);
-    dubbyCtrls[4].addParamValue(CUTOFF);
-
     dubbyCtrls[5].Init(BTN1, 0);
-    dubbyCtrls[5].addParamValue(IN_GAIN);
-
     dubbyCtrls[6].Init(BTN2, 0);
-    dubbyCtrls[6].addParamValue(OUT_GAIN);
-
     dubbyCtrls[7].Init(BTN3, 0);
-    dubbyCtrls[7].addParamValue(FREEZE);
-
     dubbyCtrls[8].Init(BTN4, 0);
-    dubbyCtrls[8].addParamValue(MUTE);
-
     dubbyCtrls[9].Init(JSX, 0);
-    dubbyCtrls[9].addParamValue(LOOP);
-
     dubbyCtrls[10].Init(JSY, 0);
-    dubbyCtrls[10].addParamValue(RESONANCE);
-    
     dubbyCtrls[11].Init(JSSW, 0);
-
 }
 
 void Dubby::InitDubbyParameters()
 {
     for (int i = 0; i < PARAMS_LAST - 1; i++) 
     {
-        if (i == 0)
-            dubbyParameters[i].Init(PARAM_NONE, 0, 0, 1, LINEAR);
-        else if (i == 1)
-            dubbyParameters[i].Init(Params(i), 0, 0, 1, LOGARITHMIC);
-        else if (i == 2)
-            dubbyParameters[i].Init(Params(i), 0, 0, 0.5, EXPONENTIAL);
-        else 
-            dubbyParameters[i].Init(Params(i), 0.6, 0, 1, SIGMOID);
+        dubbyParameters[i].Init(Params(i), CONTROL_NONE, 0, 0, 1, LINEAR);
     }
-}
-
-DubbyControls Dubby::GetParameterControl(Params p) 
-{
-    for (int i = 0; i < CONTROLS_LAST; i++) {
-        for (int j = 0; j < PARAMS_LAST; j++) {
-            if (p == dubbyCtrls[i].param[j])
-                return dubbyCtrls[i].control;
-        }
-    }
-
-    return CONTROL_NONE;
-}
-
-float Dubby::GetParameterValue(Parameters p)
-{
-    for (int i = 0; i < CONTROLS_LAST; i++) {
-        for (int j = 0; j < PARAMS_LAST; j++) {
-            if (p.param == dubbyCtrls[i].param[j])
-                return p.GetRealValue(dubbyCtrls[i].value);
-        }
-    }
-
-    return p.value;
 }
 
 void Dubby::SetAudioInGain(AudioIns in, float gain)
@@ -338,16 +287,14 @@ void Dubby::UpdateDisplay()
                 for (int i = 0; i < CONTROLS_LAST; i++) {
                     if (abs(dubbyCtrls[i].tempValue - dubbyCtrls[i].value) > 0.1f) {
 
-                        dubbyCtrls[prevControl].removeParamValue(dubbyParameters[parameterSelected].param);
-                        prevControl = CONTROL_NONE;
-
-                        dubbyCtrls[i].addParamValue(dubbyParameters[parameterSelected].param);
+                        dubbyParameters[parameterSelected].control = (DubbyControls)i;
 
                         DisplayParameterList(0);
                         UpdateStatusBar(" PARAM       CTRL     VALUE   ", LEFT);
 
                         isListeningControlChange = false;
                         isEncoderIncrementDisabled = false;
+                        trigger_save_parameters_qspi = true;
                     }
                 }
             } else if (isCurveChanging) {
@@ -363,33 +310,74 @@ void Dubby::UpdateDisplay()
                     isCurveChanging = false;
                     isEncoderIncrementDisabled = false;
                     UpdateStatusBar(" PARAM       CTRL     CURVE   ", LEFT);
+
+                    trigger_save_parameters_qspi = true;
                 }
             } else if (isMinChanging) {
                 if (encoder.Increment()) {  
-                    dubbyParameters[parameterSelected].min += encoder.Increment();
+                    int incrementValue = encoder.Increment();
+                    float newValue = dubbyParameters[parameterSelected].min + incrementValue;
+
+                    // Check min limit
+                    if (dubbyParameters[parameterSelected].hasMinLimit && newValue < dubbyParameters[parameterSelected].minLimit) 
+                        newValue = dubbyParameters[parameterSelected].minLimit;
+                    
+
+                    // Check max limit
+                    if (dubbyParameters[parameterSelected].hasMaxLimit && newValue > dubbyParameters[parameterSelected].maxLimit) 
+                        newValue = dubbyParameters[parameterSelected].maxLimit;
+
+                    // Apply the new value
+                    dubbyParameters[parameterSelected].min = newValue;
                 }
                 if (EncoderFallingEdgeCustom()) {
                     isMinChanging = false;
                     isEncoderIncrementDisabled = false;
                     UpdateStatusBar(" PARAM       CTRL     MIN   ", LEFT);  
+                    
+                    trigger_save_parameters_qspi = true;
                 }
             } else if (isMaxChanging) {
-                if (encoder.Increment()) {  
-                    dubbyParameters[parameterSelected].max += encoder.Increment();
+                if (encoder.Increment()) {
+                    int incrementValue = encoder.Increment();
+                    float newValue = dubbyParameters[parameterSelected].max + incrementValue;
+
+                    // Check min limit
+                    if (dubbyParameters[parameterSelected].hasMinLimit && newValue < dubbyParameters[parameterSelected].minLimit)
+                        newValue = dubbyParameters[parameterSelected].minLimit;
+
+                    // Check max limit
+                    if (dubbyParameters[parameterSelected].hasMaxLimit && newValue > dubbyParameters[parameterSelected].maxLimit)
+                        newValue = dubbyParameters[parameterSelected].maxLimit;
+
+                    // Apply the new value
+                    dubbyParameters[parameterSelected].max = newValue;
                 }
+                            
                 if (EncoderFallingEdgeCustom()) {
                     isMaxChanging = false;
                     isEncoderIncrementDisabled = false;
                     UpdateStatusBar(" PARAM       CTRL     MAX   ", LEFT);  
+                    
+                    trigger_save_parameters_qspi = true;
                 }
             } else if (isValueChanging) {
                 if (encoder.Increment()) {  
-                    dubbyParameters[parameterSelected].value += encoder.Increment();
+
+                    if (encoder.Increment() == -1 && dubbyParameters[parameterSelected].value > dubbyParameters[parameterSelected].minLimit && dubbyParameters[parameterSelected].hasMinLimit)
+                        dubbyParameters[parameterSelected].value += encoder.Increment();
+                    else if (encoder.Increment() == 1 && dubbyParameters[parameterSelected].value < dubbyParameters[parameterSelected].maxLimit && dubbyParameters[parameterSelected].hasMaxLimit)
+                        dubbyParameters[parameterSelected].value += encoder.Increment();
+                    else 
+                        dubbyParameters[parameterSelected].value += encoder.Increment();
+                     
                 }
                 if (EncoderFallingEdgeCustom()) {
                     isValueChanging = false;
                     isEncoderIncrementDisabled = false;
                     UpdateStatusBar(" PARAM       CTRL     VALUE ", LEFT);  
+                    
+                    trigger_save_parameters_qspi = true;
                 }
             }
 
@@ -428,10 +416,10 @@ void Dubby::UpdateDisplay()
                     for (int i = 0; i < CONTROLS_LAST; i++) {
                         dubbyCtrls[i].tempValue = dubbyCtrls[i].value;
 
-                        for (int j = 0; j < PARAMS_LAST; j++) {
-                            if (dubbyCtrls[i].param[j] == parameterSelected)
-                                prevControl = dubbyCtrls[i].control;
-                        }
+                        // for (int j = 0; j < PARAMS_LAST; j++) {
+                        //     if (dubbyCtrls[i].param[j] == parameterSelected)
+                        //         prevControl = dubbyCtrls[i].control;
+                        // }
                     }
                 } else if (parameterOptionSelected == CURVE) {
                     if (EncoderFallingEdgeCustom())
@@ -454,7 +442,7 @@ void Dubby::UpdateDisplay()
                         isEncoderIncrementDisabled = true;
                         isMaxChanging = true;
                     }
-                } else if (parameterOptionSelected == VALUE && GetParameterControl(dubbyParameters[parameterSelected].param) == CONTROL_NONE) {
+                } else if (parameterOptionSelected == VALUE && dubbyParameters[parameterSelected].control == CONTROL_NONE) {
                     if (EncoderFallingEdgeCustom())
                     {
                         UpdateStatusBar("SELECT A VALUE", MIDDLE, 127);
@@ -938,9 +926,9 @@ void Dubby::DisplayParameterList(int increment)
 
 
         display.SetCursor(53, PARAMLIST_Y_START + 1 + (j * PARAMLIST_SPACING));
-        display.WriteString(ControlsStrings[GetParameterControl(dubbyParameters[i].param)], Font_4x5, !(parameterSelected == i && isParameterSelected));
+        display.WriteString(ControlsStrings[dubbyParameters[i].control], Font_4x5, !(parameterSelected == i && isParameterSelected));
 
-        std::string str = std::to_string(GetParameterValue(dubbyParameters[i])).substr(0, std::to_string(GetParameterValue(dubbyParameters[i])).find(".") + 3);
+        std::string str;
         switch (parameterOptionSelected)
         {
             case MIN:
@@ -953,7 +941,7 @@ void Dubby::DisplayParameterList(int increment)
                 str = CurvesStrings[dubbyParameters[i].curve];
                 break;
             default:
-                str = std::to_string(GetParameterValue(dubbyParameters[i])).substr(0, std::to_string(GetParameterValue(dubbyParameters[i])).find(".") + 3);
+                str = std::to_string(dubbyParameters[i].GetRealValue(dubbyCtrls[dubbyParameters[i].control].value)).substr(0, std::to_string(dubbyParameters[i].GetRealValue(dubbyCtrls[dubbyParameters[i].control].value)).find(".") + 3);
                 // UpdateStatusBar(" PARAM       CTRL     VALUE   ", LEFT);
                 break;
         }

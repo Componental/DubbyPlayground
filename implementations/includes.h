@@ -6,3 +6,4 @@
 #include "Scope.h"
 #include "Audio.h"
 #include "KnobsGui.h"
+#include "PersistantMemory.h"
