@@ -12,7 +12,6 @@
 #include "ui/DubbyEncoder.h"
 #include "led.h"
 #include "libDubby/Controls.h"
-
 #include "./bitmaps/bmps.h"
 
 #define AUDIO_BLOCK_SIZE 128
@@ -243,15 +242,14 @@ namespace daisy
                 "6",
                 "7",
                 "8",
-                "9", 
-                "10", 
-                "11", 
+                "9",
+                "10",
+                "11",
                 "12",
                 "13",
                 "14",
                 "15",
-                "16"
-        };
+                "16"};
 
         const char *ParamsStrings[PARAMS_LAST] =
             {
@@ -360,7 +358,10 @@ namespace daisy
 
         void UpdateAlgorithmTitle();
 
+        void SetCurrentPage(int page);
+        int currentPage; 
         std::vector<int> numDecimals = {1, 1, 1, 1}; // Assuming you have three knobs with different decimal places
+
 
         DubbyControls GetParameterControl(Params p);
 
@@ -435,7 +436,7 @@ namespace daisy
         std::vector<float> savedKnobValuesForVisuals;
         std::string algorithmTitle = "";
 
-        Controls dubbyCtrls[CONTROLS_LAST];
+        Controls    dubbyCtrls[NUM_PAGES][CONTROLS_LAST];
         Parameters dubbyParameters[PARAMS_LAST];
 
         const char *algorithmTitles[NUM_PAGES] = {"KNOB PAGE 1", "KNOB PAGE 2", "KNOB PAGE 3", "KNOB PAGE 4"};
@@ -447,9 +448,9 @@ namespace daisy
             {"PRM 13", "PRM 14", "PRM 15", "PRM 16"}};
 
         float getKnobValueMatrix[NUM_PAGES][NUM_KNOBS] = { // PAGEX x KNOBS
-            {.4f, .6f, .4f, .0f}, // default value bass drum
-            {.2f, .4f, .6f, .7f}, // default value snare
-            {.2f, .2f, .2f, .2f}, // default value tom
+            {.4f, .6f, .4f, .0f},                          // default value bass drum
+            {.2f, .4f, .6f, .7f},                          // default value snare
+            {.2f, .2f, .2f, .2f},                          // default value tom
             {.0f, .2f, .5f, .3f}};
         bool windowSelectorActive = false;
 

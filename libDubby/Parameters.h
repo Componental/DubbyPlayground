@@ -121,6 +121,10 @@ class Parameters
         return value;
     }
 
+    void setPage(int pg){
+      page = pg;
+    }
+
   private:
     
 };

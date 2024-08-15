@@ -14,11 +14,12 @@ namespace daisy
     bool knobWithinTolerance[5][NUM_KNOBS] = {0};
     std::vector<float> knobValues;
 
+
     bool WithinTolerance(float value1, float value2)
     {
         return fabs(value1 - value2) <= knobTolerance; // Check if the difference between two values is within a tolerance limit
     }
-
+ 
     void HandleKnobs(Dubby &dubby, const char **algorithmTitles, const char *(*customLabels)[NUM_KNOBS], float (*getKnobValueMatrix)[NUM_KNOBS])
     {
         static bool prevButtonState = false;
@@ -94,5 +95,7 @@ namespace daisy
         }
         // Update the knob values for the visual representation
         dubby.UpdateKnobValues(knobValues);
+        dubby.SetCurrentPage(selectedPage);
     }
+      
 } // namespace daisy

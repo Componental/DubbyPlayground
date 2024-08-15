@@ -152,43 +152,45 @@ void Dubby::InitDisplay()
 
 void Dubby::InitDubbyControls()
 {
-    dubbyCtrls[0].Init(CONTROL_NONE, 0);
 
-    dubbyCtrls[1].Init(KN1, 0);
-    dubbyCtrls[1].addParamValue(TIME);
+    // CONTROL 0
+    dubbyCtrls[0][0].Init(CONTROL_NONE, 0);
+    dubbyCtrls[0][1].Init(KN1, 0);
+    dubbyCtrls[0][2].Init(KN2, 0);
+    dubbyCtrls[0][3].Init(KN3, 0);
+    dubbyCtrls[0][4].Init(KN4, 0);
 
-    dubbyCtrls[2].Init(KN2, 0);
-    dubbyCtrls[1].addParamValue(FEEDBACK);
+    // CONTROL 1
+    dubbyCtrls[1][0].Init(CONTROL_NONE, 0);
+    dubbyCtrls[1][1].Init(KN1, 0);
+    dubbyCtrls[1][2].Init(KN2, 0);
+    dubbyCtrls[1][3].Init(KN3, 0);
+    dubbyCtrls[1][4].Init(KN4, 0);
 
-    dubbyCtrls[3].Init(KN3, 0);
-    dubbyCtrls[3].addParamValue(MIX);
+    // CONTROL 2
+    dubbyCtrls[2][0].Init(CONTROL_NONE, 0);
+    dubbyCtrls[2][1].Init(KN1, 0);
+    dubbyCtrls[2][2].Init(KN2, 0);
+    dubbyCtrls[2][3].Init(KN3, 0);
+    dubbyCtrls[2][4].Init(KN4, 0);
 
-    dubbyCtrls[4].Init(KN4, 0);
-    dubbyCtrls[4].addParamValue(CUTOFF);
+    // CONTROL 3
+    dubbyCtrls[3][0].Init(CONTROL_NONE, 0);
+    dubbyCtrls[3][1].Init(KN1, 0);
+    dubbyCtrls[3][2].Init(KN2, 0);
+    dubbyCtrls[3][3].Init(KN3, 0);
+    dubbyCtrls[3][4].Init(KN4, 0);
 
-    dubbyCtrls[5].Init(BTN1, 0);
-    dubbyCtrls[5].addParamValue(IN_GAIN);
+    // // CONTROL 1
+    // dubbyCtrls[0][1].addParamValue(TIME);
 
-    dubbyCtrls[6].Init(BTN2, 0);
-    dubbyCtrls[6].addParamValue(OUT_GAIN);
-
-    dubbyCtrls[7].Init(BTN3, 0);
-    dubbyCtrls[7].addParamValue(FREEZE);
-
-    dubbyCtrls[8].Init(BTN4, 0);
-    dubbyCtrls[8].addParamValue(MUTE);
-
-    dubbyCtrls[9].Init(JSX, 0);
-    dubbyCtrls[9].addParamValue(LOOP);
-
-    dubbyCtrls[10].Init(JSY, 0);
-    dubbyCtrls[10].addParamValue(RESONANCE);
-
-    dubbyCtrls[11].Init(JSSW, 0);
+    // // CONTROL 2
+    // dubbyCtrls[1][1].addParamValue(FEEDBACK);
 }
 
 void Dubby::InitDubbyParameters()
 {
+
     for (int i = 0; i < PARAMS_LAST - 1; i++)
     {
         if (i == 0)
@@ -203,13 +205,23 @@ void Dubby::InitDubbyParameters()
 }
 
 DubbyControls Dubby::GetParameterControl(Params p)
+// For each combination of page, ctrl, and j,
+// the function checks if the given parameter p matches any of the parameters associated
+// with the control dubbyCtrls[page][ctrl].param[j]. If a match is found, the function returns
+// the control (dubbyCtrls[page][ctrl].control) associated with that parameter.
+// If no matching control is found after all iterations, the function returns CONTROL_NONE,
+// indicating that the parameter p is not linked to any control.
+
 {
-    for (int i = 0; i < CONTROLS_LAST; i++)
+    for (int page = 0; page < NUM_PAGES; page++)
     {
-        for (int j = 0; j < PARAMS_LAST; j++)
+        for (int ctrl = 0; ctrl < CONTROLS_LAST; ctrl++)
         {
-            if (p == dubbyCtrls[i].param[j])
-                return dubbyCtrls[i].control;
+            for (int j = 0; j < PARAMS_LAST; j++)
+            {
+                if (p == dubbyCtrls[page][ctrl].param[j])
+                    return dubbyCtrls[page][ctrl].control;
+            }
         }
     }
 
@@ -217,13 +229,22 @@ DubbyControls Dubby::GetParameterControl(Params p)
 }
 
 float Dubby::GetParameterValue(Parameters p)
+// For each parameter associated with a control, it checks if the parameter in question (p.param)
+// matches any of the parameters in the dubbyCtrls[page][ctrl].param[j].
+// If a match is found, the function retrieves the control's value using dubbyCtrls[page][ctrl].value.
+// It then computes the "real" value of the parameter using the method p.GetRealValue() and returns this computed value.
+// If no matching parameter is found, the function returns the default value of p (p.value).
+
 {
-    for (int i = 0; i < CONTROLS_LAST; i++)
+    for (int page = 0; page < NUM_PAGES; page++)
     {
-        for (int j = 0; j < PARAMS_LAST; j++)
+        for (int ctrl = 0; ctrl < CONTROLS_LAST; ctrl++)
         {
-            if (p.param == dubbyCtrls[i].param[j])
-                return p.GetRealValue(dubbyCtrls[i].value);
+            for (int j = 0; j < PARAMS_LAST; j++)
+            {
+                if (p.param == dubbyCtrls[page][ctrl].param[j]) // these should stay like this and not be assigned to the select param
+                    return p.GetRealValue(dubbyCtrls[page][ctrl].value);
+            }
         }
     }
 
@@ -361,44 +382,70 @@ void Dubby::UpdateDisplay()
         // Handle control change listening
         if (isListeningControlChange)
         {
+
+            // If the system is currently listening for control changes
             for (int i = 0; i < CONTROLS_LAST; i++)
             {
+                // Loop through all controls up to the constant CONTROLS_LAST
+
                 // Check if the control value has changed significantly
-                if (abs(dubbyCtrls[i].tempValue - dubbyCtrls[i].value) > 0.1f)
+                if (abs(dubbyCtrls[currentPage][i].tempValue -
+                        dubbyCtrls[dubbyParameters[parameterSelected].page][i].value) > 0.1f)
                 {
-                    dubbyCtrls[prevControl].removeParamValue(dubbyParameters[parameterSelected].param);
+                    // If the absolute difference between the temporary value and the actual value
+                    // of the control at the current page and index is greater than 0.1f,
+                    // it means the control value has changed significantly
+
+                    // Remove the parameter value associated with the previously selected control
+                    dubbyCtrls[dubbyParameters[parameterSelected].page][prevControl].removeParamValue(dubbyParameters[parameterSelected].param);
+
+                    // Reset the previous control to indicate no control is currently selected
                     prevControl = CONTROL_NONE;
-                    dubbyCtrls[i].addParamValue(dubbyParameters[parameterSelected].param);
+
+                    // Add the parameter value to the newly selected control
+                    dubbyCtrls[dubbyParameters[parameterSelected].page][i].addParamValue(dubbyParameters[parameterSelected].param);
+
+                    // Update the parameter to reflect the current page
+                    dubbyParameters[parameterSelected].setPage(currentPage);
+
+                    // Refresh the parameter display, starting from the first parameter
                     DisplayParameterList(0);
+
+                    // Update the status bar with a message indicating the value is being adjusted
                     fullParameterStatusbar = parameterWindowStatusbarBase + "VALUE";
                     UpdateStatusBar(&fullParameterStatusbar[0], LEFT);
+
+                    // Stop listening for further control changes
                     isListeningControlChange = false;
+
+                    // Re-enable encoder increments, assuming they were disabled during this process
                     isEncoderIncrementDisabled = false;
                 }
             }
         }
+
         // Handle page changing
         else if (isPageChanging)
         {
             if (encoder.Increment())
             {
-        // Get current page and encoder increment
-        int currentPage = static_cast<int>(dubbyParameters[parameterSelected].page);
-        int increment = encoder.Increment();
+                // Get current page and encoder increment
+                int currentPage = static_cast<int>(dubbyParameters[parameterSelected].page);
+                int increment = encoder.Increment();
 
-        // Update page value considering the bounds
-        currentPage += increment;
-        if (currentPage >= NUM_PAGES+1) // Wrap around if exceeding the maximum page. +1 because of ALL option
-        {
-            currentPage = 0; // or any other logic you want for wrapping
-        }
-        else if (currentPage < 0) // Wrap around if going below the minimum page
-        {
-            currentPage = NUM_PAGES ; // or any other logic you want for wrapping. not -1 because of ALL option
-        }
+                // Update page value considering the bounds
+                currentPage += increment;
+                if (currentPage >= NUM_PAGES + 1) // Wrap around if exceeding the maximum page. +1 because of ALL option
+                {
+                    currentPage = 0; // or any other logic you want for wrapping
+                }
+                else if (currentPage < 0) // Wrap around if going below the minimum page
+                {
+                    currentPage = NUM_PAGES; // or any other logic you want for wrapping. not -1 because of ALL option
+                }
 
-        // Set the page value
-        dubbyParameters[parameterSelected].page = static_cast<Pages>(currentPage);
+                // Set the page value
+                dubbyParameters[parameterSelected].setPage(static_cast<Pages>(currentPage));
             }
             if (EncoderFallingEdgeCustom())
             {
@@ -480,6 +527,7 @@ void Dubby::UpdateDisplay()
         // Handle parameter option selection
         if (isParameterSelected)
         {
+
             if (encoder.Increment() && !isEncoderIncrementDisabled)
             {
                 // Cycle through parameter options based on encoder increment
@@ -515,21 +563,37 @@ void Dubby::UpdateDisplay()
             // Handle control selection
             else if (encoder.FallingEdge() && parameterOptionSelected == CTRL)
             {
+                // If the encoder has been pressed (FallingEdge triggered) and the selected parameter option is CTRL,
+                // proceed to handle control selection
+
                 UpdateStatusBar("SELECT A CONTROL", MIDDLE, 127);
+
+                // Set the system to listen for control changes
                 isListeningControlChange = true;
+
+                // Disable encoder increments to avoid interfering with the control selection process
                 isEncoderIncrementDisabled = true;
 
-                // Prepare for control change
-                for (int i = 0; i < CONTROLS_LAST; i++)
-                {
-                    dubbyCtrls[i].tempValue = dubbyCtrls[i].value;
-                    for (int j = 0; j < PARAMS_LAST; j++)
+                // Prepare for detecting control changes
+                    for (int i = 0; i < CONTROLS_LAST; i++)
                     {
-                        if (dubbyCtrls[i].param[j] == parameterSelected)
-                            prevControl = dubbyCtrls[i].control;
+                        // Loop through all controls up to the constant CONTROLS_LAST
+
+                        // Store the current value of each control into its temporary value
+                        dubbyCtrls[dubbyParameters[parameterSelected].page][i].tempValue = dubbyCtrls[dubbyParameters[parameterSelected].page][i].value;
+
+                        // Check if the current parameter is already associated with any control
+                        for (int k = 0; k < PARAMS_LAST; k++)
+                        {
+                            // If the current parameter (parameterSelected) is found in the list of parameters for the current control
+                            if (dubbyCtrls[dubbyParameters[parameterSelected].page][i].param[k] == parameterSelected)
+                                // Set prevControl to the current control's ID
+                                prevControl = dubbyCtrls[dubbyParameters[parameterSelected].page][i].control;
+                        }
                     }
                 }
-            }
+            
+
             // Handle page selection
             else if (parameterOptionSelected == PAGE)
             {
@@ -1100,6 +1164,11 @@ void Dubby::UpdateKnobValues(const std::vector<float> &values)
     knobValuesForPrint.insert(knobValuesForPrint.end(), values.begin(), values.end());
 }
 
+void Dubby::SetCurrentPage(int page)
+{
+    currentPage = page + 1;
+}
+
 void Dubby::DisplayParameterList(int increment)
 {
     // clear bounding box
@@ -1163,9 +1232,9 @@ void Dubby::DisplayParameterList(int increment)
         display.SetCursor(ctrlColumnPos + 2, PARAMLIST_Y_START + 1 + (j * PARAMLIST_SPACING));
         display.WriteString(ControlsStrings[GetParameterControl(dubbyParameters[i].param)], Font_4x5, !(parameterSelected == i && isParameterSelected));
 
-         std::string  pageStr = PagesStrings[dubbyParameters[i].page];
-         display.SetCursor(pageColumnPos + 2, PARAMLIST_Y_START + 1 + (j * PARAMLIST_SPACING));
-         display.WriteString(pageStr.c_str(), Font_4x5, !(parameterSelected == i && isParameterSelected));
+        std::string pageStr = PagesStrings[dubbyParameters[i].page];
+        display.SetCursor(pageColumnPos + 2, PARAMLIST_Y_START + 1 + (j * PARAMLIST_SPACING));
+        display.WriteString(pageStr.c_str(), Font_4x5, !(parameterSelected == i && isParameterSelected));
 
         std::string str = std::to_string(GetParameterValue(dubbyParameters[i])).substr(0, std::to_string(GetParameterValue(dubbyParameters[i])).find(".") + 3);
         switch (parameterOptionSelected)
@@ -1232,22 +1301,50 @@ void Dubby::ProcessAllControls()
     ProcessAnalogControls();
     ProcessDigitalControls();
 
-    dubbyCtrls[1].value = GetKnobValue(CTRL_1);
-    dubbyCtrls[2].value = GetKnobValue(CTRL_2);
-    dubbyCtrls[3].value = GetKnobValue(CTRL_3);
-    dubbyCtrls[4].value = GetKnobValue(CTRL_4);
-    // dubbyCtrls[1].value = getKnobValueMatrix[0][0];
-    // dubbyCtrls[2].value = getKnobValueMatrix[0][1];
-    // dubbyCtrls[3].value = getKnobValueMatrix[0][2];
-    // dubbyCtrls[4].value = getKnobValueMatrix[0][3];
+    // dubbyCtrls[0][1].value = GetKnobValue(CTRL_1);
+    // dubbyCtrls[0][2].value = GetKnobValue(CTRL_2);
+    // dubbyCtrls[0][3].value = GetKnobValue(CTRL_3);
+    // dubbyCtrls[0][4].value = GetKnobValue(CTRL_4);
+    // page0
 
-    dubbyCtrls[5].value = buttons[0].Pressed();
-    dubbyCtrls[6].value = buttons[1].Pressed();
-    dubbyCtrls[7].value = buttons[2].Pressed();
-    dubbyCtrls[8].value = buttons[3].Pressed();
-    dubbyCtrls[9].value = GetKnobValue(CTRL_5);
-    dubbyCtrls[10].value = GetKnobValue(CTRL_6);
-    dubbyCtrls[11].value = joystickButton.Pressed();
+    dubbyCtrls[0][1].value = getKnobValueMatrix[0][0];
+    dubbyCtrls[0][2].value = getKnobValueMatrix[0][1];
+    dubbyCtrls[0][3].value = getKnobValueMatrix[0][2];
+    dubbyCtrls[0][4].value = getKnobValueMatrix[0][3];
+
+    // page1
+
+    dubbyCtrls[1][1].value = getKnobValueMatrix[1][0];
+    dubbyCtrls[1][2].value = getKnobValueMatrix[1][1];
+    dubbyCtrls[1][3].value = getKnobValueMatrix[1][2];
+    dubbyCtrls[1][4].value = getKnobValueMatrix[1][3];
+
+    // page2
+    dubbyCtrls[2][1].value = getKnobValueMatrix[2][0];
+    dubbyCtrls[2][2].value = getKnobValueMatrix[2][1];
+    dubbyCtrls[2][3].value = getKnobValueMatrix[2][2];
+    dubbyCtrls[2][4].value = getKnobValueMatrix[2][3];
+
+    // page3
+    dubbyCtrls[3][1].value = getKnobValueMatrix[3][0];
+    dubbyCtrls[3][2].value = getKnobValueMatrix[3][1];
+    dubbyCtrls[3][3].value = getKnobValueMatrix[3][2];
+    dubbyCtrls[3][4].value = getKnobValueMatrix[3][3];
+
+    // for loop for shorter code, later
+
+    // for (int page = 0; page < NUM_PAGES; ++page) {
+    //     for (int controlIndex = 1; controlIndex <= 4; ++controlIndex) {
+    //         dubbyCtrls[page][controlIndex].value = getKnobValueMatrix[page][controlIndex - 1];
+    //     }
+    // }
+    dubbyCtrls[0][5].value = buttons[0].Pressed();
+    dubbyCtrls[0][6].value = buttons[1].Pressed();
+    dubbyCtrls[0][7].value = buttons[2].Pressed();
+    dubbyCtrls[0][8].value = buttons[3].Pressed();
+    dubbyCtrls[0][9].value = GetKnobValue(CTRL_5);
+    dubbyCtrls[0][10].value = GetKnobValue(CTRL_6);
+    dubbyCtrls[0][11].value = joystickButton.Pressed();
 }
 
 void Dubby::ProcessAnalogControls()
