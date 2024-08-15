@@ -194,7 +194,7 @@ void Dubby::InitDubbyParameters()
     dubbyParameters[DLY_MIX].Init(Params(DLY_MIX), 0, 0, 1, LINEAR);
     dubbyParameters[FLT_CUTOFF].Init(Params(FLT_CUTOFF), 1, 0, 2000, EXPONENTIAL);
     dubbyParameters[FLT_RESONANCE].Init(Params(FLT_RESONANCE), 0.3, 0, 1, LINEAR);
-    dubbyParameters[OUT_GAIN].Init(Params(OUT_GAIN), 1, 0, 1, LINEAR);
+    dubbyParameters[OUT_GAIN].Init(Params(OUT_GAIN), 1, 0, 1, LOGARITHMIC);
 }
 
 DubbyControls Dubby::GetParameterControl(Params p)
