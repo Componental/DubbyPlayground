@@ -81,7 +81,6 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
 
             // =======================================
 
-            CalculateRMS(dubby, _in, out[j][i], j, sumSquared);
         }
         AssignScopeData(dubby, i, in, out);
     }
@@ -124,19 +123,19 @@ int main(void)
         Monitor(dubby);
         MonitorMidi();
         // Set the wet and dry mix based on the delay mix parameter
-        wetAmplitude = dubby.GetParameterValue(dubby.dubbyParameters[DLY_MIX]);
+        wetAmplitude = dubby.dubbyParameters[DLY_MIX].value;
         dryAmplitude = 1.f - wetAmplitude;
 
         // Retrieve the delay time, feedback, and stereo spread parameters
-        delayTimeSecs = dubby.GetParameterValue(dubby.dubbyParameters[DLY_TIME]);
-        delayFeedback = dubby.GetParameterValue(dubby.dubbyParameters[DLY_FEEDBACK]);
-        stereoSpread = 125.f + (dubby.GetParameterValue(dubby.dubbyParameters[DLY_SPREAD]) * 250.f);
+        delayTimeSecs = dubby.dubbyParameters[DLY_TIME].value;
+        delayFeedback = dubby.dubbyParameters[DLY_FEEDBACK].value;
+        stereoSpread = 125.f + dubby.dubbyParameters[DLY_SPREAD].value * 250.f;
 
         // Retrieve the output gain parameter
-        outGain = dubby.GetParameterValue(dubby.dubbyParameters[OUT_GAIN]);
+        outGain = dubby.dubbyParameters[OUT_GAIN].value;
 
         // Set the delay time divisor based on the Pot3 value (DLY_DIVISION)
-        float pot3Value = dubby.GetParameterValue(dubby.dubbyParameters[DLY_DIVISION]);
+        float pot3Value = dubby.dubbyParameters[DLY_DIVISION].value;
 
         divisor =
             pot3Value <= 0.05f   ? 8.0f
@@ -156,8 +155,8 @@ int main(void)
         delayTimeSecsR = (delayTimeSecs + stereoSpread) / divisor;
 
         // Set the filter frequency and resonance for left and right channels
-        float cutoffFreq = dubby.GetParameterValue(dubby.dubbyParameters[FLT_CUTOFF]);
-        float resonance = dubby.GetParameterValue(dubby.dubbyParameters[FLT_RESONANCE]);
+        float cutoffFreq = dubby.dubbyParameters[FLT_CUTOFF].value;
+        float resonance = dubby.dubbyParameters[FLT_RESONANCE].value;
 
         filterL.SetFreq(cutoffFreq);
         filterR.SetFreq(cutoffFreq);
@@ -169,7 +168,7 @@ int main(void)
 
 void HandleMidiMessage(MidiEvent m)
 {
-    switch(m.type)
+    switch (m.type)
     {
     case NoteOn:
     {
@@ -187,22 +186,7 @@ void HandleMidiMessage(MidiEvent m)
     }
     default:
         break;
-    case NoteOn:
-    {
-        NoteOnEvent p = m.AsNoteOn();
-        break;
-    }
-    case NoteOff:
-    {
-        NoteOffEvent p = m.AsNoteOff();
-        break;
-    }
-    case SystemRealTime:
-    {
-        HandleSystemRealTime(m.srt_type);
-    }
-    default:
-        break;
+   
     }
 }
 
@@ -211,16 +195,17 @@ void MonitorMidi()
     // Handle USB MIDI Events
     while (dubby.midi_usb.HasEvents())
     {
-    while (dubby.midi_usb.HasEvents())
-    {
-        MidiEvent m = dubby.midi_usb.PopEvent();
-        HandleMidiMessage(m);
-    }
+        while (dubby.midi_usb.HasEvents())
+        {
+            MidiEvent m = dubby.midi_usb.PopEvent();
+            HandleMidiMessage(m);
+        }
 
-    // Handle UART MIDI Events
-    while (dubby.midi_uart.HasEvents())
-    {
-        MidiEvent m = dubby.midi_uart.PopEvent();
-        HandleMidiMessage(m);
+        // Handle UART MIDI Events
+        while (dubby.midi_uart.HasEvents())
+        {
+            MidiEvent m = dubby.midi_uart.PopEvent();
+            HandleMidiMessage(m);
+        }
     }
 }
