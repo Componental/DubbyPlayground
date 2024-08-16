@@ -11,7 +11,7 @@
 
 #include "ui/DubbyEncoder.h"
 #include "led.h"
-#include "libDubby/Controls.h"
+#include "libDubby/Parameters.h"
 
 #include "./bitmaps/bmps.h"
 
@@ -23,6 +23,37 @@
 
 namespace daisy
 {
+
+
+//Setting Struct containing parameters we want to save to flash
+struct PersistantMemoryParameterSettings {
+
+    Parameters savedParams[PARAMS_LAST];
+    bool isSaved[PARAMS_LAST];
+
+    // Overloading the != operator
+    // This is necessary as this operator is used in the PersistentStorage source code
+    bool operator!=(const PersistantMemoryParameterSettings& a) const {
+        for (int i = 0; i < PARAMS_LAST; ++i) {
+            if (savedParams[i].param != a.savedParams[i].param ||
+                savedParams[i].control != a.savedParams[i].control ||
+                savedParams[i].value != a.savedParams[i].value ||
+                savedParams[i].min != a.savedParams[i].min ||
+                savedParams[i].max != a.savedParams[i].max ||
+                savedParams[i].minLimit != a.savedParams[i].minLimit ||
+                savedParams[i].maxLimit != a.savedParams[i].maxLimit ||
+                savedParams[i].hasMinLimit != a.savedParams[i].hasMinLimit ||
+                savedParams[i].hasMaxLimit != a.savedParams[i].hasMaxLimit ||
+                savedParams[i].curve != a.savedParams[i].curve ||
+                isSaved[i] != a.isSaved[i]) {
+                return true;
+            }
+        }
+        return false;
+    }
+};
+
+
 class Dubby
 {
   public:
@@ -408,6 +439,8 @@ class Dubby
 
     Controls dubbyCtrls[CONTROLS_LAST];
     Parameters dubbyParameters[PARAMS_LAST];
+
+    bool trigger_save_parameters_qspi = false;
 
   private:
 

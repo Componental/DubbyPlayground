@@ -31,6 +31,9 @@ void MonitorMidi();
 void HandleMidiUartMessage(MidiEvent m);
 void HandleMidiUsbMessage(MidiEvent m);
 
+// Persistent Storage Declaration. Using type Settings and passed the devices qspi handle
+PersistentStorage<PersistantMemoryParameterSettings> SavedParameterSettings(dubby.seed.qspi);
+
 void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, size_t size)
 {
     double sumSquared[2][NUM_AUDIO_CHANNELS] = {0.0f};
@@ -77,6 +80,8 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
             out[1][i] = SoftLimit(dryWetMixR) * outGain;
 
             // =======================================
+
+            CalculateRMS(dubby, _in, out[j][i], j, sumSquared);
         }
         AssignScopeData(dubby, i, in, out);
     }
@@ -88,6 +93,7 @@ int main(void)
 {
     Init(dubby);
     InitMidiClock(dubby);
+    InitPersistantMemory(dubby, SavedParameterSettings);
     // Init DSP
     dell.Init();
     delr.Init();
@@ -113,6 +119,8 @@ int main(void)
 
     while (1)
     {
+        MonitorPersistantMemory(dubby, SavedParameterSettings);
+
         Monitor(dubby);
         MonitorMidi();
         // Set the wet and dry mix based on the delay mix parameter
@@ -161,8 +169,24 @@ int main(void)
 
 void HandleMidiMessage(MidiEvent m)
 {
-    switch (m.type)
+    switch(m.type)
     {
+    case NoteOn:
+    {
+        NoteOnEvent p = m.AsNoteOn();
+        break;
+    }
+    case NoteOff:
+    {
+        NoteOffEvent p = m.AsNoteOff();
+        break;
+    }
+    case SystemRealTime:
+    {
+        HandleSystemRealTime(m.srt_type);
+    }
+    default:
+        break;
     case NoteOn:
     {
         NoteOnEvent p = m.AsNoteOn();
@@ -185,6 +209,8 @@ void HandleMidiMessage(MidiEvent m)
 void MonitorMidi()
 {
     // Handle USB MIDI Events
+    while (dubby.midi_usb.HasEvents())
+    {
     while (dubby.midi_usb.HasEvents())
     {
         MidiEvent m = dubby.midi_usb.PopEvent();
