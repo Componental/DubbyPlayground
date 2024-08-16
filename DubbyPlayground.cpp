@@ -53,6 +53,9 @@ int main(void)
     // setLED(1, RED, 0);
     // updateLED();
 
+    // DELETE MEMORY
+    // SavedParameterSettings.RestoreDefaults();
+
     while (1)
     {
         Monitor(dubby);
