@@ -941,7 +941,7 @@ void Dubby::DisplayParameterList(int increment)
                 str = CurvesStrings[dubbyParameters[i].curve];
                 break;
             default:
-                str = std::to_string(dubbyParameters[i].GetRealValue(dubbyCtrls[dubbyParameters[i].control].value)).substr(0, std::to_string(dubbyParameters[i].GetRealValue(dubbyCtrls[dubbyParameters[i].control].value)).find(".") + 3);
+                str = std::to_string(dubbyParameters[i].value).substr(0, std::to_string(dubbyParameters[i].value).find(".") + 3);
                 // UpdateStatusBar(" PARAM       CTRL     VALUE   ", LEFT);
                 break;
         }
@@ -1005,6 +1005,10 @@ void Dubby::ProcessAllControls()
     dubbyCtrls[9].value = GetKnobValue(CTRL_5);
     dubbyCtrls[10].value = GetKnobValue(CTRL_6);
     dubbyCtrls[11].value = joystickButton.Pressed();
+
+    for (int i = 0; i < PARAMS_LAST; i++)
+        dubbyParameters[i].CalculateRealValue(dubbyCtrls[dubbyParameters[i].control].value);
+    
 }
 
 void Dubby::ProcessAnalogControls()

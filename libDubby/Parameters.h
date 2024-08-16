@@ -74,10 +74,8 @@ class Parameters
       if (hasMaxL) maxLimit = maxL;
     }
 
-    float GetRealValue(float vv) 
+    void CalculateRealValue(float normalizedValue) 
     {
-        float normalizedValue = (vv - 0.0f) / (1.0f - 0.0f);
-
         switch(curve)
         {
             case LINEAR:
@@ -103,7 +101,6 @@ class Parameters
                 value = min; // Default to minimum value for unknown curve type
                 break;
         }
-        return value;
     }
 
   private:
