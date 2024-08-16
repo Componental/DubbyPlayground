@@ -2,8 +2,7 @@
 // 1. ADD PARAMS TO ENUM LIST BELOW
 // 2. UPDATE PARAMSSTRINGS IN Dubby.h WITH THE SAME ORDER AS THE ENUM
 // 3. INITIALIZE IN USING .Init() IN InitDubbyParameters() IN Dubby.cpp
-// 4. EVENTUALLY ASSIGN THE PARAMETER TO A CONTROL IN InitDubbyControls();
-// 5. USE THE VARIABLE IN DubbyPlayground.cpp, GET THE VALUE USING: dubby.GetParameterValue(dubby.dubbyParameters[FLT_CUTOFF]
+// 4. USE THE VARIABLE IN DubbyPlayground.cpp, GET THE VALUE USING: dubby.dubbyParameters[FLT_CUTOFF].value
 
 #pragma once
 

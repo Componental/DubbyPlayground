@@ -51,7 +51,7 @@ void InitPersistantMemory(Dubby& dubby, PersistentStorage<PersistantMemoryParame
     }
 
 	SavedParameterSettings.Init(DefaultParameterSettings);
-    LoadFromQspi(dubby, SavedParameterSettings); // Comment this if want to use RestoreDefaults()
+    // LoadFromQspi(dubby, SavedParameterSettings); // Comment this if want to use RestoreDefaults()
 }
 
 void MonitorPersistantMemory(Dubby& dubby, PersistentStorage<PersistantMemoryParameterSettings>& SavedParameterSettings) 

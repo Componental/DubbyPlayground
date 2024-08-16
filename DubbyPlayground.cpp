@@ -11,15 +11,15 @@ Dubby dubby;
 
 // DELAY EFFECT
 #define MAX_DELAY static_cast<size_t>(48000 * 6.0f)
-static DelayLine<float, MAX_DELAY> DSY_SDRAM_BSS dell;
-static DelayLine<float, MAX_DELAY> DSY_SDRAM_BSS delr;
+static DelayLine<float, MAX_DELAY> DSY_SDRAM_BSS delayLineLeft;
+static DelayLine<float, MAX_DELAY> DSY_SDRAM_BSS delayLineRight;
 
-float sample_rate, dryL, dryR, delayOutL, delayOutR, delayTimeSecsL, delayTimeSecsR, delayFeedback, stereoSpread;
+float sample_rate, dryL, dryR, delayOutL, delayOutR, delayTimeMillisL, delayTimeMillisR, delayFeedback, stereoSpread, delaySamplesL, delaySamplesR;
 float currentDelayL, currentDelayR;
 float dryWetMixL, dryWetMixR, dryAmplitude, wetAmplitude;
 
 float divisor = 1;
-float delayTimeSecs = 0.4f;
+float delayTimeMillis = 400.f;
 
 float outGain = 1.f;
 // FILTER
@@ -49,23 +49,26 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
 
             // Set and smooth the delay time for the left channel
             // (fonepole smooths out changes in delay time)
-            fonepole(currentDelayL, delayTimeSecsL, 0.0001f);
+            fonepole(currentDelayL, delayTimeMillisL, 0.0001f);
 
             // Set and smooth the delay time for the right channel
             // Stereo effect: Reduce the delay time of the right channel as Pot4 increases
-            fonepole(currentDelayR, delayTimeSecsR, 0.0001f);
+            fonepole(currentDelayR, delayTimeMillisR, 0.0001f);
+
+            delaySamplesL = currentDelayL * (sample_rate / 1000);
+            delaySamplesR = currentDelayR * (sample_rate / 1000);
 
             // Set delay times for delay lines
-            dell.SetDelay(currentDelayL);
-            delr.SetDelay(currentDelayR);
+            delayLineLeft.SetDelay(delaySamplesL);
+            delayLineRight.SetDelay(delaySamplesR);
 
             // Read delay outputs
-            delayOutL = dell.Read();
-            delayOutR = delr.Read();
+            delayOutL = delayLineLeft.Read();
+            delayOutR = delayLineRight.Read();
 
             // Write the feedback and current input to the delay lines
-            dell.Write((delayFeedback * delayOutL) + dryL);
-            delr.Write((delayFeedback * delayOutR) + dryR);
+            delayLineLeft.Write((delayFeedback * delayOutL) + dryL);
+            delayLineRight.Write((delayFeedback * delayOutR) + dryR);
 
             // Process the delay outputs through the filters
             filterL.Process(delayOutL);
@@ -80,7 +83,6 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
             out[1][i] = SoftLimit(dryWetMixR) * outGain;
 
             // =======================================
-
         }
         AssignScopeData(dubby, i, in, out);
     }
@@ -94,8 +96,8 @@ int main(void)
     InitMidiClock(dubby);
     InitPersistantMemory(dubby, SavedParameterSettings);
     // Init DSP
-    dell.Init();
-    delr.Init();
+    delayLineLeft.Init();
+    delayLineRight.Init();
     sample_rate = dubby.seed.AudioSampleRate();
 
     stereoSpread = 0;
@@ -117,7 +119,7 @@ int main(void)
     // updateLED();
 
     // DELETE MEMORY
-    // SavedParameterSettings.RestoreDefaults();
+     SavedParameterSettings.RestoreDefaults();
 
     while (1)
     {
@@ -130,9 +132,9 @@ int main(void)
         dryAmplitude = 1.f - wetAmplitude;
 
         // Retrieve the delay time, feedback, and stereo spread parameters
-        delayTimeSecs = dubby.dubbyParameters[DLY_TIME].value;
+        delayTimeMillis = dubby.dubbyParameters[DLY_TIME].value;
         delayFeedback = dubby.dubbyParameters[DLY_FEEDBACK].value;
-        stereoSpread = 125.f + dubby.dubbyParameters[DLY_SPREAD].value * 250.f;
+        stereoSpread = 250.f + dubby.dubbyParameters[DLY_SPREAD].value * 500.f;
 
         // Retrieve the output gain parameter
         outGain = dubby.dubbyParameters[OUT_GAIN].value;
@@ -154,8 +156,8 @@ int main(void)
                                  : 0.125f;
 
         // Calculate the delay times for left and right channels
-        delayTimeSecsL = delayTimeSecs / divisor;
-        delayTimeSecsR = (delayTimeSecs + stereoSpread) / divisor;
+        delayTimeMillisL = delayTimeMillis / divisor;
+        delayTimeMillisR = (delayTimeMillis + stereoSpread) / divisor;
 
         // Set the filter frequency and resonance for left and right channels
         float cutoffFreq = dubby.dubbyParameters[FLT_CUTOFF].value;
@@ -189,7 +191,6 @@ void HandleMidiMessage(MidiEvent m)
     }
     default:
         break;
-   
     }
 }
 
