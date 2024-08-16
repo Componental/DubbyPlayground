@@ -40,35 +40,41 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
         for (int j = 0; j < NUM_AUDIO_CHANNELS; j++)
         {
 
-            // === AUDIO CODE HERE ===================
-            dryL = in[0][i];
-            dryR = in[1][i];
+            // === AUDIO PROCESSING CODE ===
+            dryL = in[0][i]; // Left channel dry input
+            dryR = in[1][i]; // Right channel dry input
 
-            // Set the delay time (fonepole/Filter one-pole smooths out the changes)
-            fonepole(currentDelayL, delayTimeSecsL, .0001f);
+            // Set and smooth the delay time for the left channel
+            // (fonepole smooths out changes in delay time)
+            fonepole(currentDelayL, delayTimeSecsL, 0.0001f);
 
-            // Stereo effect: Reduce the delaytime of the Right channel as Pot4
-            // increases
-            fonepole(currentDelayR, delayTimeSecsR, .0001f);
+            // Set and smooth the delay time for the right channel
+            // Stereo effect: Reduce the delay time of the right channel as Pot4 increases
+            fonepole(currentDelayR, delayTimeSecsR, 0.0001f);
 
-            delr.SetDelay(currentDelayL);
-            dell.SetDelay(currentDelayR);
+            // Set delay times for delay lines
+            dell.SetDelay(currentDelayL);
+            delr.SetDelay(currentDelayR);
 
+            // Read delay outputs
             delayOutL = dell.Read();
             delayOutR = delr.Read();
 
-            dell.Write((delayFeedback * delayOutL) + (dryL));
-            delr.Write((delayFeedback * delayOutR) + (dryR));
+            // Write the feedback and current input to the delay lines
+            dell.Write((delayFeedback * delayOutL) + dryL);
+            delr.Write((delayFeedback * delayOutR) + dryR);
 
+            // Process the delay outputs through the filters
             filterL.Process(delayOutL);
             filterR.Process(delayOutR);
 
-            // Create finel dry/wet mix and send to the output with soft limitting
+            // Mix the dry and wet signals and apply soft limiting
             dryWetMixL = (dryL * dryAmplitude) + (filterL.Low() * wetAmplitude);
             dryWetMixR = (dryR * dryAmplitude) + (filterR.Low() * wetAmplitude);
 
-            out[0][i] = SoftLimit(dryWetMixL)*outGain;
-            out[1][i] = SoftLimit(dryWetMixR)*outGain;
+            // Output the final processed signals with gain and soft limiting
+            out[0][i] = SoftLimit(dryWetMixL) * outGain;
+            out[1][i] = SoftLimit(dryWetMixR) * outGain;
 
             // =======================================
         }
@@ -109,75 +115,47 @@ int main(void)
     {
         Monitor(dubby);
         MonitorMidi();
-        // Set the wet and dry mix
+        // Set the wet and dry mix based on the delay mix parameter
         wetAmplitude = dubby.GetParameterValue(dubby.dubbyParameters[DLY_MIX]);
         dryAmplitude = 1.f - wetAmplitude;
 
+        // Retrieve the delay time, feedback, and stereo spread parameters
         delayTimeSecs = dubby.GetParameterValue(dubby.dubbyParameters[DLY_TIME]);
-
         delayFeedback = dubby.GetParameterValue(dubby.dubbyParameters[DLY_FEEDBACK]);
-
         stereoSpread = 125.f + (dubby.GetParameterValue(dubby.dubbyParameters[DLY_SPREAD]) * 250.f);
 
+        // Retrieve the output gain parameter
         outGain = dubby.GetParameterValue(dubby.dubbyParameters[OUT_GAIN]);
-        // Set the delay time based on Pot3
+
+        // Set the delay time divisor based on the Pot3 value (DLY_DIVISION)
         float pot3Value = dubby.GetParameterValue(dubby.dubbyParameters[DLY_DIVISION]);
 
-        if (pot3Value == 0.0f)
-        {
-            divisor = 8;
-        }
-        else if (pot3Value <= 0.1f)
-        {
-            divisor = 4;
-        }
-        else if (pot3Value <= 0.2f)
-        {
-            divisor = 3;
-        } // half note triplets
-        else if (pot3Value <= 0.3f)
-        {
-            divisor = 2;
-        }
-        else if (pot3Value <= 0.4f)
-        {
-            divisor = 1.5;
-        } // whole note triplets
-        else if (pot3Value <= 0.5f)
-        {
-            divisor = 1;
-        }
-        else if (pot3Value <= 0.6f)
-        {
-            divisor = 0.5;
-        } // x2
-        else if (pot3Value <= 0.7f)
-        {
-            divisor = 0.33;
-        } // x3
-        else if (pot3Value <= 0.8f)
-        {
-            divisor = 0.25;
-        } // x4
-        else if (pot3Value <= 0.9f)
-        {
-            divisor = 0.2;
-        } // x5
-        else
-        {
-            divisor = 0.125;
-        } // x8
+        divisor =
+            pot3Value <= 0.05f   ? 8.0f
+            : pot3Value <= 0.15f ? 4.0f
+            : pot3Value <= 0.25f ? 3.0f
+            : pot3Value <= 0.35f ? 2.0f
+            : pot3Value <= 0.45f ? 1.5f
+            : pot3Value <= 0.55f ? 1.0f
+            : pot3Value <= 0.65f ? 0.5f
+            : pot3Value <= 0.75f ? 0.33f
+            : pot3Value <= 0.85f ? 0.25f
+            : pot3Value <= 0.95f ? 0.2f
+                                 : 0.125f;
 
-        delayTimeSecsL = (delayTimeSecs ) / divisor;
+        // Calculate the delay times for left and right channels
+        delayTimeSecsL = delayTimeSecs / divisor;
         delayTimeSecsR = (delayTimeSecs + stereoSpread) / divisor;
 
-        filterL.SetFreq(dubby.GetParameterValue(dubby.dubbyParameters[FLT_CUTOFF]));
-        filterR.SetFreq(dubby.GetParameterValue(dubby.dubbyParameters[FLT_CUTOFF]));
+        // Set the filter frequency and resonance for left and right channels
+        float cutoffFreq = dubby.GetParameterValue(dubby.dubbyParameters[FLT_CUTOFF]);
+        float resonance = dubby.GetParameterValue(dubby.dubbyParameters[FLT_RESONANCE]);
 
-        filterL.SetRes(dubby.GetParameterValue(dubby.dubbyParameters[FLT_RESONANCE]));
-        filterR.SetRes(dubby.GetParameterValue(dubby.dubbyParameters[FLT_RESONANCE]));
+        filterL.SetFreq(cutoffFreq);
+        filterR.SetFreq(cutoffFreq);
 
-        
+        filterL.SetRes(resonance);
+        filterR.SetRes(resonance);
     }
 }
 
