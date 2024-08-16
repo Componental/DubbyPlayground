@@ -1038,7 +1038,8 @@ void Dubby::ProcessAllControls()
     dubbyCtrls[11].value = joystickButton.Pressed();
 
     for (int i = 0; i < PARAMS_LAST; i++)
-        dubbyParameters[i].CalculateRealValue(dubbyCtrls[dubbyParameters[i].control].value);
+        if (dubbyParameters[i].control != CONTROL_NONE)
+            dubbyParameters[i].CalculateRealValue(dubbyCtrls[dubbyParameters[i].control].value);
     
 }
 
