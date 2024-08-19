@@ -156,8 +156,12 @@ int main(void)
                                  : 0.125f;
 
         // Calculate the delay times for left and right channels
-        delayTimeMillisL = delayTimeMillis / divisor;
+        delayTimeMillisL = (delayTimeMillis - stereoSpread) / divisor;
         delayTimeMillisR = (delayTimeMillis + stereoSpread) / divisor;
+
+        // Ensure that delay times don't go lower than 1 millisecond
+        delayTimeMillisL = fmaxf(delayTimeMillisL, 1.0f);
+        delayTimeMillisR = fmaxf(delayTimeMillisR, 1.0f);
 
         // Set the filter frequency and resonance for left and right channels
         float cutoffFreq = dubby.dubbyParameters[FLT_CUTOFF].value;

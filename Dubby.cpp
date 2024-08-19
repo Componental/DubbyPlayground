@@ -173,7 +173,7 @@ void Dubby::InitDubbyParameters()
     dubbyParameters[DLY_TIME].Init(Params(DLY_TIME), KN1, 0, 0, 1000, LINEAR);
     dubbyParameters[DLY_FEEDBACK].Init(Params(DLY_FEEDBACK), KN2, 0, 0, 1, LINEAR);
     dubbyParameters[DLY_DIVISION].Init(Params(DLY_DIVISION), JSY, 0, 0, 1, LINEAR);
-    dubbyParameters[DLY_SPREAD].Init(Params(DLY_SPREAD), JSX, 0, 0, 1, LINEAR);
+    dubbyParameters[DLY_SPREAD].Init(Params(DLY_SPREAD), JSX, 0, -250, 250, LINEAR);
     dubbyParameters[DLY_MIX].Init(Params(DLY_MIX), KN4, 0, 0, 1, LINEAR);
     dubbyParameters[FLT_CUTOFF].Init(Params(FLT_CUTOFF), KN3, 1, 0, 2000, EXPONENTIAL);
     dubbyParameters[FLT_RESONANCE].Init(Params(FLT_RESONANCE), CONTROL_NONE, 0.3, 0, 1, LINEAR);
