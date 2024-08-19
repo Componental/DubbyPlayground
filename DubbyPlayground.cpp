@@ -119,7 +119,7 @@ int main(void)
     // updateLED();
 
     // DELETE MEMORY
-     SavedParameterSettings.RestoreDefaults();
+    SavedParameterSettings.RestoreDefaults();
 
     while (1)
     {
@@ -134,7 +134,7 @@ int main(void)
         // Retrieve the delay time, feedback, and stereo spread parameters
         delayTimeMillis = dubby.dubbyParameters[DLY_TIME].value;
         delayFeedback = dubby.dubbyParameters[DLY_FEEDBACK].value;
-        stereoSpread = 250.f + dubby.dubbyParameters[DLY_SPREAD].value * 500.f;
+        stereoSpread = dubby.dubbyParameters[DLY_SPREAD].value;
 
         // Retrieve the output gain parameter
         outGain = dubby.dubbyParameters[OUT_GAIN].value;
