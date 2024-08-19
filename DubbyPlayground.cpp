@@ -4,7 +4,6 @@
 
 #include "implementations/includes.h"
 
-
 using namespace daisy;
 using namespace daisysp;
 
@@ -120,7 +119,7 @@ int main(void)
     // updateLED();
 
     // DELETE MEMORY
-     SavedParameterSettings.RestoreDefaults();
+    SavedParameterSettings.RestoreDefaults();
 
     while (1)
     {
@@ -135,7 +134,7 @@ int main(void)
         // Retrieve the delay time, feedback, and stereo spread parameters
         delayTimeMillis = dubby.dubbyParameters[DLY_TIME].value;
         delayFeedback = dubby.dubbyParameters[DLY_FEEDBACK].value;
-        stereoSpread = 250.f + dubby.dubbyParameters[DLY_SPREAD].value * 500.f;
+        stereoSpread = dubby.dubbyParameters[DLY_SPREAD].value;
 
         // Retrieve the output gain parameter
         outGain = dubby.dubbyParameters[OUT_GAIN].value;
@@ -157,8 +156,12 @@ int main(void)
                                  : 0.125f;
 
         // Calculate the delay times for left and right channels
-        delayTimeMillisL = delayTimeMillis / divisor;
+        delayTimeMillisL = (delayTimeMillis - stereoSpread) / divisor;
         delayTimeMillisR = (delayTimeMillis + stereoSpread) / divisor;
+
+        // Ensure that delay times don't go lower than 1 millisecond
+        delayTimeMillisL = fmaxf(delayTimeMillisL, 1.0f);
+        delayTimeMillisR = fmaxf(delayTimeMillisR, 1.0f);
 
         // Set the filter frequency and resonance for left and right channels
         float cutoffFreq = dubby.dubbyParameters[FLT_CUTOFF].value;
