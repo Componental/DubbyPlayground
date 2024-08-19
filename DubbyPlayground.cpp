@@ -33,42 +33,54 @@ void HandleMidiUsbMessage(MidiEvent m);
 
 // Persistent Storage Declaration. Using type Settings and passed the devices qspi handle
 PersistentStorage<PersistantMemoryParameterSettings> SavedParameterSettings(dubby.seed.qspi);
-
 void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, size_t size)
 {
     double sumSquared[2][NUM_AUDIO_CHANNELS] = {0.0f};
+
+    // Retrieve the FREEZE parameter
+    bool freeze = dubby.dubbyParameters[DLY_FREEZE].value > 0.5f;
 
     for (size_t i = 0; i < size; i++)
     {
         for (int j = 0; j < NUM_AUDIO_CHANNELS; j++)
         {
-
             // === AUDIO PROCESSING CODE ===
             dryL = in[0][i]; // Left channel dry input
             dryR = in[1][i]; // Right channel dry input
 
-            // Set and smooth the delay time for the left channel
-            // (fonepole smooths out changes in delay time)
-            fonepole(currentDelayL, delayTimeMillisL, 0.0001f);
+            // Check if freeze is activated
+            if (freeze)
+            {
+                // Set feedback to 1 and prevent writing new data to delay buffers
+                delayFeedback = 1.0f;
+                delayOutL = delayLineLeft.Read();
+                delayOutR = delayLineRight.Read();
+                delayLineLeft.Write(delayOutL);  // Just keep the old data
+                delayLineRight.Write(delayOutR); // Just keep the old data
+            }
+            else
+            {
+                // Set and smooth the delay time for the left channel
+                fonepole(currentDelayL, delayTimeMillisL, 0.0001f);
 
-            // Set and smooth the delay time for the right channel
-            // Stereo effect: Reduce the delay time of the right channel as Pot4 increases
-            fonepole(currentDelayR, delayTimeMillisR, 0.0001f);
+                // Set and smooth the delay time for the right channel
+                fonepole(currentDelayR, delayTimeMillisR, 0.0001f);
 
-            delaySamplesL = currentDelayL * (sample_rate / 1000);
-            delaySamplesR = currentDelayR * (sample_rate / 1000);
+                delaySamplesL = currentDelayL * (sample_rate / 1000);
+                delaySamplesR = currentDelayR * (sample_rate / 1000);
 
-            // Set delay times for delay lines
-            delayLineLeft.SetDelay(delaySamplesL);
-            delayLineRight.SetDelay(delaySamplesR);
+                // Set delay times for delay lines
+                delayLineLeft.SetDelay(delaySamplesL);
+                delayLineRight.SetDelay(delaySamplesR);
 
-            // Read delay outputs
-            delayOutL = delayLineLeft.Read();
-            delayOutR = delayLineRight.Read();
+                // Read delay outputs
+                delayOutL = delayLineLeft.Read();
+                delayOutR = delayLineRight.Read();
 
-            // Write the feedback and current input to the delay lines
-            delayLineLeft.Write((delayFeedback * delayOutL) + dryL);
-            delayLineRight.Write((delayFeedback * delayOutR) + dryR);
+                // Write the feedback and current input to the delay lines
+                delayLineLeft.Write((delayFeedback * delayOutL) + dryL);
+                delayLineRight.Write((delayFeedback * delayOutR) + dryR);
+            }
 
             // Process the delay outputs through the filters
             filterL.Process(delayOutL);

@@ -271,6 +271,7 @@ class Dubby
       "DLY FB", 
       "DLY DIV", 
       "DLY SPREAD",
+      "DLY FREEZE",
       "MIX",
       "LPF CUTOFF",
       "LPF RES",
