@@ -174,6 +174,7 @@ void Dubby::InitDubbyParameters()
     dubbyParameters[DLY_DIVISION].Init(Params(DLY_DIVISION), JSY, 0, 0, 1, LINEAR);
     dubbyParameters[DLY_SPREAD].Init(Params(DLY_SPREAD), JSX, 0, -250, 250, LINEAR);
     dubbyParameters[DLY_FREEZE].Init(Params(DLY_FREEZE), BTN3, 0, 0, 1, LINEAR);
+    dubbyParameters[DLY_MAXWET].Init(Params(DLY_MAXWET), BTN4, 0, 0, 1, LINEAR);
     dubbyParameters[DLY_MIX].Init(Params(DLY_MIX), KN4, 0, 0, 1, LINEAR);
     dubbyParameters[FLT_CUTOFF].Init(Params(FLT_CUTOFF), KN3, 1, 0, 2000, EXPONENTIAL);
     dubbyParameters[FLT_RESONANCE].Init(Params(FLT_RESONANCE), CONTROL_NONE, 0.3, 0, 1, LINEAR);

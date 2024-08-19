@@ -140,8 +140,16 @@ int main(void)
         Monitor(dubby);
         MonitorMidi();
         // Set the wet and dry mix based on the delay mix parameter
+        // Set the wet and dry mix based on the delay mix parameter
         wetAmplitude = dubby.dubbyParameters[DLY_MIX].value;
         dryAmplitude = 1.f - wetAmplitude;
+
+        // Check if DLY_MAXWET is greater than 0.5
+        if (dubby.dubbyParameters[DLY_MAXWET].value > 0.5f)
+        {
+            dryAmplitude = 0.f; // Set dry amplitude to 0
+            wetAmplitude = 1.f; // Set wet amplitude to 1 (fully wet)
+        }
 
         // Retrieve the delay time, feedback, and stereo spread parameters
         delayTimeMillis = dubby.dubbyParameters[DLY_TIME].value;
