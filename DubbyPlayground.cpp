@@ -22,6 +22,8 @@ float dryWetMixL, dryWetMixR, delayDryAmplitude, delayWetAmplitude;
 
 float reverbDryAmplitude, reverbWetAmplitude;
 
+float reverbAmplitudeAdjustment = 0.7f;
+
 float divisor = 1;
 float delayTimeMillis = 400.f;
 
@@ -63,8 +65,8 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
             float reverbWetLeft = processedSampleLeft;
             float reverbWetRight = processedSampleRight;
 
-            float reverbDryWetLeft = (dryL * reverbDryAmplitude) + (reverbWetLeft * reverbWetAmplitude);
-            float reverbDryWetRight = (dryR * reverbDryAmplitude) + (reverbWetRight * reverbWetAmplitude);
+            float reverbDryWetLeft = (dryL * reverbDryAmplitude) + (reverbWetLeft * reverbAmplitudeAdjustment * reverbWetAmplitude);
+            float reverbDryWetRight = (dryR * reverbDryAmplitude) + (reverbWetRight * reverbAmplitudeAdjustment * reverbWetAmplitude);
 
 
             // === DELAY EFFECT ===
