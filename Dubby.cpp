@@ -181,6 +181,8 @@ void Dubby::InitDubbyParameters()
     dubbyParameters[RVB_MIX].Init(Params(RVB_MIX), KN1, 0.8, 0, 1, LINEAR);
     dubbyParameters[FLT_CUTOFF].Init(Params(FLT_CUTOFF), KN3, 1, 0, 2000, EXPONENTIAL);
     dubbyParameters[FLT_RESONANCE].Init(Params(FLT_RESONANCE), CONTROL_NONE, 0.3, 0, 1, LINEAR);
+    dubbyParameters[DRV_AMOUNT].Init(Params(DRV_AMOUNT), KN4, 0.21, 0.21, 0.46, EXPONENTIAL);
+    dubbyParameters[DRV_GAIN_COMPENSATION].Init(Params(DRV_GAIN_COMPENSATION), KN4, 0.21, 1, 0.26, EXPONENTIAL);
     dubbyParameters[OUT_GAIN].Init(Params(OUT_GAIN), CONTROL_NONE, 1, 0, 1, LOGARITHMIC);
 }
 

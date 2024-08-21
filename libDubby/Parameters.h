@@ -25,6 +25,8 @@ enum Params {
   RVB_MIX,
   FLT_CUTOFF,
   FLT_RESONANCE,
+  DRV_AMOUNT,
+  DRV_GAIN_COMPENSATION,
   OUT_GAIN,
   PARAMS_2ND_LAST, // because of a bug with last element of list, made this one but stays hidden
   PARAMS_LAST

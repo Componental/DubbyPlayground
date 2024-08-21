@@ -264,6 +264,7 @@ class Dubby
       "JSSW",
     };
 
+
     const char * ParamsStrings[PARAMS_LAST] = 
     { 
       "-",
@@ -272,11 +273,15 @@ class Dubby
       "DLY DIV", 
       "DLY SPREAD",
       "DLY MIX",
+      "DLY FREEZE",
+      "WET TOGGLE",
       "RVB TIME",
       "RVB CUTOFF",
       "RVB MIX",
       "LPF CUTOFF",
       "LPF RES",
+      "DRV AMOUNT",
+      "DRV REDUCT",
       "OUT GAIN", 
       "2ND_LAST" // because of a bug
     };
