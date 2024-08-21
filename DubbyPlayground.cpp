@@ -45,8 +45,8 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
         for (int j = 0; j < NUM_AUDIO_CHANNELS; j++)
         {
             // === AUDIO PROCESSING CODE ===
-            dryL = in[0][i]; // Left channel dry input
-            dryR = in[1][i]; // Right channel dry input
+            dryL = in[2][i]; // Left channel dry input
+            dryR = in[3][i]; // Right channel dry input
 
                 // Set and smooth the delay time for the left channel
                 fonepole(currentDelayL, delayTimeMillisL, 0.0001f);
@@ -95,8 +95,8 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
             dryWetMixR = (dryR * dryAmplitude) + (filterR.Low() * wetAmplitude);
 
             // Output the final processed signals with gain and soft limiting
-            out[0][i] = SoftLimit(dryWetMixL) * outGain;
-            out[1][i] = SoftLimit(dryWetMixR) * outGain;
+            out[2][i] = SoftLimit(dryWetMixL) * outGain;
+            out[3][i] = SoftLimit(dryWetMixR) * outGain;
 
             // =======================================
         }
