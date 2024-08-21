@@ -10,7 +10,7 @@ using namespace daisysp;
 Dubby dubby;
 
 // DELAY EFFECT
-#define MAX_DELAY static_cast<size_t>(48000 * 6.0f)
+#define MAX_DELAY static_cast<size_t>(48000 * 20.0f)
 static DelayLine<float, MAX_DELAY> DSY_SDRAM_BSS delayLineLeft;
 static DelayLine<float, MAX_DELAY> DSY_SDRAM_BSS delayLineRight;
 
@@ -48,18 +48,6 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
             dryL = in[0][i]; // Left channel dry input
             dryR = in[1][i]; // Right channel dry input
 
-            // Check if freeze is activated
-            if (freeze)
-            {
-                // Set feedback to 1 and prevent writing new data to delay buffers
-                delayFeedback = 1.0f;
-                delayOutL = delayLineLeft.Read();
-                delayOutR = delayLineRight.Read();
-                delayLineLeft.Write(delayOutL);  // Just keep the old data
-                delayLineRight.Write(delayOutR); // Just keep the old data
-            }
-            else
-            {
                 // Set and smooth the delay time for the left channel
                 fonepole(currentDelayL, delayTimeMillisL, 0.0001f);
 
@@ -68,6 +56,22 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
 
                 delaySamplesL = currentDelayL * (sample_rate / 1000);
                 delaySamplesR = currentDelayR * (sample_rate / 1000);
+
+            // Check if freeze is activated
+            if (freeze)
+            {
+                // Set feedback to 1 and prevent writing new data to delay buffers
+                delayFeedback = 1.0f;
+                delayLineLeft.SetDelay(delaySamplesL);
+                delayLineRight.SetDelay(delaySamplesR);
+
+                delayOutL = delayLineLeft.Read();
+                delayOutR = delayLineRight.Read();
+                delayLineLeft.Write(delayOutL);  // Just keep the old data
+                delayLineRight.Write(delayOutR); // Just keep the old data
+            }
+            else
+            {
 
                 // Set delay times for delay lines
                 delayLineLeft.SetDelay(delaySamplesL);
@@ -139,7 +143,8 @@ int main(void)
 
         Monitor(dubby);
         MonitorMidi();
-        // Set the wet and dry mix based on the delay mix parameter
+
+
         // Set the wet and dry mix based on the delay mix parameter
         wetAmplitude = dubby.dubbyParameters[DLY_MIX].value;
         dryAmplitude = 1.f - wetAmplitude;
