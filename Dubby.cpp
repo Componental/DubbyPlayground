@@ -51,13 +51,6 @@ using namespace daisy;
 #define MIDILIST_SPACING 8
 #define MIDILIST_ROWS_ON_SCREEN 5
 
-#define PARAMLIST_X_START 1
-#define PARAMLIST_X_END 123
-#define PARAMLIST_Y_START 11
-#define PARAMLIST_Y_END 19
-#define PARAMLIST_SPACING 8
-#define PARAMLIST_ROWS_ON_SCREEN 5
-
 #define ENCODER_LONGPRESS_THRESHOLD 300
 
 int currentBitmapIndex = 2; // Initial bitmap index
@@ -259,34 +252,6 @@ void Dubby::UpdateDisplay()
             UpdatePreferencesSubMenuList(encoder.Increment(), preferencesMenuItemSelected);
         break;
     case WIN5:
-        currentBitmapIndex += encoder.Increment();
-        if (currentBitmapIndex < 2)
-            currentBitmapIndex = 5;
-        if (currentBitmapIndex > 5)
-            currentBitmapIndex = 2;
-
-        if (encoder.Increment())
-        {
-            DrawBitmap(currentBitmapIndex); // Redraw bitmap with new index
-            UpdateStatusBar("IN", LEFT);
-            UpdateStatusBar("OUT", RIGHT);
-            if (currentBitmapIndex == 2)
-            {
-                UpdateStatusBar("2x2 IN SERIES", MIDDLE);
-            }
-            else if (currentBitmapIndex == 3)
-            {
-                UpdateStatusBar("1 QUAD", MIDDLE);
-            }
-            else if (currentBitmapIndex == 4)
-            {
-                UpdateStatusBar("2 IN SERIES", MIDDLE);
-            }
-            else if (currentBitmapIndex == 5)
-            {
-                UpdateStatusBar("2 IN PARALLEL", MIDDLE);
-            }
-        }
 
         break;
     case WIN4:
@@ -512,26 +477,6 @@ void Dubby::UpdateWindowList()
 
         break;
     case WIN5:
-
-        DrawBitmap(currentBitmapIndex);
-        UpdateStatusBar("IN", LEFT);
-        UpdateStatusBar("OUT", RIGHT);
-        if (currentBitmapIndex == 2)
-        {
-            UpdateStatusBar("2x2 IN SERIES", MIDDLE);
-        }
-        else if (currentBitmapIndex == 3)
-        {
-            UpdateStatusBar("1 QUAD", MIDDLE);
-        }
-        else if (currentBitmapIndex == 4)
-        {
-            UpdateStatusBar("2 IN SERIES", MIDDLE);
-        }
-        else if (currentBitmapIndex == 5)
-        {
-            UpdateStatusBar("2 IN PARALLEL", MIDDLE);
-        }
 
         break;
     case WIN6:
@@ -786,8 +731,6 @@ void Dubby::UpdateStatusBar(char *text, StatusBarSide side = LEFT, int width)
 
 void Dubby::DisplayParameterList(int increment)
 {
-
-  
 }
 
 void Dubby::UpdateParameterList(int increment)
