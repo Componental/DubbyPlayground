@@ -1,4 +1,3 @@
-
 #include "daisysp.h"
 #include "Dubby.h"
 
@@ -8,29 +7,26 @@ using namespace daisy;
 using namespace daisysp;
 
 Dubby dubby;
-ReverbSc DSY_SDRAM_BSS reverbLeft, reverbRight;
-Overdrive driveReverbLeft, driveReverbRight, driveDelayLeft, driveDelayRight;
+ReverbSc DSY_SDRAM_BSS reverb[2];        // Array for reverb channels
+Overdrive driveReverb[2], driveDelay[2]; // Arrays for overdrive
 
 // DELAY EFFECT
 #define MAX_DELAY static_cast<size_t>(48000 * 6.0f)
-static DelayLine<float, MAX_DELAY> DSY_SDRAM_BSS delayLineLeft, delayLineRight;
+static DelayLine<float, MAX_DELAY> DSY_SDRAM_BSS delayLine[2]; // Array for delay lines
 
-float sample_rate, dryL, dryR, delayOutL, delayOutR, delayTimeMillisL, delayTimeMillisR, delayFeedback, stereoSpread, delaySamplesL, delaySamplesR;
-float currentDelayL, currentDelayR;
-float reverbDelayDryWetMixL, reverbDelayDryWetMixR, delayDryAmplitude, delayWetAmplitude;
+float sample_rate, dry[2], delayOut[2], delayTimeMillis[2], delayFeedback, delaySamples[2];
+float currentDelay[2];
+float reverbDelayDryWetMix[2], delayDryAmplitude, delayWetAmplitude;
 
-float reverbDryAmplitude, reverbWetAmplitude;
+float reverbDryAmplitude;
 
 float reverbAmplitudeAdjustment = 0.7f;
 
 float divisor = 1;
-float delayTimeMillis = 400.f;
-float distortedReverbLeft, distortedReverbRight, distortedDelayLeft, distortedDelayRight, driveAmount, driveGainCompensation;
-float outGain = 1.f;
-// FILTER
+float distortedReverb[2], distortedDelay[2], driveGainCompensation;
 
-Svf filterL;
-Svf filterR;
+// FILTER
+Svf filter[2]; // Array for filters
 
 void MonitorMidi();
 void HandleMidiUartMessage(MidiEvent m);
@@ -46,76 +42,55 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
 
     for (size_t i = 0; i < size; i++)
     {
-        for (int j = 0; j < NUM_AUDIO_CHANNELS - 2; j++)
+        float processedSample[2];
+
+        dry[0] = in[2][i];
+        dry[1] = in[3][i];
+
+        for (int j = 0; j < 2; j++)
         {
-            // Dry input signal
-            dryL = in[2][i];
-            dryR = in[3][i];
-
             // === REVERB EFFECT ===
-            float processedSampleLeft;
-            float processedSampleRight;
+            reverb[j].Process(dry[j], &processedSample[j]);
+            float reverbWet = processedSample[j] * dubby.dubbyParameters[RVB_MIX].value;
 
-            reverbLeft.Process(dryL, &processedSampleLeft);
-            reverbRight.Process(dryR, &processedSampleRight);
+            // Apply overdrive to the mixed signal
+            distortedReverb[j] = driveReverb[j].Process(reverbWet);
 
-            float reverbWetLeft = processedSampleLeft * reverbWetAmplitude;
-            float reverbWetRight = processedSampleRight * reverbWetAmplitude;
-
-                        // Apply overdrive to the mixed signal
-            distortedReverbLeft = driveReverbLeft.Process(reverbWetLeft);
-            distortedReverbRight = driveReverbRight.Process(reverbWetRight);
-
-    
             // Mix the dry signal with the reverb signal
-            float reverbOutputLeft = (dryL * reverbDryAmplitude) + (distortedReverbLeft*driveGainCompensation);
-            float reverbOutputRight = (dryR * reverbDryAmplitude) + (distortedReverbRight*driveGainCompensation);
+            dry[j] = (dry[j] * reverbDryAmplitude) + (distortedReverb[j] * driveGainCompensation);
 
             // === DELAY EFFECT ===
             if (freeze)
             {
                 delayFeedback = 1.0f;
-                delayOutL = delayLineLeft.Read();
-                delayOutR = delayLineRight.Read();
-                delayLineLeft.Write(delayOutL);
-                delayLineRight.Write(delayOutR);
+                delayOut[j] = delayLine[j].Read();
+                delayLine[j].Write(delayOut[j]);
             }
             else
             {
-                fonepole(currentDelayL, delayTimeMillisL, 0.0001f);
-                fonepole(currentDelayR, delayTimeMillisR, 0.0001f);
+                fonepole(currentDelay[j], delayTimeMillis[j], 0.0001f);
 
-                delaySamplesL = currentDelayL * (sample_rate / 1000);
-                delaySamplesR = currentDelayR * (sample_rate / 1000);
+                delaySamples[j] = currentDelay[j] * (sample_rate / 1000);
+                delayLine[j].SetDelay(delaySamples[j]);
 
-                delayLineLeft.SetDelay(delaySamplesL);
-                delayLineRight.SetDelay(delaySamplesR);
+                delayOut[j] = delayLine[j].Read();
 
-                delayOutL = delayLineLeft.Read();
-                delayOutR = delayLineRight.Read();
-
-                delayLineLeft.Write((delayFeedback * delayOutL) + reverbOutputLeft);
-                delayLineRight.Write((delayFeedback * delayOutR) + reverbOutputRight);
+                delayLine[j].Write((delayFeedback * delayOut[j]) + dry[j]);
             }
 
-            // Process the delay outputs through the filters
-            filterL.Process(delayOutL);
-            filterR.Process(delayOutR);
+            // Process the delay outputs through the filters and overdrive
+            filter[j].Process(delayOut[j]);
+            float delayWetOutput = filter[j].Low() * delayWetAmplitude;
 
-            // Final mix of delay and filter outputs with the dry signal
-            float delayWetOutputLeft = filterL.Low() * delayWetAmplitude;
-            float delayWetOutputRight = filterR.Low() * delayWetAmplitude;
+            distortedDelay[j] = driveDelay[j].Process(delayWetOutput) * driveGainCompensation;
+            reverbDelayDryWetMix[j] = distortedDelay[j] * delayWetAmplitude + dry[j] * delayDryAmplitude;
+                    out[j+2][i] = SoftLimit(reverbDelayDryWetMix[j]) * dubby.dubbyParameters[OUT_GAIN].value;
 
-            distortedDelayLeft = driveDelayLeft.Process(delayWetOutputLeft)*driveGainCompensation;
-            distortedDelayRight = driveDelayRight.Process(delayWetOutputRight)*driveGainCompensation;
-            reverbDelayDryWetMixL = distortedDelayLeft * delayWetAmplitude + reverbOutputLeft * delayDryAmplitude;
-            reverbDelayDryWetMixR = distortedDelayRight * delayWetAmplitude + reverbOutputRight * delayDryAmplitude;
-
-
-            // Output the final processed signal with gain and soft limiting
-            out[2][i] = SoftLimit(reverbDelayDryWetMixL) * outGain;
-            out[3][i] = SoftLimit(reverbDelayDryWetMixR) * outGain;
         }
+
+        // Output the final processed signal with gain and soft limiting
+        out[0][i] = out[1][i] = 0;
+
         AssignScopeData(dubby, i, in, out);
     }
 
@@ -130,42 +105,23 @@ int main(void)
     // Init DSP
     sample_rate = dubby.seed.AudioSampleRate();
 
-    delayLineLeft.Init();
-    delayLineRight.Init();
+    for (int j = 0; j < 2; j++)
+    {
+        delayLine[j].Init();
+        reverb[j].Init(sample_rate);
+        reverb[j].SetFeedback(0.5f);
+        reverb[j].SetLpFreq(20000.f);
 
-    stereoSpread = 0;
+        filter[j].Init(sample_rate);
+        filter[j].SetFreq(500.0);
+        filter[j].SetRes(0.3f);
+        filter[j].SetDrive(0.8f);
 
-    // REVERB
-    reverbLeft.Init(sample_rate);
-    reverbRight.Init(sample_rate);
-    reverbLeft.SetFeedback(0.5f);
-    reverbRight.SetFeedback(0.5f);
-    reverbLeft.SetLpFreq(20000.f);
-    reverbRight.SetLpFreq(20000.f);
-
-    filterL.Init(sample_rate);
-    filterL.SetFreq(500.0);
-    filterL.SetRes(0.3f);
-    filterL.SetDrive(0.8f);
-
-    filterR.Init(sample_rate);
-    filterR.SetFreq(500.0);
-    filterR.SetRes(0.3f);
-    filterR.SetDrive(0.8f);
-
-    driveReverbLeft.Init();
-    driveReverbRight.Init();
-    driveDelayLeft.Init();
-    driveDelayRight.Init();
+        driveReverb[j].Init();
+        driveDelay[j].Init();
+    }
 
     dubby.seed.StartAudio(AudioCallback);
-
-    // initLED();
-    // setLED(0, BLUE, 0);
-    // setLED(1, RED, 0);
-    // updateLED();
-
-    // DELETE MEMORY
     SavedParameterSettings.RestoreDefaults();
 
     while (1)
@@ -174,72 +130,48 @@ int main(void)
 
         Monitor(dubby);
         MonitorMidi();
-        // Set the wet and dry mix based on the delay mix parameter
+
         delayWetAmplitude = dubby.dubbyParameters[DLY_MIX].value;
         delayDryAmplitude = 1.f - delayWetAmplitude;
 
-        // Check if DLY_MAXWET is greater than 0.5
         if (dubby.dubbyParameters[DLY_MAXWET].value > 0.5f)
         {
-            delayDryAmplitude = 0.f; // Set dry amplitude to 0
-            delayWetAmplitude = 1.f; // Set wet amplitude to 1 (fully wet)
+            delayDryAmplitude = 0.f;
+            delayWetAmplitude = 1.f;
         }
 
-        // Retrieve the delay time, feedback, and stereo spread parameters
-        delayTimeMillis = dubby.dubbyParameters[DLY_TIME].value;
         delayFeedback = dubby.dubbyParameters[DLY_FEEDBACK].value;
-        stereoSpread = dubby.dubbyParameters[DLY_SPREAD].value;
 
-        // Retrieve the output gain parameter
-        outGain = dubby.dubbyParameters[OUT_GAIN].value;
+        reverbDryAmplitude = 1.f - dubby.dubbyParameters[RVB_MIX].value;
 
-        // Set the delay time divisor based on the Pot3 value (DLY_DIVISION)
-        float pot3Value = dubby.dubbyParameters[DLY_DIVISION].value;
+        divisor = dubby.dubbyParameters[DLY_DIVISION].value <= 0.05f   ? 8.0f
+                  : dubby.dubbyParameters[DLY_DIVISION].value <= 0.15f ? 4.0f
+                  : dubby.dubbyParameters[DLY_DIVISION].value <= 0.25f ? 3.0f
+                  : dubby.dubbyParameters[DLY_DIVISION].value <= 0.35f ? 2.0f
+                  : dubby.dubbyParameters[DLY_DIVISION].value <= 0.45f ? 1.5f
+                  : dubby.dubbyParameters[DLY_DIVISION].value <= 0.55f ? 1.0f
+                  : dubby.dubbyParameters[DLY_DIVISION].value <= 0.65f ? 0.5f
+                  : dubby.dubbyParameters[DLY_DIVISION].value <= 0.75f ? 0.33f
+                  : dubby.dubbyParameters[DLY_DIVISION].value <= 0.85f ? 0.25f
+                  : dubby.dubbyParameters[DLY_DIVISION].value <= 0.95f ? 0.2f
+                                       : 0.125f;
 
-        divisor =
-            pot3Value <= 0.05f   ? 8.0f
-            : pot3Value <= 0.15f ? 4.0f
-            : pot3Value <= 0.25f ? 3.0f
-            : pot3Value <= 0.35f ? 2.0f
-            : pot3Value <= 0.45f ? 1.5f
-            : pot3Value <= 0.55f ? 1.0f
-            : pot3Value <= 0.65f ? 0.5f
-            : pot3Value <= 0.75f ? 0.33f
-            : pot3Value <= 0.85f ? 0.25f
-            : pot3Value <= 0.95f ? 0.2f
-                                 : 0.125f;
+        delayTimeMillis[0] = (dubby.dubbyParameters[DLY_TIME].value - dubby.dubbyParameters[DLY_SPREAD].value) / divisor;
+        delayTimeMillis[1] = (dubby.dubbyParameters[DLY_TIME].value + dubby.dubbyParameters[DLY_SPREAD].value) / divisor;
 
-        // Calculate the delay times for left and right channels
-        delayTimeMillisL = (delayTimeMillis - stereoSpread) / divisor;
-        delayTimeMillisR = (delayTimeMillis + stereoSpread) / divisor;
+        for (int j = 0; j < 2; j++)
+        {
+            delayTimeMillis[j] = fmaxf(delayTimeMillis[j], 1.0f);
 
-        // Ensure that delay times don't go lower than 1 millisecond
-        delayTimeMillisL = fmaxf(delayTimeMillisL, 1.0f);
-        delayTimeMillisR = fmaxf(delayTimeMillisR, 1.0f);
+            reverb[j].SetFeedback(dubby.dubbyParameters[RVB_FEEDBACK].value);
+            reverb[j].SetLpFreq(dubby.dubbyParameters[RVB_LPF_CUTOFF].value);
 
-        // REVERB
-        reverbWetAmplitude = dubby.dubbyParameters[RVB_MIX].value;
-        reverbDryAmplitude = 1.f - reverbWetAmplitude;
-        reverbLeft.SetFeedback(dubby.dubbyParameters[RVB_FEEDBACK].value);
-        reverbRight.SetFeedback(dubby.dubbyParameters[RVB_FEEDBACK].value);
-        reverbLeft.SetLpFreq(dubby.dubbyParameters[RVB_LPF_CUTOFF].value);
-        reverbRight.SetLpFreq(dubby.dubbyParameters[RVB_LPF_CUTOFF].value);
-        // Set the filter frequency and resonance for left and right channels
-        float cutoffFreq = dubby.dubbyParameters[FLT_CUTOFF].value;
-        float resonance = dubby.dubbyParameters[FLT_RESONANCE].value;
+            filter[j].SetFreq(dubby.dubbyParameters[FLT_CUTOFF].value);
+            filter[j].SetRes(dubby.dubbyParameters[FLT_RESONANCE].value);
 
-        filterL.SetFreq(cutoffFreq);
-        filterR.SetFreq(cutoffFreq);
-
-        filterL.SetRes(resonance);
-        filterR.SetRes(resonance);
-
-        driveAmount = dubby.dubbyParameters[DRV_AMOUNT].value;
-
-        driveReverbLeft.SetDrive(driveAmount);
-        driveReverbRight.SetDrive(driveAmount);
-        driveDelayLeft.SetDrive(driveAmount);
-        driveDelayRight.SetDrive(driveAmount); 
+            driveReverb[j].SetDrive(dubby.dubbyParameters[DRV_AMOUNT].value);
+            driveDelay[j].SetDrive(dubby.dubbyParameters[DRV_AMOUNT].value);
+        }
 
         driveGainCompensation = dubby.dubbyParameters[DRV_GAIN_COMPENSATION].value;
     }
