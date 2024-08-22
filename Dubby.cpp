@@ -529,7 +529,7 @@ void Dubby::UpdateWindowList()
         break;
     case WIN6:
         //            display.SetCursor(10, 15);
-        UpdateStatusBar(" PARAM                SETTING  ", LEFT);
+        UpdateStatusBar(" SETTING              VALUE    ", LEFT);
         display.DrawLine(6, 10, 121, 10, true);
 
         DisplayMidiSettingsList(0);
