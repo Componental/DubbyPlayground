@@ -296,7 +296,7 @@ void Dubby::UpdateDisplay()
                 if (EncoderFallingEdgeCustom()) {
                     isListeningControlChange = false;
                     isEncoderIncrementDisabled = false;
-                    UpdateStatusBar(" PARAM       CTRL     VALUE  >", LEFT);
+                    UpdateStatusBar(" PARAM       CTRL      VALUE  >", LEFT);
 
                     trigger_save_parameters_qspi = true;
                 } else {
@@ -306,7 +306,7 @@ void Dubby::UpdateDisplay()
                             dubbyParameters[parameterSelected].control = (DubbyControls)i;
 
                             DisplayParameterList(0);
-                            UpdateStatusBar(" PARAM       CTRL     VALUE  >", LEFT);
+                            UpdateStatusBar(" PARAM       CTRL      VALUE  >", LEFT);
 
                             isListeningControlChange = false;
                             isEncoderIncrementDisabled = false;
@@ -326,7 +326,7 @@ void Dubby::UpdateDisplay()
                 if (EncoderFallingEdgeCustom()) {
                     isCurveChanging = false;
                     isEncoderIncrementDisabled = false;
-                    UpdateStatusBar(" PARAM       CTRL     CURVE   ", LEFT);
+                    UpdateStatusBar(" PARAM       CTRL   <  CURVE   ", LEFT);
 
                     trigger_save_parameters_qspi = true;
                 }
@@ -350,7 +350,7 @@ void Dubby::UpdateDisplay()
                 if (EncoderFallingEdgeCustom()) {
                     isMinChanging = false;
                     isEncoderIncrementDisabled = false;
-                    UpdateStatusBar(" PARAM       CTRL     MIN   ", LEFT);  
+                    UpdateStatusBar(" PARAM       CTRL   <  MIN    >", LEFT);  
                     
                     trigger_save_parameters_qspi = true;
                 }
@@ -374,7 +374,7 @@ void Dubby::UpdateDisplay()
                 if (EncoderFallingEdgeCustom()) {
                     isMaxChanging = false;
                     isEncoderIncrementDisabled = false;
-                    UpdateStatusBar(" PARAM       CTRL     MAX   ", LEFT);  
+                    UpdateStatusBar(" PARAM       CTRL   <  MAX    >", LEFT);  
                     
                     trigger_save_parameters_qspi = true;
                 }
@@ -392,7 +392,7 @@ void Dubby::UpdateDisplay()
                 if (EncoderFallingEdgeCustom()) {
                     isValueChanging = false;
                     isEncoderIncrementDisabled = false;
-                    UpdateStatusBar(" PARAM       CTRL     VALUE  >", LEFT);
+                    UpdateStatusBar(" PARAM       CTRL      VALUE  >", LEFT);
                     
                     trigger_save_parameters_qspi = true;
                 }
@@ -410,16 +410,16 @@ void Dubby::UpdateDisplay()
                     switch (parameterOptionSelected)
                     {
                         case MIN: 
-                            UpdateStatusBar(" PARAM       CTRL     MIN   ", LEFT);      
+                            UpdateStatusBar(" PARAM       CTRL   <  MIN    >", LEFT);  
                             break;
                         case MAX:
-                            UpdateStatusBar(" PARAM       CTRL     MAX   ", LEFT);
+                            UpdateStatusBar(" PARAM       CTRL   <  MAX    >", LEFT);  
                             break;
                         case CURVE:
-                            UpdateStatusBar(" PARAM       CTRL     CURVE ", LEFT);
+                            UpdateStatusBar(" PARAM       CTRL   <  CURVE   ", LEFT);
                             break;
                         default:
-                            UpdateStatusBar(" PARAM       CTRL     VALUE  >", LEFT);
+                            UpdateStatusBar(" PARAM       CTRL      VALUE  >", LEFT);
                             break;
                     }
 
@@ -630,7 +630,7 @@ void Dubby::UpdateWindowList()
             DisplayPreferencesMenuList(0);
             break;
         case WIN4:
-            UpdateStatusBar(" PARAM       CTRL     VALUE  >", LEFT);
+            UpdateStatusBar(" PARAM       CTRL      VALUE  >", LEFT);
             display.DrawLine(6, 7, 127, 7, true);
 
             DisplayParameterList(0);
@@ -922,7 +922,7 @@ void Dubby::DisplayParameterList(int increment)
                     case MIN:
                     case MAX: 
                     case CURVE:
-                        x = 87;
+                        x = 91;
                         break;
                     default:
                         x = 3;
@@ -960,7 +960,7 @@ void Dubby::DisplayParameterList(int increment)
         }
         
 
-        display.SetCursor(89, PARAMLIST_Y_START + 1 + (j * PARAMLIST_SPACING));
+        display.SetCursor(93, PARAMLIST_Y_START + 1 + (j * PARAMLIST_SPACING));
         display.WriteString(&str[0], Font_4x5, !(parameterSelected == i && isParameterSelected));
         
     }
