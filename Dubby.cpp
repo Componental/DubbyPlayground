@@ -73,10 +73,10 @@ void Dubby::Init()
 
     for (int i = 0; i < MIDILIST_ROWS_ON_SCREEN; i++)
     {
-        midiListBoxBounding[i][0] = MIDILIST_X_START;
-        midiListBoxBounding[i][1] = MIDILIST_Y_START + i * MIDILIST_SPACING;
-        midiListBoxBounding[i][2] = MIDILIST_X_END;
-        midiListBoxBounding[i][3] = MIDILIST_Y_END + i * MIDILIST_SPACING;
+        paramListBoxBounding[i][0] = MIDILIST_X_START;
+        paramListBoxBounding[i][1] = MIDILIST_Y_START + i * MIDILIST_SPACING;
+        paramListBoxBounding[i][2] = MIDILIST_X_END;
+        paramListBoxBounding[i][3] = MIDILIST_Y_END + i * MIDILIST_SPACING;
     }
 
     scrollbarWidth = int(128 / WIN_LAST);
@@ -859,15 +859,15 @@ void Dubby::DisplayMidiSettingsList(int increment)
 
     for (int i = optionStart, j = 0; i < optionStart + MIDILIST_ROWS_ON_SCREEN; i++, j++)
     {
-        display.DrawRect(midiListBoxBounding[j][0], midiListBoxBounding[j][1], midiListBoxBounding[j][2], midiListBoxBounding[j][3], false, true);
+        display.DrawRect(paramListBoxBounding[j][0], paramListBoxBounding[j][1], paramListBoxBounding[j][2], paramListBoxBounding[j][3], false, true);
 
         if (midiSettingSelected == i)
         {
             if (isMidiSettingSelected)
-                display.DrawRect(midiListBoxBounding[j][0], midiListBoxBounding[j][1], midiListBoxBounding[j][2], midiListBoxBounding[j][3], true, true);
+                display.DrawRect(paramListBoxBounding[j][0], paramListBoxBounding[j][1], paramListBoxBounding[j][2], paramListBoxBounding[j][3], true, true);
 
             int x = 3;
-            display.DrawCircle(x, midiListBoxBounding[j][1] + 4, 1, !isMidiSettingSelected);
+            display.DrawCircle(x, paramListBoxBounding[j][1] + 4, 1, !isMidiSettingSelected);
         }
 
         display.SetCursor(5, MIDILIST_Y_START + 2 + (j * MIDILIST_SPACING));
