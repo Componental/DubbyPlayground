@@ -528,7 +528,7 @@ void Dubby::UpdateDisplay()
 
         break;
         
-    case WIN6:
+    case WIN5:
         DisplayMidiSettingsList(encoder.Increment());
 
         if (encoder.Increment() && !windowSelectorActive && !isMidiSettingSelected)
@@ -723,23 +723,11 @@ void Dubby::UpdateWindowList()
 
         break;
     case WIN5:
-
-        break;
-    case WIN6:
-        //            display.SetCursor(10, 15);
         UpdateStatusBar(" SETTING              VALUE    ", LEFT);
         display.DrawLine(6, 10, 121, 10, true);
 
         DisplayMidiSettingsList(0);
 
-        break;
-    case WIN7:
-        display.SetCursor(10, 15);
-        UpdateStatusBar("PANE 7", LEFT);
-        break;
-    case WIN8:
-        display.SetCursor(10, 15);
-        UpdateStatusBar("PANE 8", LEFT);
         break;
     default:
         break;

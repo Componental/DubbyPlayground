@@ -81,10 +81,7 @@ namespace daisy
             WIN2,
             WIN3,
             WIN4,
-            WIN5, // ROUTING TEST
-            WIN6,
-            WIN7,
-            WIN8,
+            WIN5,
             WIN_LAST // used to know the size of enum
         };
 
@@ -94,10 +91,7 @@ namespace daisy
                 "MIXER",
                 "PREFS",
                 "PARAMETERS",
-                "ROUTING",
                 "MIDI CONF",
-                "WIN7",
-                "WIN8",
         };
 
         enum PreferencesMenuItems
