@@ -284,17 +284,34 @@ void Dubby::UpdateDisplay()
 
             if (isListeningControlChange) {
 
-                for (int i = 0; i < CONTROLS_LAST; i++) {
-                    if (abs(dubbyCtrls[i].tempValue - dubbyCtrls[i].value) > 0.1f) {
+                if (encoder.Increment()) {  
+                    if (dubbyParameters[parameterSelected].control == CONTROLS_LAST - 1 && encoder.Increment() == 1)
+                        dubbyParameters[parameterSelected].control = CONTROL_NONE;
+                    else if (dubbyParameters[parameterSelected].control == CONTROL_NONE && encoder.Increment() == -1)
+                        dubbyParameters[parameterSelected].control = (DubbyControls)(CONTROLS_LAST - 1);
+                    else
+                        dubbyParameters[parameterSelected].control = static_cast<DubbyControls>(static_cast<int>(dubbyParameters[parameterSelected].control) + encoder.Increment());
+                }
 
-                        dubbyParameters[parameterSelected].control = (DubbyControls)i;
+                if (EncoderFallingEdgeCustom()) {
+                    isListeningControlChange = false;
+                    isEncoderIncrementDisabled = false;
+                    UpdateStatusBar(" PARAM       CTRL     VALUE  >", LEFT);
 
-                        DisplayParameterList(0);
-                        UpdateStatusBar(" PARAM       CTRL     VALUE   ", LEFT);
+                    trigger_save_parameters_qspi = true;
+                } else {
+                    for (int i = 0; i < CONTROLS_LAST; i++) {
+                        if (abs(dubbyCtrls[i].tempValue - dubbyCtrls[i].value) > 0.1f) {
 
-                        isListeningControlChange = false;
-                        isEncoderIncrementDisabled = false;
-                        trigger_save_parameters_qspi = true;
+                            dubbyParameters[parameterSelected].control = (DubbyControls)i;
+
+                            DisplayParameterList(0);
+                            UpdateStatusBar(" PARAM       CTRL     VALUE  >", LEFT);
+
+                            isListeningControlChange = false;
+                            isEncoderIncrementDisabled = false;
+                            trigger_save_parameters_qspi = true;
+                        }
                     }
                 }
             } else if (isCurveChanging) {
@@ -375,7 +392,7 @@ void Dubby::UpdateDisplay()
                 if (EncoderFallingEdgeCustom()) {
                     isValueChanging = false;
                     isEncoderIncrementDisabled = false;
-                    UpdateStatusBar(" PARAM       CTRL     VALUE ", LEFT);  
+                    UpdateStatusBar(" PARAM       CTRL     VALUE  >", LEFT);
                     
                     trigger_save_parameters_qspi = true;
                 }
@@ -402,24 +419,21 @@ void Dubby::UpdateDisplay()
                             UpdateStatusBar(" PARAM       CTRL     CURVE ", LEFT);
                             break;
                         default:
-                            UpdateStatusBar(" PARAM       CTRL     VALUE   ", LEFT);
+                            UpdateStatusBar(" PARAM       CTRL     VALUE  >", LEFT);
                             break;
                     }
 
                     DisplayParameterList(encoder.Increment());
 
-                } else if (encoder.FallingEdge() && parameterOptionSelected == CTRL) {
-                    UpdateStatusBar("SELECT A CONTROL", MIDDLE, 127);
-                    isListeningControlChange = true;
-                    isEncoderIncrementDisabled = true;
+                } else if (parameterOptionSelected == CTRL) {
+                    if (EncoderFallingEdgeCustom())
+                    {
+                        UpdateStatusBar("SELECT A CONTROL", MIDDLE, 127);
+                        isListeningControlChange = true;
+                        isEncoderIncrementDisabled = true;
 
-                    for (int i = 0; i < CONTROLS_LAST; i++) {
-                        dubbyCtrls[i].tempValue = dubbyCtrls[i].value;
-
-                        // for (int j = 0; j < PARAMS_LAST; j++) {
-                        //     if (dubbyCtrls[i].param[j] == parameterSelected)
-                        //         prevControl = dubbyCtrls[i].control;
-                        // }
+                        for (int i = 0; i < CONTROLS_LAST; i++) 
+                            dubbyCtrls[i].tempValue = dubbyCtrls[i].value;
                     }
                 } else if (parameterOptionSelected == CURVE) {
                     if (EncoderFallingEdgeCustom())
@@ -449,7 +463,7 @@ void Dubby::UpdateDisplay()
                         isEncoderIncrementDisabled = true;
                         isValueChanging = true;
                     }
-                } 
+                }
                 
             }
             
@@ -616,7 +630,7 @@ void Dubby::UpdateWindowList()
             DisplayPreferencesMenuList(0);
             break;
         case WIN4:
-            UpdateStatusBar(" PARAM       CTRL     VALUE   ", LEFT);
+            UpdateStatusBar(" PARAM       CTRL     VALUE  >", LEFT);
             display.DrawLine(6, 7, 127, 7, true);
 
             DisplayParameterList(0);
@@ -942,7 +956,6 @@ void Dubby::DisplayParameterList(int increment)
                 break;
             default:
                 str = std::to_string(dubbyParameters[i].value).substr(0, std::to_string(dubbyParameters[i].value).find(".") + 3);
-                // UpdateStatusBar(" PARAM       CTRL     VALUE   ", LEFT);
                 break;
         }
         
