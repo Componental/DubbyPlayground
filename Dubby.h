@@ -81,7 +81,7 @@ namespace daisy
             WIN2,
             WIN3,
             WIN4,
-            WIN5,
+            WIN5, // ROUTING TEST
             WIN6,
             WIN7,
             WIN8,
@@ -94,8 +94,8 @@ namespace daisy
                 "MIXER",
                 "PREFS",
                 "PARAMETERS",
-                "WIN5",
-                "WIN6",
+                "ROUTING",
+                "MIDI CONF",
                 "WIN7",
                 "WIN8",
         };
@@ -201,9 +201,9 @@ namespace daisy
 
         enum PreferencesMidiMenuItems
         {
-            MIDIIN,
-            MIDIOUT,
-            MIDITHRU,
+            xMIDIIN,
+            xMIDIOUT,
+            xMIDITHRU,
             MIDIWHATEV,
             MIDIWHATEVA,
             PREFERENCESMIDIMENU_LAST // used to know the size of enum
@@ -336,7 +336,11 @@ namespace daisy
 
         void DisplayParameterList(int increment);
 
+        void DisplayMidiSettingsList(int increment);
+
         void UpdateParameterList(int increment);
+
+        void UpdateMidiSettingsList(int increment);
 
         void ProcessAllControls();
 
@@ -393,12 +397,18 @@ namespace daisy
         bool isEncoderIncrementDisabled = false;
 
         bool isSubMenuActive = false;
+        
+        MidiSettings midiSettingSelected = (MidiSettings)0;
+        bool isMidiSettingSelected = false;
+        bool testBool = false;
+        
 
         // const int menuTextCursors[3][2] = { {8, 55}, {50, 55}, {92, 55} }; OLD
         const int windowTextCursors[3][2] = {{3, 52}, {46, 52}, {88, 52}};
         const int windowBoxBounding[3][4] = {{0, 56, 43, 61}, {43, 56, 85, 61}, {85, 56, 127, 61}};
         int menuListBoxBounding[5][4];
         int paramListBoxBounding[8][4];
+        int midiListBoxBounding[5][4];
 
         int scrollbarWidth = 0;
         int barSelector = 0;
@@ -429,7 +439,8 @@ namespace daisy
         MidiUsbHandler midi_usb;
 
         int globalBPM = 120;
-
+        int receivedBPM; 
+       // uint32_t bpm = 120;
         std::vector<std::string> customLabels = {"PRM1", "PRM2", "PRM3", "PRM4"};
         std::vector<float> knobValuesForPrint;
         std::vector<int> numDecimals = {1, 1, 1, 1}; // Assuming you have three knobs with different decimal places
@@ -440,6 +451,7 @@ namespace daisy
         Controls dubbyCtrls[CONTROLS_LAST];
         Parameters dubbyParameters[PARAMS_LAST];
 
+        MidiSettingsMenu dubbyMidiSettings;
         bool trigger_save_parameters_qspi = false;
 
     private:

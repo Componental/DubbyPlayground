@@ -8,6 +8,8 @@ using namespace daisy;
 using namespace daisysp;
 
 Dubby dubby;
+bool midiClockStarted = false;
+bool midiClockStoppedByButton2 = false;
 
 void MonitorMidi();
 void HandleMidiUartMessage(MidiEvent m);
@@ -61,26 +63,81 @@ int main(void)
         Monitor(dubby);
         MonitorMidi();
         MonitorPersistantMemory(dubby, SavedParameterSettings);
+    
+        //   MIDISendNoteOn(dubby, 46, 120);
+
+        if (dubby.buttons[dubby.CTRL_1].FallingEdge())
+        {
+            if (midiClockStarted)
+            {
+                MIDISendStop(dubby);
+                midiClockStarted = false;
+            }
+            else
+            {
+                if (midiClockStoppedByButton2)
+                {
+                    MIDISendStart(dubby);
+                    midiClockStoppedByButton2 = false;
+                }
+                else
+                {
+                    MIDISendContinue(dubby);
+                }
+                midiClockStarted = true;
+            }
+        }
+
+        if (dubby.buttons[dubby.CTRL_2].FallingEdge())
+        {
+            MIDISendStop(dubby);
+            midiClockStarted = false;
+            midiClockStoppedByButton2 = true;
+        }
+
+        if (dubby.buttons[dubby.CTRL_3].TimeHeldMs() > 1000)
+        {
+            dubby.ResetToBootloader();
+        }
     }
 }
 
 void HandleMidiMessage(MidiEvent m)
 {
+
     switch (m.type)
     {
     case NoteOn:
     {
-        NoteOnEvent p = m.AsNoteOn();
+        if (dubby.dubbyMidiSettings.currentMidiInOption == MIDIIN_ON)
+        {
+            if (m.channel == dubby.dubbyMidiSettings.currentMidiInChannelOption)
+            {
+                NoteOnEvent p = m.AsNoteOn();
+            }
+        }
         break;
     }
     case NoteOff:
     {
-        NoteOffEvent p = m.AsNoteOff();
+        if (dubby.dubbyMidiSettings.currentMidiInOption == MIDIIN_ON)
+        {
+            if (m.channel == dubby.dubbyMidiSettings.currentMidiInChannelOption)
+            {
+                NoteOffEvent p = m.AsNoteOff();
+            }
+        }
         break;
     }
     case SystemRealTime:
     {
-        HandleSystemRealTime(m.srt_type);
+        if (dubby.dubbyMidiSettings.currentMidiClockOption == FOLLOWER)
+        {
+
+            HandleSystemRealTime(m.srt_type, dubby);
+            // std::string stra = std::to_string(dubby.receivedBPM);
+            // dubby.UpdateStatusBar(&stra[0], dubby.MIDDLE, 127);
+        }
     }
     default:
         break;
@@ -100,6 +157,12 @@ void MonitorMidi()
     while (dubby.midi_uart.HasEvents())
     {
         MidiEvent m = dubby.midi_uart.PopEvent();
-        HandleMidiMessage(m);
+        if (dubby.dubbyMidiSettings.currentMidiInOption == MIDIIN_ON)
+        {
+            if (m.channel == dubby.dubbyMidiSettings.currentMidiInChannelOption)
+            {
+                HandleMidiMessage(m);
+            }
+        }
     }
 }
