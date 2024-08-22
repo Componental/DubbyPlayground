@@ -313,6 +313,7 @@ namespace daisy
         const int windowBoxBounding[3][4] = {{0, 53, 43, 61}, {43, 53, 85, 61}, {85, 53, 127, 61}};
         int menuListBoxBounding[5][4];
         int paramListBoxBounding[5][4];
+        int midiListBoxBounding[5][4];
 
         int scrollbarWidth = 0;
         int barSelector = 0;
