@@ -44,12 +44,12 @@ using namespace daisy;
 #define MENULIST_SUBMENU_SPACING 63
 #define MENULIST_ROWS_ON_SCREEN 5
 
-#define PARAMLIST_X_START 1
-#define PARAMLIST_X_END 123
-#define PARAMLIST_Y_START 11
-#define PARAMLIST_Y_END 19
-#define PARAMLIST_SPACING 8
-#define PARAMLIST_ROWS_ON_SCREEN 5
+#define MIDILIST_X_START 1
+#define MIDILIST_X_END 123
+#define MIDILIST_Y_START 11
+#define MIDILIST_Y_END 19
+#define MIDILIST_SPACING 8
+#define MIDILIST_ROWS_ON_SCREEN 5
 
 #define ENCODER_LONGPRESS_THRESHOLD 300
 
@@ -71,12 +71,12 @@ void Dubby::Init()
         menuListBoxBounding[i][3] = MENULIST_Y_END + i * MENULIST_SPACING;
     }
 
-    for (int i = 0; i < PARAMLIST_ROWS_ON_SCREEN; i++)
+    for (int i = 0; i < MIDILIST_ROWS_ON_SCREEN; i++)
     {
-        paramListBoxBounding[i][0] = PARAMLIST_X_START;
-        paramListBoxBounding[i][1] = PARAMLIST_Y_START + i * PARAMLIST_SPACING;
-        paramListBoxBounding[i][2] = PARAMLIST_X_END;
-        paramListBoxBounding[i][3] = PARAMLIST_Y_END + i * PARAMLIST_SPACING;
+        midiListBoxBounding[i][0] = MIDILIST_X_START;
+        midiListBoxBounding[i][1] = MIDILIST_Y_START + i * MIDILIST_SPACING;
+        midiListBoxBounding[i][2] = MIDILIST_X_END;
+        midiListBoxBounding[i][3] = MIDILIST_Y_END + i * MIDILIST_SPACING;
     }
 
     scrollbarWidth = int(128 / WIN_LAST);
@@ -780,82 +780,7 @@ void Dubby::UpdateStatusBar(char *text, StatusBarSide side = LEFT, int width)
 void Dubby::DisplayParameterList(int increment)
 {
 
-    // clear bounding box
-    // display.DrawRect(PANE_X_START - 1, 1, PANE_X_END, PANE_Y_END, false, true);
-
-    int optionStart = 0;
-    if (parameterSelected > (PARAMLIST_ROWS_ON_SCREEN - 1))
-    {
-        optionStart = parameterSelected - (PARAMLIST_ROWS_ON_SCREEN - 1);
-    }
-
-    // display each item, j for text cursor
-    for (int i = optionStart, j = 0; i < optionStart + PARAMLIST_ROWS_ON_SCREEN; i++, j++)
-    {
-        // clear item spaces
-        display.DrawRect(paramListBoxBounding[j][0], paramListBoxBounding[j][1], paramListBoxBounding[j][2], paramListBoxBounding[j][3], false, true);
-
-        if (parameterSelected == i)
-        {
-
-            if (isParameterSelected)
-                display.DrawRect(paramListBoxBounding[j][0], paramListBoxBounding[j][1], paramListBoxBounding[j][2], paramListBoxBounding[j][3], true, true);
-
-            int x;
-
-            if (isParameterSelected)
-            {
-
-                switch (parameterOptionSelected)
-                {
-                case 0:
-                    x = 43;
-                    break;
-                case 1:
-                    x = 68;
-                    break;
-                case 2:
-                    x = 88;
-                    break;
-                case 3:
-                    x = 107;
-                    break;
-                default:
-                    x = 3;
-                    break;
-                }
-
-                display.DrawCircle(x, paramListBoxBounding[j][1] + 4, 1, !isParameterSelected);
-            }
-            else
-            {
-                display.DrawCircle(3, paramListBoxBounding[j][1] + 4, 1, !isParameterSelected);
-            }
-        }
-
-        display.SetCursor(5, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
-        display.WriteString(dubbyControls.ParamsStrings[i], Font_4x5, !(parameterSelected == i && isParameterSelected));
-
-        display.SetCursor(45, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
-        display.WriteString(dubbyControls.ControlsStrings[dubbyParameters.GetControlValues(static_cast<DubbyControls>(i)).param], Font_4x5, !(parameterSelected == i && isParameterSelected));
-
-        std::string str = std::to_string(dubbyParameters.GetControlValues(static_cast<DubbyControls>(i)).value).substr(0, std::to_string(dubbyParameters.GetControlValues(static_cast<DubbyControls>(i)).value).find(".") + 2);
-
-        display.SetCursor(70, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
-        display.WriteString(&str[0], Font_4x5, !(parameterSelected == i && isParameterSelected));
-
-        str = std::to_string(dubbyParameters.GetControlValues(static_cast<DubbyControls>(i)).min).substr(0, std::to_string(dubbyParameters.GetControlValues(static_cast<DubbyControls>(i)).min).find(".") + 2);
-
-        display.SetCursor(90, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
-        display.WriteString(&str[0], Font_4x5, !(parameterSelected == i && isParameterSelected));
-
-        str = std::to_string(dubbyParameters.GetControlValues(static_cast<DubbyControls>(i)).max).substr(0, std::to_string(dubbyParameters.GetControlValues(static_cast<DubbyControls>(i)).max).find(".") + 2);
-
-        display.SetCursor(110, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
-        display.WriteString(&str[0], Font_4x5, !(parameterSelected == i && isParameterSelected));
-    }
-
-    display.Update();
+  
 }
 
 void Dubby::UpdateParameterList(int increment)
@@ -927,25 +852,25 @@ void Dubby::DisplayMidiSettingsList(int increment)
     }
 
     int optionStart = 0;
-    if (midiSettingSelected > (PARAMLIST_ROWS_ON_SCREEN - 1))
+    if (midiSettingSelected > (MIDILIST_ROWS_ON_SCREEN - 1))
     {
-        optionStart = midiSettingSelected - (PARAMLIST_ROWS_ON_SCREEN - 1);
+        optionStart = midiSettingSelected - (MIDILIST_ROWS_ON_SCREEN - 1);
     }
 
-    for (int i = optionStart, j = 0; i < optionStart + PARAMLIST_ROWS_ON_SCREEN; i++, j++)
+    for (int i = optionStart, j = 0; i < optionStart + MIDILIST_ROWS_ON_SCREEN; i++, j++)
     {
-        display.DrawRect(paramListBoxBounding[j][0], paramListBoxBounding[j][1], paramListBoxBounding[j][2], paramListBoxBounding[j][3], false, true);
+        display.DrawRect(midiListBoxBounding[j][0], midiListBoxBounding[j][1], midiListBoxBounding[j][2], midiListBoxBounding[j][3], false, true);
 
         if (midiSettingSelected == i)
         {
             if (isMidiSettingSelected)
-                display.DrawRect(paramListBoxBounding[j][0], paramListBoxBounding[j][1], paramListBoxBounding[j][2], paramListBoxBounding[j][3], true, true);
+                display.DrawRect(midiListBoxBounding[j][0], midiListBoxBounding[j][1], midiListBoxBounding[j][2], midiListBoxBounding[j][3], true, true);
 
             int x = 3;
-            display.DrawCircle(x, paramListBoxBounding[j][1] + 4, 1, !isMidiSettingSelected);
+            display.DrawCircle(x, midiListBoxBounding[j][1] + 4, 1, !isMidiSettingSelected);
         }
 
-        display.SetCursor(5, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
+        display.SetCursor(5, MIDILIST_Y_START + 2 + (j * MIDILIST_SPACING));
         display.WriteString(dubbyMidiSettings.MidiSettingsStrings[i], Font_4x5, !(midiSettingSelected == i && isMidiSettingSelected));
 
         // Displaying the corresponding first index string for each enum
@@ -953,34 +878,34 @@ void Dubby::DisplayMidiSettingsList(int increment)
 
         {
         case MIDICLOCK:
-            display.SetCursor(90, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
+            display.SetCursor(90, MIDILIST_Y_START + 2 + (j * MIDILIST_SPACING));
             display.WriteString(dubbyMidiSettings.MidiClockOptionsStrings[dubbyMidiSettings.currentMidiClockOption], Font_4x5, !(midiSettingSelected == i && isMidiSettingSelected));
             break;
         case BPM:
-            display.SetCursor(90, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
+            display.SetCursor(90, MIDILIST_Y_START + 2 + (j * MIDILIST_SPACING));
             char bpmStr[4];
             snprintf(bpmStr, 4, "%d", dubbyMidiSettings.currentBpm);
             display.WriteString(bpmStr, Font_4x5, !(midiSettingSelected == i && isMidiSettingSelected));
             break;
 
         case MIDIIN:
-            display.SetCursor(90, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
+            display.SetCursor(90, MIDILIST_Y_START + 2 + (j * MIDILIST_SPACING));
             display.WriteString(dubbyMidiSettings.MidiInOptionsStrings[dubbyMidiSettings.currentMidiInOption], Font_4x5, !(midiSettingSelected == i && isMidiSettingSelected));
             break;
         case MIDIINCHN:
-            display.SetCursor(90, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
+            display.SetCursor(90, MIDILIST_Y_START + 2 + (j * MIDILIST_SPACING));
             display.WriteString(dubbyMidiSettings.MidiInChannelOptionsStrings[dubbyMidiSettings.currentMidiInChannelOption], Font_4x5, !(midiSettingSelected == i && isMidiSettingSelected));
             break;
         case MIDIOUT:
-            display.SetCursor(90, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
+            display.SetCursor(90, MIDILIST_Y_START + 2 + (j * MIDILIST_SPACING));
             display.WriteString(dubbyMidiSettings.MidiOutOptionsStrings[dubbyMidiSettings.currentMidiOutOption], Font_4x5, !(midiSettingSelected == i && isMidiSettingSelected));
             break;
         case MIDIOUTCHN:
-            display.SetCursor(90, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
+            display.SetCursor(90, MIDILIST_Y_START + 2 + (j * MIDILIST_SPACING));
             display.WriteString(dubbyMidiSettings.MidiOutChannelOptionsStrings[dubbyMidiSettings.currentMidiOutChannelOption], Font_4x5, !(midiSettingSelected == i && isMidiSettingSelected));
             break;
         case MIDITHRUOUT:
-            display.SetCursor(90, PARAMLIST_Y_START + 2 + (j * PARAMLIST_SPACING));
+            display.SetCursor(90, MIDILIST_Y_START + 2 + (j * MIDILIST_SPACING));
             display.WriteString(dubbyMidiSettings.MidiThruOutOptionsStrings[dubbyMidiSettings.currentMidiThruOutOption], Font_4x5, !(midiSettingSelected == i && isMidiSettingSelected));
             break;
         default:
