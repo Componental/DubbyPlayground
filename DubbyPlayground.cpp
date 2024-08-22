@@ -144,7 +144,7 @@ int main(void)
 
         reverbDryAmplitude = 1.f - dubby.dubbyParameters[RVB_MIX].value;
 
-        divisor = dubby.dubbyParameters[DLY_DIVISION].value <= 0.05f   ? 8.0f
+        divisor =   dubby.dubbyParameters[DLY_DIVISION].value <= 0.05f   ? 8.0f
                   : dubby.dubbyParameters[DLY_DIVISION].value <= 0.15f ? 4.0f
                   : dubby.dubbyParameters[DLY_DIVISION].value <= 0.25f ? 3.0f
                   : dubby.dubbyParameters[DLY_DIVISION].value <= 0.35f ? 2.0f
