@@ -13,7 +13,7 @@ void MonitorMidi();
 void HandleMidiUartMessage(MidiEvent m);
 void HandleMidiUsbMessage(MidiEvent m);
 
-//Persistent Storage Declaration. Using type Settings and passed the devices qspi handle
+// Persistent Storage Declaration. Using type Settings and passed the devices qspi handle
 PersistentStorage<PersistantMemoryParameterSettings> SavedParameterSettings(dubby.seed.qspi);
 
 void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, size_t size)
