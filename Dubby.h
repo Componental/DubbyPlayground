@@ -266,6 +266,7 @@ namespace daisy
     const char * ParamsStrings[PARAMS_LAST] = 
     { 
       "-",
+      "DLY SYNC",
       "DLY TIME", 
       "DLY FB", 
       "DLY DIV", 

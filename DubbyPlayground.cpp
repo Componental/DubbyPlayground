@@ -158,18 +158,22 @@ int main(void)
         }
 
         // Retrieve the delay time, feedback, and stereo spread parameters
-        //delayTimeMillis = dubby.dubbyParameters[DLY_TIME].value;
-        
-        delayTimeMillis =      60000/ dubby.dubbyMidiSettings.currentBpm;
+
+        if (dubby.dubbyParameters[DLY_SYNC].value > 0.5)
+        {
+            dubby.dubbyParameters[DLY_TIME_FREE].control = CONTROL_NONE;
+            delayTimeMillis = 60000 / dubby.dubbyMidiSettings.currentBpm;
+        }
+        else
+        {
+            delayTimeMillis = dubby.dubbyParameters[DLY_TIME_FREE].value;
+        }
 
         delayFeedback = dubby.dubbyParameters[DLY_FEEDBACK].value;
         stereoSpread = dubby.dubbyParameters[DLY_SPREAD].value;
 
         // Retrieve the output gain parameter
         outGain = dubby.dubbyParameters[OUT_GAIN].value;
-        
-        
-
 
         divisor =
             dubby.dubbyParameters[DLY_DIVISION].value <= 0.05f   ? 8.0f
@@ -182,13 +186,13 @@ int main(void)
             : dubby.dubbyParameters[DLY_DIVISION].value <= 0.75f ? 0.33f
             : dubby.dubbyParameters[DLY_DIVISION].value <= 0.85f ? 0.25f
             : dubby.dubbyParameters[DLY_DIVISION].value <= 0.95f ? 0.2f
-                                 : 0.125f;
+                                                                 : 0.125f;
 
         // Calculate the delay times for left and right channels
         // delayTimeMillisL = (delayTimeMillis - stereoSpread) / divisor;
         // delayTimeMillisR = (delayTimeMillis + stereoSpread) / divisor;
-        delayTimeMillisL = (delayTimeMillis) / divisor;
-        delayTimeMillisR = (delayTimeMillis ) / divisor;
+        delayTimeMillisL = (delayTimeMillis - stereoSpread) / divisor;
+        delayTimeMillisR = (delayTimeMillis + stereoSpread) / divisor;
 
         // Ensure that delay times don't go lower than 1 millisecond
         delayTimeMillisL = fmaxf(delayTimeMillisL, 1.0f);
@@ -203,7 +207,8 @@ int main(void)
 
         filterL.SetRes(resonance);
         filterR.SetRes(resonance);
-            if (dubby.buttons[dubby.CTRL_1].FallingEdge())
+
+        if (dubby.buttons[dubby.CTRL_1].FallingEdge())
         {
             if (midiClockStarted)
             {
@@ -237,7 +242,6 @@ int main(void)
             dubby.ResetToBootloader();
         }
     }
-
 }
 
 void HandleMidiMessage(MidiEvent m)
