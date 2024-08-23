@@ -10,6 +10,7 @@
 #include <vector>
 #include <algorithm> // for std::find
 #include "Controls.h"
+#include "MidiSettingsMenu.h"
 
 enum Params {
   PARAM_NONE,

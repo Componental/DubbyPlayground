@@ -51,7 +51,16 @@ using namespace daisy;
 #define PARAMLIST_SPACING 6
 #define PARAMLIST_ROWS_ON_SCREEN 8
 
+#define MIDILIST_X_START 1
+#define MIDILIST_X_END 123
+#define MIDILIST_Y_START 11
+#define MIDILIST_Y_END 19
+#define MIDILIST_SPACING 8
+#define MIDILIST_ROWS_ON_SCREEN 5
+
 #define ENCODER_LONGPRESS_THRESHOLD 300
+
+int currentBitmapIndex = 2; // Initial bitmap index
 
 void Dubby::Init()
 {
@@ -75,6 +84,14 @@ void Dubby::Init()
         paramListBoxBounding[i][1] = PARAMLIST_Y_START + i * PARAMLIST_SPACING;
         paramListBoxBounding[i][2] = PARAMLIST_X_END;
         paramListBoxBounding[i][3] = PARAMLIST_Y_END + i * PARAMLIST_SPACING;
+    }
+
+    for (int i = 0; i < MIDILIST_ROWS_ON_SCREEN; i++)
+    {
+        midiListBoxBounding[i][0] = MIDILIST_X_START;
+        midiListBoxBounding[i][1] = MIDILIST_Y_START + i * MIDILIST_SPACING;
+        midiListBoxBounding[i][2] = MIDILIST_X_END;
+        midiListBoxBounding[i][3] = MIDILIST_Y_END + i * MIDILIST_SPACING;
     }
 
     scrollbarWidth = int(128 / WIN_LAST);
@@ -139,6 +156,8 @@ void Dubby::InitMidi()
     MidiUsbHandler::Config midi_usb_cfg;
     midi_usb_cfg.transport_config.periph = MidiUsbTransport::Config::EXTERNAL;
     midi_usb.Init(midi_usb_cfg);
+
+    SwitchMIDIOutThru(true);
 }
 
 void Dubby::InitDisplay()
@@ -298,19 +317,40 @@ void Dubby::UpdateDisplay()
         if (isListeningControlChange)
         {
 
-            for (int i = 0; i < CONTROLS_LAST; i++)
+            if (encoder.Increment())
             {
-                if (abs(dubbyCtrls[i].tempValue - dubbyCtrls[i].value) > 0.1f)
+                if (dubbyParameters[parameterSelected].control == CONTROLS_LAST - 1 && encoder.Increment() == 1)
+                    dubbyParameters[parameterSelected].control = CONTROL_NONE;
+                else if (dubbyParameters[parameterSelected].control == CONTROL_NONE && encoder.Increment() == -1)
+                    dubbyParameters[parameterSelected].control = (DubbyControls)(CONTROLS_LAST - 1);
+                else
+                    dubbyParameters[parameterSelected].control = static_cast<DubbyControls>(static_cast<int>(dubbyParameters[parameterSelected].control) + encoder.Increment());
+            }
+
+            if (EncoderFallingEdgeCustom())
+            {
+                isListeningControlChange = false;
+                isEncoderIncrementDisabled = false;
+                UpdateStatusBar(" PARAM       CTRL      VALUE  >", LEFT);
+
+                trigger_save_parameters_qspi = true;
+            }
+            else
+            {
+                for (int i = 0; i < CONTROLS_LAST; i++)
                 {
+                    if (abs(dubbyCtrls[i].tempValue - dubbyCtrls[i].value) > 0.1f)
+                    {
 
                     dubbyParameters[parameterSelected].control = (DubbyControls)i;
 
-                    DisplayParameterList(0);
-                    UpdateStatusBar(" PARAM       CTRL     VALUE   ", LEFT);
+                        DisplayParameterList(0);
+                        UpdateStatusBar(" PARAM       CTRL      VALUE  >", LEFT);
 
-                    isListeningControlChange = false;
-                    isEncoderIncrementDisabled = false;
-                    trigger_save_parameters_qspi = true;
+                        isListeningControlChange = false;
+                        isEncoderIncrementDisabled = false;
+                        trigger_save_parameters_qspi = true;
+                    }
                 }
             }
         }
@@ -329,7 +369,7 @@ void Dubby::UpdateDisplay()
             {
                 isCurveChanging = false;
                 isEncoderIncrementDisabled = false;
-                UpdateStatusBar(" PARAM       CTRL     CURVE   ", LEFT);
+                UpdateStatusBar(" PARAM       CTRL   <  CURVE   ", LEFT);
 
                 trigger_save_parameters_qspi = true;
             }
@@ -356,7 +396,7 @@ void Dubby::UpdateDisplay()
             {
                 isMinChanging = false;
                 isEncoderIncrementDisabled = false;
-                UpdateStatusBar(" PARAM       CTRL     MIN   ", LEFT);
+                UpdateStatusBar(" PARAM       CTRL   <  MIN    >", LEFT);
 
                 trigger_save_parameters_qspi = true;
             }
@@ -384,7 +424,7 @@ void Dubby::UpdateDisplay()
             {
                 isMaxChanging = false;
                 isEncoderIncrementDisabled = false;
-                UpdateStatusBar(" PARAM       CTRL     MAX   ", LEFT);
+                UpdateStatusBar(" PARAM       CTRL   <  MAX    >", LEFT);
 
                 trigger_save_parameters_qspi = true;
             }
@@ -405,7 +445,7 @@ void Dubby::UpdateDisplay()
             {
                 isValueChanging = false;
                 isEncoderIncrementDisabled = false;
-                UpdateStatusBar(" PARAM       CTRL     VALUE ", LEFT);
+                UpdateStatusBar(" PARAM       CTRL      VALUE  >", LEFT);
 
                 trigger_save_parameters_qspi = true;
             }
@@ -425,35 +465,31 @@ void Dubby::UpdateDisplay()
                 switch (parameterOptionSelected)
                 {
                 case MIN:
-                    UpdateStatusBar(" PARAM       CTRL     MIN   ", LEFT);
+                    UpdateStatusBar(" PARAM       CTRL   <  MIN    >", LEFT);
                     break;
                 case MAX:
-                    UpdateStatusBar(" PARAM       CTRL     MAX   ", LEFT);
+                    UpdateStatusBar(" PARAM       CTRL   <  MAX    >", LEFT);
                     break;
                 case CURVE:
-                    UpdateStatusBar(" PARAM       CTRL     CURVE ", LEFT);
+                    UpdateStatusBar(" PARAM       CTRL   <  CURVE   ", LEFT);
                     break;
                 default:
-                    UpdateStatusBar(" PARAM       CTRL     VALUE   ", LEFT);
+                    UpdateStatusBar(" PARAM       CTRL      VALUE  >", LEFT);
                     break;
                 }
 
                 DisplayParameterList(encoder.Increment());
             }
-            else if (encoder.FallingEdge() && parameterOptionSelected == CTRL)
+            else if (parameterOptionSelected == CTRL)
             {
-                UpdateStatusBar("SELECT A CONTROL", MIDDLE, 127);
-                isListeningControlChange = true;
-                isEncoderIncrementDisabled = true;
-
-                for (int i = 0; i < CONTROLS_LAST; i++)
+                if (EncoderFallingEdgeCustom())
                 {
-                    dubbyCtrls[i].tempValue = dubbyCtrls[i].value;
+                    UpdateStatusBar("SELECT A CONTROL", MIDDLE, 127);
+                    isListeningControlChange = true;
+                    isEncoderIncrementDisabled = true;
 
-                    // for (int j = 0; j < PARAMS_LAST; j++) {
-                    //     if (dubbyCtrls[i].param[j] == parameterSelected)
-                    //         prevControl = dubbyCtrls[i].control;
-                    // }
+                    for (int i = 0; i < CONTROLS_LAST; i++)
+                        dubbyCtrls[i].tempValue = dubbyCtrls[i].value;
                 }
             }
             else if (parameterOptionSelected == CURVE)
@@ -492,6 +528,21 @@ void Dubby::UpdateDisplay()
                     isValueChanging = true;
                 }
             }
+        }
+
+        break;
+        
+    case WIN6:
+        DisplayMidiSettingsList(encoder.Increment());
+
+        if (encoder.Increment() && !windowSelectorActive && !isMidiSettingSelected)
+            UpdateMidiSettingsList(encoder.Increment());
+
+        if (encoder.FallingEdge() && !wasEncoderJustInHighlightMenu && !windowSelectorActive)
+        {
+            isMidiSettingSelected = !isMidiSettingSelected;
+
+            UpdateMidiSettingsList(encoder.Increment());
         }
 
         break;
@@ -536,6 +587,7 @@ void Dubby::DrawBitmap(int bitmapIndex)
                 display.Update();
         }
     }
+    display.Update();
 }
 
 void Dubby::UpdateWindowSelector(int increment, bool higlight)
@@ -668,19 +720,22 @@ void Dubby::UpdateWindowList()
         DisplayPreferencesMenuList(0);
         break;
     case WIN4:
-        UpdateStatusBar(" PARAM       CTRL     VALUE   ", LEFT);
+        UpdateStatusBar(" PARAM       CTRL      VALUE  >", LEFT);
         display.DrawLine(6, 7, 127, 7, true);
 
         DisplayParameterList(0);
 
         break;
     case WIN5:
-        display.SetCursor(10, 15);
-        UpdateStatusBar("PANE 5", LEFT);
+
         break;
     case WIN6:
-        display.SetCursor(10, 15);
-        UpdateStatusBar("PANE 6", LEFT);
+        //            display.SetCursor(10, 15);
+        UpdateStatusBar(" SETTING              VALUE    ", LEFT);
+        display.DrawLine(6, 10, 121, 10, true);
+
+        DisplayMidiSettingsList(0);
+
         break;
     case WIN7:
         display.SetCursor(10, 15);
@@ -960,7 +1015,7 @@ void Dubby::DisplayParameterList(int increment)
                 case MIN:
                 case MAX:
                 case CURVE:
-                    x = 87;
+                    x = 91;
                     break;
                 default:
                     x = 3;
@@ -995,13 +1050,150 @@ void Dubby::DisplayParameterList(int increment)
             break;
         default:
             str = std::to_string(dubbyParameters[i].value).substr(0, std::to_string(dubbyParameters[i].value).find(".") + 3);
-            // UpdateStatusBar(" PARAM       CTRL     VALUE   ", LEFT);
             break;
         }
 
-        display.SetCursor(89, PARAMLIST_Y_START + 1 + (j * PARAMLIST_SPACING));
+        display.SetCursor(93, PARAMLIST_Y_START + 1 + (j * PARAMLIST_SPACING));
         display.WriteString(&str[0], Font_4x5, !(parameterSelected == i && isParameterSelected));
     }
+
+    display.Update();
+}
+
+void Dubby::DisplayMidiSettingsList(int increment)
+{
+
+    testBool = isMidiSettingSelected;
+    if (dubbyMidiSettings.currentMidiClockOption == FOLLOWER)
+    {
+
+        dubbyMidiSettings.currentBpm = receivedBPM;
+    }
+
+    if (isMidiSettingSelected)
+    {
+        // Adjust the selected option based on the encoder's input
+        switch (midiSettingSelected)
+        {
+        case MIDICLOCK:
+            dubbyMidiSettings.currentMidiClockOption = (dubbyMidiSettings.currentMidiClockOption + increment + MIDICLOCKOPTIONS_LAST) % MIDICLOCKOPTIONS_LAST;
+            break;
+        case BPM:
+            if (dubbyMidiSettings.currentMidiClockOption == LEADER)
+            {
+
+                dubbyMidiSettings.currentBpm += increment;
+                if (dubbyMidiSettings.currentBpm < 20)
+                    dubbyMidiSettings.currentBpm = 20;
+                else if (dubbyMidiSettings.currentBpm > 300)
+                    dubbyMidiSettings.currentBpm = 300;
+            }
+            else
+            {
+                dubbyMidiSettings.currentBpm = receivedBPM;
+            }
+            break;
+
+        case MIDIIN:
+            dubbyMidiSettings.currentMidiInOption = (dubbyMidiSettings.currentMidiInOption + increment + MIDIINOPTIONS_LAST) % MIDIINOPTIONS_LAST;
+            break;
+        case MIDIINCHN:
+            dubbyMidiSettings.currentMidiInChannelOption = (dubbyMidiSettings.currentMidiInChannelOption + increment + MIDIINCHNOPTIONS_LAST) % MIDIINCHNOPTIONS_LAST;
+            break;
+        case MIDIOUT:
+            dubbyMidiSettings.currentMidiOutOption = (dubbyMidiSettings.currentMidiOutOption + increment + MIDIOUTOPTIONS_LAST) % MIDIOUTOPTIONS_LAST;
+            break;
+        case MIDIOUTCHN:
+            dubbyMidiSettings.currentMidiOutChannelOption = (dubbyMidiSettings.currentMidiOutChannelOption + increment + MIDIOUTCHNOPTIONS_LAST) % MIDIOUTCHNOPTIONS_LAST;
+            break;
+        case MIDITHRUOUT:
+            dubbyMidiSettings.currentMidiThruOutOption += increment;
+            if (dubbyMidiSettings.currentMidiThruOutOption < 0)
+                dubbyMidiSettings.currentMidiThruOutOption = 0;
+            else if (dubbyMidiSettings.currentMidiThruOutOption > 1)
+                dubbyMidiSettings.currentMidiThruOutOption = 1;
+            break;
+        default:
+            // Add default action if needed
+            break;
+        }
+    }
+
+    int optionStart = 0;
+    if (midiSettingSelected > (MIDILIST_ROWS_ON_SCREEN - 1))
+    {
+        optionStart = midiSettingSelected - (MIDILIST_ROWS_ON_SCREEN - 1);
+    }
+
+    for (int i = optionStart, j = 0; i < optionStart + MIDILIST_ROWS_ON_SCREEN; i++, j++)
+    {
+        display.DrawRect(midiListBoxBounding[j][0], midiListBoxBounding[j][1], midiListBoxBounding[j][2], midiListBoxBounding[j][3], false, true);
+
+        if (midiSettingSelected == i)
+        {
+            if (isMidiSettingSelected)
+                display.DrawRect(midiListBoxBounding[j][0], midiListBoxBounding[j][1], midiListBoxBounding[j][2], midiListBoxBounding[j][3], true, true);
+
+            int x = 3;
+            display.DrawCircle(x, midiListBoxBounding[j][1] + 4, 1, !isMidiSettingSelected);
+        }
+
+        display.SetCursor(5, MIDILIST_Y_START + 2 + (j * MIDILIST_SPACING));
+        display.WriteString(dubbyMidiSettings.MidiSettingsStrings[i], Font_4x5, !(midiSettingSelected == i && isMidiSettingSelected));
+
+        // Displaying the corresponding first index string for each enum
+        switch (i)
+
+        {
+        case MIDICLOCK:
+            display.SetCursor(90, MIDILIST_Y_START + 2 + (j * MIDILIST_SPACING));
+            display.WriteString(dubbyMidiSettings.MidiClockOptionsStrings[dubbyMidiSettings.currentMidiClockOption], Font_4x5, !(midiSettingSelected == i && isMidiSettingSelected));
+            break;
+        case BPM:
+            display.SetCursor(90, MIDILIST_Y_START + 2 + (j * MIDILIST_SPACING));
+            char bpmStr[4];
+            snprintf(bpmStr, 4, "%d", dubbyMidiSettings.currentBpm);
+            display.WriteString(bpmStr, Font_4x5, !(midiSettingSelected == i && isMidiSettingSelected));
+            break;
+
+        case MIDIIN:
+            display.SetCursor(90, MIDILIST_Y_START + 2 + (j * MIDILIST_SPACING));
+            display.WriteString(dubbyMidiSettings.MidiInOptionsStrings[dubbyMidiSettings.currentMidiInOption], Font_4x5, !(midiSettingSelected == i && isMidiSettingSelected));
+            break;
+        case MIDIINCHN:
+            display.SetCursor(90, MIDILIST_Y_START + 2 + (j * MIDILIST_SPACING));
+            display.WriteString(dubbyMidiSettings.MidiInChannelOptionsStrings[dubbyMidiSettings.currentMidiInChannelOption], Font_4x5, !(midiSettingSelected == i && isMidiSettingSelected));
+            break;
+        case MIDIOUT:
+            display.SetCursor(90, MIDILIST_Y_START + 2 + (j * MIDILIST_SPACING));
+            display.WriteString(dubbyMidiSettings.MidiOutOptionsStrings[dubbyMidiSettings.currentMidiOutOption], Font_4x5, !(midiSettingSelected == i && isMidiSettingSelected));
+            break;
+        case MIDIOUTCHN:
+            display.SetCursor(90, MIDILIST_Y_START + 2 + (j * MIDILIST_SPACING));
+            display.WriteString(dubbyMidiSettings.MidiOutChannelOptionsStrings[dubbyMidiSettings.currentMidiOutChannelOption], Font_4x5, !(midiSettingSelected == i && isMidiSettingSelected));
+            break;
+        case MIDITHRUOUT:
+            display.SetCursor(90, MIDILIST_Y_START + 2 + (j * MIDILIST_SPACING));
+            display.WriteString(dubbyMidiSettings.MidiThruOutOptionsStrings[dubbyMidiSettings.currentMidiThruOutOption], Font_4x5, !(midiSettingSelected == i && isMidiSettingSelected));
+            break;
+        default:
+            // Add default action if needed
+            break;
+        }
+    }
+
+    // CONTROL MIDI OUT/ THRU RELAY
+    if (dubbyMidiSettings.currentMidiThruOutOption == MIDI_THRU)
+    {
+        SwitchMIDIOutThru(true);
+    }
+
+    if (dubbyMidiSettings.currentMidiThruOutOption == MIDI_OUT)
+    {
+        SwitchMIDIOutThru(false);
+    }
+
+    globalBPM = dubbyMidiSettings.currentBpm;
 
     display.Update();
 }
@@ -1013,6 +1205,17 @@ void Dubby::UpdateParameterList(int increment)
         parameterSelected = (Params)(parameterSelected + increment);
 
         DisplayParameterList(increment);
+    }
+}
+
+void Dubby::UpdateMidiSettingsList(int increment)
+{
+
+    // Check if increment is 1 (moving forward) and within bounds
+    if ((increment == 1 && midiSettingSelected < MIDISETTINGS_LAST - 1) || (increment == -1 && midiSettingSelected > 0))
+    {
+        midiSettingSelected = static_cast<MidiSettings>(midiSettingSelected + increment);
+        DisplayMidiSettingsList(increment);
     }
 }
 

@@ -8,6 +8,8 @@ using namespace daisy;
 using namespace daisysp;
 
 Dubby dubby;
+bool midiClockStarted = false;
+bool midiClockStoppedByButton2 = false;
 
 // DELAY EFFECT
 #define MAX_DELAY static_cast<size_t>(48000 * 20.0f)
@@ -48,14 +50,14 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
             dryL = in[2][i]; // Left channel dry input
             dryR = in[3][i]; // Right channel dry input
 
-                // Set and smooth the delay time for the left channel
-                fonepole(currentDelayL, delayTimeMillisL, 0.0001f);
+            // Set and smooth the delay time for the left channel
+            fonepole(currentDelayL, delayTimeMillisL, 0.0001f);
 
-                // Set and smooth the delay time for the right channel
-                fonepole(currentDelayR, delayTimeMillisR, 0.0001f);
+            // Set and smooth the delay time for the right channel
+            fonepole(currentDelayR, delayTimeMillisR, 0.0001f);
 
-                delaySamplesL = currentDelayL * (sample_rate / 1000);
-                delaySamplesR = currentDelayR * (sample_rate / 1000);
+            delaySamplesL = currentDelayL * (sample_rate / 1000);
+            delaySamplesR = currentDelayR * (sample_rate / 1000);
 
             // Check if freeze is activated
             if (freeze)
@@ -139,11 +141,10 @@ int main(void)
 
     while (1)
     {
-        MonitorPersistantMemory(dubby, SavedParameterSettings);
 
         Monitor(dubby);
         MonitorMidi();
-
+        MonitorPersistantMemory(dubby, SavedParameterSettings);
 
         // Set the wet and dry mix based on the delay mix parameter
         wetAmplitude = dubby.dubbyParameters[DLY_MIX].value;
@@ -197,26 +198,79 @@ int main(void)
 
         filterL.SetRes(resonance);
         filterR.SetRes(resonance);
+            if (dubby.buttons[dubby.CTRL_1].FallingEdge())
+        {
+            if (midiClockStarted)
+            {
+                MIDISendStop(dubby);
+                midiClockStarted = false;
+            }
+            else
+            {
+                if (midiClockStoppedByButton2)
+                {
+                    MIDISendStart(dubby);
+                    midiClockStoppedByButton2 = false;
+                }
+                else
+                {
+                    MIDISendContinue(dubby);
+                }
+                midiClockStarted = true;
+            }
+        }
+
+        if (dubby.buttons[dubby.CTRL_2].FallingEdge())
+        {
+            MIDISendStop(dubby);
+            midiClockStarted = false;
+            midiClockStoppedByButton2 = true;
+        }
+
+        if (dubby.buttons[dubby.CTRL_3].TimeHeldMs() > 1000)
+        {
+            dubby.ResetToBootloader();
+        }
     }
+
 }
 
 void HandleMidiMessage(MidiEvent m)
 {
+
     switch (m.type)
     {
     case NoteOn:
     {
-        NoteOnEvent p = m.AsNoteOn();
+        if (dubby.dubbyMidiSettings.currentMidiInOption == MIDIIN_ON)
+        {
+            if (m.channel == dubby.dubbyMidiSettings.currentMidiInChannelOption)
+            {
+                NoteOnEvent p = m.AsNoteOn();
+            }
+        }
         break;
     }
     case NoteOff:
     {
-        NoteOffEvent p = m.AsNoteOff();
+        if (dubby.dubbyMidiSettings.currentMidiInOption == MIDIIN_ON)
+        {
+            if (m.channel == dubby.dubbyMidiSettings.currentMidiInChannelOption)
+            {
+                NoteOffEvent p = m.AsNoteOff();
+            }
+        }
         break;
     }
     case SystemRealTime:
     {
-        HandleSystemRealTime(m.srt_type);
+        if (dubby.dubbyMidiSettings.currentMidiClockOption == FOLLOWER)
+        {
+
+            HandleSystemRealTime(m.srt_type, dubby);
+            // std::string stra = std::to_string(dubby.receivedBPM);
+            // dubby.UpdateStatusBar(&stra[0], dubby.MIDDLE, 127);
+        }
     }
     default:
         break;
