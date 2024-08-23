@@ -158,32 +158,37 @@ int main(void)
         }
 
         // Retrieve the delay time, feedback, and stereo spread parameters
-        delayTimeMillis = dubby.dubbyParameters[DLY_TIME].value;
+        //delayTimeMillis = dubby.dubbyParameters[DLY_TIME].value;
+        
+        delayTimeMillis =      60000/ dubby.dubbyMidiSettings.currentBpm;
+
         delayFeedback = dubby.dubbyParameters[DLY_FEEDBACK].value;
         stereoSpread = dubby.dubbyParameters[DLY_SPREAD].value;
 
         // Retrieve the output gain parameter
         outGain = dubby.dubbyParameters[OUT_GAIN].value;
+        
+        
 
-        // Set the delay time divisor based on the Pot3 value (DLY_DIVISION)
-        float pot3Value = dubby.dubbyParameters[DLY_DIVISION].value;
 
         divisor =
-            pot3Value <= 0.05f   ? 8.0f
-            : pot3Value <= 0.15f ? 4.0f
-            : pot3Value <= 0.25f ? 3.0f
-            : pot3Value <= 0.35f ? 2.0f
-            : pot3Value <= 0.45f ? 1.5f
-            : pot3Value <= 0.55f ? 1.0f
-            : pot3Value <= 0.65f ? 0.5f
-            : pot3Value <= 0.75f ? 0.33f
-            : pot3Value <= 0.85f ? 0.25f
-            : pot3Value <= 0.95f ? 0.2f
+            dubby.dubbyParameters[DLY_DIVISION].value <= 0.05f   ? 8.0f
+            : dubby.dubbyParameters[DLY_DIVISION].value <= 0.15f ? 4.0f
+            : dubby.dubbyParameters[DLY_DIVISION].value <= 0.25f ? 3.0f
+            : dubby.dubbyParameters[DLY_DIVISION].value <= 0.35f ? 2.0f
+            : dubby.dubbyParameters[DLY_DIVISION].value <= 0.45f ? 1.5f
+            : dubby.dubbyParameters[DLY_DIVISION].value <= 0.55f ? 1.0f
+            : dubby.dubbyParameters[DLY_DIVISION].value <= 0.65f ? 0.5f
+            : dubby.dubbyParameters[DLY_DIVISION].value <= 0.75f ? 0.33f
+            : dubby.dubbyParameters[DLY_DIVISION].value <= 0.85f ? 0.25f
+            : dubby.dubbyParameters[DLY_DIVISION].value <= 0.95f ? 0.2f
                                  : 0.125f;
 
         // Calculate the delay times for left and right channels
-        delayTimeMillisL = (delayTimeMillis - stereoSpread) / divisor;
-        delayTimeMillisR = (delayTimeMillis + stereoSpread) / divisor;
+        // delayTimeMillisL = (delayTimeMillis - stereoSpread) / divisor;
+        // delayTimeMillisR = (delayTimeMillis + stereoSpread) / divisor;
+        delayTimeMillisL = (delayTimeMillis) / divisor;
+        delayTimeMillisR = (delayTimeMillis ) / divisor;
 
         // Ensure that delay times don't go lower than 1 millisecond
         delayTimeMillisL = fmaxf(delayTimeMillisL, 1.0f);
