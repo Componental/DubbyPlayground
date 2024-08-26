@@ -16,10 +16,15 @@ static LadderFilter flt[4]; // Four filters, one for each channel
 
 
 
+bool midiClockStarted = false;
+bool midiClockStoppedByButton2 = false;
 
 void MonitorMidi();
 void HandleMidiUartMessage(MidiEvent m);
 void HandleMidiUsbMessage(MidiEvent m);
+
+// Persistent Storage Declaration. Using type Settings and passed the devices qspi handle
+PersistentStorage<PersistantMemoryParameterSettings> SavedParameterSettings(dubby.seed.qspi);
 
 
 
@@ -59,6 +64,7 @@ int main(void)
 {
     Init(dubby);
     InitMidiClock(dubby);
+    InitPersistantMemory(dubby, SavedParameterSettings);
 
     dubby.seed.StartAudio(AudioCallback);
 
@@ -83,10 +89,47 @@ int main(void)
 
                 LadderFilter::FilterMode currentMode = LadderFilter::FilterMode::LP24;
 
-	while(1) { 
+    // DELETE MEMORY
+    // SavedParameterSettings.RestoreDefaults();
+
+    while (1)
+    {
         Monitor(dubby);
         MonitorMidi();
-        if (dubby.buttons[3].TimeHeldMs() > 400) 
+        MonitorPersistantMemory(dubby, SavedParameterSettings);
+    
+        //   MIDISendNoteOn(dubby, 46, 120);
+
+        if (dubby.buttons[dubby.CTRL_1].FallingEdge())
+        {
+            if (midiClockStarted)
+            {
+                MIDISendStop(dubby);
+                midiClockStarted = false;
+            }
+            else
+            {
+                if (midiClockStoppedByButton2)
+                {
+                    MIDISendStart(dubby);
+                    midiClockStoppedByButton2 = false;
+                }
+                else
+                {
+                    MIDISendContinue(dubby);
+                }
+                midiClockStarted = true;
+            }
+        }
+
+        if (dubby.buttons[dubby.CTRL_2].FallingEdge())
+        {
+            MIDISendStop(dubby);
+            midiClockStarted = false;
+            midiClockStoppedByButton2 = true;
+        }
+
+        if (dubby.buttons[dubby.CTRL_3].TimeHeldMs() > 1000)
         {
             dubby.ResetToBootloader();
         }
@@ -95,39 +138,65 @@ int main(void)
 
 void HandleMidiMessage(MidiEvent m)
 {
-    switch(m.type)
+
+    switch (m.type)
     {
-        case NoteOn:
+    case NoteOn:
+    {
+        if (dubby.dubbyMidiSettings.currentMidiInOption == MIDIIN_ON)
         {
-            NoteOnEvent p = m.AsNoteOn();
-            break;
+            if (m.channel == dubby.dubbyMidiSettings.currentMidiInChannelOption)
+            {
+                NoteOnEvent p = m.AsNoteOn();
+            }
         }
-        case NoteOff:
+        break;
+    }
+    case NoteOff:
+    {
+        if (dubby.dubbyMidiSettings.currentMidiInOption == MIDIIN_ON)
         {
-            NoteOffEvent p = m.AsNoteOff();
-            break;
+            if (m.channel == dubby.dubbyMidiSettings.currentMidiInChannelOption)
+            {
+                NoteOffEvent p = m.AsNoteOff();
+            }
         }
-        case SystemRealTime:
+        break;
+    }
+    case SystemRealTime:
+    {
+        if (dubby.dubbyMidiSettings.currentMidiClockOption == FOLLOWER)
         {
-            HandleSystemRealTime(m.srt_type);
+
+            HandleSystemRealTime(m.srt_type, dubby);
+            // std::string stra = std::to_string(dubby.receivedBPM);
+            // dubby.UpdateStatusBar(&stra[0], dubby.MIDDLE, 127);
         }
-        default: break;
+    }
+    default:
+        break;
     }
 }
 
 void MonitorMidi()
 {
     // Handle USB MIDI Events
-    while(dubby.midi_usb.HasEvents())
-    { 
+    while (dubby.midi_usb.HasEvents())
+    {
         MidiEvent m = dubby.midi_usb.PopEvent();
         HandleMidiMessage(m);
     }
 
     // Handle UART MIDI Events
-    while(dubby.midi_uart.HasEvents())
+    while (dubby.midi_uart.HasEvents())
     {
         MidiEvent m = dubby.midi_uart.PopEvent();
-        HandleMidiMessage(m);
+        if (dubby.dubbyMidiSettings.currentMidiInOption == MIDIIN_ON)
+        {
+            if (m.channel == dubby.dubbyMidiSettings.currentMidiInChannelOption)
+            {
+                HandleMidiMessage(m);
+            }
+        }
     }
 }

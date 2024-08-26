@@ -11,7 +11,7 @@
 
 #include "ui/DubbyEncoder.h"
 #include "led.h"
-#include "libDubby/Controls.h"
+#include "libDubby/Parameters.h"
 
 #include "./bitmaps/bmps.h"
 
@@ -22,6 +22,39 @@
 
 namespace daisy
 {
+
+    // Setting Struct containing parameters we want to save to flash
+    struct PersistantMemoryParameterSettings
+    {
+
+        Parameters savedParams[PARAMS_LAST];
+        bool isSaved[PARAMS_LAST];
+
+        // Overloading the != operator
+        // This is necessary as this operator is used in the PersistentStorage source code
+        bool operator!=(const PersistantMemoryParameterSettings &a) const
+        {
+            for (int i = 0; i < PARAMS_LAST; ++i)
+            {
+                if (savedParams[i].param != a.savedParams[i].param ||
+                    savedParams[i].control != a.savedParams[i].control ||
+                    savedParams[i].value != a.savedParams[i].value ||
+                    savedParams[i].min != a.savedParams[i].min ||
+                    savedParams[i].max != a.savedParams[i].max ||
+                    savedParams[i].minLimit != a.savedParams[i].minLimit ||
+                    savedParams[i].maxLimit != a.savedParams[i].maxLimit ||
+                    savedParams[i].hasMinLimit != a.savedParams[i].hasMinLimit ||
+                    savedParams[i].hasMaxLimit != a.savedParams[i].hasMaxLimit ||
+                    savedParams[i].curve != a.savedParams[i].curve ||
+                    isSaved[i] != a.isSaved[i])
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+    };
+
     class Dubby
     {
     public:
@@ -167,9 +200,9 @@ namespace daisy
 
         enum PreferencesMidiMenuItems
         {
-            MIDIIN,
-            MIDIOUT,
-            MIDITHRU,
+            xMIDIIN,
+            xMIDIOUT,
+            xMIDITHRU,
             MIDIWHATEV,
             MIDIWHATEVA,
             PREFERENCESMIDIMENU_LAST // used to know the size of enum
@@ -314,7 +347,11 @@ namespace daisy
 
         void DisplayParameterList(int increment);
 
+        void DisplayMidiSettingsList(int increment);
+
         void UpdateParameterList(int increment);
+
+        void UpdateMidiSettingsList(int increment);
 
         void ProcessAllControls();
 
@@ -369,20 +406,26 @@ namespace daisy
         bool isCurveChanging = false;
         bool isMinChanging = false;
         bool isMaxChanging = false;
+        bool isValueChanging = false;
 
         bool isEncoderIncrementDisabled = false;
 
         bool isSubMenuActive = false;
+        
+        MidiSettings midiSettingSelected = (MidiSettings)0;
+        bool isMidiSettingSelected = false;
+        bool testBool = false;
 
         ChannelMappings channelMappingSelected = (ChannelMappings)0;
         bool isChannelMappingSelected = false;
-        bool testBool = false;
+        
 
         // const int menuTextCursors[3][2] = { {8, 55}, {50, 55}, {92, 55} }; OLD
         const int windowTextCursors[3][2] = {{3, 52}, {46, 52}, {88, 52}};
         const int windowBoxBounding[3][4] = {{0, 56, 43, 61}, {43, 56, 85, 61}, {85, 56, 127, 61}};
         int menuListBoxBounding[5][4];
         int paramListBoxBounding[8][4];
+        int midiListBoxBounding[5][4];
 
         int scrollbarWidth = 0;
         int barSelector = 0;
@@ -413,7 +456,8 @@ namespace daisy
         MidiUsbHandler midi_usb;
 
         int globalBPM = 120;
-
+        int receivedBPM; 
+       // uint32_t bpm = 120;
         std::vector<std::string> customLabels = {"PRM1", "PRM2", "PRM3", "PRM4"};
         std::vector<float> knobValuesForPrint;
         std::vector<int> numDecimals = {1, 1, 1, 1}; // Assuming you have three knobs with different decimal places
@@ -424,6 +468,9 @@ namespace daisy
         Controls dubbyCtrls[CONTROLS_LAST];
         Parameters dubbyParameters[PARAMS_LAST];
         ChannelMappingMenu dubbyChannelMapping[CHANNELMAPPINGS_LAST];
+
+        MidiSettingsMenu dubbyMidiSettings;
+        bool trigger_save_parameters_qspi = false;
 
     private:
         void InitAudio();
