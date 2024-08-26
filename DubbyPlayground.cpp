@@ -354,26 +354,24 @@ void sendMidiBasedOnRhythms()
         {
             if (activeNotesSet.find(note) == activeNotesSet.end())
             {
-                MIDIUsbSendNoteOff(note-DEFAULT_NOTE, note);  // Sending note off for USB
-                MIDIUartSendNoteOff(note-DEFAULT_NOTE, note); // Sending note off for UART
+                int channel = (note - notes[0]) % 16; // Calculate channel based on note position (0 to 7)
+                MIDIUsbSendNoteOff(channel, note);  // Sending note off for USB
+                MIDIUartSendNoteOff(channel, note); // Sending note off for UART
             }
         }
 
         // Calculate new velocity based on baseline and randomness
-
-        // Send note on for all active notes with updated velocity
-
-        // Calculate new velocity based on baseline and randomness
+        int velocityIndex = 0; // Initialize the index to zero
         for (int note : activeNotesSet)
         {
-            int velocityIndex = 0; // Initialize the index to zero
             for (int i = 0; i < MAX_RHYTHMS; ++i)
             {
                 if (notes[i] == note)
                 {
+                    int channel = (i % 16); // Calculate the channel for this note
                     velocities[velocityIndex] = std::max(0, std::min(127, baselineVelocities[i] + getRandom(-velocityRandomAmounts[i] * baselineVelocities[i], velocityRandomAmounts[i] * baselineVelocities[i])));
-                    MIDIUsbSendNoteOn(note-DEFAULT_NOTE, note, velocities[velocityIndex]);
-                    MIDIUartSendNoteOn(note-DEFAULT_NOTE, note, velocities[velocityIndex]);
+                    MIDIUsbSendNoteOn(channel, note, velocities[velocityIndex]);
+                    MIDIUartSendNoteOn(channel, note, velocities[velocityIndex]);
                     ++velocityIndex; // Increment the index after assigning velocity
                 }
             }
