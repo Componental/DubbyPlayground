@@ -60,7 +60,7 @@ namespace daisy
                 "MIXER",
                 "PREFS",
                 "PARAMETERS",
-                "MIDI SETTINGS", 
+                "MIDI CONF", 
                 "ROUTING", // ROUTING
                 "WIN7",
                 "WIN8",
