@@ -1332,7 +1332,6 @@ bool Dubby::EncoderFallingEdgeCustom()
             if (encoderState == true)
             { // Encoder button pressed
 
-                UpdateStatusBar("TRUEEEE", MIDDLE, 127);
                 return true;
             }
         }
