@@ -1117,29 +1117,28 @@ void Dubby::UpdatePreferencesSubMenuList(int increment, PreferencesMenuItems pre
     }
 }
 
-void Dubby::UpdateStatusBar(char *text, StatusBarSide side = LEFT, int width)
+void Dubby::UpdateStatusBar(const char *text, StatusBarSide side = LEFT, int width)
 {
     Rectangle barRec = daisy::Rectangle(STATUSBAR_X_START, STATUSBAR_Y_START, STATUSBAR_X_END, STATUSBAR_Y_END);
 
     if (side == LEFT)
     {
         display.DrawRect(STATUSBAR_X_START, STATUSBAR_Y_START, width, STATUSBAR_Y_END - 1, false, true);
-        display.WriteStringAligned(&text[0], Font_4x5, barRec, daisy::Alignment::centeredLeft, true);
+        display.WriteStringAligned(text, Font_4x5, barRec, daisy::Alignment::centeredLeft, true);
     }
     else if (side == MIDDLE)
     {
         display.DrawRect(64 - (width / 2), STATUSBAR_Y_START, 64 + (width / 2), STATUSBAR_Y_END - 1, false, true);
-        display.WriteStringAligned(&text[0], Font_4x5, barRec, daisy::Alignment::centered, true);
+        display.WriteStringAligned(text, Font_4x5, barRec, daisy::Alignment::centered, true);
     }
     else if (side == RIGHT)
     {
         display.DrawRect(STATUSBAR_X_END - width, STATUSBAR_Y_START, STATUSBAR_X_END, STATUSBAR_Y_END - 1, false, true);
-        display.WriteStringAligned(&text[0], Font_4x5, barRec, daisy::Alignment::centeredRight, true);
+        display.WriteStringAligned(text, Font_4x5, barRec, daisy::Alignment::centeredRight, true);
     }
 
     display.Update();
 }
-
 void Dubby::DisplayParameterList(int increment)
 {
     // clear bounding box

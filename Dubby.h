@@ -369,7 +369,7 @@ namespace daisy
 
         void ClearPane();
 
-        void UpdateStatusBar(char *text, StatusBarSide side, int width = 40); // side = 0 => left, side = 1 => right
+        void UpdateStatusBar(const char *text, StatusBarSide side, int width = 40); // side = 0 => left, side = 1 => right
 
         void updateKnobValues(const std::vector<float> &values);
 
