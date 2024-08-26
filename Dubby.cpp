@@ -485,7 +485,9 @@ void Dubby::UpdateDisplay()
         }
 
         break;
-    case WIN5:
+        case WIN5:
+        break;
+    case WIN6:
         UpdateChannelMappingMenu();
         break;
     default:
@@ -828,7 +830,7 @@ void Dubby::UpdateWindowList()
         break;
     case WIN6:
         display.SetCursor(10, 15);
-        UpdateStatusBar("PANE 6", LEFT);
+        //UpdateStatusBar("PANE 6", LEFT);
         break;
     case WIN7:
         display.SetCursor(10, 15);
