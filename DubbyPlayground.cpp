@@ -8,13 +8,10 @@ using namespace daisy;
 using namespace daisysp;
 
 Dubby dubby;
-    int outChannel;
-    int inChannel = 0;
-
+int outChannel;
+int inChannel = 0;
 
 static LadderFilter flt[4]; // Four filters, one for each channel
-
-
 
 bool midiClockStarted = false;
 bool midiClockStoppedByButton2 = false;
@@ -26,40 +23,54 @@ void HandleMidiUsbMessage(MidiEvent m);
 // Persistent Storage Declaration. Using type Settings and passed the devices qspi handle
 PersistentStorage<PersistantMemoryParameterSettings> SavedParameterSettings(dubby.seed.qspi);
 
-
-
-
-
-void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, size_t size) {
+void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, size_t size)
+{
     // Loop through each sample
-    for (size_t i = 0; i < size; i++) {
+    for (size_t i = 0; i < size; i++)
+    {
         // Clear the output buffer for each sample
-        for (int j = 0; j < NUM_AUDIO_CHANNELS; j++) {
+        for (int j = 0; j < NUM_AUDIO_CHANNELS; j++)
+        {
             out[j][i] = 0.0f; // Initialize output to 0 for each sample
         }
 
         // Loop through each output channel
-        for (int j = 0; j < NUM_AUDIO_CHANNELS; j++) {
+        for (int j = 0; j < NUM_AUDIO_CHANNELS; j++)
+        {
             // Loop through each input channel
-            for (int inChannel = 0; inChannel < NUM_AUDIO_CHANNELS; inChannel++) {
-                // Check if the input channel is mapped to the output channel
-                if (dubby.channelMapping[j][inChannel] == PASS) {
+            for (int inChannel = 0; inChannel < NUM_AUDIO_CHANNELS; inChannel++)
+            {
+                // Use switch statement to handle different channel mappings
+                switch (dubby.channelMapping[j][inChannel])
+                {
+                case PASS:
                     // Directly assign input to output channel
                     out[j][i] += in[inChannel][i];
-                } else if (dubby.channelMapping[j][inChannel] == EFCT) {
+                    break;
+
+                case EFCT:
+                {
                     // Apply effect (like filter) to input and then assign to output channel
                     float output = flt[j].Process(in[inChannel][i]);
                     out[j][i] += output;
-                } else if (dubby.channelMapping[j][inChannel] == SNTH) {
-                    // Apply input to synth
-                    //float output = synth[j].SidechainInput(in[inChannel][i]);
-                    //out[j][i] += output;
+                    break;
                 }
-                // If channelMapping[j][inChannel] == 0, do nothing (channel not assigned)
+
+                case SNTH:
+                    // Apply input to synth
+                    // float output = synth[j].SidechainInput(in[inChannel][i]);
+                    // out[j][i] += output;
+                    break;
+
+                default:
+                    // Do nothing (channel not assigned)
+                    break;
+                }
             }
         }
     }
 }
+
 int main(void)
 {
     Init(dubby);
@@ -68,26 +79,25 @@ int main(void)
 
     dubby.seed.StartAudio(AudioCallback);
 
-     initLED();   
-     setLED(0, BLUE, 0);
-    setLED(1, RED, 0);
-     updateLED();
+    //  initLED();
+    //  setLED(0, BLUE, 0);
+    // setLED(1, RED, 0);
+    //  updateLED();
     // Update the filter parameters for each filter
-              float sample_rate = dubby.seed.AudioSampleRate();
+    float sample_rate = dubby.seed.AudioSampleRate();
 
-    for (int i = 0; i < 4; i++) {
-  // initialize Moogladder object
-    // Initialize the LadderFilter objects
+    for (int i = 0; i < 4; i++)
+    {
+        // initialize Moogladder object
+        // Initialize the LadderFilter objects
         flt[i].Init(sample_rate);
-    
 
-  flt[i].SetInputDrive(1.f);
+        flt[i].SetInputDrive(1.f);
         flt[i].SetRes(0.f);
         flt[i].SetFreq(2000.f);
-
     }
 
-                LadderFilter::FilterMode currentMode = LadderFilter::FilterMode::LP24;
+    LadderFilter::FilterMode currentMode = LadderFilter::FilterMode::LP24;
 
     // DELETE MEMORY
     // SavedParameterSettings.RestoreDefaults();
@@ -97,7 +107,7 @@ int main(void)
         Monitor(dubby);
         MonitorMidi();
         MonitorPersistantMemory(dubby, SavedParameterSettings);
-    
+
         //   MIDISendNoteOn(dubby, 46, 120);
 
         if (dubby.buttons[dubby.CTRL_1].FallingEdge())

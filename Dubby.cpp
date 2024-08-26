@@ -184,7 +184,7 @@ void Dubby::InitDubbyControls()
     dubbyCtrls[8].Init(BTN4, 0);
     dubbyCtrls[9].Init(JSX, 0);
     dubbyCtrls[10].Init(JSY, 0);
-   // dubbyCtrls[10].addParamValue(RESONANCE);
+    // dubbyCtrls[10].addParamValue(RESONANCE);
 
     dubbyCtrls[11].Init(JSSW, 0);
 }
@@ -525,7 +525,7 @@ void Dubby::UpdateDisplay()
         }
 
         break;
-        
+
     case WIN5:
         DisplayMidiSettingsList(encoder.Increment());
 
@@ -539,6 +539,9 @@ void Dubby::UpdateDisplay()
             UpdateMidiSettingsList(encoder.Increment());
         }
 
+        break;
+    case WIN6:
+        UpdateChannelMappingMenu();
         break;
     default:
         break;
@@ -727,12 +730,186 @@ void Dubby::UpdateWindowList()
         DisplayMidiSettingsList(0);
 
         break;
-        case WIN6:
+    case WIN6:
+        UpdateChannelMappingMenu();
         break;
     default:
         break;
     }
 
+    display.Update();
+}
+
+void Dubby::UpdateChannelMappingMenu()
+{
+    // Define dimensions for each cell in the grid
+    const int cellWidth = 23; // Width of each cell in the grid
+    const int cellHeight = 8; // Height of each cell in the grid
+
+    // Calculate the overall width and height of the grid
+    const int gridWidth = numCols * cellWidth;   // Total width of the grid
+    const int gridHeight = numRows * cellHeight; // Total height of the grid
+
+    // Calculate the starting coordinates to center the grid in a 128x64 display
+    const int startX = ((128 - gridWidth) / 2) + 4; // X-coordinate of the top-left corner of the grid
+    const int startY = ((64 - gridHeight) / 2) + 2; // Y-coordinate of the top-left corner of the grid
+
+    // Define labels for rows and columns
+    const char *rowLabels[numRows] = {"IN1", "IN2", "IN3", "IN4"};     // Row labels displayed above each row
+    const char *colLabels[numCols] = {"OUT1", "OUT2", "OUT3", "OUT4"}; // Column labels displayed to the left of each column
+
+    // Get the current increment value from the encoder
+    int increment = encoder.Increment(); // Encoder increment value
+
+    // Static variables to keep track of the current position and mode
+    static int currentRow = 0;          // Current selected row
+    static int currentCol = 0;          // Current selected column
+    static bool selectIndexMode = true; // Flag to toggle between index mode and grid mode
+
+    // Toggle mode when the encoder is pressed
+    if (EncoderFallingEdgeCustom() && !windowSelectorActive)
+    {
+        selectIndexMode = !selectIndexMode; // Toggle between selectIndexMode and grid navigation mode
+    }
+
+    if (selectIndexMode)
+    {
+        // Display status bar message for select index mode
+        UpdateStatusBar("SELECT AUDIO JUNCTION   ", LEFT);
+
+        // Update row and column based on the encoder increment
+        if (increment != 0 && !windowSelectorActive)
+        {
+            // Adjust the increment direction for smooth navigation
+            if (increment > 0)
+            {
+                currentCol++;
+                if (currentCol >= numCols)
+                {
+                    currentCol = 0;
+                    currentRow++;
+                    if (currentRow >= numRows)
+                    {
+                        currentRow = 0;
+                    }
+                }
+            }
+            else
+            {
+                currentCol--;
+                if (currentCol < 0)
+                {
+                    currentCol = numCols - 1;
+                    currentRow--;
+                    if (currentRow < 0)
+                    {
+                        currentRow = numRows - 1;
+                    }
+                }
+            }
+        }
+    }
+    else
+    {
+        // Display status bar message for grid navigation mode
+        UpdateStatusBar("* ASSIGN AUDIO ROUTING *", LEFT);
+
+        // Update the channel mapping value at the selected row and column
+        if (increment != 0 && !windowSelectorActive)
+        {
+            // Determine the valid range for channel mappings
+
+            // Determine the direction of navigation (forward or backward)
+            int direction = (increment > 0) ? 1 : -1;
+
+            // Initialize the current mapping to the existing value
+            int currentMapping = channelMapping[currentRow][currentCol];
+
+            // Calculate the next potential mapping in the desired direction
+            int nextMapping = (currentMapping + direction + CHANNELMAPPINGS_LAST) % CHANNELMAPPINGS_LAST;
+
+            // Loop until a valid mapping is found or we return to the original position
+            while (nextMapping != currentMapping)
+            {
+                currentMapping = nextMapping;
+                nextMapping = (currentMapping + direction + CHANNELMAPPINGS_LAST) % CHANNELMAPPINGS_LAST;
+
+                // Check if the current mapping is valid (exists and has corresponding bool)
+                if ((currentMapping == NONE && dubbyChannelMapping->hasNone) ||
+                    (currentMapping == PASS && dubbyChannelMapping->hasPass) ||
+                    (currentMapping == EFCT && dubbyChannelMapping->hasEfct) ||
+                    (currentMapping == SNTH && dubbyChannelMapping->hasSynth))
+                {
+                    break; // Valid mapping found, exit loop
+                }
+            }
+
+            // Update the channel mapping with the validated value
+            channelMapping[currentRow][currentCol] = currentMapping;
+        }
+    }
+
+    // Display row labels above the grid
+    for (int row = 0; row < numRows; row++)
+    {
+        int labelX = startX + 5 + (cellWidth * row); // X-coordinate for the row label
+        int labelY = startY - 6;                     // Y-coordinate for the row label
+        display.SetCursor(labelX, labelY);
+        display.WriteString(rowLabels[row], Font_4x5, true); // Display row label
+
+        // Draw horizontal line under the row labels
+        int lineStartX = startX + 2;
+        int lineEndX = lineStartX + (cellWidth * 4) - 5;
+        int lineY = startY;
+        display.DrawLine(lineStartX, lineY, lineEndX, lineY, true); // Draw a horizontal line
+    }
+
+    // Display column labels to the left of the grid
+    for (int col = 0; col < numCols; col++)
+    {
+        int labelX = startX - 16;                     // X-coordinate for the column label
+        int labelY = startY + (cellHeight * col) + 3; // Y-coordinate for the column label
+        display.SetCursor(labelX, labelY);
+        display.WriteString(colLabels[col], Font_4x5, true); // Display column label
+
+        // Draw vertical line next to the column labels
+        int lineX = startX + 2;
+        int lineStartY = startY;
+        int lineEndY = lineStartY + (cellHeight * 4) - 1;
+        display.DrawLine(lineX, lineStartY, lineX, lineEndY, true); // Draw a vertical line
+    }
+
+    // Display options in the grid based on channelMapping
+    for (int row = 0; row < numRows; row++)
+    {
+        for (int col = 0; col < numCols; col++)
+        {
+            int x = startX + col * cellWidth;  // X-coordinate for the cell
+            int y = startY + row * cellHeight; // Y-coordinate for the cell
+
+            // Determine whether to fill the cell or just draw the border
+            bool fillCell = (row == currentRow && col == currentCol); // Fill the selected cell with white only in grid mode
+
+            // Draw the cell with or without filling
+            display.DrawRect(x + 4, y + 2, x + cellWidth - 1, y + cellHeight, fillCell, fillCell);
+
+            // Look up the string based on the channelMapping value
+            int mappingValue = channelMapping[row][col];
+
+            // Display the mapping string in the cell
+            const char *mappingString = dubbyChannelMapping->ChannelMappingsStrings[mappingValue];
+            bool negativeFill = (row == currentRow && col == currentCol && !selectIndexMode);
+
+            display.SetCursor(x + 5, y + 3);                             // Adjust text positioning for centering
+            display.WriteString(mappingString, Font_4x5, !negativeFill); // Display mapping text
+
+            // Draw a vertical line 6 pixels to the left of the right border of the rectangle
+            int lineX = x + cellWidth - 2;
+            display.DrawLine(lineX, y + 3, lineX, y + cellHeight - 1, negativeFill); // Draw line
+        }
+    }
+
+    // Update the display after drawing all elements
     display.Update();
 }
 
@@ -1332,7 +1509,7 @@ bool Dubby::EncoderFallingEdgeCustom()
             if (encoderState == true)
             { // Encoder button pressed
 
-            //    UpdateStatusBar("TRUEEEE", MIDDLE, 127);
+                //    UpdateStatusBar("TRUEEEE", MIDDLE, 127);
                 return true;
             }
         }
