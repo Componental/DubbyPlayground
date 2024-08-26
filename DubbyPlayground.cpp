@@ -104,7 +104,6 @@ int main(void)
 
 void HandleMidiMessage(MidiEvent m)
 {
-
     switch (m.type)
     {
     case NoteOn:
@@ -114,6 +113,7 @@ void HandleMidiMessage(MidiEvent m)
             if (m.channel == dubby.dubbyMidiSettings.currentMidiInChannelOption)
             {
                 NoteOnEvent p = m.AsNoteOn();
+                (void)p;  // Suppress unused variable warning
             }
         }
         break;
@@ -125,6 +125,7 @@ void HandleMidiMessage(MidiEvent m)
             if (m.channel == dubby.dubbyMidiSettings.currentMidiInChannelOption)
             {
                 NoteOffEvent p = m.AsNoteOff();
+                (void)p;  // Suppress unused variable warning
             }
         }
         break;
@@ -133,7 +134,6 @@ void HandleMidiMessage(MidiEvent m)
     {
         if (dubby.dubbyMidiSettings.currentMidiClockOption == FOLLOWER)
         {
-
             HandleSystemRealTime(m.srt_type, dubby);
             // std::string stra = std::to_string(dubby.receivedBPM);
             // dubby.UpdateStatusBar(&stra[0], dubby.MIDDLE, 127);
