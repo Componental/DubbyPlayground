@@ -1,7 +1,5 @@
-
 #include "daisysp.h"
 #include "Dubby.h"
-
 #include "implementations/includes.h"
 
 using namespace daisy;
@@ -11,7 +9,7 @@ Dubby dubby;
 int outChannel;
 int inChannel = 0;
 
-static LadderFilter flt[4]; // Four filters, one for each channel
+static LadderFilter flt[NUM_AUDIO_CHANNELS]; // One filter for each input channel
 
 bool midiClockStarted = false;
 bool midiClockStoppedByButton2 = false;
@@ -28,11 +26,8 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
     // Loop through each sample
     for (size_t i = 0; i < size; i++)
     {
-        // Clear the output buffer for each sample
-        for (int j = 0; j < NUM_AUDIO_CHANNELS; j++)
-        {
-            out[j][i] = 0.0f; // Initialize output to 0 for each sample
-        }
+        // Set all audio samples for the current frame (index i) across all channels to 0.0f
+          std::fill_n(&out[0][i], NUM_AUDIO_CHANNELS, 0.0f);
 
         // Loop through each output channel
         for (int j = 0; j < NUM_AUDIO_CHANNELS; j++)
@@ -40,31 +35,10 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
             // Loop through each input channel
             for (int inChannel = 0; inChannel < NUM_AUDIO_CHANNELS; inChannel++)
             {
-                // Use switch statement to handle different channel mappings
-                switch (dubby.channelMapping[j][inChannel])
-                {
-                case PASS:
-                    // Directly assign input to output channel
-                    out[j][i] += in[inChannel][i];
-                    break;
-
-                case EFCT:
-                {
-                    // Apply effect (like filter) to input and then assign to output channel
-                    float output = flt[j].Process(in[inChannel][i]);
-                    out[j][i] += output;
-                    break;
-                }
-
-                case SNTH:
-                    // Apply input to synth
-                    // float output = synth[j].SidechainInput(in[inChannel][i]);
-                    // out[j][i] += output;
-                    break;
-
-                default:
-                    // Do nothing (channel not assigned)
-                    break;
+                switch (dubby.channelMapping[j][inChannel]) {
+                    case PASS: out[j][i] += in[inChannel][i]; break;
+                    case EFCT: out[j][i] += flt[inChannel].Process(in[inChannel][i]); break;
+                    case SNTH: /* Synth code placeholder */ break;
                 }
             }
         }
@@ -79,16 +53,11 @@ int main(void)
 
     dubby.seed.StartAudio(AudioCallback);
 
-    //  initLED();
-    //  setLED(0, BLUE, 0);
-    // setLED(1, RED, 0);
-    //  updateLED();
     // Update the filter parameters for each filter
     float sample_rate = dubby.seed.AudioSampleRate();
 
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < NUM_AUDIO_CHANNELS; i++)
     {
-        // initialize Moogladder object
         // Initialize the LadderFilter objects
         flt[i].Init(sample_rate);
 
@@ -99,16 +68,13 @@ int main(void)
 
     LadderFilter::FilterMode currentMode = LadderFilter::FilterMode::LP24;
 
-    // DELETE MEMORY
-    // SavedParameterSettings.RestoreDefaults();
-
     while (1)
     {
+            (void)currentMode; // suppress unused variable warning
+
         Monitor(dubby);
         MonitorMidi();
         MonitorPersistantMemory(dubby, SavedParameterSettings);
-
-        //   MIDISendNoteOn(dubby, 46, 120);
 
         if (dubby.buttons[dubby.CTRL_1].FallingEdge())
         {
@@ -179,8 +145,6 @@ void HandleMidiMessage(MidiEvent m)
         if (dubby.dubbyMidiSettings.currentMidiClockOption == FOLLOWER)
         {
             HandleSystemRealTime(m.srt_type, dubby);
-            // std::string stra = std::to_string(dubby.receivedBPM);
-            // dubby.UpdateStatusBar(&stra[0], dubby.MIDDLE, 127);
         }
     }
     default:
