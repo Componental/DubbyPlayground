@@ -23,22 +23,27 @@ PersistentStorage<PersistantMemoryParameterSettings> SavedParameterSettings(dubb
 
 void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, size_t size)
 {
-    // Loop through each sample
     for (size_t i = 0; i < size; i++)
     {
-        // Set all audio samples for the current frame (index i) across all channels to 0.0f
-          std::fill_n(&out[0][i], NUM_AUDIO_CHANNELS, 0.0f);
-
-        // Loop through each output channel
         for (int j = 0; j < NUM_AUDIO_CHANNELS; j++)
         {
-            // Loop through each input channel
+            out[j][i] = 0.0f; // Clear output buffer for each sample
+
             for (int inChannel = 0; inChannel < NUM_AUDIO_CHANNELS; inChannel++)
             {
                 switch (dubby.channelMapping[j][inChannel]) {
-                    case PASS: out[j][i] += in[inChannel][i]; break;
-                    case EFCT: out[j][i] += flt[inChannel].Process(in[inChannel][i]); break;
-                    case SNTH: /* Synth code placeholder */ break;
+                    case PASS: 
+                        out[j][i] += in[inChannel][i]; 
+                        break;
+                    case EFCT: 
+                        out[j][i] += flt[inChannel].Process(in[inChannel][i]); 
+                        break;
+                    case SNTH: 
+                        out[j][i] += /* Synth processing here, if applicable */ 0.0f; 
+                        break;
+                    default: 
+                        out[j][i] += 0.0f; // Ensure default is zero
+                        break;
                 }
             }
         }
