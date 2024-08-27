@@ -9,7 +9,6 @@ Dubby dubby;
 int outChannel;
 int inChannel = 0;
 
-static LadderFilter flt[NUM_AUDIO_CHANNELS]; // One filter for each input channel
 
 bool midiClockStarted = false;
 bool midiClockStoppedByButton2 = false;
@@ -36,7 +35,7 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
                         out[j][i] += in[inChannel][i]; 
                         break;
                     case EFCT: 
-                        out[j][i] += flt[inChannel].Process(in[inChannel][i]); 
+                        out[j][i] += 0;//flt[inChannel].Process(in[inChannel][i]); 
                         break;
                     case SNTH: 
                         out[j][i] += /* Synth processing here, if applicable */ 0.0f; 
@@ -58,24 +57,13 @@ int main(void)
 
     dubby.seed.StartAudio(AudioCallback);
 
-    // Update the filter parameters for each filter
     float sample_rate = dubby.seed.AudioSampleRate();
 
-    for (int i = 0; i < NUM_AUDIO_CHANNELS; i++)
-    {
-        // Initialize the LadderFilter objects
-        flt[i].Init(sample_rate);
+  
 
-        flt[i].SetInputDrive(1.f);
-        flt[i].SetRes(0.f);
-        flt[i].SetFreq(2000.f);
-    }
-
-    LadderFilter::FilterMode currentMode = LadderFilter::FilterMode::LP24;
 
     while (1)
     {
-            (void)currentMode; // suppress unused variable warning
 
         Monitor(dubby);
         MonitorMidi();
