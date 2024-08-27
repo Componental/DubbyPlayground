@@ -1094,7 +1094,6 @@ void Dubby::UpdatePreferencesSubMenuList(int increment, PreferencesMenuItems pre
 {
     int endSelector = 0;
 
-    EnumTypes type;
 
     switch (prefMenuItemSelected)
     {
@@ -1508,7 +1507,6 @@ bool Dubby::EncoderFallingEdgeCustom()
             if (encoderState == true)
             { // Encoder button pressed
 
-                //    UpdateStatusBar("TRUEEEE", MIDDLE, 127);
                 return true;
             }
         }
