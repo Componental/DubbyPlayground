@@ -37,7 +37,7 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
             {
                 switch (dubby.channelMapping[j][inChannel]) {
                     case PASS: out[j][i] += in[inChannel][i]; break;
-                    case EFCT: out[j][i] += flt[inChannel].Process(in[inChannel][i]); break;
+                    case EFCT: out[j][i] += 0; //flt[inChannel].Process(in[inChannel][i]); break;
                     case SNTH: /* Synth code placeholder */ break;
                 }
             }
