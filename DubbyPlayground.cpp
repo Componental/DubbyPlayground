@@ -61,7 +61,6 @@ int main(void)
 
   
 
-
     while (1)
     {
 
@@ -69,39 +68,6 @@ int main(void)
         MonitorMidi();
         MonitorPersistantMemory(dubby, SavedParameterSettings);
 
-        if (dubby.buttons[dubby.CTRL_1].FallingEdge())
-        {
-            if (midiClockStarted)
-            {
-                MIDISendStop(dubby);
-                midiClockStarted = false;
-            }
-            else
-            {
-                if (midiClockStoppedByButton2)
-                {
-                    MIDISendStart(dubby);
-                    midiClockStoppedByButton2 = false;
-                }
-                else
-                {
-                    MIDISendContinue(dubby);
-                }
-                midiClockStarted = true;
-            }
-        }
-
-        if (dubby.buttons[dubby.CTRL_2].FallingEdge())
-        {
-            MIDISendStop(dubby);
-            midiClockStarted = false;
-            midiClockStoppedByButton2 = true;
-        }
-
-        if (dubby.buttons[dubby.CTRL_3].TimeHeldMs() > 1000)
-        {
-            dubby.ResetToBootloader();
-        }
     }
 }
 
