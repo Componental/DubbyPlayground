@@ -273,7 +273,7 @@ void Dubby::UpdateDisplay()
         UpdateMixerPane();
         break;
     case WIN3:
-        if (encoder.FallingEdge() && !isSubMenuActive && !wasEncoderJustInHighlightMenu)
+        if (EncoderFallingEdgeCustom() && !isSubMenuActive)
         {
             isSubMenuActive = true;
             DisplayPreferencesMenuList(0);
@@ -286,8 +286,17 @@ void Dubby::UpdateDisplay()
         }
 
         DisplayPreferencesSubMenuList(encoder.Increment(), preferencesMenuItemSelected);
-        if (encoder.FallingEdge() && !wasEncoderJustInHighlightMenu && preferencesMenuItemSelected == DFUMODE)
-            ResetToBootloader();
+
+        if (EncoderFallingEdgeCustom()) 
+        {
+            if (preferencesMenuItemSelected == SAVEMEMORY)
+                trigger_save_parameters_qspi = true;
+            if (preferencesMenuItemSelected == RESETMEMORY)
+                trigger_reset_parameters_qspi = true;
+            else if (preferencesMenuItemSelected == DFUMODE)
+                ResetToBootloader();
+        }
+        
         if (encoder.Increment() && !windowSelectorActive && !isSubMenuActive)
             UpdatePreferencesMenuList(encoder.Increment());
         else if (encoder.Increment() && !windowSelectorActive && isSubMenuActive)
@@ -327,7 +336,7 @@ void Dubby::UpdateDisplay()
                 isEncoderIncrementDisabled = false;
                 UpdateStatusBar(" PARAM       CTRL      VALUE  >", LEFT);
 
-                trigger_save_parameters_qspi = true;
+                // trigger_save_parameters_qspi = true;
             }
             else
             {
@@ -343,7 +352,7 @@ void Dubby::UpdateDisplay()
 
                         isListeningControlChange = false;
                         isEncoderIncrementDisabled = false;
-                        trigger_save_parameters_qspi = true;
+                        // trigger_save_parameters_qspi = true;
                     }
                 }
             }
@@ -365,7 +374,7 @@ void Dubby::UpdateDisplay()
                 isEncoderIncrementDisabled = false;
                 UpdateStatusBar(" PARAM       CTRL   <  CURVE   ", LEFT);
 
-                trigger_save_parameters_qspi = true;
+                // trigger_save_parameters_qspi = true;
             }
         }
         else if (isMinChanging)
@@ -392,7 +401,7 @@ void Dubby::UpdateDisplay()
                 isEncoderIncrementDisabled = false;
                 UpdateStatusBar(" PARAM       CTRL   <  MIN    >", LEFT);
 
-                trigger_save_parameters_qspi = true;
+                // trigger_save_parameters_qspi = true;
             }
         }
         else if (isMaxChanging)
@@ -420,19 +429,21 @@ void Dubby::UpdateDisplay()
                 isEncoderIncrementDisabled = false;
                 UpdateStatusBar(" PARAM       CTRL   <  MAX    >", LEFT);
 
-                trigger_save_parameters_qspi = true;
+                // trigger_save_parameters_qspi = true;
             }
         }
         else if (isValueChanging)
         {
             if (encoder.Increment())
             {
-
                 if (encoder.Increment() == -1 && dubbyParameters[parameterSelected].value > dubbyParameters[parameterSelected].minLimit && dubbyParameters[parameterSelected].hasMinLimit)
                     dubbyParameters[parameterSelected].value += encoder.Increment();
                 else if (encoder.Increment() == 1 && dubbyParameters[parameterSelected].value < dubbyParameters[parameterSelected].maxLimit && dubbyParameters[parameterSelected].hasMaxLimit)
                     dubbyParameters[parameterSelected].value += encoder.Increment();
-                else
+
+                if (encoder.Increment() == -1 && !dubbyParameters[parameterSelected].hasMinLimit)
+                    dubbyParameters[parameterSelected].value += encoder.Increment();
+                else if (encoder.Increment() == 1 && !dubbyParameters[parameterSelected].hasMaxLimit)
                     dubbyParameters[parameterSelected].value += encoder.Increment();
             }
             if (EncoderFallingEdgeCustom())
@@ -441,7 +452,7 @@ void Dubby::UpdateDisplay()
                 isEncoderIncrementDisabled = false;
                 UpdateStatusBar(" PARAM       CTRL      VALUE  >", LEFT);
 
-                trigger_save_parameters_qspi = true;
+                // trigger_save_parameters_qspi = true;
             }
         }
 

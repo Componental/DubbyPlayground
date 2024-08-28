@@ -61,8 +61,31 @@ void MonitorPersistantMemory(Dubby& dubby, PersistentStorage<PersistantMemoryPar
 
     if(dubby.trigger_save_parameters_qspi) {
         SaveToQspi(dubby, SavedParameterSettings);
+
+        dubby.preferencesMenuItemSelected = dubby.MIDI;
+
+        dubby.UpdateDisplay();
+
+        dubby.UpdateStatusBar("SAVED TO MEMORY", dubby.MIDDLE, 127);
+
         dubby.trigger_save_parameters_qspi = false;
+    }
+
+    if (dubby.trigger_reset_parameters_qspi)
+    {
+        SavedParameterSettings.RestoreDefaults();
+
+        LoadFromQspi(dubby, SavedParameterSettings);
+
+        dubby.preferencesMenuItemSelected = dubby.MIDI;
+
+        dubby.UpdateDisplay();
+
+        dubby.UpdateStatusBar("RESET TO DEFAULTS", dubby.MIDDLE, 127);
+
+
+        dubby.trigger_reset_parameters_qspi = false;
     }
 }
 
-} // namespace daisy
+} // namespace daisy9

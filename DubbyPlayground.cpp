@@ -57,10 +57,7 @@ int main(void)
 
     dubby.seed.StartAudio(AudioCallback);
 
-    float sample_rate = dubby.seed.AudioSampleRate();
-
   
-
     while (1)
     {
 
