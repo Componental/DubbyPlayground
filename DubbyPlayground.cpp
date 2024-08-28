@@ -125,7 +125,7 @@ int main(void)
     }
 
     dubby.seed.StartAudio(AudioCallback);
-    SavedParameterSettings.RestoreDefaults();
+
     float sample_rate = dubby.seed.AudioSampleRate();
 
     while (1)

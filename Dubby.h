@@ -105,10 +105,8 @@ namespace daisy
             ROUTING,
             PARAMS,
             DFUMODE,
-            OPTION5,
-            OPTION6,
-            OPTION7,
-            OPTION8,
+            SAVEMEMORY,
+            RESETMEMORY,
             PREFERENCESMENU_LAST // used to know the size of enum
         };
 
@@ -118,10 +116,8 @@ namespace daisy
                 "ROUTING",
                 "PARAMETERS",
                 "DFU MODE",
-                "OPTION 5",
-                "OPTION 6",
-                "OPTION 7",
-                "OPTION 8",
+                "SAVE MEMORY",
+                "RESET MEMORY"
         };
 
         enum Ctrl
@@ -472,6 +468,7 @@ namespace daisy
 
         MidiSettingsMenu dubbyMidiSettings;
         bool trigger_save_parameters_qspi = false;
+        bool trigger_reset_parameters_qspi = false;
 
     private:
         void InitAudio();
