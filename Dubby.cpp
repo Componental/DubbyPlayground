@@ -436,25 +436,26 @@ void Dubby::UpdateDisplay()
         {
             if (encoder.Increment())
             {
-                if (encoder.Increment() == -1 && dubbyParameters[parameterSelected].value > dubbyParameters[parameterSelected].minLimit && dubbyParameters[parameterSelected].hasMinLimit)
+                if (encoder.Increment() == -1)
                 {
-                    if ((dubbyParameters[parameterSelected].value + encoder.Increment()) < dubbyParameters[parameterSelected].minLimit)
-                        dubbyParameters[parameterSelected].value = ceil(dubbyParameters[parameterSelected].value + encoder.Increment());
-                    else 
-                        dubbyParameters[parameterSelected].value += encoder.Increment();
+                    if (dubbyParameters[parameterSelected].value > dubbyParameters[parameterSelected].min)
+                    {
+                        if ((dubbyParameters[parameterSelected].value + encoder.Increment()) < dubbyParameters[parameterSelected].min)
+                            dubbyParameters[parameterSelected].value = ceil(dubbyParameters[parameterSelected].value + encoder.Increment());
+                        else 
+                            dubbyParameters[parameterSelected].value += encoder.Increment();
+                    }
                 }
-                else if (encoder.Increment() == 1 && dubbyParameters[parameterSelected].value < dubbyParameters[parameterSelected].maxLimit && dubbyParameters[parameterSelected].hasMaxLimit)
+                else if (encoder.Increment() == 1)
                 {
-                    if ((dubbyParameters[parameterSelected].value + encoder.Increment()) > dubbyParameters[parameterSelected].maxLimit)
-                        dubbyParameters[parameterSelected].value = floor(dubbyParameters[parameterSelected].value + encoder.Increment());
-                    else 
-                        dubbyParameters[parameterSelected].value += encoder.Increment();
+                    if (dubbyParameters[parameterSelected].value < dubbyParameters[parameterSelected].max)
+                    {
+                        if ((dubbyParameters[parameterSelected].value + encoder.Increment()) > dubbyParameters[parameterSelected].max)
+                            dubbyParameters[parameterSelected].value = floor(dubbyParameters[parameterSelected].value + encoder.Increment());
+                        else 
+                            dubbyParameters[parameterSelected].value += encoder.Increment();
+                    }
                 }
-
-                if (encoder.Increment() == -1 && !dubbyParameters[parameterSelected].hasMinLimit)
-                    dubbyParameters[parameterSelected].value += encoder.Increment();
-                else if (encoder.Increment() == 1 && !dubbyParameters[parameterSelected].hasMaxLimit)
-                    dubbyParameters[parameterSelected].value += encoder.Increment();
             }
             if (EncoderFallingEdgeCustom())
             {
