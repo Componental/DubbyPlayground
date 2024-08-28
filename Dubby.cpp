@@ -190,21 +190,21 @@ void Dubby::InitDubbyControls()
 
 void Dubby::InitDubbyParameters()
 {
-    dubbyParameters[DLY_TIME].Init(Params(DLY_TIME), CONTROL_NONE, 230, 0, 1000, LINEAR);
-    dubbyParameters[DLY_FEEDBACK].Init(Params(DLY_FEEDBACK), CONTROL_NONE, 0.6, 0, 1, LINEAR);
+    dubbyParameters[DLY_TIME].Init(Params(DLY_TIME), CONTROL_NONE, 230, 0, 1000, LINEAR, true, 0);
+    dubbyParameters[DLY_FEEDBACK].Init(Params(DLY_FEEDBACK), CONTROL_NONE, 0.6, 0, 1, LINEAR, true, 0, true, 1);
     dubbyParameters[DLY_DIVISION].Init(Params(DLY_DIVISION), JSY, 0, 0, 1, LINEAR);
     dubbyParameters[DLY_SPREAD].Init(Params(DLY_SPREAD), JSX, 0, -250, 250, LINEAR);
-    dubbyParameters[DLY_FREEZE].Init(Params(DLY_FREEZE), BTN3, 0, 0, 1, LINEAR);
-    dubbyParameters[DLY_MAXWET].Init(Params(DLY_MAXWET), BTN4, 0, 0, 1, LINEAR);
-    dubbyParameters[DLY_MIX].Init(Params(DLY_MIX), KN2, 0, 0, 1, LINEAR);
-    dubbyParameters[RVB_FEEDBACK].Init(Params(RVB_FEEDBACK), CONTROL_NONE, 0.96, 0.84, 0.99, LOGARITHMIC);
-    dubbyParameters[RVB_LPF_CUTOFF].Init(Params(RVB_LPF_CUTOFF), KN3, 100, 80, 10000, EXPONENTIAL);
+    dubbyParameters[DLY_FREEZE].Init(Params(DLY_FREEZE), BTN3, 0, 0, 1, LINEAR, true, 0, true, 1);
+    dubbyParameters[DLY_MAXWET].Init(Params(DLY_MAXWET), BTN4, 0, 0, 1, LINEAR, true, 0, true, 1);
+    dubbyParameters[DLY_MIX].Init(Params(DLY_MIX), KN2, 0, 0, 1, LINEAR, true, 0, true, 1);
+    dubbyParameters[RVB_FEEDBACK].Init(Params(RVB_FEEDBACK), CONTROL_NONE, 0.96, 0.84, 0.99, LOGARITHMIC, true, 0, true, 1);
+    dubbyParameters[RVB_LPF_CUTOFF].Init(Params(RVB_LPF_CUTOFF), KN3, 100, 80, 10000, EXPONENTIAL, true, 0, true, 20000);
     dubbyParameters[RVB_MIX].Init(Params(RVB_MIX), KN1, 0.8, 0, 1, LINEAR);
     dubbyParameters[FLT_CUTOFF].Init(Params(FLT_CUTOFF), KN3, 100, 80, 10000, EXPONENTIAL);
     dubbyParameters[FLT_RESONANCE].Init(Params(FLT_RESONANCE), CONTROL_NONE, 0.3, 0, 1, LINEAR);
     dubbyParameters[DRV_AMOUNT].Init(Params(DRV_AMOUNT), KN4, 0.21, 0.10, 0.46, EXPONENTIAL);
     dubbyParameters[DRV_GAIN_COMPENSATION].Init(Params(DRV_GAIN_COMPENSATION), KN4, 0.21, 1, 0.13, EXPONENTIAL);
-    dubbyParameters[OUT_GAIN].Init(Params(OUT_GAIN), CONTROL_NONE, 1, 0, 1, LOGARITHMIC);
+    dubbyParameters[OUT_GAIN].Init(Params(OUT_GAIN), CONTROL_NONE, 1, 0, 1, LOGARITHMIC, true, 0, true, 1);
 }
 
 void Dubby::SetAudioInGain(AudioIns in, float gain)
