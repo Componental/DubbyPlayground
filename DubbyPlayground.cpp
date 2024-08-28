@@ -1,12 +1,16 @@
 #include "daisysp.h"
 #include "Dubby.h"
-
 #include "implementations/includes.h"
 #include "reverbsc.h"
 using namespace daisy;
 using namespace daisysp;
 
 Dubby dubby;
+int outChannel;
+int inChannel = 0;
+
+bool midiClockStarted = false;
+bool midiClockStoppedByButton2 = false;
 ReverbSc DSY_SDRAM_BSS reverb[2];        // Array for reverb channels
 Overdrive driveReverb[2], driveDelay[2]; // Arrays for overdrive
 
@@ -84,8 +88,7 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
 
             distortedDelay[j] = driveDelay[j].Process(delayWetOutput) * driveGainCompensation;
             reverbDelayDryWetMix[j] = distortedDelay[j] * delayWetAmplitude + dry[j] * delayDryAmplitude;
-                    out[j+2][i] = SoftLimit(reverbDelayDryWetMix[j]) * dubby.dubbyParameters[OUT_GAIN].value;
-
+            out[j + 2][i] = SoftLimit(reverbDelayDryWetMix[j]) * dubby.dubbyParameters[OUT_GAIN].value;
         }
 
         // Output the final processed signal with gain and soft limiting
@@ -123,6 +126,7 @@ int main(void)
 
     dubby.seed.StartAudio(AudioCallback);
     SavedParameterSettings.RestoreDefaults();
+    float sample_rate = dubby.seed.AudioSampleRate();
 
     while (1)
     {
@@ -130,6 +134,7 @@ int main(void)
 
         Monitor(dubby);
         MonitorMidi();
+        MonitorPersistantMemory(dubby, SavedParameterSettings);
 
         delayWetAmplitude = dubby.dubbyParameters[DLY_MIX].value;
         delayDryAmplitude = 1.f - delayWetAmplitude;
@@ -183,17 +188,34 @@ void HandleMidiMessage(MidiEvent m)
     {
     case NoteOn:
     {
-        NoteOnEvent p = m.AsNoteOn();
+        if (dubby.dubbyMidiSettings.currentMidiInOption == MIDIIN_ON)
+        {
+            if (m.channel == dubby.dubbyMidiSettings.currentMidiInChannelOption)
+            {
+                NoteOnEvent p = m.AsNoteOn();
+                (void)p; // Suppress unused variable warning
+            }
+        }
         break;
     }
     case NoteOff:
     {
-        NoteOffEvent p = m.AsNoteOff();
+        if (dubby.dubbyMidiSettings.currentMidiInOption == MIDIIN_ON)
+        {
+            if (m.channel == dubby.dubbyMidiSettings.currentMidiInChannelOption)
+            {
+                NoteOffEvent p = m.AsNoteOff();
+                (void)p; // Suppress unused variable warning
+            }
+        }
         break;
     }
     case SystemRealTime:
     {
-        HandleSystemRealTime(m.srt_type);
+        if (dubby.dubbyMidiSettings.currentMidiClockOption == FOLLOWER)
+        {
+            HandleSystemRealTime(m.srt_type, dubby);
+        }
     }
     default:
         break;
@@ -218,4 +240,3 @@ void MonitorMidi()
             HandleMidiMessage(m);
         }
     }
-}
