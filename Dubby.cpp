@@ -1508,13 +1508,13 @@ bool Dubby::EncoderFallingEdgeCustom()
             if (reading)
             {
                 std::string str = std::to_string(reading);
-                UpdateStatusBar(&str[0], LEFT, 55);
+                //UpdateStatusBar(&str[0], LEFT, 55);
             }
 
             if (encoderState)
             {
                 std::string str = std::to_string(encoderState);
-                UpdateStatusBar(&str[0], RIGHT, 55);
+             //   UpdateStatusBar(&str[0], RIGHT, 55);
             }
 
             if (encoderState == true)
