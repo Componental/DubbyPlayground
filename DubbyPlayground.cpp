@@ -240,3 +240,4 @@ void MonitorMidi()
             HandleMidiMessage(m);
         }
     }
+}

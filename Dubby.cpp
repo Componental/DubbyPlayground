@@ -553,9 +553,9 @@ void Dubby::UpdateDisplay()
         }
 
         break;
-    case WIN6:
-        UpdateChannelMappingMenu();
-        break;
+    // case WIN6:
+    //   //  UpdateChannelMappingMenu();
+    //     break;
     default:
         break;
     }
@@ -743,9 +743,9 @@ void Dubby::UpdateWindowList()
         DisplayMidiSettingsList(0);
 
         break;
-    case WIN6:
-        UpdateChannelMappingMenu();
-        break;
+    // case WIN6:
+    //    // UpdateChannelMappingMenu();
+    //     break;
     default:
         break;
     }
