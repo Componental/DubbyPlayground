@@ -294,7 +294,7 @@ void Dubby::UpdateDisplay()
         UpdateMidiSettingsPane();
         break;
     case WIN6:
-        UpdateChannelMappingPane();
+       // UpdateChannelMappingPane();
         break;
     case WIN7:
 
@@ -487,7 +487,6 @@ void Dubby::UpdateWindowList()
 
         break;
     case WIN6:
-
         // UpdateChannelMappingPane();
         break;
     case WIN7:
