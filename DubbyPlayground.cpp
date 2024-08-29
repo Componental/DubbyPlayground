@@ -1,13 +1,15 @@
-
 #include "daisysp.h"
 #include "Dubby.h"
-
 #include "implementations/includes.h"
 
 using namespace daisy;
 using namespace daisysp;
 
 Dubby dubby;
+int outChannel;
+int inChannel = 0;
+
+
 bool midiClockStarted = false;
 bool midiClockStoppedByButton2 = false;
 
@@ -246,7 +248,6 @@ int main(void)
 
 void HandleMidiMessage(MidiEvent m)
 {
-
     switch (m.type)
     {
     case NoteOn:
@@ -256,6 +257,7 @@ void HandleMidiMessage(MidiEvent m)
             if (m.channel == dubby.dubbyMidiSettings.currentMidiInChannelOption)
             {
                 NoteOnEvent p = m.AsNoteOn();
+                (void)p;  // Suppress unused variable warning
             }
         }
         break;
@@ -267,6 +269,7 @@ void HandleMidiMessage(MidiEvent m)
             if (m.channel == dubby.dubbyMidiSettings.currentMidiInChannelOption)
             {
                 NoteOffEvent p = m.AsNoteOff();
+                (void)p;  // Suppress unused variable warning
             }
         }
         break;
@@ -275,10 +278,7 @@ void HandleMidiMessage(MidiEvent m)
     {
         if (dubby.dubbyMidiSettings.currentMidiClockOption == FOLLOWER)
         {
-
             HandleSystemRealTime(m.srt_type, dubby);
-            // std::string stra = std::to_string(dubby.receivedBPM);
-            // dubby.UpdateStatusBar(&stra[0], dubby.MIDDLE, 127);
         }
     }
     default:

@@ -18,7 +18,6 @@
 #define AUDIO_BLOCK_SIZE 128
 #define NUM_AUDIO_CHANNELS 4
 #define PI_F 3.1415927410125732421875f
-
 #define NUM_KNOBS 4
 
 namespace daisy
@@ -81,8 +80,8 @@ namespace daisy
             WIN2,
             WIN3,
             WIN4,
-            WIN5, // ROUTING TEST
-            WIN6,
+            WIN5, 
+            WIN6, // ROUTING 
             WIN7,
             WIN8,
             WIN_LAST // used to know the size of enum
@@ -94,8 +93,8 @@ namespace daisy
                 "MIXER",
                 "PREFS",
                 "PARAMETERS",
-                "ROUTING",
-                "MIDI CONF",
+                "MIDI CONF", 
+                "ROUTING", // ROUTING
                 "WIN7",
                 "WIN8",
         };
@@ -106,10 +105,8 @@ namespace daisy
             ROUTING,
             PARAMS,
             DFUMODE,
-            OPTION5,
-            OPTION6,
-            OPTION7,
-            OPTION8,
+            SAVEMEMORY,
+            RESETMEMORY,
             PREFERENCESMENU_LAST // used to know the size of enum
         };
 
@@ -119,10 +116,8 @@ namespace daisy
                 "ROUTING",
                 "PARAMETERS",
                 "DFU MODE",
-                "OPTION 5",
-                "OPTION 6",
-                "OPTION 7",
-                "OPTION 8",
+                "SAVE MEMORY",
+                "RESET MEMORY"
         };
 
         enum Ctrl
@@ -287,6 +282,18 @@ namespace daisy
             "SIGMOID",
         };
 
+        const int numRows = 4;
+        const int numCols = 4;
+
+
+
+        int channelMapping[NUM_AUDIO_CHANNELS][NUM_AUDIO_CHANNELS] = {
+            // Input channels:       0     1     2     3
+            /* Output channel 0 */ {0, 0, 0, 0},
+            /* Output channel 1 */ {0, 0, 0, 0},
+            /* Output channel 2 */ {0, 0, 0, 0},
+            /* Output channel 3 */ {0, 0, 0, 0}};
+
         Dubby() {}
 
         ~Dubby() {}
@@ -321,6 +328,12 @@ namespace daisy
 
         void UpdateRenderPane();
 
+        void UpdateGlobalSettingsPane();
+
+        void UpdateParameterPane();
+
+        void UpdateMidiSettingsPane();
+
         void RenderScope();
 
         void DisplayPreferencesMenuList(int increment);
@@ -339,6 +352,8 @@ namespace daisy
 
         void UpdateMidiSettingsList(int increment);
 
+        void UpdateLFOWindow(int increment);
+
         void ProcessAllControls();
 
         void ProcessAnalogControls();
@@ -355,7 +370,7 @@ namespace daisy
 
         void ClearPane();
 
-        void UpdateStatusBar(char *text, StatusBarSide side, int width = 40); // side = 0 => left, side = 1 => right
+        void UpdateStatusBar(const char *text, StatusBarSide side, int width = 40); // side = 0 => left, side = 1 => right
 
         void updateKnobValues(const std::vector<float> &values);
 
@@ -370,6 +385,9 @@ namespace daisy
         float GetParameterValue(Parameters p);
 
         bool EncoderFallingEdgeCustom();
+        bool EncoderRisingEdgeCustom();
+
+        void UpdateChannelMappingPane();
 
         DaisySeed seed;
 
@@ -398,6 +416,9 @@ namespace daisy
         MidiSettings midiSettingSelected = (MidiSettings)0;
         bool isMidiSettingSelected = false;
         bool testBool = false;
+
+        ChannelMappings channelMappingSelected = (ChannelMappings)0;
+        bool isChannelMappingSelected = false;
         
 
         // const int menuTextCursors[3][2] = { {8, 55}, {50, 55}, {92, 55} }; OLD
@@ -447,9 +468,11 @@ namespace daisy
 
         Controls dubbyCtrls[CONTROLS_LAST];
         Parameters dubbyParameters[PARAMS_LAST];
+        ChannelMappingMenu dubbyChannelMapping[CHANNELMAPPINGS_LAST];
 
         MidiSettingsMenu dubbyMidiSettings;
         bool trigger_save_parameters_qspi = false;
+        bool trigger_reset_parameters_qspi = false;
 
     private:
         void InitAudio();
