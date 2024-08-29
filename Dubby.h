@@ -332,6 +332,12 @@ namespace daisy
 
         void UpdateRenderPane();
 
+        void UpdateGlobalSettingsPane();
+
+        void UpdateParameterPane();
+
+        void UpdateMidiSettingsPane();
+
         void RenderScope();
 
         void DisplayPreferencesMenuList(int increment);
@@ -349,6 +355,8 @@ namespace daisy
         void UpdateParameterList(int increment);
 
         void UpdateMidiSettingsList(int increment);
+
+        void UpdateLFOWindow(int increment);
 
         void ProcessAllControls();
 
@@ -383,7 +391,7 @@ namespace daisy
         bool EncoderFallingEdgeCustom();
         bool EncoderRisingEdgeCustom();
 
-        void UpdateChannelMappingMenu();
+        void UpdateChannelMappingPane();
 
         DaisySeed seed;
 

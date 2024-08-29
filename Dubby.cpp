@@ -285,299 +285,20 @@ void Dubby::UpdateDisplay()
         UpdateMixerPane();
         break;
     case WIN3:
-
-        if (EncoderFallingEdgeCustom() && !isSubMenuActive)
-        {
-            isSubMenuActive = true;
-            DisplayPreferencesMenuList(0);
-        }
-
-        if (windowSelectorActive)
-        {
-            isSubMenuActive = false;
-            DisplayPreferencesMenuList(0);
-        }
-
-        DisplayPreferencesSubMenuList(encoder.Increment(), preferencesMenuItemSelected);
-
-        if (EncoderFallingEdgeCustom()) 
-        {
-            if (preferencesMenuItemSelected == SAVEMEMORY)
-                trigger_save_parameters_qspi = true;
-            if (preferencesMenuItemSelected == RESETMEMORY)
-                trigger_reset_parameters_qspi = true;
-            else if (preferencesMenuItemSelected == DFUMODE)
-                ResetToBootloader();
-        }
-        
-        if (encoder.Increment() && !windowSelectorActive && !isSubMenuActive)
-            UpdatePreferencesMenuList(encoder.Increment());
-        else if (encoder.Increment() && !windowSelectorActive && isSubMenuActive)
-            UpdatePreferencesSubMenuList(encoder.Increment(), preferencesMenuItemSelected);
+        UpdateGlobalSettingsPane();
         break;
     case WIN4:
-        // if (encoder.FallingEdge() && !wasEncoderJustInHighlightMenu) {
-        DisplayParameterList(encoder.Increment());
-
-        if (encoder.Increment() && !isEncoderIncrementDisabled && !windowSelectorActive && !isParameterSelected)
-            UpdateParameterList(encoder.Increment());
-
-        if (encoder.FallingEdge() && !wasEncoderJustInHighlightMenu && !windowSelectorActive && !isParameterSelected)
-        {
-            isParameterSelected = true;
-            parameterOptionSelected = PARAM;
-
-            DisplayParameterList(encoder.Increment());
-        }
-
-        if (isListeningControlChange)
-        {
-
-            if (encoder.Increment())
-            {
-                if (dubbyParameters[parameterSelected].control == CONTROLS_LAST - 1 && encoder.Increment() == 1)
-                    dubbyParameters[parameterSelected].control = CONTROL_NONE;
-                else if (dubbyParameters[parameterSelected].control == CONTROL_NONE && encoder.Increment() == -1)
-                    dubbyParameters[parameterSelected].control = (DubbyControls)(CONTROLS_LAST - 1);
-                else
-                    dubbyParameters[parameterSelected].control = static_cast<DubbyControls>(static_cast<int>(dubbyParameters[parameterSelected].control) + encoder.Increment());
-            }
-
-            if (EncoderFallingEdgeCustom())
-            {
-                isListeningControlChange = false;
-                isEncoderIncrementDisabled = false;
-                UpdateStatusBar(" PARAM       CTRL      VALUE  >", LEFT);
-
-                // trigger_save_parameters_qspi = true;
-            }
-            else
-            {
-                for (int i = 0; i < CONTROLS_LAST; i++)
-                {
-                    if (abs(dubbyCtrls[i].tempValue - dubbyCtrls[i].value) > 0.1f)
-                    {
-
-                    dubbyParameters[parameterSelected].control = (DubbyControls)i;
-
-                        DisplayParameterList(0);
-                        UpdateStatusBar(" PARAM       CTRL      VALUE  >", LEFT);
-
-                        isListeningControlChange = false;
-                        isEncoderIncrementDisabled = false;
-                        // trigger_save_parameters_qspi = true;
-                    }
-                }
-            }
-        }
-        else if (isCurveChanging)
-        {
-            if (encoder.Increment())
-            {
-                if (dubbyParameters[parameterSelected].curve == CURVES_LAST - 1 && encoder.Increment() == 1)
-                    dubbyParameters[parameterSelected].curve = (Curves)0;
-                else if (dubbyParameters[parameterSelected].curve == 0 && encoder.Increment() == -1)
-                    dubbyParameters[parameterSelected].curve = (Curves)(CURVES_LAST - 1);
-                else
-                    dubbyParameters[parameterSelected].curve = static_cast<Curves>(static_cast<int>(dubbyParameters[parameterSelected].curve) + encoder.Increment());
-            }
-            if (EncoderFallingEdgeCustom())
-            {
-                isCurveChanging = false;
-                isEncoderIncrementDisabled = false;
-                UpdateStatusBar(" PARAM       CTRL   <  CURVE   ", LEFT);
-
-                // trigger_save_parameters_qspi = true;
-            }
-        }
-        else if (isMinChanging)
-        {
-            if (encoder.Increment())
-            {
-                int incrementValue = encoder.Increment();
-                float newValue = dubbyParameters[parameterSelected].min + incrementValue;
-
-                // Check min limit
-                if (dubbyParameters[parameterSelected].hasMinLimit && newValue < dubbyParameters[parameterSelected].minLimit)
-                    newValue = dubbyParameters[parameterSelected].minLimit;
-
-                // Check max limit
-                if (dubbyParameters[parameterSelected].hasMaxLimit && newValue > dubbyParameters[parameterSelected].maxLimit)
-                    newValue = dubbyParameters[parameterSelected].maxLimit;
-
-                // Apply the new value
-                dubbyParameters[parameterSelected].min = newValue;
-            }
-            if (EncoderFallingEdgeCustom())
-            {
-                isMinChanging = false;
-                isEncoderIncrementDisabled = false;
-                UpdateStatusBar(" PARAM       CTRL   <  MIN    >", LEFT);
-
-                // trigger_save_parameters_qspi = true;
-            }
-        }
-        else if (isMaxChanging)
-        {
-            if (encoder.Increment())
-            {
-                int incrementValue = encoder.Increment();
-                float newValue = dubbyParameters[parameterSelected].max + incrementValue;
-
-                // Check min limit
-                if (dubbyParameters[parameterSelected].hasMinLimit && newValue < dubbyParameters[parameterSelected].minLimit)
-                    newValue = dubbyParameters[parameterSelected].minLimit;
-
-                // Check max limit
-                if (dubbyParameters[parameterSelected].hasMaxLimit && newValue > dubbyParameters[parameterSelected].maxLimit)
-                    newValue = dubbyParameters[parameterSelected].maxLimit;
-
-                // Apply the new value
-                dubbyParameters[parameterSelected].max = newValue;
-            }
-
-            if (EncoderFallingEdgeCustom())
-            {
-                isMaxChanging = false;
-                isEncoderIncrementDisabled = false;
-                UpdateStatusBar(" PARAM       CTRL   <  MAX    >", LEFT);
-
-                // trigger_save_parameters_qspi = true;
-            }
-        }
-        else if (isValueChanging)
-        {
-            if (encoder.Increment())
-            {
-                if (encoder.Increment() == -1)
-                {
-                    if (dubbyParameters[parameterSelected].value > dubbyParameters[parameterSelected].min)
-                    {
-                        if ((dubbyParameters[parameterSelected].value + encoder.Increment()) < dubbyParameters[parameterSelected].min)
-                            dubbyParameters[parameterSelected].value = ceil(dubbyParameters[parameterSelected].value + encoder.Increment());
-                        else 
-                            dubbyParameters[parameterSelected].value += encoder.Increment();
-                    }
-                }
-                else if (encoder.Increment() == 1)
-                {
-                    if (dubbyParameters[parameterSelected].value < dubbyParameters[parameterSelected].max)
-                    {
-                        if ((dubbyParameters[parameterSelected].value + encoder.Increment()) > dubbyParameters[parameterSelected].max)
-                            dubbyParameters[parameterSelected].value = floor(dubbyParameters[parameterSelected].value + encoder.Increment());
-                        else 
-                            dubbyParameters[parameterSelected].value += encoder.Increment();
-                    }
-                }
-            }
-            if (EncoderFallingEdgeCustom())
-            {
-                isValueChanging = false;
-                isEncoderIncrementDisabled = false;
-                UpdateStatusBar(" PARAM       CTRL      VALUE  >", LEFT);
-
-                // trigger_save_parameters_qspi = true;
-            }
-        }
-
-        if (isParameterSelected)
-        {
-            if (encoder.Increment() && !isEncoderIncrementDisabled)
-            {
-                parameterOptionSelected = static_cast<ParameterOptions>(static_cast<int>(parameterOptionSelected) + encoder.Increment());
-
-                if (parameterOptionSelected < PARAM || parameterOptionSelected >= POPTIONS_LAST)
-                {
-                    isParameterSelected = false;
-                }
-
-                switch (parameterOptionSelected)
-                {
-                case MIN:
-                    UpdateStatusBar(" PARAM       CTRL   <  MIN    >", LEFT);
-                    break;
-                case MAX:
-                    UpdateStatusBar(" PARAM       CTRL   <  MAX    >", LEFT);
-                    break;
-                case CURVE:
-                    UpdateStatusBar(" PARAM       CTRL   <  CURVE   ", LEFT);
-                    break;
-                default:
-                    UpdateStatusBar(" PARAM       CTRL      VALUE  >", LEFT);
-                    break;
-                }
-
-                DisplayParameterList(encoder.Increment());
-            }
-            else if (parameterOptionSelected == CTRL)
-            {
-                if (EncoderFallingEdgeCustom())
-                {
-                    UpdateStatusBar("SELECT A CONTROL", MIDDLE, 127);
-                    isListeningControlChange = true;
-                    isEncoderIncrementDisabled = true;
-
-                    for (int i = 0; i < CONTROLS_LAST; i++)
-                        dubbyCtrls[i].tempValue = dubbyCtrls[i].value;
-                }
-            }
-            else if (parameterOptionSelected == CURVE)
-            {
-                if (EncoderFallingEdgeCustom())
-                {
-                    UpdateStatusBar("SELECT A CURVE", MIDDLE, 127);
-                    isEncoderIncrementDisabled = true;
-                    isCurveChanging = true;
-                }
-            }
-            else if (parameterOptionSelected == MIN)
-            {
-                if (EncoderFallingEdgeCustom())
-                {
-                    UpdateStatusBar("SELECT MIN VALUE", MIDDLE, 127);
-                    isEncoderIncrementDisabled = true;
-                    isMinChanging = true;
-                }
-            }
-            else if (parameterOptionSelected == MAX)
-            {
-                if (EncoderFallingEdgeCustom())
-                {
-                    UpdateStatusBar("SELECT MAX VALUE", MIDDLE, 127);
-                    isEncoderIncrementDisabled = true;
-                    isMaxChanging = true;
-                }
-            }
-            else if (parameterOptionSelected == VALUE && dubbyParameters[parameterSelected].control == CONTROL_NONE)
-            {
-                if (EncoderFallingEdgeCustom())
-                {
-                    UpdateStatusBar("SELECT A VALUE", MIDDLE, 127);
-                    isEncoderIncrementDisabled = true;
-                    isValueChanging = true;
-                }
-            }
-        }
-
+        UpdateParameterPane();
         break;
-
     case WIN5:
-        DisplayMidiSettingsList(encoder.Increment());
-
-        if (encoder.Increment() && !windowSelectorActive && !isMidiSettingSelected)
-            UpdateMidiSettingsList(encoder.Increment());
-
-        if (encoder.FallingEdge() && !wasEncoderJustInHighlightMenu && !windowSelectorActive)
-        {
-            isMidiSettingSelected = !isMidiSettingSelected;
-
-            UpdateMidiSettingsList(encoder.Increment());
-        }
+        UpdateMidiSettingsPane();
+        break;
+    case WIN6:
+        UpdateChannelMappingPane();
+        break;
+    case WIN7:
 
         break;
-    // case WIN6:
-    //   //  UpdateChannelMappingMenu();
-    //     break;
     default:
         break;
     }
@@ -765,9 +486,13 @@ void Dubby::UpdateWindowList()
         DisplayMidiSettingsList(0);
 
         break;
-    // case WIN6:
-    //    // UpdateChannelMappingMenu();
-    //     break;
+    case WIN6:
+
+        // UpdateChannelMappingPane();
+        break;
+    case WIN7:
+
+        break;
     default:
         break;
     }
@@ -775,7 +500,7 @@ void Dubby::UpdateWindowList()
     display.Update();
 }
 
-void Dubby::UpdateChannelMappingMenu()
+void Dubby::UpdateChannelMappingPane()
 {
     // Define dimensions for each cell in the grid
     const int cellWidth = 23; // Width of each cell in the grid
@@ -948,6 +673,12 @@ void Dubby::UpdateChannelMappingMenu()
     display.Update();
 }
 
+void Dubby::UpdateLFOWindow(int i)
+{
+    // Update the display after drawing all elements
+    display.Update();
+}
+
 void Dubby::UpdateBar(int i)
 {
     // clear bars
@@ -987,6 +718,299 @@ void Dubby::UpdateRenderPane()
     RenderScope();
 }
 
+void Dubby::UpdateGlobalSettingsPane()
+{
+    if (EncoderFallingEdgeCustom() && !isSubMenuActive)
+    {
+        isSubMenuActive = true;
+        DisplayPreferencesMenuList(0);
+    }
+
+    if (windowSelectorActive)
+    {
+        isSubMenuActive = false;
+        DisplayPreferencesMenuList(0);
+    }
+
+    DisplayPreferencesSubMenuList(encoder.Increment(), preferencesMenuItemSelected);
+
+    if (EncoderFallingEdgeCustom())
+    {
+        if (preferencesMenuItemSelected == SAVEMEMORY)
+            trigger_save_parameters_qspi = true;
+        if (preferencesMenuItemSelected == RESETMEMORY)
+            trigger_reset_parameters_qspi = true;
+        else if (preferencesMenuItemSelected == DFUMODE)
+            ResetToBootloader();
+    }
+
+    if (encoder.Increment() && !windowSelectorActive && !isSubMenuActive)
+        UpdatePreferencesMenuList(encoder.Increment());
+    else if (encoder.Increment() && !windowSelectorActive && isSubMenuActive)
+        UpdatePreferencesSubMenuList(encoder.Increment(), preferencesMenuItemSelected);
+}
+
+void Dubby::UpdateParameterPane()
+{
+    // if (encoder.FallingEdge() && !wasEncoderJustInHighlightMenu) {
+    DisplayParameterList(encoder.Increment());
+
+    if (encoder.Increment() && !isEncoderIncrementDisabled && !windowSelectorActive && !isParameterSelected)
+        UpdateParameterList(encoder.Increment());
+
+    if (encoder.FallingEdge() && !wasEncoderJustInHighlightMenu && !windowSelectorActive && !isParameterSelected)
+    {
+        isParameterSelected = true;
+        parameterOptionSelected = PARAM;
+
+        DisplayParameterList(encoder.Increment());
+    }
+
+    if (isListeningControlChange)
+    {
+
+        if (encoder.Increment())
+        {
+            if (dubbyParameters[parameterSelected].control == CONTROLS_LAST - 1 && encoder.Increment() == 1)
+                dubbyParameters[parameterSelected].control = CONTROL_NONE;
+            else if (dubbyParameters[parameterSelected].control == CONTROL_NONE && encoder.Increment() == -1)
+                dubbyParameters[parameterSelected].control = (DubbyControls)(CONTROLS_LAST - 1);
+            else
+                dubbyParameters[parameterSelected].control = static_cast<DubbyControls>(static_cast<int>(dubbyParameters[parameterSelected].control) + encoder.Increment());
+        }
+
+        if (EncoderFallingEdgeCustom())
+        {
+            isListeningControlChange = false;
+            isEncoderIncrementDisabled = false;
+            UpdateStatusBar(" PARAM       CTRL      VALUE  >", LEFT);
+
+            // trigger_save_parameters_qspi = true;
+        }
+        else
+        {
+            for (int i = 0; i < CONTROLS_LAST; i++)
+            {
+                if (abs(dubbyCtrls[i].tempValue - dubbyCtrls[i].value) > 0.1f)
+                {
+
+                    dubbyParameters[parameterSelected].control = (DubbyControls)i;
+
+                    DisplayParameterList(0);
+                    UpdateStatusBar(" PARAM       CTRL      VALUE  >", LEFT);
+
+                    isListeningControlChange = false;
+                    isEncoderIncrementDisabled = false;
+                    // trigger_save_parameters_qspi = true;
+                }
+            }
+        }
+    }
+    else if (isCurveChanging)
+    {
+        if (encoder.Increment())
+        {
+            if (dubbyParameters[parameterSelected].curve == CURVES_LAST - 1 && encoder.Increment() == 1)
+                dubbyParameters[parameterSelected].curve = (Curves)0;
+            else if (dubbyParameters[parameterSelected].curve == 0 && encoder.Increment() == -1)
+                dubbyParameters[parameterSelected].curve = (Curves)(CURVES_LAST - 1);
+            else
+                dubbyParameters[parameterSelected].curve = static_cast<Curves>(static_cast<int>(dubbyParameters[parameterSelected].curve) + encoder.Increment());
+        }
+        if (EncoderFallingEdgeCustom())
+        {
+            isCurveChanging = false;
+            isEncoderIncrementDisabled = false;
+            UpdateStatusBar(" PARAM       CTRL   <  CURVE   ", LEFT);
+
+            // trigger_save_parameters_qspi = true;
+        }
+    }
+    else if (isMinChanging)
+    {
+        if (encoder.Increment())
+        {
+            int incrementValue = encoder.Increment();
+            float newValue = dubbyParameters[parameterSelected].min + incrementValue;
+
+            // Check min limit
+            if (dubbyParameters[parameterSelected].hasMinLimit && newValue < dubbyParameters[parameterSelected].minLimit)
+                newValue = dubbyParameters[parameterSelected].minLimit;
+
+            // Check max limit
+            if (dubbyParameters[parameterSelected].hasMaxLimit && newValue > dubbyParameters[parameterSelected].maxLimit)
+                newValue = dubbyParameters[parameterSelected].maxLimit;
+
+            // Apply the new value
+            dubbyParameters[parameterSelected].min = newValue;
+        }
+        if (EncoderFallingEdgeCustom())
+        {
+            isMinChanging = false;
+            isEncoderIncrementDisabled = false;
+            UpdateStatusBar(" PARAM       CTRL   <  MIN    >", LEFT);
+
+            // trigger_save_parameters_qspi = true;
+        }
+    }
+    else if (isMaxChanging)
+    {
+        if (encoder.Increment())
+        {
+            int incrementValue = encoder.Increment();
+            float newValue = dubbyParameters[parameterSelected].max + incrementValue;
+
+            // Check min limit
+            if (dubbyParameters[parameterSelected].hasMinLimit && newValue < dubbyParameters[parameterSelected].minLimit)
+                newValue = dubbyParameters[parameterSelected].minLimit;
+
+            // Check max limit
+            if (dubbyParameters[parameterSelected].hasMaxLimit && newValue > dubbyParameters[parameterSelected].maxLimit)
+                newValue = dubbyParameters[parameterSelected].maxLimit;
+
+            // Apply the new value
+            dubbyParameters[parameterSelected].max = newValue;
+        }
+
+        if (EncoderFallingEdgeCustom())
+        {
+            isMaxChanging = false;
+            isEncoderIncrementDisabled = false;
+            UpdateStatusBar(" PARAM       CTRL   <  MAX    >", LEFT);
+
+            // trigger_save_parameters_qspi = true;
+        }
+    }
+    else if (isValueChanging)
+    {
+        if (encoder.Increment())
+        {
+            if (encoder.Increment() == -1)
+            {
+                if (dubbyParameters[parameterSelected].value > dubbyParameters[parameterSelected].min)
+                {
+                    if ((dubbyParameters[parameterSelected].value + encoder.Increment()) < dubbyParameters[parameterSelected].min)
+                        dubbyParameters[parameterSelected].value = ceil(dubbyParameters[parameterSelected].value + encoder.Increment());
+                    else
+                        dubbyParameters[parameterSelected].value += encoder.Increment();
+                }
+            }
+            else if (encoder.Increment() == 1)
+            {
+                if (dubbyParameters[parameterSelected].value < dubbyParameters[parameterSelected].max)
+                {
+                    if ((dubbyParameters[parameterSelected].value + encoder.Increment()) > dubbyParameters[parameterSelected].max)
+                        dubbyParameters[parameterSelected].value = floor(dubbyParameters[parameterSelected].value + encoder.Increment());
+                    else
+                        dubbyParameters[parameterSelected].value += encoder.Increment();
+                }
+            }
+        }
+        if (EncoderFallingEdgeCustom())
+        {
+            isValueChanging = false;
+            isEncoderIncrementDisabled = false;
+            UpdateStatusBar(" PARAM       CTRL      VALUE  >", LEFT);
+
+            // trigger_save_parameters_qspi = true;
+        }
+    }
+
+    if (isParameterSelected)
+    {
+        if (encoder.Increment() && !isEncoderIncrementDisabled)
+        {
+            parameterOptionSelected = static_cast<ParameterOptions>(static_cast<int>(parameterOptionSelected) + encoder.Increment());
+
+            if (parameterOptionSelected < PARAM || parameterOptionSelected >= POPTIONS_LAST)
+            {
+                isParameterSelected = false;
+            }
+
+            switch (parameterOptionSelected)
+            {
+            case MIN:
+                UpdateStatusBar(" PARAM       CTRL   <  MIN    >", LEFT);
+                break;
+            case MAX:
+                UpdateStatusBar(" PARAM       CTRL   <  MAX    >", LEFT);
+                break;
+            case CURVE:
+                UpdateStatusBar(" PARAM       CTRL   <  CURVE   ", LEFT);
+                break;
+            default:
+                UpdateStatusBar(" PARAM       CTRL      VALUE  >", LEFT);
+                break;
+            }
+
+            DisplayParameterList(encoder.Increment());
+        }
+        else if (parameterOptionSelected == CTRL)
+        {
+            if (EncoderFallingEdgeCustom())
+            {
+                UpdateStatusBar("SELECT A CONTROL", MIDDLE, 127);
+                isListeningControlChange = true;
+                isEncoderIncrementDisabled = true;
+
+                for (int i = 0; i < CONTROLS_LAST; i++)
+                    dubbyCtrls[i].tempValue = dubbyCtrls[i].value;
+            }
+        }
+        else if (parameterOptionSelected == CURVE)
+        {
+            if (EncoderFallingEdgeCustom())
+            {
+                UpdateStatusBar("SELECT A CURVE", MIDDLE, 127);
+                isEncoderIncrementDisabled = true;
+                isCurveChanging = true;
+            }
+        }
+        else if (parameterOptionSelected == MIN)
+        {
+            if (EncoderFallingEdgeCustom())
+            {
+                UpdateStatusBar("SELECT MIN VALUE", MIDDLE, 127);
+                isEncoderIncrementDisabled = true;
+                isMinChanging = true;
+            }
+        }
+        else if (parameterOptionSelected == MAX)
+        {
+            if (EncoderFallingEdgeCustom())
+            {
+                UpdateStatusBar("SELECT MAX VALUE", MIDDLE, 127);
+                isEncoderIncrementDisabled = true;
+                isMaxChanging = true;
+            }
+        }
+        else if (parameterOptionSelected == VALUE && dubbyParameters[parameterSelected].control == CONTROL_NONE)
+        {
+            if (EncoderFallingEdgeCustom())
+            {
+                UpdateStatusBar("SELECT A VALUE", MIDDLE, 127);
+                isEncoderIncrementDisabled = true;
+                isValueChanging = true;
+            }
+        }
+    }
+}
+
+void Dubby::UpdateMidiSettingsPane()
+{
+     DisplayMidiSettingsList(encoder.Increment());
+
+        if (encoder.Increment() && !windowSelectorActive && !isMidiSettingSelected)
+            UpdateMidiSettingsList(encoder.Increment());
+
+        if (encoder.FallingEdge() && !wasEncoderJustInHighlightMenu && !windowSelectorActive)
+        {
+            isMidiSettingSelected = !isMidiSettingSelected;
+
+            UpdateMidiSettingsList(encoder.Increment());
+        }
+
+}
 void Dubby::RenderScope()
 {
     if (seed.system.GetNow() - screen_update_last_ > screen_update_period_)
@@ -1128,7 +1152,6 @@ void Dubby::DisplayPreferencesSubMenuList(int increment, PreferencesMenuItems pr
 void Dubby::UpdatePreferencesSubMenuList(int increment, PreferencesMenuItems prefMenuItemSelected)
 {
     int endSelector = 0;
-
 
     switch (prefMenuItemSelected)
     {
@@ -1530,13 +1553,13 @@ bool Dubby::EncoderFallingEdgeCustom()
             if (reading)
             {
                 std::string str = std::to_string(reading);
-                //UpdateStatusBar(&str[0], LEFT, 55);
+                // UpdateStatusBar(&str[0], LEFT, 55);
             }
 
             if (encoderState)
             {
                 std::string str = std::to_string(encoderState);
-             //   UpdateStatusBar(&str[0], RIGHT, 55);
+                //   UpdateStatusBar(&str[0], RIGHT, 55);
             }
 
             if (encoderState == true)
