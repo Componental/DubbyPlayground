@@ -455,21 +455,25 @@ void Dubby::UpdateMixerPane()
         isBarSelected = !isBarSelected;
         if (isBarSelected)
         {
+            encoder.EnableAcceleration(true);
             std::string str = (mixerPageSelected == INPUTS ? "in" : "out") + std::to_string(barSelector % 4 + 1) + ":" + std::to_string(audioGains[mixerPageSelected][barSelector % 4]).substr(0, std::to_string(audioGains[mixerPageSelected][barSelector % 4]).find(".") + 3);
             UpdateStatusBar(&str[0], RIGHT);
         }
         else
         {
+            encoder.EnableAcceleration(false);
             UpdateStatusBar(" ", RIGHT);
         }
     }
 
     if (isBarSelected)
     {
-        if ((increment == 1 && audioGains[mixerPageSelected][barSelector % 4] < 1.0f) || (increment == -1 && audioGains[mixerPageSelected][barSelector % 4] > 0.0001f))
+        if ((increment > 0 && audioGains[mixerPageSelected][barSelector % 4] < 1.0f) || (increment < 0 && audioGains[mixerPageSelected][barSelector % 4] > 0.0001f))
         {
-            audioGains[mixerPageSelected][barSelector % 4] += increment / 20.f;
-            audioGains[mixerPageSelected][barSelector % 4] = abs(audioGains[mixerPageSelected][barSelector % 4]);
+            audioGains[mixerPageSelected][barSelector % 4] += increment / 100.f;
+
+            if (audioGains[mixerPageSelected][barSelector % 4] > 1.0f) audioGains[mixerPageSelected][barSelector % 4] = 1.0f;
+            else if (audioGains[mixerPageSelected][barSelector % 4] < 0.0f) audioGains[mixerPageSelected][barSelector % 4] = 0.0f;
 
             std::string str = (mixerPageSelected == INPUTS ? "in" : "out") + std::to_string(barSelector % 4 + 1) + ":" + std::to_string(audioGains[mixerPageSelected][barSelector % 4]).substr(0, std::to_string(audioGains[mixerPageSelected][barSelector % 4]).find(".") + 3);
             UpdateStatusBar(&str[0], RIGHT);
