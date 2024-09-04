@@ -663,185 +663,313 @@ void Dubby::UpdateChannelMappingPane()
 
 void Dubby::UpdateLFOWindow()
 {
-      // Define dimensions for each cell in the grid
-    const int cellWidth = 23; // Width of each cell in the grid
-    const int cellHeight = 8; // Height of each cell in the grid
+    UpdateStatusBar("LFO 1           LFO 2 ", LEFT);
 
-    // Calculate the overall width and height of the grid
-    const int gridWidth = numCols * cellWidth;   // Total width of the grid
-    const int gridHeight = numRows * cellHeight; // Total height of the grid
+    int16_t displayWidth = display.Width();
+    int16_t displayHeight = display.Height();
+    int16_t yStart = displayHeight / 5 - 2;
+    int16_t halfWidth = displayWidth / 2;
+    int16_t rectHeight = 8;
+    static int currentParamIndexLFO1 = 0, currentParamIndexLFO2 = 0;
+    static bool isSelected[] = {true, false, false, false, false, false, false, false}; // 0: LFO1, 1: LFO2, 2: WaveShapeLFO1, 3: WaveShapeLFO2
+    static bool selectIndexMode = false;
+    float maxRateLFO = 300.f;
+    display.Fill(false);
+    display.DrawLine(halfWidth, PANE_Y_START, halfWidth, PANE_Y_END, true);
 
-    // Calculate the starting coordinates to center the grid in a 128x64 display
-    const int startX = ((128 - gridWidth) / 2) + 4; // X-coordinate of the top-left corner of the grid
-    const int startY = ((64 - gridHeight) / 2) + 2; // Y-coordinate of the top-left corner of the grid
+    // Draw the vertical line in the center of the display
+    display.DrawLine(halfWidth, PANE_Y_START, halfWidth, PANE_Y_END, true);
 
-    // Define labels for rows and columns
-    const char *rowLabels[numRows] = {"IN1", "IN2", "IN3", "IN4"};     // Row labels displayed above each row
-    const char *colLabels[numCols] = {"OUT1", "OUT2", "OUT3", "OUT4"}; // Column labels displayed to the left of each column
+    // Define the bounding box dimensions for LFO1 and LFO2
+    int16_t lfo1BoundingBoxStartX = 0;
+    int16_t lfo1BoundingBoxEndX = halfWidth / 2;
 
-    // Get the current increment value from the encoder
-    int increment = encoder.Increment(); // Encoder increment value
+    int16_t lfo2BoundingBoxStartX = halfWidth;
+    int16_t lfo2BoundingBoxEndX = halfWidth + halfWidth / 2;
 
-    // Static variables to keep track of the current position and mode
-    static int currentCornerIndex = 0;   // Current corner cell index (0 to 3)
-    static bool selectIndexMode = true; // Flag to toggle between index mode and grid mode
+    // Draw bounding box for LFO1
+    display.DrawRect(lfo1BoundingBoxStartX, yStart, lfo1BoundingBoxEndX, yStart + rectHeight, true, false);
 
-    // Toggle mode when the encoder is pressed
-    if (EncoderFallingEdgeCustom() && !windowSelectorActive)
+    // Draw rectangles for lfo1Value (left half)
+    if (lfo1Value != 0)
     {
-        selectIndexMode = !selectIndexMode; // Toggle between selectIndexMode and grid navigation mode
+        int16_t x1_lfo1 = (lfo1Value < 0) ? halfWidth / 4 + (lfo1Value * (halfWidth / 2)) + 1 : halfWidth / 4 + 1;
+        int16_t x2_lfo1 = (lfo1Value > 0) ? halfWidth / 4 + (lfo1Value * (halfWidth / 2)) : halfWidth / 4; // Subtract 2 pixels for width and move right by 2 pixels
+        display.DrawRect(x1_lfo1, yStart, x2_lfo1, yStart + rectHeight, true, true);
     }
 
-    if (selectIndexMode)
-    {
-        // Display status bar message for select index mode
-        UpdateStatusBar("SELECT AUDIO JUNCTION   ", LEFT);
+    // Draw bounding box for LFO2
+    display.DrawRect(lfo2BoundingBoxStartX, yStart, lfo2BoundingBoxEndX, yStart + rectHeight, true, false);
 
-        // Update corner index based on the encoder increment
-        if (increment != 0 && !windowSelectorActive)
+    // Draw rectangles for lfo2Value (right half)
+    if (lfo2Value != 0)
+    {
+        int16_t x1_lfo2 = (lfo2Value < 0) ? halfWidth + halfWidth / 4 + (lfo2Value * (halfWidth / 2)) + 1 : halfWidth + halfWidth / 4 + 1;
+        int16_t x2_lfo2 = (lfo2Value > 0) ? halfWidth + halfWidth / 4 + (lfo2Value * (halfWidth / 2)) : halfWidth + halfWidth / 4; // Subtract 2 pixels for width and move right by 2 pixels
+        display.DrawRect(x1_lfo2, yStart, x2_lfo2, yStart + rectHeight, true, true);
+    }
+
+    int increment = encoder.Increment();
+
+    if (EncoderFallingEdgeCustom())
+        selectIndexMode = !selectIndexMode;
+
+    // Determine which parameter box is selected
+    int selectedIndex = -1;
+    for (int i = 0; i < 8; ++i)
+    {
+        if (isSelected[i])
         {
-            // Adjust the increment direction for smooth navigation
-            if (increment > 0)
+            selectedIndex = i;
+            break;
+        }
+    }
+
+    // Update the parameter index based on selection mode
+    if (increment != 0)
+    {
+        if (selectIndexMode && selectedIndex != -1)
+        {
+            int paramCount = PARAMS_LAST; // Assuming PARAMS_LAST is the total number of parameters
+            int waveformCount = daisysp::Oscillator::WAVE_LAST - 3;
+            switch (selectedIndex)
             {
-                currentCornerIndex++;
-                if (currentCornerIndex >= 4)
+            case 0: // WaveShapeLFO1
+                currentParamIndexLFO1WaveShape = (currentParamIndexLFO1WaveShape + increment + waveformCount) % waveformCount;
+
+                break;
+
+            case 1:
+                // Update knobValues[1] with encoder increment
+                knobValues[0] += encoder.Increment() * 1.;
+
+                // Clamp knobValues[1] between 0 and 20
+                if (knobValues[0] < 0.0f)
                 {
-                    currentCornerIndex = 0;
+                    knobValues[0] = 0.0f;
                 }
+                else if (knobValues[0] > maxRateLFO)
+                {
+                    knobValues[0] = maxRateLFO;
+                }
+                break;
+            case 2:
+                // Update knobValues[1] with encoder increment
+                knobValues[1] += encoder.Increment() * 0.05f;
+
+                // Clamp knobValues[1] between 0 and 20
+                if (knobValues[1] < 0.0f)
+                {
+                    knobValues[1] = 0.0f;
+                }
+                else if (knobValues[1] > 1.0f)
+                {
+                    knobValues[1] = 1.0f;
+                }
+                break;
+            case 3: // PARAM LFO1
+                currentParamIndexLFO1 = (currentParamIndexLFO1 + increment + paramCount) % paramCount;
+
+                break;
+            case 4: // WaveShapeLFO2
+                currentParamIndexLFO2WaveShape = (currentParamIndexLFO2WaveShape + increment + waveformCount) % waveformCount;
+
+                break;
+            case 5:
+                // Update knobValues[1] with encoder increment
+                knobValues[2] += encoder.Increment() * 1.f;
+
+                // Clamp knobValues[1] between 0 and 20
+                if (knobValues[2] < 0.0f)
+                {
+                    knobValues[2] = 0.0f;
+                }
+                else if (knobValues[2] > maxRateLFO)
+                {
+                    knobValues[2] = maxRateLFO;
+                }
+                break;
+            case 6:
+                knobValues[3] += encoder.Increment() * 0.05f;
+
+                // Clamp knobValues[1] between 0 and 20
+                if (knobValues[3] < 0.0f)
+                {
+                    knobValues[3] = 0.0f;
+                }
+                else if (knobValues[3] > 1.0f)
+                {
+                    knobValues[3] = 1.0f;
+                }
+                break;
+            case 7: // WaveShapeLFO2
+                currentParamIndexLFO2 = (currentParamIndexLFO2 + increment + paramCount) % paramCount;
+                break;
+            }
+        }
+        else
+        {
+            // Switch selection mode
+            if (selectIndexMode)
+            {
+                // Switch selection based on increment
+                int newIndex = (selectedIndex + increment + 8) % 8;
+                // Deselect all other boxes
+                for (int i = 0; i < 8; ++i)
+                {
+                    isSelected[i] = false;
+                }
+                // Select the new index
+                isSelected[newIndex] = true;
             }
             else
             {
-                currentCornerIndex--;
-                if (currentCornerIndex < 0)
+                // Toggle selection between parameters
+                int nextIndex = (selectedIndex + increment + 8) % 8;
+                // Ensure the nextIndex stays within bounds
+                nextIndex = (nextIndex < 0) ? (nextIndex + 8) % 8 : nextIndex;
+                // Deselect all other boxes
+                for (int i = 0; i < 8; ++i)
                 {
-                    currentCornerIndex = 3;
+                    isSelected[i] = false;
                 }
+                // Select the next box
+                isSelected[nextIndex] = true;
             }
         }
     }
-    else
+
+    // Define box dimensions for LFO and WaveShape parameters
+    int paramBoxLFOWidth = 34;
+    int paramBoxLFOHeight = 8;
+    int paramBoxWaveShapeWidth = 26;
+    int paramBoxWaveShapeHeight = 8;
+
+    // Define positions for parameter boxes
+    int paramBoxLFO1X = 2;
+    int paramBoxLFO1Y = 50;
+    int paramBoxLFO2X = displayWidth / 2 + 2;
+    int paramBoxLFO2Y = 50;
+
+    int paramBoxWaveShapeLFO1X = halfWidth / 2 + 3;
+    int paramBoxWaveShapeLFO1Y = 10;
+    int paramBoxWaveShapeLFO2X = displayWidth - halfWidth / 2 + 3;
+    int paramBoxWaveShapeLFO2Y = 10;
+
+    const char *paramLFO1 = ParamsStrings[currentParamIndexLFO1];
+    const char *paramLFO2 = ParamsStrings[currentParamIndexLFO2];
+    const char *paramWaveShapeLFO1 = LFOWaveFormsStrings[currentParamIndexLFO1WaveShape];
+    const char *paramWaveShapeLFO2 = LFOWaveFormsStrings[currentParamIndexLFO2WaveShape];
+
+    // Draw parameter boxes and strings
+    auto drawParamBox = [&](const char *param, int16_t x, int16_t y, int width, int height, bool selected, bool selectIndexMode)
     {
-        // Display status bar message for grid navigation mode
-        UpdateStatusBar("* ASSIGN AUDIO ROUTING *", LEFT);
-
-        // Update the channel mapping value at the selected corner
-        if (increment != 0 && !windowSelectorActive)
-        {
-            // Determine the valid range for channel mappings
-
-            // Determine the direction of navigation (forward or backward)
-            int direction = (increment > 0) ? 1 : -1;
-
-            // Get the current corner cell coordinates
-            int cornerRow = (currentCornerIndex == 0 || currentCornerIndex == 1) ? 0 : numRows - 1;
-            int cornerCol = (currentCornerIndex == 0 || currentCornerIndex == 2) ? 0 : numCols - 1;
-
-            // Initialize the current mapping to the existing value
-            int currentMapping = channelMapping[cornerRow][cornerCol];
-
-            // Calculate the next potential mapping in the desired direction
-            int nextMapping = (currentMapping + direction + CHANNELMAPPINGS_LAST) % CHANNELMAPPINGS_LAST;
-
-            // Loop until a valid mapping is found or we return to the original position
-            while (nextMapping != currentMapping)
-            {
-                currentMapping = nextMapping;
-                nextMapping = (currentMapping + direction + CHANNELMAPPINGS_LAST) % CHANNELMAPPINGS_LAST;
-
-                // Check if the current mapping is valid (exists and has corresponding bool)
-                if ((currentMapping == NONE && dubbyChannelMapping->hasNone) ||
-                    (currentMapping == PASS && dubbyChannelMapping->hasPass) ||
-                    (currentMapping == EFCT && dubbyChannelMapping->hasEfct) ||
-                    (currentMapping == SNTH && dubbyChannelMapping->hasSynth))
-                {
-                    break; // Valid mapping found, exit loop
-                }
-            }
-
-            // Update the channel mapping with the validated value
-            channelMapping[cornerRow][cornerCol] = currentMapping;
-        }
-    }
-
-    // Define the four corners
-    const int corners[4][2] = {
-        {0, 0},              // Top-left
-        {0, numCols - 1},    // Top-right
-        {numRows - 1, 0},    // Bottom-left
-        {numRows - 1, numCols - 1} // Bottom-right
+        bool fill = selected && selectIndexMode;
+        display.DrawRect(x, y, x + width, y + height, selected, fill);
+        display.SetCursor(x + 1, y + 2);
+        display.WriteString(param, Font_4x5, !fill);
     };
 
-    // Display row labels above the grid
-    for (int row = 0; row < numRows; row++)
+    // Draw boxes for LFO1, LFO2, WaveShapeLFO1, and WaveShapeLFO2
+    drawParamBox(paramWaveShapeLFO1, paramBoxWaveShapeLFO1X, paramBoxWaveShapeLFO1Y, paramBoxWaveShapeWidth, paramBoxWaveShapeHeight, isSelected[0], selectIndexMode);
+
+    drawParamBox(paramLFO1, paramBoxLFO1X, paramBoxLFO1Y, paramBoxLFOWidth, paramBoxLFOHeight, isSelected[3], selectIndexMode);
+    drawParamBox(paramWaveShapeLFO2, paramBoxWaveShapeLFO2X, paramBoxWaveShapeLFO2Y, paramBoxWaveShapeWidth, paramBoxWaveShapeHeight, isSelected[4], selectIndexMode);
+
+    drawParamBox(paramLFO2, paramBoxLFO2X, paramBoxLFO2Y, paramBoxLFOWidth, paramBoxLFOHeight, isSelected[7], selectIndexMode);
+
+    // visualizeKnobValuesCircle(customLabels, numDecimals);
+
+    // Define parameters for circular knobs and bounding circles
+    int circle_y = 34;              // Y-coordinate of the center of the circle
+    int circle_radius = 6;          // Radius of the circle
+    int bounding_circle_radius = 7; // Radius of the bounding circle, slightly larger than the knob circle
+    int selectedIndices[NUM_KNOBS] = {1, 2, 5, 6};
+    // Calculate total width occupied by circles
+    int totalWidth = NUM_KNOBS * 2 * bounding_circle_radius;
+
+    // Calculate space between circles
+    int circleSpacing = (OLED_WIDTH - totalWidth) / (NUM_KNOBS + 1);
+
+    // Define offsets for knobs
+    const int offsetKnob1And2 = -6;
+    const int offsetKnob3And4 = 6;
+
+    // Loop through each knob value
+    for (int i = 0; i < NUM_KNOBS; ++i)
     {
-        int labelX = startX + 5 + (cellWidth * row); // X-coordinate for the row label
-        int labelY = startY - 6;                     // Y-coordinate for the row label
-        display.SetCursor(labelX, labelY);
-        display.WriteString(rowLabels[row], Font_4x5, true); // Display row label
+        bool selected = isSelected[selectedIndices[i]];
 
-        // Draw horizontal line under the row labels
-        int lineStartX = startX + 2;
-        int lineEndX = lineStartX + (cellWidth * 4) - 5;
-        int lineY = startY;
-        display.DrawLine(lineStartX, lineY, lineEndX, lineY, true); // Draw a horizontal line
+        // Calculate knob x-coordinate with the applied offsets
+        int circle_x_offset = circleSpacing * (i + 1) + bounding_circle_radius + i * 2 * bounding_circle_radius;
+
+        // Apply offsets based on knob ƒindex
+        if (i == 0 || i == 1)
+        { // Knobs 1 and 2
+            circle_x_offset += offsetKnob1And2;
+        }
+        else if (i == 2 || i == 3)
+        { // Knobs 3 and 4
+            circle_x_offset += offsetKnob3And4;
+        }
+
+        // Draw circular knob
+        display.DrawCircle(circle_x_offset, circle_y, bounding_circle_radius, selected); // Draw filled knob circle
+
+        display.DrawCircle(circle_x_offset, circle_y, circle_radius, true); // Draw filled knob circle
+
+        // Normalize the knob value for the first and third knobs
+        float normalizedValue = knobValues[i];
+        if (i == 0 || i == 2) // Knobs 1 and 3
+        {
+            normalizedValue = knobValues[i] / maxRateLFO; // Normalize to 0-1 range
+        }
+
+        // Calculate angle for the current knob
+        float angle = (normalizedValue * 0.8f * 2 * PI_F) - (PI_F * 1.5f) + 0.2 * PI_F; // Convert normalized value to angle
+        // Calculate line end position based on knob value
+        int line_end_x = circle_x_offset + static_cast<int>(circle_radius * cos(angle));
+        int line_end_y = circle_y + static_cast<int>(circle_radius * sin(angle));
+
+        // Draw line indicating knob value
+        display.DrawLine(circle_x_offset, circle_y, line_end_x, line_end_y, true);
+
+        // Calculate the position for the label to be centered above the circle
+        int label_x = circle_x_offset - (customLabels[i].size() * 4) / 2; // Assuming each character is 4 pixels wide in the selected font
+        int label_y = circle_y - 13;                                      // Adjust this value to position the label properly above the circle
+
+        // Draw custom label above each circle
+        display.SetCursor(label_x, label_y);
+        display.WriteString(customLabels[i].c_str(), Font_4x5, true);
+
+        // Format knob value as string
+        char formattedValue[10];
+        snprintf(formattedValue, 10, "%.*f", numDecimals[i], knobValues[i]);
+
+        // Calculate the position for the value to be centered under the circle
+        int value_width = strlen(formattedValue) * 4; // Assuming each character is 4 pixels wide in the selected font
+        int value_x = circle_x_offset - value_width / 2;
+
+        // Draw knob value below the label
+        display.SetCursor(value_x, circle_y + 9);
+        display.WriteString(formattedValue, Font_4x5, true);
     }
-
-    // Display column labels to the left of the grid
-    for (int col = 0; col < numCols; col++)
-    {
-        int labelX = startX - 16;                     // X-coordinate for the column label
-        int labelY = startY + (cellHeight * col) + 3; // Y-coordinate for the column label
-        display.SetCursor(labelX, labelY);
-        display.WriteString(colLabels[col], Font_4x5, true); // Display column label
-
-        // Draw vertical line next to the column labels
-        int lineX = startX + 2;
-        int lineStartY = startY;
-        int lineEndY = lineStartY + (cellHeight * 4) - 1;
-        display.DrawLine(lineX, lineStartY, lineX, lineEndY, true); // Draw a vertical line
-    }
-
-    // Display the selected corner cell
-    int row = corners[currentCornerIndex][0];
-    int col = corners[currentCornerIndex][1];
-    int x = startX + col * cellWidth;  // X-coordinate for the cell
-    int y = startY + row * cellHeight; // Y-coordinate for the cell
-
-    // Determine whether to fill the cell or just draw the border
-    bool fillCell = (selectIndexMode && row == (corners[currentCornerIndex][0]) && col == (corners[currentCornerIndex][1]));
-
-    // Draw the cell with or without filling
-    display.DrawRect(x + 4, y + 2, x + cellWidth - 1, y + cellHeight, fillCell, fillCell);
-
-    // Look up the string based on the channelMapping value
-    int mappingValue = channelMapping[row][col];
-    const char *mappingString = dubbyChannelMapping->ChannelMappingsStrings[mappingValue];
-    bool negativeFill = (selectIndexMode && row == (corners[currentCornerIndex][0]) && col == (corners[currentCornerIndex][1]));
-
-    display.SetCursor(x + 5, y + 3);                             // Adjust text positioning for centering
-    display.WriteString(mappingString, Font_4x5, !negativeFill); // Display mapping text
-
-    // Draw a vertical line 6 pixels to the left of the right border of the rectangle
-    int lineX = x + cellWidth - 2;
-    display.DrawLine(lineX, y + 3, lineX, y + cellHeight - 1, negativeFill); // Draw line
-
-    // Update the display after drawing all elements
+    // Update the display to show the changes
     display.Update();
-
 }
+
 void Dubby::UpdateLFO()
 {
-    lfo1.SetWaveform(daisysp::Oscillator::WAVE_SIN);
-    lfo1.SetFreq(70);
-
-    lfo2.SetWaveform(daisysp::Oscillator::WAVE_SIN);
-    lfo2.SetFreq(35);
+    lfo1.SetWaveform(currentParamIndexLFO1WaveShape);
+    lfo1.SetFreq(knobValues[0]);
+    lfo2.SetWaveform(currentParamIndexLFO2WaveShape);
+    lfo2.SetFreq(knobValues[2]);
 }
 
 void Dubby::ProcessLFO()
 {
-    lfo1Value = lfo1.Process();
-    lfo2Value = lfo2.Process();
+    lfo1Value = lfo1.Process() * knobValues[1];
+    lfo2Value = lfo2.Process() * knobValues[3];
 }
 
 void Dubby::UpdateBar(int i)

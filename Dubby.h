@@ -83,7 +83,7 @@ namespace daisy
             WIN3,
             WIN4,
             WIN5,
-            WIN6, 
+            WIN6,
             WIN7,
             WIN8,
             WIN_LAST // used to know the size of enum
@@ -96,7 +96,7 @@ namespace daisy
                 "PREFS",
                 "PARAMETERS",
                 "MIDI CONF",
-                "ROUTING", 
+                "ROUTING",
                 "LFO",
                 "WIN8",
         };
@@ -286,6 +286,16 @@ namespace daisy
             "SIGMOID",
         };
 
+        const char *LFOWaveFormsStrings[daisysp::Oscillator::WAVE_LAST-3] =
+            {
+                "SIN",
+                "TRI",
+                "SAW",
+                "RAMP",
+                "SQUARE"
+        };
+     int currentParamIndexLFO1WaveShape, currentParamIndexLFO2WaveShape;
+
         const int numRows = 4;
         const int numCols = 4;
 
@@ -329,6 +339,8 @@ namespace daisy
         void UpdateBar(int i);
 
         void UpdateLFO();
+        void DrawLFOValues(int16_t lfoValue, int16_t xStart, int16_t xEnd, int16_t yStart, int16_t rectHeight);
+        void DrawParamBox(const char *param, int16_t x, int16_t y, int16_t width, int16_t height, bool selected, bool invert);
 
         void ProcessLFO();
 
@@ -468,9 +480,9 @@ namespace daisy
         int globalBPM = 120;
         int receivedBPM;
         // uint32_t bpm = 120;
-        std::vector<std::string> customLabels = {"PRM1", "PRM2", "PRM3", "PRM4"};
-        std::vector<float> knobValuesForPrint;
-        std::vector<int> numDecimals = {1, 1, 1, 1}; // Assuming you have three knobs with different decimal places
+        std::vector<std::string> customLabels = {"RATE", "AMT", "RATE", "AMT"};
+        std::vector<float> knobValues = {100.f, 0.f, 25.f, 0.f};
+        std::vector<int> numDecimals = {0, 1, 0, 1}; // Assuming you have three knobs with different decimal places
 
         std::vector<float> savedKnobValuesForVisuals;
         std::string algorithmTitle = "";
