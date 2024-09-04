@@ -38,7 +38,6 @@ void HandleMidiUsbMessage(MidiEvent m);
 
 // Persistent Storage Declaration. Using type Settings and passed the devices qspi handle
 PersistentStorage<PersistantMemoryParameterSettings> SavedParameterSettings(dubby.seed.qspi);
-
 void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, size_t size)
 {
     double sumSquared[2][NUM_AUDIO_CHANNELS] = {0.0f};
@@ -48,8 +47,8 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
     {
         float processedSample[2];
 
-        dry[0] = in[2][i];
-        dry[1] = in[3][i];
+        dry[0] = in[0][i];
+        dry[1] = in[2][i];
 
         for (int j = 0; j < 2; j++)
         {
@@ -88,17 +87,28 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
 
             distortedDelay[j] = driveDelay[j].Process(delayWetOutput) * driveGainCompensation;
             reverbDelayDryWetMix[j] = distortedDelay[j] * delayWetAmplitude + dry[j] * delayDryAmplitude;
-            out[j + 2][i] = SoftLimit(reverbDelayDryWetMix[j]) * dubby.dubbyParameters[OUT_GAIN].value;
+
+            // Update output channels 1 and 3
+            if (j == 0)
+            {
+                out[0][i] = SoftLimit(reverbDelayDryWetMix[j]) * dubby.dubbyParameters[OUT_GAIN].value;
+            }
+            else
+            {
+                out[2][i] = SoftLimit(reverbDelayDryWetMix[j]) * dubby.dubbyParameters[OUT_GAIN].value;
+            }
         }
 
-        // Output the final processed signal with gain and soft limiting
-        out[0][i] = out[1][i] = 0;
+        // Clear channels 2 and 4 (since we're not using them)
+        out[1][i] = 0;
+        out[3][i] = 0;
 
         AssignScopeData(dubby, i, in, out);
     }
 
     SetRMSValues(dubby, sumSquared);
 }
+
 
 int main(void)
 {
