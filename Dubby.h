@@ -285,6 +285,12 @@ namespace daisy
             "SIGMOID",
         };
 
+        enum ModalOptions 
+        {
+            YES,
+            NO
+        };
+
         const int numRows = 4;
         const int numCols = 4;
 
@@ -388,9 +394,16 @@ namespace daisy
         float GetParameterValue(Parameters p);
 
         bool EncoderFallingEdgeCustom();
+        
         bool EncoderRisingEdgeCustom();
 
         void UpdateChannelMappingPane();
+
+        void OpenModal(const char *text);
+
+        void ChangeModalOption();
+
+        void CloseModal();
 
         DaisySeed seed;
 
@@ -476,6 +489,9 @@ namespace daisy
         MidiSettingsMenu dubbyMidiSettings;
         bool trigger_save_parameters_qspi = false;
         bool trigger_reset_parameters_qspi = false;
+
+        bool isModalActive = false;
+        ModalOptions modalOptionSelected = YES;
 
     private:
         void InitAudio();

@@ -59,6 +59,18 @@ using namespace daisy;
 #define MIDILIST_SPACING 8
 #define MIDILIST_ROWS_ON_SCREEN 5
 
+#define MODAL_X_START 10
+#define MODAL_X_END 117
+#define MODAL_Y_START 5
+#define MODAL_Y_END 54
+
+#define MODAL_LEFT_OPTION_X_START 25
+#define MODAL_LEFT_OPTION_Y_START 35
+#define MODAL_RIGHT_OPTION_X_START 70
+#define MODAL_RIGHT_OPTION_Y_START 35
+#define MODAL_OPTION_WIDTH 33
+#define MODAL_OPTION_HEIGHT 12
+
 #define ENCODER_LONGPRESS_THRESHOLD 300
 
 int currentBitmapIndex = 2; // Initial bitmap index
@@ -229,67 +241,101 @@ float Dubby::GetAudioOutGain(AudioOuts out)
 void Dubby::UpdateDisplay()
 {
 
-    if (encoder.TimeHeldMs() > ENCODER_LONGPRESS_THRESHOLD && !windowSelectorActive)
+    if (!isModalActive)
     {
-        windowSelectorActive = true;
-    }
-
-    if (windowSelectorActive)
-    {
-        HighlightWindowItem();
-        if (encoder.Increment())
-            UpdateWindowSelector(encoder.Increment(), true);
-
-        if (encoder.RisingEdge())
+        if (encoder.TimeHeldMs() > ENCODER_LONGPRESS_THRESHOLD && !windowSelectorActive)
         {
-            windowSelectorActive = false;
-            ReleaseWindowSelector();
-            UpdateWindowList();
+            windowSelectorActive = true;
         }
 
-        if (!wasEncoderJustInHighlightMenu && EncoderFallingEdgeCustom())
-            wasEncoderJustInHighlightMenu = true;
-    }
-
-    if (wasEncoderJustInHighlightMenu && EncoderFallingEdgeCustom())
-    {
-        if (highlightMenuCounter < 2)
+        if (windowSelectorActive)
         {
-            highlightMenuCounter++;
+            HighlightWindowItem();
+            if (encoder.Increment())
+                UpdateWindowSelector(encoder.Increment(), true);
+
+            if (encoder.RisingEdge())
+            {
+                windowSelectorActive = false;
+                ReleaseWindowSelector();
+                UpdateWindowList();
+            }
+
+            if (!wasEncoderJustInHighlightMenu && EncoderFallingEdgeCustom())
+                wasEncoderJustInHighlightMenu = true;
         }
-        else
+
+        if (wasEncoderJustInHighlightMenu && EncoderFallingEdgeCustom())
         {
-            wasEncoderJustInHighlightMenu = false;
-            highlightMenuCounter = 0;
+            if (highlightMenuCounter < 2)
+            {
+                highlightMenuCounter++;
+            }
+            else
+            {
+                wasEncoderJustInHighlightMenu = false;
+                highlightMenuCounter = 0;
+            }
+        }
+
+        switch (windowItemSelected)
+        {
+        case WIN1:
+            UpdateRenderPane();
+            break;
+        case WIN2:
+            UpdateMixerPane();
+            break;
+        case WIN3:
+            UpdateGlobalSettingsPane();
+            break;
+        case WIN4:
+            UpdateParameterPane();
+            break;
+        case WIN5:
+            UpdateMidiSettingsPane();
+            break;
+        case WIN6:
+            UpdateChannelMappingPane();
+            break;
+        case WIN7:
+            break;
+        default:
+            break;
+        }
+    }
+    else 
+    {   
+        if((encoder.Increment() == 1 && modalOptionSelected == 0) || (encoder.Increment() == -1 && modalOptionSelected == 1))
+        {
+            ChangeModalOption();
+        }
+        else if(EncoderRisingEdgeCustom())
+        {
+            if (modalOptionSelected == YES)
+            {
+                switch (preferencesMenuItemSelected)
+                {
+                case DFUMODE:
+                    ResetToBootloader();
+                    break;
+                case SAVEMEMORY:
+                    trigger_save_parameters_qspi = true;
+                    break;
+                case RESETMEMORY:
+                    trigger_reset_parameters_qspi = true;
+                    break;
+                default:
+                    break;
+                }
+            }
+                
+            CloseModal();
+            
         }
     }
 
-    switch (windowItemSelected)
-    {
-    case WIN1:
-        UpdateRenderPane();
-        break;
-    case WIN2:
-        UpdateMixerPane();
-        break;
-    case WIN3:
-        UpdateGlobalSettingsPane();
-        break;
-    case WIN4:
-        UpdateParameterPane();
-        break;
-    case WIN5:
-        UpdateMidiSettingsPane();
-        break;
-    case WIN6:
-        UpdateChannelMappingPane();
-        break;
-    case WIN7:
-
-        break;
-    default:
-        break;
-    }
+    
 }
 
 void Dubby::DrawLogo()
@@ -458,7 +504,7 @@ void Dubby::UpdateWindowList()
             UpdateBar(i);
         break;
     case WIN3:
-        DisplayPreferencesMenuList(0);
+        DisplayPreferencesMenuList(preferencesMenuItemSelected);
         break;
     case WIN4:
         UpdateStatusBar(" PARAM       CTRL      VALUE  >", LEFT);
@@ -722,14 +768,24 @@ void Dubby::UpdateGlobalSettingsPane()
 
     DisplayPreferencesSubMenuList(encoder.Increment(), preferencesMenuItemSelected);
 
-    if (EncoderFallingEdgeCustom())
+    if (EncoderRisingEdgeCustom() && !windowSelectorActive) 
     {
-        if (preferencesMenuItemSelected == SAVEMEMORY)
-            trigger_save_parameters_qspi = true;
-        if (preferencesMenuItemSelected == RESETMEMORY)
-            trigger_reset_parameters_qspi = true;
-        else if (preferencesMenuItemSelected == DFUMODE)
-            ResetToBootloader();
+        switch (preferencesMenuItemSelected)
+        {
+        case MIDI:
+            break;
+        case SAVEMEMORY:
+            OpenModal("ARE YOU SURE?");
+            break;
+        case RESETMEMORY:
+            OpenModal("ARE YOU SURE?");
+            break;
+        case DFUMODE:
+            OpenModal("ARE YOU SURE?");
+            break;
+        default:
+            break;
+        }
     }
 
     if (encoder.Increment() && !windowSelectorActive && !isSubMenuActive)
@@ -1538,21 +1594,8 @@ bool Dubby::EncoderFallingEdgeCustom()
         {
             encoderState = reading;
 
-            if (reading)
-            {
-                std::string str = std::to_string(reading);
-                // UpdateStatusBar(&str[0], LEFT, 55);
-            }
-
-            if (encoderState)
-            {
-                std::string str = std::to_string(encoderState);
-                //   UpdateStatusBar(&str[0], RIGHT, 55);
-            }
-
             if (encoderState == true)
             { // Encoder button pressed
-
                 return true;
             }
         }
@@ -1561,6 +1604,73 @@ bool Dubby::EncoderFallingEdgeCustom()
     encoderLastState = reading;
 
     return false;
+}
+
+bool Dubby::EncoderRisingEdgeCustom()
+{
+    bool reading = encoder.Pressed(); // Read the encoder button state, assuming true is pressed
+
+    if (reading != encoderLastState)
+    {
+        encoderLastDebounceTime = seed.system.GetNow();
+    }
+
+    if ((seed.system.GetNow() - encoderLastDebounceTime) > encoderDebounceDelay)
+    {
+
+        if (reading != encoderState)
+        {
+            encoderState = reading;
+
+            if (encoderState == false)
+            { // Encoder button released
+                return true;
+            }
+        }
+    }
+
+    encoderLastState = reading;
+
+    return false;
+}
+
+
+void Dubby::OpenModal(const char *text)
+{
+    isModalActive = true;
+
+    display.DrawRect(MODAL_X_START - 2, MODAL_Y_START - 2, MODAL_X_END + 2, MODAL_Y_END + 2, false, true);
+    display.DrawRect(MODAL_X_START, MODAL_Y_START, MODAL_X_END, MODAL_Y_END, true);
+
+    display.WriteStringAligned(text, Font_6x8, Rectangle(MODAL_X_START + 5, MODAL_Y_START + 5, 100, 12), Alignment::centered, true);
+    
+    ChangeModalOption();
+}
+
+void Dubby::ChangeModalOption()
+{
+    modalOptionSelected = (ModalOptions)!modalOptionSelected;
+
+    display.DrawRect(MODAL_X_START + 2, MODAL_LEFT_OPTION_Y_START - 2, MODAL_X_END - 2, MODAL_LEFT_OPTION_Y_START + MODAL_OPTION_HEIGHT + 2, false, true);
+
+    display.DrawRect(MODAL_LEFT_OPTION_X_START, MODAL_LEFT_OPTION_Y_START, MODAL_LEFT_OPTION_X_START + MODAL_OPTION_WIDTH, MODAL_LEFT_OPTION_Y_START + MODAL_OPTION_HEIGHT, true, !modalOptionSelected);
+    display.WriteStringAligned("YES", Font_6x8, Rectangle(MODAL_LEFT_OPTION_X_START + 1, MODAL_LEFT_OPTION_Y_START + 1, MODAL_OPTION_WIDTH, MODAL_OPTION_HEIGHT), Alignment::centered, modalOptionSelected);
+
+    display.DrawRect(MODAL_RIGHT_OPTION_X_START, MODAL_RIGHT_OPTION_Y_START, MODAL_RIGHT_OPTION_X_START + MODAL_OPTION_WIDTH, MODAL_RIGHT_OPTION_Y_START + MODAL_OPTION_HEIGHT, true, modalOptionSelected);
+    display.WriteStringAligned("NO", Font_6x8, Rectangle(MODAL_RIGHT_OPTION_X_START + 1, MODAL_RIGHT_OPTION_Y_START + 1, MODAL_OPTION_WIDTH, MODAL_OPTION_HEIGHT), Alignment::centered, !modalOptionSelected);
+    
+    display.Update();
+}
+
+void Dubby::CloseModal() 
+{
+    isModalActive = false;
+    modalOptionSelected = YES;
+
+    display.DrawRect(0, 0, OLED_WIDTH, OLED_WIDTH, false, true);
+    
+    ReleaseWindowSelector();
+    UpdateWindowList();
 }
 
 void Dubby::InitAudio()
