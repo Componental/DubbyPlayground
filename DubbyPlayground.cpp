@@ -1,4 +1,3 @@
-#include "daisysp.h"
 #include "Dubby.h"
 #include "implementations/includes.h"
 
@@ -22,6 +21,8 @@ PersistentStorage<PersistantMemoryParameterSettings> SavedParameterSettings(dubb
 
 void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, size_t size)
 {
+    dubby.ProcessLFO();
+    
     for (size_t i = 0; i < size; i++)
     {
         for (int j = 0; j < NUM_AUDIO_CHANNELS; j++)
@@ -36,6 +37,7 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
                         break;
                     case EFCT: 
                         out[j][i] += 0;//flt[inChannel].Process(in[inChannel][i]); 
+
                         break;
                     case SNTH: 
                         out[j][i] += /* Synth processing here, if applicable */ 0.0f; 

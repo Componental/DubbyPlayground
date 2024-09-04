@@ -12,10 +12,11 @@ using namespace daisysp;
 namespace daisy
 {
 
-void Monitor(Dubby& dubby) 
-{
-    dubby.ProcessAllControls();
-    dubby.UpdateDisplay();
-}
+    void Monitor(Dubby &dubby)
+    {
+        dubby.ProcessAllControls();
+        dubby.UpdateLFO();
+        dubby.UpdateDisplay();
+    }
 
 } // namespace daisy
