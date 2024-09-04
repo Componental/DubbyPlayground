@@ -196,8 +196,6 @@ void Dubby::InitDubbyControls()
     dubbyCtrls[8].Init(BTN4, 0);
     dubbyCtrls[9].Init(JSX, 0);
     dubbyCtrls[10].Init(JSY, 0);
-    // dubbyCtrls[10].addParamValue(RESONANCE);
-
     dubbyCtrls[11].Init(JSSW, 0);
 }
 
@@ -205,7 +203,7 @@ void Dubby::InitDubbyParameters()
 {
     for (int i = 0; i < PARAMS_LAST - 1; i++)
     {
-        dubbyParameters[i].Init(Params(i), CONTROL_NONE, 0.6f, 0, 1, LINEAR, true, 0, true, 1);
+        dubbyParameters[i].Init(Params(i), CONTROL_NONE, 0.6f, 0, 1, LINEAR); //, true, 0, true, 1);
     }
 }
 
@@ -246,6 +244,7 @@ void Dubby::UpdateDisplay()
         if (encoder.TimeHeldMs() > ENCODER_LONGPRESS_THRESHOLD && !windowSelectorActive)
         {
             windowSelectorActive = true;
+            encoder.EnableAcceleration(false);
         }
 
         if (windowSelectorActive)
@@ -304,13 +303,13 @@ void Dubby::UpdateDisplay()
             break;
         }
     }
-    else 
-    {   
-        if((encoder.Increment() == 1 && modalOptionSelected == 0) || (encoder.Increment() == -1 && modalOptionSelected == 1))
+    else
+    {
+        if ((encoder.Increment() == 1 && modalOptionSelected == 0) || (encoder.Increment() == -1 && modalOptionSelected == 1))
         {
             ChangeModalOption();
         }
-        else if(EncoderRisingEdgeCustom())
+        else if (EncoderRisingEdgeCustom())
         {
             if (modalOptionSelected == YES)
             {
@@ -329,13 +328,10 @@ void Dubby::UpdateDisplay()
                     break;
                 }
             }
-                
+
             CloseModal();
-            
         }
     }
-
-    
 }
 
 void Dubby::DrawLogo()
@@ -768,7 +764,7 @@ void Dubby::UpdateGlobalSettingsPane()
 
     DisplayPreferencesSubMenuList(encoder.Increment(), preferencesMenuItemSelected);
 
-    if (EncoderRisingEdgeCustom() && !windowSelectorActive) 
+    if (EncoderRisingEdgeCustom() && !windowSelectorActive)
     {
         switch (preferencesMenuItemSelected)
         {
@@ -828,8 +824,6 @@ void Dubby::UpdateParameterPane()
             isListeningControlChange = false;
             isEncoderIncrementDisabled = false;
             UpdateStatusBar(" PARAM       CTRL      VALUE  >", LEFT);
-
-            // trigger_save_parameters_qspi = true;
         }
         else
         {
@@ -845,7 +839,6 @@ void Dubby::UpdateParameterPane()
 
                     isListeningControlChange = false;
                     isEncoderIncrementDisabled = false;
-                    // trigger_save_parameters_qspi = true;
                 }
             }
         }
@@ -866,15 +859,13 @@ void Dubby::UpdateParameterPane()
             isCurveChanging = false;
             isEncoderIncrementDisabled = false;
             UpdateStatusBar(" PARAM       CTRL   <  CURVE   ", LEFT);
-
-            // trigger_save_parameters_qspi = true;
         }
     }
     else if (isMinChanging)
     {
         if (encoder.Increment())
         {
-            int incrementValue = encoder.Increment();
+            float incrementValue = encoder.Increment() / 100.0f;
             float newValue = dubbyParameters[parameterSelected].min + incrementValue;
 
             // Check min limit
@@ -892,16 +883,15 @@ void Dubby::UpdateParameterPane()
         {
             isMinChanging = false;
             isEncoderIncrementDisabled = false;
+            encoder.EnableAcceleration(false);
             UpdateStatusBar(" PARAM       CTRL   <  MIN    >", LEFT);
-
-            // trigger_save_parameters_qspi = true;
         }
     }
     else if (isMaxChanging)
     {
         if (encoder.Increment())
         {
-            int incrementValue = encoder.Increment();
+            float incrementValue = encoder.Increment() / 100.0f;
             float newValue = dubbyParameters[parameterSelected].max + incrementValue;
 
             // Check min limit
@@ -920,33 +910,39 @@ void Dubby::UpdateParameterPane()
         {
             isMaxChanging = false;
             isEncoderIncrementDisabled = false;
+            encoder.EnableAcceleration(false);
             UpdateStatusBar(" PARAM       CTRL   <  MAX    >", LEFT);
-
-            // trigger_save_parameters_qspi = true;
         }
     }
     else if (isValueChanging)
     {
-        if (encoder.Increment())
+        float incrementValue = encoder.Increment() / 100.0f;
+        if (incrementValue)
         {
-            if (encoder.Increment() == -1)
+            if (incrementValue < 0)
             {
                 if (dubbyParameters[parameterSelected].value > dubbyParameters[parameterSelected].min)
                 {
-                    if ((dubbyParameters[parameterSelected].value + encoder.Increment()) < dubbyParameters[parameterSelected].min)
-                        dubbyParameters[parameterSelected].value = ceil(dubbyParameters[parameterSelected].value + encoder.Increment());
+                    if ((dubbyParameters[parameterSelected].value + incrementValue) < dubbyParameters[parameterSelected].min)
+                        dubbyParameters[parameterSelected].value = ceil(dubbyParameters[parameterSelected].value + incrementValue);
                     else
-                        dubbyParameters[parameterSelected].value += encoder.Increment();
+                        dubbyParameters[parameterSelected].value += incrementValue;
+                        
+                    if (dubbyParameters[parameterSelected].value < dubbyParameters[parameterSelected].min)
+                        dubbyParameters[parameterSelected].value = dubbyParameters[parameterSelected].min;
                 }
             }
-            else if (encoder.Increment() == 1)
+            else if (incrementValue > 0)
             {
                 if (dubbyParameters[parameterSelected].value < dubbyParameters[parameterSelected].max)
                 {
-                    if ((dubbyParameters[parameterSelected].value + encoder.Increment()) > dubbyParameters[parameterSelected].max)
-                        dubbyParameters[parameterSelected].value = floor(dubbyParameters[parameterSelected].value + encoder.Increment());
+                    if ((dubbyParameters[parameterSelected].value + incrementValue) > dubbyParameters[parameterSelected].max)
+                        dubbyParameters[parameterSelected].value = floor(dubbyParameters[parameterSelected].value + incrementValue);
                     else
-                        dubbyParameters[parameterSelected].value += encoder.Increment();
+                        dubbyParameters[parameterSelected].value += incrementValue;
+
+                    if (dubbyParameters[parameterSelected].value > dubbyParameters[parameterSelected].max)
+                        dubbyParameters[parameterSelected].value = dubbyParameters[parameterSelected].max;
                 }
             }
         }
@@ -954,9 +950,8 @@ void Dubby::UpdateParameterPane()
         {
             isValueChanging = false;
             isEncoderIncrementDisabled = false;
+            encoder.EnableAcceleration(false);
             UpdateStatusBar(" PARAM       CTRL      VALUE  >", LEFT);
-
-            // trigger_save_parameters_qspi = true;
         }
     }
 
@@ -1017,6 +1012,7 @@ void Dubby::UpdateParameterPane()
                 UpdateStatusBar("SELECT MIN VALUE", MIDDLE, 127);
                 isEncoderIncrementDisabled = true;
                 isMinChanging = true;
+                encoder.EnableAcceleration(true);
             }
         }
         else if (parameterOptionSelected == MAX)
@@ -1026,6 +1022,7 @@ void Dubby::UpdateParameterPane()
                 UpdateStatusBar("SELECT MAX VALUE", MIDDLE, 127);
                 isEncoderIncrementDisabled = true;
                 isMaxChanging = true;
+                encoder.EnableAcceleration(true);
             }
         }
         else if (parameterOptionSelected == VALUE && dubbyParameters[parameterSelected].control == CONTROL_NONE)
@@ -1035,6 +1032,7 @@ void Dubby::UpdateParameterPane()
                 UpdateStatusBar("SELECT A VALUE", MIDDLE, 127);
                 isEncoderIncrementDisabled = true;
                 isValueChanging = true;
+                encoder.EnableAcceleration(true);
             }
         }
     }
@@ -1042,18 +1040,17 @@ void Dubby::UpdateParameterPane()
 
 void Dubby::UpdateMidiSettingsPane()
 {
-     DisplayMidiSettingsList(encoder.Increment());
+    DisplayMidiSettingsList(encoder.Increment());
 
-        if (encoder.Increment() && !windowSelectorActive && !isMidiSettingSelected)
-            UpdateMidiSettingsList(encoder.Increment());
+    if (encoder.Increment() && !windowSelectorActive && !isMidiSettingSelected)
+        UpdateMidiSettingsList(encoder.Increment());
 
-        if (encoder.FallingEdge() && !wasEncoderJustInHighlightMenu && !windowSelectorActive)
-        {
-            isMidiSettingSelected = !isMidiSettingSelected;
+    if (encoder.FallingEdge() && !wasEncoderJustInHighlightMenu && !windowSelectorActive)
+    {
+        isMidiSettingSelected = !isMidiSettingSelected;
 
-            UpdateMidiSettingsList(encoder.Increment());
-        }
-
+        UpdateMidiSettingsList(encoder.Increment());
+    }
 }
 void Dubby::RenderScope()
 {
@@ -1634,7 +1631,6 @@ bool Dubby::EncoderRisingEdgeCustom()
     return false;
 }
 
-
 void Dubby::OpenModal(const char *text)
 {
     isModalActive = true;
@@ -1643,7 +1639,7 @@ void Dubby::OpenModal(const char *text)
     display.DrawRect(MODAL_X_START, MODAL_Y_START, MODAL_X_END, MODAL_Y_END, true);
 
     display.WriteStringAligned(text, Font_6x8, Rectangle(MODAL_X_START + 5, MODAL_Y_START + 5, 100, 12), Alignment::centered, true);
-    
+
     ChangeModalOption();
 }
 
@@ -1658,17 +1654,17 @@ void Dubby::ChangeModalOption()
 
     display.DrawRect(MODAL_RIGHT_OPTION_X_START, MODAL_RIGHT_OPTION_Y_START, MODAL_RIGHT_OPTION_X_START + MODAL_OPTION_WIDTH, MODAL_RIGHT_OPTION_Y_START + MODAL_OPTION_HEIGHT, true, modalOptionSelected);
     display.WriteStringAligned("NO", Font_6x8, Rectangle(MODAL_RIGHT_OPTION_X_START + 1, MODAL_RIGHT_OPTION_Y_START + 1, MODAL_OPTION_WIDTH, MODAL_OPTION_HEIGHT), Alignment::centered, !modalOptionSelected);
-    
+
     display.Update();
 }
 
-void Dubby::CloseModal() 
+void Dubby::CloseModal()
 {
     isModalActive = false;
     modalOptionSelected = YES;
 
     display.DrawRect(0, 0, OLED_WIDTH, OLED_WIDTH, false, true);
-    
+
     ReleaseWindowSelector();
     UpdateWindowList();
 }
