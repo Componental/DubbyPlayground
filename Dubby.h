@@ -271,11 +271,6 @@ namespace daisy
                 "FREEZE",
                 "MUTE",
                 "LOOP",
-                "RES",
-                "SCRUB",
-                "RATIO",
-                "PREDELAY",
-                "AMOUNT",
                 "2ND_LAST" // because of a bug
         };
 
@@ -286,15 +281,15 @@ namespace daisy
             "SIGMOID",
         };
 
-        const char *LFOWaveFormsStrings[daisysp::Oscillator::WAVE_LAST-3] =
+        const char *LFOWaveFormsStrings[daisysp::Oscillator::WAVE_LAST - 3] =
             {
                 "SIN",
                 "TRI",
                 "SAW",
                 "RAMP",
-                "SQUARE"
-        };
-     int currentParamIndexLFO1WaveShape, currentParamIndexLFO2WaveShape;
+                "SQUARE"};
+        int currentParamIndexLFO1WaveShape, currentParamIndexLFO2WaveShape;
+        int currentParamIndexLFO1 = 0, currentParamIndexLFO2 = 0;
 
         const int numRows = 4;
         const int numCols = 4;
@@ -428,8 +423,9 @@ namespace daisy
         bool isMaxChanging = false;
         bool isValueChanging = false;
 
-        float lfo1Value, lfo2Value;
-
+        float lfo1Values[PARAMS_LAST] = {0}; // Store LFO1 values for each parameter
+        float lfo2Values[PARAMS_LAST] = {0}; // Store LFO2 values for each parameter
+        float lfo1Value = 0, lfo2Value = 0;
         bool isEncoderIncrementDisabled = false;
 
         bool isSubMenuActive = false;

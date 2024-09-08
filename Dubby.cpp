@@ -191,10 +191,17 @@ void Dubby::InitDubbyControls()
 
 void Dubby::InitDubbyParameters()
 {
-    for (int i = 0; i < PARAMS_LAST - 1; i++)
-    {
-        dubbyParameters[i].Init(Params(i), CONTROL_NONE, 0.6f, 0, 1, LINEAR, true, 0, true, 1);
-    }
+
+    dubbyParameters[TIME].Init(Params(TIME), CONTROL_NONE, 500.f, 0, 1000, LINEAR, true, 0, true, 2000);
+    dubbyParameters[FEEDBACK].Init(Params(FEEDBACK), KN1, 0.6f, 0, 1, LINEAR, true, 0, true, 1);
+    dubbyParameters[MIX].Init(Params(MIX), KN2, 0.5f, 0, 1, EXPONENTIAL, true, 0, true, 100);
+    dubbyParameters[CUTOFF].Init(Params(CUTOFF), CONTROL_NONE, 5.f, 0, 10, EXPONENTIAL, true, 0, true, 10);
+    dubbyParameters[IN_GAIN].Init(Params(IN_GAIN), CONTROL_NONE, 0.5f, 0, 5, LINEAR, true, 0, true, 5);
+    dubbyParameters[OUT_GAIN].Init(Params(OUT_GAIN), CONTROL_NONE, 0.5f, 0, 5, LINEAR, true, 0, true, 5);
+    dubbyParameters[OUT_GAIN].Init(Params(OUT_GAIN), CONTROL_NONE, 0.5f, 0, 5, LINEAR, true, 0, true, 5);
+    dubbyParameters[FREEZE].Init(Params(FREEZE), CONTROL_NONE, 0.5f, 0, 5, LINEAR, true, 0, true, 5);
+    dubbyParameters[MUTE].Init(Params(MUTE), CONTROL_NONE, 0.5f, 0, 5, LINEAR, true, 0, true, 5);
+    dubbyParameters[LOOP].Init(Params(LOOP), CONTROL_NONE, 0.5f, 0, 5, LINEAR, true, 0, true, 5);
 }
 
 void Dubby::SetAudioInGain(AudioIns in, float gain)
@@ -670,22 +677,68 @@ void Dubby::UpdateLFOWindow()
     int16_t yStart = displayHeight / 5 - 2;
     int16_t halfWidth = displayWidth / 2;
     int16_t rectHeight = 8;
-    static int currentParamIndexLFO1 = 0, currentParamIndexLFO2 = 0;
-    static bool isSelected[] = {true, false, false, false, false, false, false, false}; // 0: LFO1, 1: LFO2, 2: WaveShapeLFO1, 3: WaveShapeLFO2
-    static bool selectIndexMode = false;
-    float maxRateLFO = 300.f;
-    display.Fill(false);
-    display.DrawLine(halfWidth, PANE_Y_START, halfWidth, PANE_Y_END, true);
-
-    // Draw the vertical line in the center of the display
-    display.DrawLine(halfWidth, PANE_Y_START, halfWidth, PANE_Y_END, true);
-
     // Define the bounding box dimensions for LFO1 and LFO2
     int16_t lfo1BoundingBoxStartX = 0;
     int16_t lfo1BoundingBoxEndX = halfWidth / 2;
 
     int16_t lfo2BoundingBoxStartX = halfWidth;
     int16_t lfo2BoundingBoxEndX = halfWidth + halfWidth / 2;
+
+    static bool isSelected[] = {true, false, false, false, false, false, false, false}; // 0: LFO1, 1: LFO2, 2: WaveShapeLFO1, 3: WaveShapeLFO2
+    static bool selectIndexMode = false;
+    float maxRateLFO = 300.f;
+
+    // Define box dimensions for LFO and WaveShape parameters
+    int paramBoxLFOWidth = 34;
+    int paramBoxLFOHeight = 8;
+    int paramBoxWaveShapeWidth = 26;
+    int paramBoxWaveShapeHeight = 8;
+
+    // Define positions for parameter boxes
+    int paramBoxLFO1X = 2;
+    int paramBoxLFO1Y = 50;
+    int paramBoxLFO2X = displayWidth / 2 + 2;
+    int paramBoxLFO2Y = 50;
+
+    int paramBoxWaveShapeLFO1X = halfWidth / 2 + 3;
+    int paramBoxWaveShapeLFO1Y = 10;
+    int paramBoxWaveShapeLFO2X = displayWidth - halfWidth / 2 + 3;
+    int paramBoxWaveShapeLFO2Y = 10;
+
+    const char *paramLFO1 = ParamsStrings[currentParamIndexLFO1];
+    const char *paramLFO2 = ParamsStrings[currentParamIndexLFO2];
+    const char *paramWaveShapeLFO1 = LFOWaveFormsStrings[currentParamIndexLFO1WaveShape];
+    const char *paramWaveShapeLFO2 = LFOWaveFormsStrings[currentParamIndexLFO2WaveShape];
+
+    // Draw parameter boxes and strings
+    auto drawParamBox = [&](const char *param, int16_t x, int16_t y, int width, int height, bool selected, bool selectIndexMode)
+    {
+        bool fill = selected && selectIndexMode;
+        display.DrawRect(x, y, x + width, y + height, selected, fill);
+        display.SetCursor(x + 1, y + 2);
+        display.WriteString(param, Font_4x5, !fill);
+    };
+
+    // Define parameters for circular knobs and bounding circles
+    int circle_y = 34;              // Y-coordinate of the center of the circle
+    int circle_radius = 6;          // Radius of the circle
+    int bounding_circle_radius = 7; // Radius of the bounding circle, slightly larger than the knob circle
+    int selectedIndices[NUM_KNOBS] = {1, 2, 5, 6};
+    // Calculate total width occupied by circles
+    int totalWidth = NUM_KNOBS * 2 * bounding_circle_radius;
+
+    // Calculate space between circles
+    int circleSpacing = (OLED_WIDTH - totalWidth) / (NUM_KNOBS + 1);
+
+    // Define offsets for knobs
+    const int offsetKnob1And2 = -6;
+    const int offsetKnob3And4 = 6;
+
+    display.Fill(false);
+    display.DrawLine(halfWidth, PANE_Y_START, halfWidth, PANE_Y_END, true);
+
+    // Draw the vertical line in the center of the display
+    display.DrawLine(halfWidth, PANE_Y_START, halfWidth, PANE_Y_END, true);
 
     // Draw bounding box for LFO1
     display.DrawRect(lfo1BoundingBoxStartX, yStart, lfo1BoundingBoxEndX, yStart + rectHeight, true, false);
@@ -839,61 +892,13 @@ void Dubby::UpdateLFOWindow()
         }
     }
 
-    // Define box dimensions for LFO and WaveShape parameters
-    int paramBoxLFOWidth = 34;
-    int paramBoxLFOHeight = 8;
-    int paramBoxWaveShapeWidth = 26;
-    int paramBoxWaveShapeHeight = 8;
-
-    // Define positions for parameter boxes
-    int paramBoxLFO1X = 2;
-    int paramBoxLFO1Y = 50;
-    int paramBoxLFO2X = displayWidth / 2 + 2;
-    int paramBoxLFO2Y = 50;
-
-    int paramBoxWaveShapeLFO1X = halfWidth / 2 + 3;
-    int paramBoxWaveShapeLFO1Y = 10;
-    int paramBoxWaveShapeLFO2X = displayWidth - halfWidth / 2 + 3;
-    int paramBoxWaveShapeLFO2Y = 10;
-
-    const char *paramLFO1 = ParamsStrings[currentParamIndexLFO1];
-    const char *paramLFO2 = ParamsStrings[currentParamIndexLFO2];
-    const char *paramWaveShapeLFO1 = LFOWaveFormsStrings[currentParamIndexLFO1WaveShape];
-    const char *paramWaveShapeLFO2 = LFOWaveFormsStrings[currentParamIndexLFO2WaveShape];
-
-    // Draw parameter boxes and strings
-    auto drawParamBox = [&](const char *param, int16_t x, int16_t y, int width, int height, bool selected, bool selectIndexMode)
-    {
-        bool fill = selected && selectIndexMode;
-        display.DrawRect(x, y, x + width, y + height, selected, fill);
-        display.SetCursor(x + 1, y + 2);
-        display.WriteString(param, Font_4x5, !fill);
-    };
-
     // Draw boxes for LFO1, LFO2, WaveShapeLFO1, and WaveShapeLFO2
     drawParamBox(paramWaveShapeLFO1, paramBoxWaveShapeLFO1X, paramBoxWaveShapeLFO1Y, paramBoxWaveShapeWidth, paramBoxWaveShapeHeight, isSelected[0], selectIndexMode);
-
     drawParamBox(paramLFO1, paramBoxLFO1X, paramBoxLFO1Y, paramBoxLFOWidth, paramBoxLFOHeight, isSelected[3], selectIndexMode);
     drawParamBox(paramWaveShapeLFO2, paramBoxWaveShapeLFO2X, paramBoxWaveShapeLFO2Y, paramBoxWaveShapeWidth, paramBoxWaveShapeHeight, isSelected[4], selectIndexMode);
-
     drawParamBox(paramLFO2, paramBoxLFO2X, paramBoxLFO2Y, paramBoxLFOWidth, paramBoxLFOHeight, isSelected[7], selectIndexMode);
 
     // visualizeKnobValuesCircle(customLabels, numDecimals);
-
-    // Define parameters for circular knobs and bounding circles
-    int circle_y = 34;              // Y-coordinate of the center of the circle
-    int circle_radius = 6;          // Radius of the circle
-    int bounding_circle_radius = 7; // Radius of the bounding circle, slightly larger than the knob circle
-    int selectedIndices[NUM_KNOBS] = {1, 2, 5, 6};
-    // Calculate total width occupied by circles
-    int totalWidth = NUM_KNOBS * 2 * bounding_circle_radius;
-
-    // Calculate space between circles
-    int circleSpacing = (OLED_WIDTH - totalWidth) / (NUM_KNOBS + 1);
-
-    // Define offsets for knobs
-    const int offsetKnob1And2 = -6;
-    const int offsetKnob3And4 = 6;
 
     // Loop through each knob value
     for (int i = 0; i < NUM_KNOBS; ++i)
@@ -915,8 +920,7 @@ void Dubby::UpdateLFOWindow()
 
         // Draw circular knob
         display.DrawCircle(circle_x_offset, circle_y, bounding_circle_radius, selected); // Draw filled knob circle
-
-        display.DrawCircle(circle_x_offset, circle_y, circle_radius, true); // Draw filled knob circle
+        display.DrawCircle(circle_x_offset, circle_y, circle_radius, true);              // Draw filled knob circle
 
         // Normalize the knob value for the first and third knobs
         float normalizedValue = knobValues[i];
@@ -954,6 +958,7 @@ void Dubby::UpdateLFOWindow()
         display.SetCursor(value_x, circle_y + 9);
         display.WriteString(formattedValue, Font_4x5, true);
     }
+
     // Update the display to show the changes
     display.Update();
 }
@@ -970,6 +975,24 @@ void Dubby::ProcessLFO()
 {
     lfo1Value = lfo1.Process() * knobValues[1];
     lfo2Value = lfo2.Process() * knobValues[3];
+
+    if (currentParamIndexLFO1)
+    {
+        lfo1Values[currentParamIndexLFO1] = lfo1Value;
+    }
+    else
+    {
+        lfo1Values[currentParamIndexLFO1] = 0;
+    }
+
+    if (currentParamIndexLFO2)
+    {
+        lfo2Values[currentParamIndexLFO2] = lfo2Value;
+    }
+    else
+    {
+        lfo2Values[currentParamIndexLFO2] = 0;
+    }
 }
 
 void Dubby::UpdateBar(int i)
@@ -1771,8 +1794,14 @@ void Dubby::ProcessAllControls()
     dubbyCtrls[11].value = joystickButton.Pressed();
 
     for (int i = 0; i < PARAMS_LAST; i++)
+    {
         if (dubbyParameters[i].control != CONTROL_NONE)
+        {
             dubbyParameters[i].CalculateRealValue(dubbyCtrls[dubbyParameters[i].control].value);
+        }
+
+        dubbyParameters[i].value = daisysp::fclamp(dubbyParameters[i].value + (lfo1Values[i] * (dubbyParameters[i].max - dubbyParameters[i].min)) + (lfo2Values[i] * (dubbyParameters[i].max - dubbyParameters[i].min)), dubbyParameters[i].min, dubbyParameters[i].max);
+    }
 }
 
 void Dubby::ProcessAnalogControls()
