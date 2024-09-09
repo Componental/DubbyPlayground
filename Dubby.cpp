@@ -823,7 +823,7 @@ void Dubby::UpdateLFOWindow()
 
     int increment = encoder.Increment();
 
-    if (EncoderFallingEdgeCustom() && !wasEncoderJustInHighlightMenu && !windowSelectorActive)
+    if (EncoderFallingEdgeCustom() && !windowSelectorActive)
         selectIndexMode = !selectIndexMode;
 
     // Determine which parameter box is selected
@@ -854,6 +854,8 @@ void Dubby::UpdateLFOWindow()
                 break;
 
             case 1:
+                    
+
                 encoder.EnableAcceleration(true);
                 // Update knobValues[1] with encoder increment
                 knobValues[0] += encoder.Increment() * 1.;
@@ -992,6 +994,10 @@ void Dubby::UpdateLFOWindow()
             circle_x_offset += offsetKnob3And4;
         }
 
+bool negative = false;
+        if (selectIndexMode == true && selected == true){
+           negative = true; 
+        }
         // Draw circular knob
         display.DrawCircle(circle_x_offset, circle_y, bounding_circle_radius, selected); // Draw filled knob circle
         display.DrawCircle(circle_x_offset, circle_y, circle_radius, true);              // Draw filled knob circle
