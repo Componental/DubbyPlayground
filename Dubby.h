@@ -498,6 +498,7 @@ namespace daisy
         void InitControls();
         void InitEncoder();
         void InitDisplay();
+        void InitLEDs();
         void InitButtons();
         void InitMidi();
         void InitDubbyParameters();

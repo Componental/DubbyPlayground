@@ -109,7 +109,9 @@ void Dubby::Init()
 
     scrollbarWidth = int(128 / WIN_LAST);
 
+    InitLEDs();
     InitDisplay();
+    InitLEDs();
     InitEncoder();
     InitAudio();
     InitMidi();
@@ -183,6 +185,13 @@ void Dubby::InitDisplay()
     display.Init(disp_cfg);
 }
 
+void Dubby::InitLEDs()
+{
+    initLED();
+    setLED(1, 0x004B0082, 20);
+    setLED(0, 0x00808000, 20);
+    updateLED();
+}
 void Dubby::InitDubbyControls()
 {
     dubbyCtrls[0].Init(CONTROL_NONE, 0);
@@ -472,8 +481,10 @@ void Dubby::UpdateMixerPane()
         {
             audioGains[mixerPageSelected][barSelector % 4] += increment / 100.f;
 
-            if (audioGains[mixerPageSelected][barSelector % 4] > 1.0f) audioGains[mixerPageSelected][barSelector % 4] = 1.0f;
-            else if (audioGains[mixerPageSelected][barSelector % 4] < 0.0f) audioGains[mixerPageSelected][barSelector % 4] = 0.0f;
+            if (audioGains[mixerPageSelected][barSelector % 4] > 1.0f)
+                audioGains[mixerPageSelected][barSelector % 4] = 1.0f;
+            else if (audioGains[mixerPageSelected][barSelector % 4] < 0.0f)
+                audioGains[mixerPageSelected][barSelector % 4] = 0.0f;
 
             std::string str = (mixerPageSelected == INPUTS ? "in" : "out") + std::to_string(barSelector % 4 + 1) + ":" + std::to_string(audioGains[mixerPageSelected][barSelector % 4]).substr(0, std::to_string(audioGains[mixerPageSelected][barSelector % 4]).find(".") + 3);
             UpdateStatusBar(&str[0], RIGHT);
@@ -931,7 +942,7 @@ void Dubby::UpdateParameterPane()
                         dubbyParameters[parameterSelected].value = ceil(dubbyParameters[parameterSelected].value + incrementValue);
                     else
                         dubbyParameters[parameterSelected].value += incrementValue;
-                        
+
                     if (dubbyParameters[parameterSelected].value < dubbyParameters[parameterSelected].min)
                         dubbyParameters[parameterSelected].value = dubbyParameters[parameterSelected].min;
                 }
