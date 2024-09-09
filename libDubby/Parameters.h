@@ -51,7 +51,7 @@ namespace daisy
   public:
     Params param;
     DubbyControls control = CONTROL_NONE;
-    float value, min, max, minLimit, maxLimit;
+    float value, min, max, minLimit, maxLimit, baseValue;
     bool hasMinLimit, hasMaxLimit;
     Curves curve;
 
@@ -61,6 +61,8 @@ namespace daisy
       param = p;
       control = con;
       value = v;
+      baseValue = v;
+  
       min = mi;
       max = ma;
       curve = c;

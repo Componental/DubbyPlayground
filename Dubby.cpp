@@ -192,7 +192,7 @@ void Dubby::InitDubbyControls()
 void Dubby::InitDubbyParameters()
 {
 
-    dubbyParameters[TIME].Init(Params(TIME), CONTROL_NONE, 500.f, 0, 1000, LINEAR, true, 0, true, 2000);
+    dubbyParameters[TIME].Init(Params(TIME), CONTROL_NONE, 110.f, 0, 440, LINEAR, true, 0, true, 2000);
     dubbyParameters[FEEDBACK].Init(Params(FEEDBACK), KN1, 0.6f, 0, 1, LINEAR, true, 0, true, 1);
     dubbyParameters[MIX].Init(Params(MIX), KN2, 0.5f, 0, 1, EXPONENTIAL, true, 0, true, 100);
     dubbyParameters[CUTOFF].Init(Params(CUTOFF), CONTROL_NONE, 5.f, 0, 10, EXPONENTIAL, true, 0, true, 10);
@@ -764,7 +764,7 @@ void Dubby::UpdateLFOWindow()
 
     int increment = encoder.Increment();
 
-    if (EncoderFallingEdgeCustom())
+    if (EncoderFallingEdgeCustom() && !wasEncoderJustInHighlightMenu && !windowSelectorActive)
         selectIndexMode = !selectIndexMode;
 
     // Determine which parameter box is selected
@@ -779,7 +779,7 @@ void Dubby::UpdateLFOWindow()
     }
 
     // Update the parameter index based on selection mode
-    if (increment != 0)
+    if (increment != 0 && !windowSelectorActive)
     {
         if (selectIndexMode && selectedIndex != -1)
         {
@@ -1798,9 +1798,9 @@ void Dubby::ProcessAllControls()
         if (dubbyParameters[i].control != CONTROL_NONE)
         {
             dubbyParameters[i].CalculateRealValue(dubbyCtrls[dubbyParameters[i].control].value);
-        }
-
-        dubbyParameters[i].value = daisysp::fclamp(dubbyParameters[i].value + (lfo1Values[i] * (dubbyParameters[i].max - dubbyParameters[i].min)) + (lfo2Values[i] * (dubbyParameters[i].max - dubbyParameters[i].min)), dubbyParameters[i].min, dubbyParameters[i].max);
+        } 
+      
+        dubbyParameters[i].value = daisysp::fclamp(dubbyParameters[i].baseValue + (lfo1Values[i] * (dubbyParameters[i].max - dubbyParameters[i].min)) + (lfo2Values[i] * (dubbyParameters[i].max - dubbyParameters[i].min)), dubbyParameters[i].min, dubbyParameters[i].max);
     }
 }
 
