@@ -63,11 +63,9 @@ int main(void)
     Init(dubby);
     InitMidiClock(dubby);
     InitPersistantMemory(dubby, SavedParameterSettings);
-    
+
     initLED();
-    setLED(0, GREEN, 0);
-    setLED(1, RED, 0);
-    updateLED();
+        setLED(1, RED, 0);
 
     dubby.seed.StartAudio(AudioCallback);
     osc.Init(dubby.seed.AudioSampleRate());
@@ -84,7 +82,8 @@ int main(void)
         MonitorMidi();
         MonitorPersistantMemory(dubby, SavedParameterSettings);
 
-        
+        setLED(0, GREEN, abs(0.5+dubby.lfo2Value)*50);
+        updateLED();
     }
 }
 

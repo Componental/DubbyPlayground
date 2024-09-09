@@ -212,6 +212,7 @@ void Dubby::InitDubbyParameters()
     dubbyParameters[FREEZE].Init(Params(FREEZE), CONTROL_NONE, 0.5f, 0, 5, LINEAR, true, 0, true, 5);
     dubbyParameters[MUTE].Init(Params(MUTE), CONTROL_NONE, 0.5f, 0, 5, LINEAR, true, 0, true, 5);
     dubbyParameters[LOOP].Init(Params(LOOP), CONTROL_NONE, 0.5f, 0, 5, LINEAR, true, 0, true, 5);
+    
 }
 
 void Dubby::SetAudioInGain(AudioIns in, float gain)
