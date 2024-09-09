@@ -80,8 +80,8 @@ namespace daisy
             WIN2,
             WIN3,
             WIN4,
-            WIN5, 
-            WIN6, // ROUTING 
+            WIN5,
+            WIN6, // ROUTING
             WIN7,
             WIN8,
             WIN_LAST // used to know the size of enum
@@ -93,7 +93,7 @@ namespace daisy
                 "MIXER",
                 "PREFS",
                 "PARAMETERS",
-                "MIDI CONF", 
+                "MIDI CONF",
                 "ROUTING", // ROUTING
                 "WIN7",
                 "WIN8",
@@ -101,24 +101,25 @@ namespace daisy
 
         enum PreferencesMenuItems
         {
-            MIDI,
+            LEDS,
             ROUTING,
-            PARAMS,
             DFUMODE,
+            PARAMS,
             SAVEMEMORY,
             RESETMEMORY,
+            BLABLA,
             PREFERENCESMENU_LAST // used to know the size of enum
         };
 
         const char *PreferencesMenuItemsStrings[PREFERENCESMENU_LAST] =
             {
-                "MIDI",
-                "ROUTING",
-                "PARAMETERS",
-                "DFU MODE",
+                "LEDS",
+                "MEMORY",
+                "FIRMWARE",
+                "CALLIBRATION",
                 "SAVE MEMORY",
-                "RESET MEMORY"
-        };
+                "RESET MEMORY",
+                "BLABLA"};
 
         enum Ctrl
         {
@@ -194,23 +195,17 @@ namespace daisy
                 "OUTPUTS",
         };
 
-        enum PreferencesMidiMenuItems
+        enum PreferencesLedsMenuItems
         {
-            xMIDIIN,
-            xMIDIOUT,
-            xMIDITHRU,
-            MIDIWHATEV,
-            MIDIWHATEVA,
-            PREFERENCESMIDIMENU_LAST // used to know the size of enum
+            MAXBRIGHTNESS1,
+            MAXBRIGHTNESS2,
+            PREFERENCESLEDMENU_LAST // used to know the size of enum
         };
 
-        const char *PreferencesMidiMenuItemsStrings[PREFERENCESMENU_LAST] =
+        const char *PreferencesLedsMenuItemsStrings[2] =
             {
-                "MIDI IN",
-                "MIDI OUT",
-                "MIDI THRU",
-                "MIDI WHATEV",
-                "MIDI WHATEVA",
+                "MAX BRIGHTNESS 1",
+                "MAX BRIGHTNESS 2",
         };
 
         enum PreferencesRoutingMenuItems
@@ -223,18 +218,15 @@ namespace daisy
             PREFERENCESROUTINGMENU_LAST // used to know the size of enum
         };
 
-        const char *PreferencesRoutingMenuItemsStrings[PREFERENCESMENU_LAST] =
+        const char *PreferencesRoutingMenuItemsStrings[2] =
             {
-                "ROUTING 1",
-                "ROUTING 2",
-                "ROUTING 3",
-                "ROUTING 4",
-                "ROUTING 5",
+                "SAVE MEMORY",
+                "RESET MEMORY",
         };
 
         enum EnumTypes
         {
-            PREFERENCESMIDIMENULIST,
+            PREFERENCESLEDSMENULIST,
             PREFERENCESROUTINGMENULIST,
             PREFERENCESMENU,
             WINDOWS,
@@ -285,7 +277,7 @@ namespace daisy
             "SIGMOID",
         };
 
-        enum ModalOptions 
+        enum ModalOptions
         {
             YES,
             NO
@@ -293,8 +285,6 @@ namespace daisy
 
         const int numRows = 4;
         const int numCols = 4;
-
-
 
         int channelMapping[NUM_AUDIO_CHANNELS][NUM_AUDIO_CHANNELS] = {
             // Input channels:       0     1     2     3
@@ -394,7 +384,7 @@ namespace daisy
         float GetParameterValue(Parameters p);
 
         bool EncoderFallingEdgeCustom();
-        
+
         bool EncoderRisingEdgeCustom();
 
         void UpdateChannelMappingPane();
@@ -410,7 +400,7 @@ namespace daisy
         WindowItems windowItemSelected = (WindowItems)0;
 
         PreferencesMenuItems preferencesMenuItemSelected = (PreferencesMenuItems)0;
-        PreferencesMidiMenuItems preferencesMidiMenuItemSelected = (PreferencesMidiMenuItems)0;
+        PreferencesLedsMenuItems  preferencesLedsMenuItemSelected = (PreferencesLedsMenuItems)0;
         PreferencesRoutingMenuItems preferencesRoutingMenuItemSelected = (PreferencesRoutingMenuItems)0;
         int subMenuSelector = 0;
 
@@ -428,19 +418,18 @@ namespace daisy
         bool isEncoderIncrementDisabled = false;
 
         bool isSubMenuActive = false;
-        
+
         MidiSettings midiSettingSelected = (MidiSettings)0;
         bool isMidiSettingSelected = false;
         bool testBool = false;
 
         ChannelMappings channelMappingSelected = (ChannelMappings)0;
         bool isChannelMappingSelected = false;
-        
 
         // const int menuTextCursors[3][2] = { {8, 55}, {50, 55}, {92, 55} }; OLD
         const int windowTextCursors[3][2] = {{3, 52}, {46, 52}, {88, 52}};
         const int windowBoxBounding[3][4] = {{0, 56, 43, 61}, {43, 56, 85, 61}, {85, 56, 127, 61}};
-        int menuListBoxBounding[5][4];
+        int menuListBoxBounding[7][4];
         int paramListBoxBounding[8][4];
         int midiListBoxBounding[5][4];
 
@@ -473,8 +462,8 @@ namespace daisy
         MidiUsbHandler midi_usb;
 
         int globalBPM = 120;
-        int receivedBPM; 
-       // uint32_t bpm = 120;
+        int receivedBPM;
+        // uint32_t bpm = 120;
         std::vector<std::string> customLabels = {"PRM1", "PRM2", "PRM3", "PRM4"};
         std::vector<float> knobValuesForPrint;
         std::vector<int> numDecimals = {1, 1, 1, 1}; // Assuming you have three knobs with different decimal places

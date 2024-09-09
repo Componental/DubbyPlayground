@@ -39,11 +39,11 @@ using namespace daisy;
 
 #define MENULIST_X_START 0
 #define MENULIST_X_END 63
-#define MENULIST_Y_START 8
-#define MENULIST_Y_END 19
+#define MENULIST_Y_START 0
+#define MENULIST_Y_END 8
 #define MENULIST_SPACING 8
 #define MENULIST_SUBMENU_SPACING 63
-#define MENULIST_ROWS_ON_SCREEN 5
+#define MENULIST_ROWS_ON_SCREEN 7
 
 #define PARAMLIST_X_START 1
 #define PARAMLIST_X_END 127
@@ -423,7 +423,8 @@ void Dubby::ReleaseWindowSelector()
     display.DrawRect(windowBoxBounding[0][0], windowBoxBounding[0][1], windowBoxBounding[0][2], windowBoxBounding[0][3], false, false);
 
     display.SetCursor(windowTextCursors[0][0], windowTextCursors[0][1]);
-    display.WriteStringAligned(GetTextForEnum(WINDOWS, windowItemSelected), Font_4x5, daisy::Rectangle(windowBoxBounding[0][0], windowBoxBounding[0][1] + 1, 43, 7), daisy::Alignment::centered, true);
+    
+    display.WriteStringAligned(GetTextForEnum(WINDOWS, windowItemSelected), Font_4x5, daisy::Rectangle(windowBoxBounding[0][0], windowBoxBounding[0][1] + 1, 43, 7), daisy::Alignment::centeredLeft, true);
 
     display.Update();
 }
@@ -754,11 +755,12 @@ void Dubby::UpdateRenderPane()
 
 void Dubby::UpdateGlobalSettingsPane()
 {
-    if (EncoderFallingEdgeCustom() && !isSubMenuActive)
-    {
-        isSubMenuActive = true;
-        DisplayPreferencesMenuList(0);
-    }
+//     if (EncoderRisingEdgeCustom() && !isSubMenuActive)
+//     {
+//         isSubMenuActive = true;
+//         UpdateStatusBar("UPDATED", MIDDLE, 128);
+//         // DisplayPreferencesMenuList(0);
+//     }
 
     if (windowSelectorActive)
     {
@@ -770,9 +772,16 @@ void Dubby::UpdateGlobalSettingsPane()
 
     if (EncoderRisingEdgeCustom() && !windowSelectorActive)
     {
+        if (!isSubMenuActive)
+        {
+            isSubMenuActive = true;
+            // UpdateStatusBar("UPDATED", MIDDLE, 128);
+            DisplayPreferencesMenuList(0);
+        }
+
         switch (preferencesMenuItemSelected)
         {
-        case MIDI:
+        case LEDS:
             break;
         case SAVEMEMORY:
             OpenModal("ARE YOU SURE?");
@@ -1077,7 +1086,6 @@ void Dubby::RenderScope()
             prev_x = x;
             prev_y = y;
         }
-
         display.Update();
     }
 }
@@ -1144,28 +1152,30 @@ void Dubby::DisplayPreferencesSubMenuList(int increment, PreferencesMenuItems pr
     display.DrawRect(PANE_X_START + MENULIST_SUBMENU_SPACING - 1, PANE_Y_START, PANE_X_END, PANE_Y_END, false, true);
 
     EnumTypes type;
+    int numItems = 0;
 
     switch (prefMenuItemSelected)
     {
-    case MIDI:
-        type = PREFERENCESMIDIMENULIST;
+    case LEDS:
+        type = PREFERENCESLEDSMENULIST;
+        numItems = PREFERENCESLEDMENU_LAST;
         break;
     case ROUTING:
         type = PREFERENCESROUTINGMENULIST;
         break;
     default:
-        type = PREFERENCESMIDIMENULIST;
+        type = PREFERENCESLEDSMENULIST;
         break;
     }
 
-    int optionStart = 1;
-    if (subMenuSelector > (MENULIST_ROWS_ON_SCREEN - 1))
+    int optionStart = 0;
+    if (subMenuSelector > (numItems - 1))
     {
-        optionStart = subMenuSelector - (MENULIST_ROWS_ON_SCREEN - 1);
+        optionStart = subMenuSelector - (numItems - 1);
     }
 
     // display each item, j for text cursor
-    for (int i = optionStart, j = 0; i < optionStart + MENULIST_ROWS_ON_SCREEN; i++, j++)
+    for (int i = optionStart, j = 0; i < numItems; i++, j++)
     {
         // clear item spaces
         if ((optionStart > 0 || (!optionStart && increment < 0)))
@@ -1189,7 +1199,7 @@ void Dubby::DisplayPreferencesSubMenuList(int increment, PreferencesMenuItems pr
         display.WriteString(GetTextForEnum(type, i), Font_4x5, true);
     }
 
-    display.DrawRect(PANE_X_START + MENULIST_SUBMENU_SPACING - 1, PANE_Y_START + 1, PANE_X_END, PANE_Y_END - 1, true, false);
+    display.DrawRect(PANE_X_START + MENULIST_SUBMENU_SPACING - 1, 0, PANE_X_END, PANE_Y_END + 1, true, false);
 
     display.Update();
 }
@@ -1200,8 +1210,8 @@ void Dubby::UpdatePreferencesSubMenuList(int increment, PreferencesMenuItems pre
 
     switch (prefMenuItemSelected)
     {
-    case MIDI:
-        endSelector = PREFERENCESMIDIMENU_LAST;
+    case LEDS:
+        endSelector = sizeof(PreferencesLedsMenuItemsStrings);;
         break;
     case ROUTING:
         endSelector = PREFERENCESROUTINGMENU_LAST;
@@ -1756,8 +1766,8 @@ const char *Dubby::GetTextForEnum(EnumTypes m, int enumVal)
     case PREFERENCESMENU:
         return PreferencesMenuItemsStrings[enumVal];
         break;
-    case PREFERENCESMIDIMENULIST:
-        return PreferencesMidiMenuItemsStrings[enumVal];
+    case PREFERENCESLEDSMENULIST:
+        return PreferencesLedsMenuItemsStrings[enumVal];
         break;
     case PREFERENCESROUTINGMENULIST:
         return PreferencesRoutingMenuItemsStrings[enumVal];

@@ -56,8 +56,8 @@ int main(void)
     InitPersistantMemory(dubby, SavedParameterSettings);
     
     initLED();
-    setLED(0, GREEN, 0);
-    setLED(1, RED, 0);
+    setLED(0, NO_COLOR, 0);
+    setLED(1, NO_COLOR, 0);
     updateLED();
 
     dubby.seed.StartAudio(AudioCallback);
