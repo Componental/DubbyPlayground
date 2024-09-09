@@ -188,8 +188,8 @@ void Dubby::InitDisplay()
 void Dubby::InitLEDs()
 {
     initLED();
-    setLED(1, 0x004B0082, 20);
-    setLED(0, 0x00808000, 20);
+    setLED(1, NO_COLOR, 20);
+    setLED(0, NO_COLOR, 20);
     updateLED();
 }
 void Dubby::InitDubbyControls()

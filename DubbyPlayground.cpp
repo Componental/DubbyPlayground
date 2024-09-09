@@ -80,7 +80,7 @@ int main(void)
         MonitorMidi();
         MonitorPersistantMemory(dubby, SavedParameterSettings);
 
-        setLED(0, GREEN, abs(0.5+dubby.lfo2Value)*50);
+        setLED(0, TURQUOISE, abs(0.5+dubby.lfo2Value)*50);
         updateLED();
     }
 }
