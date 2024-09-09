@@ -1284,12 +1284,12 @@ void Dubby::UpdateParameterPane()
                 if (dubbyParameters[parameterSelected].value > dubbyParameters[parameterSelected].min)
                 {
                     if ((dubbyParameters[parameterSelected].value + incrementValue) < dubbyParameters[parameterSelected].min)
-                        dubbyParameters[parameterSelected].value = ceil(dubbyParameters[parameterSelected].value + incrementValue);
+                        dubbyParameters[parameterSelected].baseValue = ceil(dubbyParameters[parameterSelected].value + incrementValue);
                     else
-                        dubbyParameters[parameterSelected].value += incrementValue;
+                        dubbyParameters[parameterSelected].baseValue += incrementValue;
 
                     if (dubbyParameters[parameterSelected].value < dubbyParameters[parameterSelected].min)
-                        dubbyParameters[parameterSelected].value = dubbyParameters[parameterSelected].min;
+                        dubbyParameters[parameterSelected].baseValue = dubbyParameters[parameterSelected].min;
                 }
             }
             else if (incrementValue > 0)
@@ -1297,12 +1297,12 @@ void Dubby::UpdateParameterPane()
                 if (dubbyParameters[parameterSelected].value < dubbyParameters[parameterSelected].max)
                 {
                     if ((dubbyParameters[parameterSelected].value + incrementValue) > dubbyParameters[parameterSelected].max)
-                        dubbyParameters[parameterSelected].value = floor(dubbyParameters[parameterSelected].value + incrementValue);
+                        dubbyParameters[parameterSelected].baseValue = floor(dubbyParameters[parameterSelected].value + incrementValue);
                     else
-                        dubbyParameters[parameterSelected].value += incrementValue;
+                        dubbyParameters[parameterSelected].baseValue += incrementValue;
 
                     if (dubbyParameters[parameterSelected].value > dubbyParameters[parameterSelected].max)
-                        dubbyParameters[parameterSelected].value = dubbyParameters[parameterSelected].max;
+                        dubbyParameters[parameterSelected].baseValue = dubbyParameters[parameterSelected].max;
                 }
             }
         }
