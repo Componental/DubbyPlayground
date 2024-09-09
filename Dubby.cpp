@@ -1798,9 +1798,13 @@ void Dubby::ProcessAllControls()
         if (dubbyParameters[i].control != CONTROL_NONE)
         {
             dubbyParameters[i].CalculateRealValue(dubbyCtrls[dubbyParameters[i].control].value);
-        } 
-      
+                    dubbyParameters[i].value = daisysp::fclamp(dubbyParameters[i].value + (lfo1Values[i] * (dubbyParameters[i].max - dubbyParameters[i].min)) + (lfo2Values[i] * (dubbyParameters[i].max - dubbyParameters[i].min)), dubbyParameters[i].min, dubbyParameters[i].max);
+
+        } else {
         dubbyParameters[i].value = daisysp::fclamp(dubbyParameters[i].baseValue + (lfo1Values[i] * (dubbyParameters[i].max - dubbyParameters[i].min)) + (lfo2Values[i] * (dubbyParameters[i].max - dubbyParameters[i].min)), dubbyParameters[i].min, dubbyParameters[i].max);
+
+        }
+      
     }
 }
 
