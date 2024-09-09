@@ -109,7 +109,9 @@ void Dubby::Init()
 
     scrollbarWidth = int(128 / WIN_LAST);
 
+    InitLEDs();
     InitDisplay();
+    InitLEDs();
     InitEncoder();
     InitAudio();
     InitMidi();
@@ -183,6 +185,13 @@ void Dubby::InitDisplay()
     display.Init(disp_cfg);
 }
 
+void Dubby::InitLEDs()
+{
+    initLED();
+    setLED(1, 0x004B0082, 20);
+    setLED(0, 0x00808000, 20);
+    updateLED();
+}
 void Dubby::InitDubbyControls()
 {
     dubbyCtrls[0].Init(CONTROL_NONE, 0);

@@ -38,12 +38,13 @@
 
 #define WHITE					0x00FFFFFF
 #define RED						0x0000FF00
-#define BLUE					0x000000FF
+#define BLUE					0x00FF0000
 #define RAND_COLOR				0x0088FF88
-#define GREEN					0x00FF0000
-#define NAVY					0x00000080
-#define PURPLE					0x00008080
-#define YELLOW					0x00FFFF00
+#define GREEN					0x000000FF
+//#define NAVY					0x00FF7F50
+#define TURQUOISE 				0x004B0082
+#define PURPLE					0x00FFFF00
+#define YELLOW					0x00008080
 #define NO_COLOR				0x00000000
 //wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
 // Exported types
