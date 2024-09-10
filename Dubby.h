@@ -518,7 +518,7 @@ namespace daisy
         unsigned long encoderLastDebounceTime = 0; // Time the button was last toggled
         unsigned long encoderDebounceDelay = 50;   // Debounce time in milliseconds
 
-        float audioGains[2][4] = {{0.8f, 0.8f, 0.8f, 0.8f}, {0.8f, 0.8f, 0.8f, 0.8f}}; // 0 => INPUTS, 1 => OUTPUTS
+        float audioGains[2][4] = {{1.0f, 1.0f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}}; // 0 => INPUTS, 1 => OUTPUTS
     };
 
 }

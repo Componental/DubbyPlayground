@@ -26,25 +26,7 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
     {
         for (int j = 0; j < NUM_AUDIO_CHANNELS; j++)
         {
-            out[j][i] = 0.0f; // Clear output buffer for each sample
-
-            for (int inChannel = 0; inChannel < NUM_AUDIO_CHANNELS; inChannel++)
-            {
-                switch (dubby.channelMapping[j][inChannel]) {
-                    case PASS: 
-                        out[j][i] += in[inChannel][i]; 
-                        break;
-                    case EFCT: 
-                        out[j][i] += 0;//flt[inChannel].Process(in[inChannel][i]); 
-                        break;
-                    case SNTH: 
-                        out[j][i] += /* Synth processing here, if applicable */ 0.0f; 
-                        break;
-                    default: 
-                        out[j][i] += 0.0f; // Ensure default is zero
-                        break;
-                }
-            }
+            SetGains(dubby, j, i, in, out); 
         }
     }
 }

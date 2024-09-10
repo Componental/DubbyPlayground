@@ -214,7 +214,7 @@ void Dubby::SetAudioInGain(AudioIns in, float gain)
     else if (gain < 0.0f)
         gain = 0.0f;
 
-    audioGains[0][in] = gain * 0.8f;
+    audioGains[0][in] = gain;
 }
 
 float Dubby::GetAudioInGain(AudioIns in)
@@ -229,7 +229,7 @@ void Dubby::SetAudioOutGain(AudioOuts out, float gain)
     else if (gain < 0.0f)
         gain = 0.0f;
 
-    audioGains[0][out] = gain * 0.8f;
+    audioGains[0][out] = gain;
 }
 
 float Dubby::GetAudioOutGain(AudioOuts out)
@@ -455,7 +455,7 @@ void Dubby::UpdateMixerPane()
         isBarSelected = !isBarSelected;
         if (isBarSelected)
         {
-            encoder.EnableAcceleration(true);
+            +––encoder.EnableAcceleration(true);
             std::string str = (mixerPageSelected == INPUTS ? "in" : "out") + std::to_string(barSelector % 4 + 1) + ":" + std::to_string(audioGains[mixerPageSelected][barSelector % 4]).substr(0, std::to_string(audioGains[mixerPageSelected][barSelector % 4]).find(".") + 3);
             UpdateStatusBar(&str[0], RIGHT);
         }
