@@ -27,9 +27,14 @@ void Init(Dubby& dubby)
     System::Delay(1000);
     dubby.UpdateWindowSelector(0, false);
 
-    
     dubby.midi_uart.StartReceive(); 
     dubby.midi_usb.StartReceive(); 
+
+    dubby.lfo1.Init(dubby.seed.AudioSampleRate());
+        dubby.lfo2.Init(dubby.seed.AudioSampleRate());
+
+
+
 }
 
 } // namespace daisy

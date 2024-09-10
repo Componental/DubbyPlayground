@@ -9,6 +9,7 @@
 #include <vector>
 #include <cstdlib>
 
+#include "daisysp.h"
 #include "ui/DubbyEncoder.h"
 #include "led.h"
 #include "libDubby/Parameters.h"
@@ -57,6 +58,7 @@ namespace daisy
 
     class Dubby
     {
+
     public:
         enum AudioIns
         {
@@ -80,8 +82,8 @@ namespace daisy
             WIN2,
             WIN3,
             WIN4,
-            WIN5, 
-            WIN6, // ROUTING 
+            WIN5,
+            WIN6,
             WIN7,
             WIN8,
             WIN_LAST // used to know the size of enum
@@ -93,9 +95,9 @@ namespace daisy
                 "MIXER",
                 "PREFS",
                 "PARAMETERS",
-                "MIDI CONF", 
-                "ROUTING", // ROUTING
-                "WIN7",
+                "MIDI CONF",
+                "ROUTING",
+                "LFO",
                 "WIN8",
         };
 
@@ -117,8 +119,7 @@ namespace daisy
                 "PARAMETERS",
                 "DFU MODE",
                 "SAVE MEMORY",
-                "RESET MEMORY"
-        };
+                "RESET MEMORY"};
 
         enum Ctrl
         {
@@ -270,11 +271,6 @@ namespace daisy
                 "FREEZE",
                 "MUTE",
                 "LOOP",
-                "RES",
-                "SCRUB",
-                "RATIO",
-                "PREDELAY",
-                "AMOUNT",
                 "2ND_LAST" // because of a bug
         };
 
@@ -285,6 +281,16 @@ namespace daisy
             "SIGMOID",
         };
 
+        const char *LFOWaveFormsStrings[daisysp::Oscillator::WAVE_LAST - 3] =
+            {
+                "SIN",
+                "TRI",
+                "SAW",
+                "RAMP",
+                "SQUARE"};
+        int currentParamIndexLFO1WaveShape, currentParamIndexLFO2WaveShape;
+        int currentParamIndexLFO1 = 0, currentParamIndexLFO2 = 0;
+
         enum ModalOptions 
         {
             YES,
@@ -293,8 +299,6 @@ namespace daisy
 
         const int numRows = 4;
         const int numCols = 4;
-
-
 
         int channelMapping[NUM_AUDIO_CHANNELS][NUM_AUDIO_CHANNELS] = {
             // Input channels:       0     1     2     3
@@ -335,6 +339,12 @@ namespace daisy
 
         void UpdateBar(int i);
 
+        void UpdateLFO();
+        void DrawLFOValues(int16_t lfoValue, int16_t xStart, int16_t xEnd, int16_t yStart, int16_t rectHeight);
+        void DrawParamBox(const char *param, int16_t x, int16_t y, int16_t width, int16_t height, bool selected, bool invert);
+
+        void ProcessLFO();
+
         void UpdateRenderPane();
 
         void UpdateGlobalSettingsPane();
@@ -361,7 +371,7 @@ namespace daisy
 
         void UpdateMidiSettingsList(int increment);
 
-        void UpdateLFOWindow(int increment);
+        void UpdateLFOWindow();
 
         void ProcessAllControls();
 
@@ -419,24 +429,28 @@ namespace daisy
         Params parameterSelected = (Params)1;
         bool isParameterSelected = false;
         ParameterOptions parameterOptionSelected = PARAM;
+
         bool isListeningControlChange = false;
         bool isCurveChanging = false;
         bool isMinChanging = false;
         bool isMaxChanging = false;
         bool isValueChanging = false;
 
+        float lfo1Values[PARAMS_LAST] = {0}; // Store LFO1 values for each parameter
+        float lfo2Values[PARAMS_LAST] = {0}; // Store LFO2 values for each parameter
+        float lfo1Value = 0, lfo2Value = 0;
         bool isEncoderIncrementDisabled = false;
 
         bool isSubMenuActive = false;
-        
+
         MidiSettings midiSettingSelected = (MidiSettings)0;
         bool isMidiSettingSelected = false;
         bool testBool = false;
 
         ChannelMappings channelMappingSelected = (ChannelMappings)0;
         bool isChannelMappingSelected = false;
-        
 
+        daisysp::Oscillator lfo1, lfo2;
         // const int menuTextCursors[3][2] = { {8, 55}, {50, 55}, {92, 55} }; OLD
         const int windowTextCursors[3][2] = {{3, 52}, {46, 52}, {88, 52}};
         const int windowBoxBounding[3][4] = {{0, 56, 43, 61}, {43, 56, 85, 61}, {85, 56, 127, 61}};
@@ -473,11 +487,11 @@ namespace daisy
         MidiUsbHandler midi_usb;
 
         int globalBPM = 120;
-        int receivedBPM; 
-       // uint32_t bpm = 120;
-        std::vector<std::string> customLabels = {"PRM1", "PRM2", "PRM3", "PRM4"};
-        std::vector<float> knobValuesForPrint;
-        std::vector<int> numDecimals = {1, 1, 1, 1}; // Assuming you have three knobs with different decimal places
+        int receivedBPM;
+        // uint32_t bpm = 120;
+        std::vector<std::string> customLabels = {"RATE", "AMT", "RATE", "AMT"};
+        std::vector<float> knobValues = {100.f, 0.f, 25.f, 0.f};
+        std::vector<int> numDecimals = {0, 1, 0, 1}; // Assuming you have three knobs with different decimal places
 
         std::vector<float> savedKnobValuesForVisuals;
         std::string algorithmTitle = "";
