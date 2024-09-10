@@ -455,7 +455,7 @@ void Dubby::UpdateMixerPane()
         isBarSelected = !isBarSelected;
         if (isBarSelected)
         {
-            +––encoder.EnableAcceleration(true);
+            encoder.EnableAcceleration(true);
             std::string str = (mixerPageSelected == INPUTS ? "in" : "out") + std::to_string(barSelector % 4 + 1) + ":" + std::to_string(audioGains[mixerPageSelected][barSelector % 4]).substr(0, std::to_string(audioGains[mixerPageSelected][barSelector % 4]).find(".") + 3);
             UpdateStatusBar(&str[0], RIGHT);
         }
