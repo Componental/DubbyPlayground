@@ -39,8 +39,7 @@ void HandleMidiUsbMessage(MidiEvent m);
 PersistentStorage<PersistantMemoryParameterSettings> SavedParameterSettings(dubby.seed.qspi);
 void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, size_t size)
 {
-    dubby.ProcessLFO();
-
+    dubby.ProcessLFO(); 
     double sumSquared[2][NUM_AUDIO_CHANNELS] = {0.0f};
     bool freeze = dubby.dubbyParameters[DLY_FREEZE].value > 0.5f;
 

@@ -731,11 +731,12 @@ void Dubby::UpdateChannelMappingPane()
 
 void Dubby::UpdateLFOWindow()
 {
+    float yOffset = 2;
     UpdateStatusBar("LFO 1           LFO 2 ", LEFT);
 
     int16_t displayWidth = display.Width();
     int16_t displayHeight = display.Height();
-    int16_t yStart = displayHeight / 5 - 2;
+    int16_t yStart = displayHeight / 5 - 2 - yOffset;
     int16_t halfWidth = displayWidth / 2;
     int16_t rectHeight = 8;
     // Define the bounding box dimensions for LFO1 and LFO2
@@ -757,14 +758,14 @@ void Dubby::UpdateLFOWindow()
 
     // Define positions for parameter boxes
     int paramBoxLFO1X = 2;
-    int paramBoxLFO1Y = 50;
+    int paramBoxLFO1Y = 50-yOffset;
     int paramBoxLFO2X = displayWidth / 2 + 2;
-    int paramBoxLFO2Y = 50;
+    int paramBoxLFO2Y = 50-yOffset;
 
     int paramBoxWaveShapeLFO1X = halfWidth / 2 + 3;
-    int paramBoxWaveShapeLFO1Y = 10;
+    int paramBoxWaveShapeLFO1Y = 10-yOffset;
     int paramBoxWaveShapeLFO2X = displayWidth - halfWidth / 2 + 3;
-    int paramBoxWaveShapeLFO2Y = 10;
+    int paramBoxWaveShapeLFO2Y = 10-yOffset;
 
     const char *paramLFO1 = ParamsStrings[currentParamIndexLFO1];
     const char *paramLFO2 = ParamsStrings[currentParamIndexLFO2];
@@ -781,7 +782,7 @@ void Dubby::UpdateLFOWindow()
     };
 
     // Define parameters for circular knobs and bounding circles
-    int circle_y = 34;              // Y-coordinate of the center of the circle
+    int circle_y = 34-yOffset;              // Y-coordinate of the center of the circle
     int circle_radius = 6;          // Radius of the circle
     int bounding_circle_radius = 7; // Radius of the bounding circle, slightly larger than the knob circle
     int selectedIndices[NUM_KNOBS] = {1, 2, 5, 6};
@@ -795,7 +796,8 @@ void Dubby::UpdateLFOWindow()
     const int offsetKnob1And2 = -6;
     const int offsetKnob3And4 = 6;
 
-    display.Fill(false);
+    //display.Fill(false);
+    ClearPane();
     display.DrawLine(halfWidth, PANE_Y_START, halfWidth, PANE_Y_END, true);
 
     // Draw the vertical line in the center of the display
@@ -972,9 +974,9 @@ void Dubby::UpdateLFOWindow()
 
     // Draw boxes for LFO1, LFO2, WaveShapeLFO1, and WaveShapeLFO2
     drawParamBox(paramWaveShapeLFO1, paramBoxWaveShapeLFO1X, paramBoxWaveShapeLFO1Y, paramBoxWaveShapeWidth, paramBoxWaveShapeHeight, isSelected[0], selectIndexMode);
-    drawParamBox(paramLFO1, paramBoxLFO1X, paramBoxLFO1Y, paramBoxLFOWidth, paramBoxLFOHeight, isSelected[3], selectIndexMode);
+    drawParamBox(paramLFO1, paramBoxLFO1X, paramBoxLFO1Y-1, paramBoxLFOWidth, paramBoxLFOHeight, isSelected[3], selectIndexMode);
     drawParamBox(paramWaveShapeLFO2, paramBoxWaveShapeLFO2X, paramBoxWaveShapeLFO2Y, paramBoxWaveShapeWidth, paramBoxWaveShapeHeight, isSelected[4], selectIndexMode);
-    drawParamBox(paramLFO2, paramBoxLFO2X, paramBoxLFO2Y, paramBoxLFOWidth, paramBoxLFOHeight, isSelected[7], selectIndexMode);
+    drawParamBox(paramLFO2, paramBoxLFO2X, paramBoxLFO2Y-1, paramBoxLFOWidth, paramBoxLFOHeight, isSelected[7], selectIndexMode);
 
     // visualizeKnobValuesCircle(customLabels, numDecimals);
 
@@ -996,10 +998,7 @@ void Dubby::UpdateLFOWindow()
             circle_x_offset += offsetKnob3And4;
         }
 
-bool negative = false;
-        if (selectIndexMode == true && selected == true){
-           negative = true; 
-        }
+      
         // Draw circular knob
         display.DrawCircle(circle_x_offset, circle_y, bounding_circle_radius, selected); // Draw filled knob circle
         display.DrawCircle(circle_x_offset, circle_y, circle_radius, true);              // Draw filled knob circle
@@ -1042,7 +1041,7 @@ bool negative = false;
     }
 
     // Update the display to show the changes
-    display.Update();
+   // display.Update();
 }
 
 void Dubby::UpdateLFO()
