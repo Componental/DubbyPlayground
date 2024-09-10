@@ -21,9 +21,8 @@ PersistentStorage<PersistantMemoryParameterSettings> SavedParameterSettings(dubb
 
 void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, size_t size)
 {
-    dubby.ProcessLFO();
-
-
+    dubby.ProcessLFO(); // test
+    
     for (size_t i = 0; i < size; i++)
     {
         for (int j = 0; j < NUM_AUDIO_CHANNELS; j++)
