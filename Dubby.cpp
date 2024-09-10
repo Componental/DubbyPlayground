@@ -58,6 +58,18 @@ using namespace daisy;
 #define MIDILIST_SPACING 8
 #define MIDILIST_ROWS_ON_SCREEN 5
 
+#define MODAL_X_START 10
+#define MODAL_X_END 117
+#define MODAL_Y_START 5
+#define MODAL_Y_END 54
+
+#define MODAL_LEFT_OPTION_X_START 25
+#define MODAL_LEFT_OPTION_Y_START 35
+#define MODAL_RIGHT_OPTION_X_START 70
+#define MODAL_RIGHT_OPTION_Y_START 35
+#define MODAL_OPTION_WIDTH 33
+#define MODAL_OPTION_HEIGHT 12
+
 #define ENCODER_LONGPRESS_THRESHOLD 300
 
 int currentBitmapIndex = 2; // Initial bitmap index
@@ -96,7 +108,9 @@ void Dubby::Init()
 
     scrollbarWidth = int(128 / WIN_LAST);
 
+    InitLEDs();
     InitDisplay();
+    InitLEDs();
     InitEncoder();
     InitAudio();
     InitMidi();
@@ -170,6 +184,13 @@ void Dubby::InitDisplay()
     display.Init(disp_cfg);
 }
 
+void Dubby::InitLEDs()
+{
+    initLED();
+    setLED(1, NO_COLOR, 0);
+    setLED(0, NO_COLOR, 0);
+    updateLED();
+}
 void Dubby::InitDubbyControls()
 {
     dubbyCtrls[0].Init(CONTROL_NONE, 0);
@@ -183,8 +204,6 @@ void Dubby::InitDubbyControls()
     dubbyCtrls[8].Init(BTN4, 0);
     dubbyCtrls[9].Init(JSX, 0);
     dubbyCtrls[10].Init(JSY, 0);
-    // dubbyCtrls[10].addParamValue(RESONANCE);
-
     dubbyCtrls[11].Init(JSSW, 0);
 }
 
@@ -240,67 +259,99 @@ float Dubby::GetAudioOutGain(AudioOuts out)
 void Dubby::UpdateDisplay()
 {
 
-    if (encoder.TimeHeldMs() > ENCODER_LONGPRESS_THRESHOLD && !windowSelectorActive)
+    if (!isModalActive)
     {
-        windowSelectorActive = true;
-    }
-
-    if (windowSelectorActive)
-    {
-        HighlightWindowItem();
-        if (encoder.Increment())
-            UpdateWindowSelector(encoder.Increment(), true);
-
-        if (encoder.RisingEdge())
+        if (encoder.TimeHeldMs() > ENCODER_LONGPRESS_THRESHOLD && !windowSelectorActive)
         {
-            windowSelectorActive = false;
-
-            ReleaseWindowSelector();
-            UpdateWindowList();
+            windowSelectorActive = true;
+            encoder.EnableAcceleration(false);
         }
 
-        if (!wasEncoderJustInHighlightMenu && EncoderFallingEdgeCustom())
-            wasEncoderJustInHighlightMenu = true;
-    }
-
-    if (wasEncoderJustInHighlightMenu && EncoderFallingEdgeCustom())
-    {
-        if (highlightMenuCounter < 2)
+        if (windowSelectorActive)
         {
-            highlightMenuCounter++;
+            HighlightWindowItem();
+            if (encoder.Increment())
+                UpdateWindowSelector(encoder.Increment(), true);
+
+            if (encoder.RisingEdge())
+            {
+                windowSelectorActive = false;
+                ReleaseWindowSelector();
+                UpdateWindowList();
+            }
+
+            if (!wasEncoderJustInHighlightMenu && EncoderFallingEdgeCustom())
+                wasEncoderJustInHighlightMenu = true;
         }
-        else
+
+        if (wasEncoderJustInHighlightMenu && EncoderFallingEdgeCustom())
         {
-            wasEncoderJustInHighlightMenu = false;
-            highlightMenuCounter = 0;
+            if (highlightMenuCounter < 2)
+            {
+                highlightMenuCounter++;
+            }
+            else
+            {
+                wasEncoderJustInHighlightMenu = false;
+                highlightMenuCounter = 0;
+            }
+        }
+
+        switch (windowItemSelected)
+        {
+        case WIN1:
+            UpdateRenderPane();
+            break;
+        case WIN2:
+            UpdateMixerPane();
+            break;
+        case WIN3:
+            UpdateGlobalSettingsPane();
+            break;
+        case WIN4:
+            UpdateParameterPane();
+            break;
+        case WIN5:
+            UpdateMidiSettingsPane();
+            break;
+        case WIN6:
+            // UpdateChannelMappingPane();
+            break;
+        case WIN7:
+            UpdateLFOWindow();
+            break;
+        default:
+            break;
         }
     }
-
-    switch (windowItemSelected)
+    else
     {
-    case WIN1:
-        UpdateRenderPane();
-        break;
-    case WIN2:
-        UpdateMixerPane();
-        break;
-    case WIN3:
-        UpdateGlobalSettingsPane();
-        break;
-    case WIN4:
-        UpdateParameterPane();
-        break;
-    case WIN5:
-        UpdateMidiSettingsPane();
-        break;
-    case WIN6:
-       // UpdateChannelMappingPane();
-        break;
-    case WIN7:
+        if ((encoder.Increment() == 1 && modalOptionSelected == 0) || (encoder.Increment() == -1 && modalOptionSelected == 1))
+        {
+            ChangeModalOption();
+        }
+        else if (EncoderRisingEdgeCustom())
+        {
+            if (modalOptionSelected == YES)
+            {
+                switch (preferencesMenuItemSelected)
+                {
+                case DFUMODE:
+                    ResetToBootloader();
+                    break;
+                case SAVEMEMORY:
+                    trigger_save_parameters_qspi = true;
+                    break;
+                case RESETMEMORY:
+                    trigger_reset_parameters_qspi = true;
+                    break;
+                default:
+                    break;
+                }
+            }
 
-        break;
-    default:
-        break;
+            CloseModal();
+        }
     }
 }
 
@@ -425,21 +476,27 @@ void Dubby::UpdateMixerPane()
         isBarSelected = !isBarSelected;
         if (isBarSelected)
         {
+            encoder.EnableAcceleration(true);
             std::string str = (mixerPageSelected == INPUTS ? "in" : "out") + std::to_string(barSelector % 4 + 1) + ":" + std::to_string(audioGains[mixerPageSelected][barSelector % 4]).substr(0, std::to_string(audioGains[mixerPageSelected][barSelector % 4]).find(".") + 3);
             UpdateStatusBar(&str[0], RIGHT);
         }
         else
         {
+            encoder.EnableAcceleration(false);
             UpdateStatusBar(" ", RIGHT);
         }
     }
 
     if (isBarSelected)
     {
-        if ((increment == 1 && audioGains[mixerPageSelected][barSelector % 4] < 1.0f) || (increment == -1 && audioGains[mixerPageSelected][barSelector % 4] > 0.0001f))
+        if ((increment > 0 && audioGains[mixerPageSelected][barSelector % 4] < 1.0f) || (increment < 0 && audioGains[mixerPageSelected][barSelector % 4] > 0.0001f))
         {
-            audioGains[mixerPageSelected][barSelector % 4] += increment / 20.f;
-            audioGains[mixerPageSelected][barSelector % 4] = abs(audioGains[mixerPageSelected][barSelector % 4]);
+            audioGains[mixerPageSelected][barSelector % 4] += increment / 100.f;
+
+            if (audioGains[mixerPageSelected][barSelector % 4] > 1.0f)
+                audioGains[mixerPageSelected][barSelector % 4] = 1.0f;
+            else if (audioGains[mixerPageSelected][barSelector % 4] < 0.0f)
+                audioGains[mixerPageSelected][barSelector % 4] = 0.0f;
 
             std::string str = (mixerPageSelected == INPUTS ? "in" : "out") + std::to_string(barSelector % 4 + 1) + ":" + std::to_string(audioGains[mixerPageSelected][barSelector % 4]).substr(0, std::to_string(audioGains[mixerPageSelected][barSelector % 4]).find(".") + 3);
             UpdateStatusBar(&str[0], RIGHT);
@@ -470,7 +527,7 @@ void Dubby::UpdateWindowList()
             UpdateBar(i);
         break;
     case WIN3:
-        DisplayPreferencesMenuList(0);
+        DisplayPreferencesMenuList(preferencesMenuItemSelected);
         break;
     case WIN4:
         UpdateStatusBar(" PARAM       CTRL      VALUE  >", LEFT);
@@ -490,7 +547,7 @@ void Dubby::UpdateWindowList()
         // UpdateChannelMappingPane();
         break;
     case WIN7:
-
+        UpdateLFOWindow();
         break;
     default:
         break;
@@ -672,10 +729,352 @@ void Dubby::UpdateChannelMappingPane()
     display.Update();
 }
 
-void Dubby::UpdateLFOWindow(int i)
+void Dubby::UpdateLFOWindow()
 {
-    // Update the display after drawing all elements
+    UpdateStatusBar("LFO 1           LFO 2 ", LEFT);
+
+    int16_t displayWidth = display.Width();
+    int16_t displayHeight = display.Height();
+    int16_t yStart = displayHeight / 5 - 2;
+    int16_t halfWidth = displayWidth / 2;
+    int16_t rectHeight = 8;
+    // Define the bounding box dimensions for LFO1 and LFO2
+    int16_t lfo1BoundingBoxStartX = 0;
+    int16_t lfo1BoundingBoxEndX = halfWidth / 2;
+
+    int16_t lfo2BoundingBoxStartX = halfWidth;
+    int16_t lfo2BoundingBoxEndX = halfWidth + halfWidth / 2;
+
+    static bool isSelected[] = {true, false, false, false, false, false, false, false}; // 0: LFO1, 1: LFO2, 2: WaveShapeLFO1, 3: WaveShapeLFO2
+    static bool selectIndexMode = false;
+    float maxRateLFO = 10000.f;
+
+    // Define box dimensions for LFO and WaveShape parameters
+    int paramBoxLFOWidth = 34;
+    int paramBoxLFOHeight = 8;
+    int paramBoxWaveShapeWidth = 26;
+    int paramBoxWaveShapeHeight = 8;
+
+    // Define positions for parameter boxes
+    int paramBoxLFO1X = 2;
+    int paramBoxLFO1Y = 50;
+    int paramBoxLFO2X = displayWidth / 2 + 2;
+    int paramBoxLFO2Y = 50;
+
+    int paramBoxWaveShapeLFO1X = halfWidth / 2 + 3;
+    int paramBoxWaveShapeLFO1Y = 10;
+    int paramBoxWaveShapeLFO2X = displayWidth - halfWidth / 2 + 3;
+    int paramBoxWaveShapeLFO2Y = 10;
+
+    const char *paramLFO1 = ParamsStrings[currentParamIndexLFO1];
+    const char *paramLFO2 = ParamsStrings[currentParamIndexLFO2];
+    const char *paramWaveShapeLFO1 = LFOWaveFormsStrings[currentParamIndexLFO1WaveShape];
+    const char *paramWaveShapeLFO2 = LFOWaveFormsStrings[currentParamIndexLFO2WaveShape];
+
+    // Draw parameter boxes and strings
+    auto drawParamBox = [&](const char *param, int16_t x, int16_t y, int width, int height, bool selected, bool selectIndexMode)
+    {
+        bool fill = selected && selectIndexMode;
+        display.DrawRect(x, y, x + width, y + height, selected, fill);
+        display.SetCursor(x + 1, y + 2);
+        display.WriteString(param, Font_4x5, !fill);
+    };
+
+    // Define parameters for circular knobs and bounding circles
+    int circle_y = 34;              // Y-coordinate of the center of the circle
+    int circle_radius = 6;          // Radius of the circle
+    int bounding_circle_radius = 7; // Radius of the bounding circle, slightly larger than the knob circle
+    int selectedIndices[NUM_KNOBS] = {1, 2, 5, 6};
+    // Calculate total width occupied by circles
+    int totalWidth = NUM_KNOBS * 2 * bounding_circle_radius;
+
+    // Calculate space between circles
+    int circleSpacing = (OLED_WIDTH - totalWidth) / (NUM_KNOBS + 1);
+
+    // Define offsets for knobs
+    const int offsetKnob1And2 = -6;
+    const int offsetKnob3And4 = 6;
+
+    display.Fill(false);
+    display.DrawLine(halfWidth, PANE_Y_START, halfWidth, PANE_Y_END, true);
+
+    // Draw the vertical line in the center of the display
+    display.DrawLine(halfWidth, PANE_Y_START, halfWidth, PANE_Y_END, true);
+
+    // Draw bounding box for LFO1
+    display.DrawRect(lfo1BoundingBoxStartX, yStart, lfo1BoundingBoxEndX, yStart + rectHeight, true, false);
+
+    // Draw rectangles for lfo1Value (left half)
+    if (lfo1Value != 0)
+    {
+        int16_t x1_lfo1 = (lfo1Value < 0) ? halfWidth / 4 + (lfo1Value * (halfWidth / 2)) + 1 : halfWidth / 4 + 1;
+        int16_t x2_lfo1 = (lfo1Value > 0) ? halfWidth / 4 + (lfo1Value * (halfWidth / 2)) : halfWidth / 4; // Subtract 2 pixels for width and move right by 2 pixels
+        display.DrawRect(x1_lfo1, yStart, x2_lfo1, yStart + rectHeight, true, true);
+    }
+
+    // Draw bounding box for LFO2
+    display.DrawRect(lfo2BoundingBoxStartX, yStart, lfo2BoundingBoxEndX, yStart + rectHeight, true, false);
+
+    // Draw rectangles for lfo2Value (right half)
+    if (lfo2Value != 0)
+    {
+        int16_t x1_lfo2 = (lfo2Value < 0) ? halfWidth + halfWidth / 4 + (lfo2Value * (halfWidth / 2)) + 1 : halfWidth + halfWidth / 4 + 1;
+        int16_t x2_lfo2 = (lfo2Value > 0) ? halfWidth + halfWidth / 4 + (lfo2Value * (halfWidth / 2)) : halfWidth + halfWidth / 4; // Subtract 2 pixels for width and move right by 2 pixels
+        display.DrawRect(x1_lfo2, yStart, x2_lfo2, yStart + rectHeight, true, true);
+    }
+
+    int increment = encoder.Increment();
+
+    if (EncoderFallingEdgeCustom() && !windowSelectorActive)
+        selectIndexMode = !selectIndexMode;
+
+    // Determine which parameter box is selected
+    int selectedIndex = -1;
+    for (int i = 0; i < 8; ++i)
+    {
+        if (isSelected[i])
+        {
+            selectedIndex = i;
+            break;
+        }
+    }
+
+    // Update the parameter index based on selection mode
+    if (increment != 0 && !windowSelectorActive)
+    {
+        if (selectIndexMode && selectedIndex != -1)
+        {
+            int paramCount = PARAMS_LAST; // Assuming PARAMS_LAST is the total number of parameters
+            int waveformCount = daisysp::Oscillator::WAVE_LAST - 3;
+            switch (selectedIndex)
+            {
+            case 0: // WaveShapeLFO1
+                encoder.EnableAcceleration(false);
+
+                currentParamIndexLFO1WaveShape = (currentParamIndexLFO1WaveShape + increment + waveformCount) % waveformCount;
+
+                break;
+
+            case 1:
+                    
+
+                encoder.EnableAcceleration(true);
+                // Update knobValues[1] with encoder increment
+                knobValues[0] += encoder.Increment() * 1.;
+
+                // Clamp knobValues[1] between 0 and 20
+                if (knobValues[0] < 0.0f)
+                {
+                    knobValues[0] = 0.0f;
+                }
+                else if (knobValues[0] > maxRateLFO)
+                {
+                    knobValues[0] = maxRateLFO;
+                }
+                break;
+            case 2:
+                encoder.EnableAcceleration(false);
+
+                // Update knobValues[1] with encoder increment
+                knobValues[1] += encoder.Increment() * 0.05f;
+
+                // Clamp knobValues[1] between 0 and 20
+                if (knobValues[1] < 0.0f)
+                {
+                    knobValues[1] = 0.0f;
+                }
+                else if (knobValues[1] > 1.0f)
+                {
+                    knobValues[1] = 1.0f;
+                }
+                break;
+            case 3: // PARAM LFO1
+                encoder.EnableAcceleration(false);
+
+                currentParamIndexLFO1 = (currentParamIndexLFO1 + increment + paramCount) % paramCount;
+
+                break;
+            case 4: // WaveShapeLFO2
+                encoder.EnableAcceleration(false);
+
+                currentParamIndexLFO2WaveShape = (currentParamIndexLFO2WaveShape + increment + waveformCount) % waveformCount;
+
+                break;
+            case 5:
+                encoder.EnableAcceleration(true);
+
+                // Update knobValues[1] with encoder increment
+                knobValues[2] += encoder.Increment() * 1.f;
+
+                // Clamp knobValues[1] between 0 and 20
+                if (knobValues[2] < 0.0f)
+                {
+                    knobValues[2] = 0.0f;
+                }
+                else if (knobValues[2] > maxRateLFO)
+                {
+                    knobValues[2] = maxRateLFO;
+                }
+                break;
+            case 6:
+                encoder.EnableAcceleration(false);
+
+                knobValues[3] += encoder.Increment() * 0.05f;
+
+                // Clamp knobValues[1] between 0 and 20
+                if (knobValues[3] < 0.0f)
+                {
+                    knobValues[3] = 0.0f;
+                }
+                else if (knobValues[3] > 1.0f)
+                {
+                    knobValues[3] = 1.0f;
+                }
+                break;
+            case 7: // WaveShapeLFO2
+                encoder.EnableAcceleration(false);
+
+                currentParamIndexLFO2 = (currentParamIndexLFO2 + increment + paramCount) % paramCount;
+                break;
+            }
+        }
+        else
+        {
+            // Switch selection mode
+            if (selectIndexMode)
+            {
+                // Switch selection based on increment
+                int newIndex = (selectedIndex + increment + 8) % 8;
+                // Deselect all other boxes
+                for (int i = 0; i < 8; ++i)
+                {
+                    isSelected[i] = false;
+                }
+                // Select the new index
+                isSelected[newIndex] = true;
+            }
+            else
+            {
+                // Toggle selection between parameters
+                int nextIndex = (selectedIndex + increment + 8) % 8;
+                // Ensure the nextIndex stays within bounds
+                nextIndex = (nextIndex < 0) ? (nextIndex + 8) % 8 : nextIndex;
+                // Deselect all other boxes
+                for (int i = 0; i < 8; ++i)
+                {
+                    isSelected[i] = false;
+                }
+                // Select the next box
+                isSelected[nextIndex] = true;
+            }
+        }
+    }
+
+    // Draw boxes for LFO1, LFO2, WaveShapeLFO1, and WaveShapeLFO2
+    drawParamBox(paramWaveShapeLFO1, paramBoxWaveShapeLFO1X, paramBoxWaveShapeLFO1Y, paramBoxWaveShapeWidth, paramBoxWaveShapeHeight, isSelected[0], selectIndexMode);
+    drawParamBox(paramLFO1, paramBoxLFO1X, paramBoxLFO1Y, paramBoxLFOWidth, paramBoxLFOHeight, isSelected[3], selectIndexMode);
+    drawParamBox(paramWaveShapeLFO2, paramBoxWaveShapeLFO2X, paramBoxWaveShapeLFO2Y, paramBoxWaveShapeWidth, paramBoxWaveShapeHeight, isSelected[4], selectIndexMode);
+    drawParamBox(paramLFO2, paramBoxLFO2X, paramBoxLFO2Y, paramBoxLFOWidth, paramBoxLFOHeight, isSelected[7], selectIndexMode);
+
+    // visualizeKnobValuesCircle(customLabels, numDecimals);
+
+    // Loop through each knob value
+    for (int i = 0; i < NUM_KNOBS; ++i)
+    {
+        bool selected = isSelected[selectedIndices[i]];
+
+        // Calculate knob x-coordinate with the applied offsets
+        int circle_x_offset = circleSpacing * (i + 1) + bounding_circle_radius + i * 2 * bounding_circle_radius;
+
+        // Apply offsets based on knob ƒindex
+        if (i == 0 || i == 1)
+        { // Knobs 1 and 2
+            circle_x_offset += offsetKnob1And2;
+        }
+        else if (i == 2 || i == 3)
+        { // Knobs 3 and 4
+            circle_x_offset += offsetKnob3And4;
+        }
+
+bool negative = false;
+        if (selectIndexMode == true && selected == true){
+           negative = true; 
+        }
+        // Draw circular knob
+        display.DrawCircle(circle_x_offset, circle_y, bounding_circle_radius, selected); // Draw filled knob circle
+        display.DrawCircle(circle_x_offset, circle_y, circle_radius, true);              // Draw filled knob circle
+
+        // Normalize the knob value for the first and third knobs
+        float normalizedValue = knobValues[i];
+        if (i == 0 || i == 2) // Knobs 1 and 3
+        {
+            normalizedValue = knobValues[i] / maxRateLFO; // Normalize to 0-1 range
+        }
+
+        // Calculate angle for the current knob
+        float angle = (normalizedValue * 0.8f * 2 * PI_F) - (PI_F * 1.5f) + 0.2 * PI_F; // Convert normalized value to angle
+        // Calculate line end position based on knob value
+        int line_end_x = circle_x_offset + static_cast<int>(circle_radius * cos(angle));
+        int line_end_y = circle_y + static_cast<int>(circle_radius * sin(angle));
+
+        // Draw line indicating knob value
+        display.DrawLine(circle_x_offset, circle_y, line_end_x, line_end_y, true);
+
+        // Calculate the position for the label to be centered above the circle
+        int label_x = circle_x_offset - (customLabels[i].size() * 4) / 2; // Assuming each character is 4 pixels wide in the selected font
+        int label_y = circle_y - 13;                                      // Adjust this value to position the label properly above the circle
+
+        // Draw custom label above each circle
+        display.SetCursor(label_x, label_y);
+        display.WriteString(customLabels[i].c_str(), Font_4x5, true);
+
+        // Format knob value as string
+        char formattedValue[10];
+        snprintf(formattedValue, 10, "%.*f", numDecimals[i], knobValues[i]);
+
+        // Calculate the position for the value to be centered under the circle
+        int value_width = strlen(formattedValue) * 4; // Assuming each character is 4 pixels wide in the selected font
+        int value_x = circle_x_offset - value_width / 2;
+
+        // Draw knob value below the label
+        display.SetCursor(value_x, circle_y + 9);
+        display.WriteString(formattedValue, Font_4x5, true);
+    }
+
+    // Update the display to show the changes
     display.Update();
+}
+
+void Dubby::UpdateLFO()
+{
+    lfo1.SetWaveform(currentParamIndexLFO1WaveShape);
+    lfo1.SetFreq(knobValues[0]);
+    lfo2.SetWaveform(currentParamIndexLFO2WaveShape);
+    lfo2.SetFreq(knobValues[2]);
+}
+
+void Dubby::ProcessLFO()
+{
+    lfo1Value = lfo1.Process() * knobValues[1];
+    lfo2Value = lfo2.Process() * knobValues[3];
+
+    if (currentParamIndexLFO1)
+    {
+        lfo1Values[currentParamIndexLFO1] = lfo1Value;
+    }
+    else
+    {
+        lfo1Values[currentParamIndexLFO1] = 0;
+    }
+
+    if (currentParamIndexLFO2)
+    {
+        lfo2Values[currentParamIndexLFO2] = lfo2Value;
+    }
+    else
+    {
+        lfo2Values[currentParamIndexLFO2] = 0;
+    }
 }
 
 void Dubby::UpdateBar(int i)
@@ -733,14 +1132,24 @@ void Dubby::UpdateGlobalSettingsPane()
 
     DisplayPreferencesSubMenuList(encoder.Increment(), preferencesMenuItemSelected);
 
-    if (EncoderFallingEdgeCustom())
+    if (EncoderRisingEdgeCustom() && !windowSelectorActive)
     {
-        if (preferencesMenuItemSelected == SAVEMEMORY)
-            trigger_save_parameters_qspi = true;
-        if (preferencesMenuItemSelected == RESETMEMORY)
-            trigger_reset_parameters_qspi = true;
-        else if (preferencesMenuItemSelected == DFUMODE)
-            ResetToBootloader();
+        switch (preferencesMenuItemSelected)
+        {
+        case MIDI:
+            break;
+        case SAVEMEMORY:
+            OpenModal("ARE YOU SURE?");
+            break;
+        case RESETMEMORY:
+            OpenModal("ARE YOU SURE?");
+            break;
+        case DFUMODE:
+            OpenModal("ARE YOU SURE?");
+            break;
+        default:
+            break;
+        }
     }
 
     if (encoder.Increment() && !windowSelectorActive && !isSubMenuActive)
@@ -783,8 +1192,6 @@ void Dubby::UpdateParameterPane()
             isListeningControlChange = false;
             isEncoderIncrementDisabled = false;
             UpdateStatusBar(" PARAM       CTRL      VALUE  >", LEFT);
-
-            // trigger_save_parameters_qspi = true;
         }
         else
         {
@@ -800,7 +1207,6 @@ void Dubby::UpdateParameterPane()
 
                     isListeningControlChange = false;
                     isEncoderIncrementDisabled = false;
-                    // trigger_save_parameters_qspi = true;
                 }
             }
         }
@@ -821,15 +1227,13 @@ void Dubby::UpdateParameterPane()
             isCurveChanging = false;
             isEncoderIncrementDisabled = false;
             UpdateStatusBar(" PARAM       CTRL   <  CURVE   ", LEFT);
-
-            // trigger_save_parameters_qspi = true;
         }
     }
     else if (isMinChanging)
     {
         if (encoder.Increment())
         {
-            int incrementValue = encoder.Increment();
+            float incrementValue = encoder.Increment() / 100.0f;
             float newValue = dubbyParameters[parameterSelected].min + incrementValue;
 
             // Check min limit
@@ -847,16 +1251,15 @@ void Dubby::UpdateParameterPane()
         {
             isMinChanging = false;
             isEncoderIncrementDisabled = false;
+            encoder.EnableAcceleration(false);
             UpdateStatusBar(" PARAM       CTRL   <  MIN    >", LEFT);
-
-            // trigger_save_parameters_qspi = true;
         }
     }
     else if (isMaxChanging)
     {
         if (encoder.Increment())
         {
-            int incrementValue = encoder.Increment();
+            float incrementValue = encoder.Increment() / 100.0f;
             float newValue = dubbyParameters[parameterSelected].max + incrementValue;
 
             // Check min limit
@@ -875,33 +1278,39 @@ void Dubby::UpdateParameterPane()
         {
             isMaxChanging = false;
             isEncoderIncrementDisabled = false;
+            encoder.EnableAcceleration(false);
             UpdateStatusBar(" PARAM       CTRL   <  MAX    >", LEFT);
-
-            // trigger_save_parameters_qspi = true;
         }
     }
     else if (isValueChanging)
     {
-        if (encoder.Increment())
+        float incrementValue = encoder.Increment() / 100.0f;
+        if (incrementValue)
         {
-            if (encoder.Increment() == -1)
+            if (incrementValue < 0)
             {
                 if (dubbyParameters[parameterSelected].value > dubbyParameters[parameterSelected].min)
                 {
-                    if ((dubbyParameters[parameterSelected].value + encoder.Increment()) < dubbyParameters[parameterSelected].min)
-                        dubbyParameters[parameterSelected].value = ceil(dubbyParameters[parameterSelected].value + encoder.Increment());
+                    if ((dubbyParameters[parameterSelected].value + incrementValue) < dubbyParameters[parameterSelected].min)
+                        dubbyParameters[parameterSelected].baseValue = ceil(dubbyParameters[parameterSelected].value + incrementValue);
                     else
-                        dubbyParameters[parameterSelected].value += encoder.Increment();
+                        dubbyParameters[parameterSelected].baseValue += incrementValue;
+
+                    if (dubbyParameters[parameterSelected].value < dubbyParameters[parameterSelected].min)
+                        dubbyParameters[parameterSelected].baseValue = dubbyParameters[parameterSelected].min;
                 }
             }
-            else if (encoder.Increment() == 1)
+            else if (incrementValue > 0)
             {
                 if (dubbyParameters[parameterSelected].value < dubbyParameters[parameterSelected].max)
                 {
-                    if ((dubbyParameters[parameterSelected].value + encoder.Increment()) > dubbyParameters[parameterSelected].max)
-                        dubbyParameters[parameterSelected].value = floor(dubbyParameters[parameterSelected].value + encoder.Increment());
+                    if ((dubbyParameters[parameterSelected].value + incrementValue) > dubbyParameters[parameterSelected].max)
+                        dubbyParameters[parameterSelected].baseValue = floor(dubbyParameters[parameterSelected].value + incrementValue);
                     else
-                        dubbyParameters[parameterSelected].value += encoder.Increment();
+                        dubbyParameters[parameterSelected].baseValue += incrementValue;
+
+                    if (dubbyParameters[parameterSelected].value > dubbyParameters[parameterSelected].max)
+                        dubbyParameters[parameterSelected].baseValue = dubbyParameters[parameterSelected].max;
                 }
             }
         }
@@ -909,9 +1318,8 @@ void Dubby::UpdateParameterPane()
         {
             isValueChanging = false;
             isEncoderIncrementDisabled = false;
+            encoder.EnableAcceleration(false);
             UpdateStatusBar(" PARAM       CTRL      VALUE  >", LEFT);
-
-            // trigger_save_parameters_qspi = true;
         }
     }
 
@@ -972,6 +1380,7 @@ void Dubby::UpdateParameterPane()
                 UpdateStatusBar("SELECT MIN VALUE", MIDDLE, 127);
                 isEncoderIncrementDisabled = true;
                 isMinChanging = true;
+                encoder.EnableAcceleration(true);
             }
         }
         else if (parameterOptionSelected == MAX)
@@ -981,6 +1390,7 @@ void Dubby::UpdateParameterPane()
                 UpdateStatusBar("SELECT MAX VALUE", MIDDLE, 127);
                 isEncoderIncrementDisabled = true;
                 isMaxChanging = true;
+                encoder.EnableAcceleration(true);
             }
         }
         else if (parameterOptionSelected == VALUE && dubbyParameters[parameterSelected].control == CONTROL_NONE)
@@ -990,6 +1400,7 @@ void Dubby::UpdateParameterPane()
                 UpdateStatusBar("SELECT A VALUE", MIDDLE, 127);
                 isEncoderIncrementDisabled = true;
                 isValueChanging = true;
+                encoder.EnableAcceleration(true);
             }
         }
     }
@@ -997,18 +1408,17 @@ void Dubby::UpdateParameterPane()
 
 void Dubby::UpdateMidiSettingsPane()
 {
-     DisplayMidiSettingsList(encoder.Increment());
+    DisplayMidiSettingsList(encoder.Increment());
 
-        if (encoder.Increment() && !windowSelectorActive && !isMidiSettingSelected)
-            UpdateMidiSettingsList(encoder.Increment());
+    if (encoder.Increment() && !windowSelectorActive && !isMidiSettingSelected)
+        UpdateMidiSettingsList(encoder.Increment());
 
-        if (encoder.FallingEdge() && !wasEncoderJustInHighlightMenu && !windowSelectorActive)
-        {
-            isMidiSettingSelected = !isMidiSettingSelected;
+    if (encoder.FallingEdge() && !wasEncoderJustInHighlightMenu && !windowSelectorActive)
+    {
+        isMidiSettingSelected = !isMidiSettingSelected;
 
-            UpdateMidiSettingsList(encoder.Increment());
-        }
-
+        UpdateMidiSettingsList(encoder.Increment());
+    }
 }
 void Dubby::RenderScope()
 {
@@ -1113,6 +1523,7 @@ void Dubby::DisplayPreferencesSubMenuList(int increment, PreferencesMenuItems pr
     }
 
     int optionStart = 1;
+
     if (subMenuSelector > (MENULIST_ROWS_ON_SCREEN - 1))
     {
         optionStart = subMenuSelector - (MENULIST_ROWS_ON_SCREEN - 1);
@@ -1477,8 +1888,17 @@ void Dubby::ProcessAllControls()
     dubbyCtrls[11].value = joystickButton.Pressed();
 
     for (int i = 0; i < PARAMS_LAST; i++)
+    {
         if (dubbyParameters[i].control != CONTROL_NONE)
+        {
             dubbyParameters[i].CalculateRealValue(dubbyCtrls[dubbyParameters[i].control].value);
+            dubbyParameters[i].value = daisysp::fclamp(dubbyParameters[i].value + (lfo1Values[i] * (dubbyParameters[i].max - dubbyParameters[i].min)) + (lfo2Values[i] * (dubbyParameters[i].max - dubbyParameters[i].min)), dubbyParameters[i].min, dubbyParameters[i].max);
+        }
+        else
+        {
+            dubbyParameters[i].value = daisysp::fclamp(dubbyParameters[i].baseValue + (lfo1Values[i] * (dubbyParameters[i].max - dubbyParameters[i].min)) + (lfo2Values[i] * (dubbyParameters[i].max - dubbyParameters[i].min)), dubbyParameters[i].min, dubbyParameters[i].max);
+        }
+    }
 }
 
 void Dubby::ProcessAnalogControls()
@@ -1549,21 +1969,8 @@ bool Dubby::EncoderFallingEdgeCustom()
         {
             encoderState = reading;
 
-            if (reading)
-            {
-                std::string str = std::to_string(reading);
-                // UpdateStatusBar(&str[0], LEFT, 55);
-            }
-
-            if (encoderState)
-            {
-                std::string str = std::to_string(encoderState);
-                //   UpdateStatusBar(&str[0], RIGHT, 55);
-            }
-
             if (encoderState == true)
             { // Encoder button pressed
-
                 return true;
             }
         }
@@ -1572,6 +1979,72 @@ bool Dubby::EncoderFallingEdgeCustom()
     encoderLastState = reading;
 
     return false;
+}
+
+bool Dubby::EncoderRisingEdgeCustom()
+{
+    bool reading = encoder.Pressed(); // Read the encoder button state, assuming true is pressed
+
+    if (reading != encoderLastState)
+    {
+        encoderLastDebounceTime = seed.system.GetNow();
+    }
+
+    if ((seed.system.GetNow() - encoderLastDebounceTime) > encoderDebounceDelay)
+    {
+
+        if (reading != encoderState)
+        {
+            encoderState = reading;
+
+            if (encoderState == false)
+            { // Encoder button released
+                return true;
+            }
+        }
+    }
+
+    encoderLastState = reading;
+
+    return false;
+}
+
+void Dubby::OpenModal(const char *text)
+{
+    isModalActive = true;
+
+    display.DrawRect(MODAL_X_START - 2, MODAL_Y_START - 2, MODAL_X_END + 2, MODAL_Y_END + 2, false, true);
+    display.DrawRect(MODAL_X_START, MODAL_Y_START, MODAL_X_END, MODAL_Y_END, true);
+
+    display.WriteStringAligned(text, Font_6x8, Rectangle(MODAL_X_START + 5, MODAL_Y_START + 5, 100, 12), Alignment::centered, true);
+
+    ChangeModalOption();
+}
+
+void Dubby::ChangeModalOption()
+{
+    modalOptionSelected = (ModalOptions)!modalOptionSelected;
+
+    display.DrawRect(MODAL_X_START + 2, MODAL_LEFT_OPTION_Y_START - 2, MODAL_X_END - 2, MODAL_LEFT_OPTION_Y_START + MODAL_OPTION_HEIGHT + 2, false, true);
+
+    display.DrawRect(MODAL_LEFT_OPTION_X_START, MODAL_LEFT_OPTION_Y_START, MODAL_LEFT_OPTION_X_START + MODAL_OPTION_WIDTH, MODAL_LEFT_OPTION_Y_START + MODAL_OPTION_HEIGHT, true, !modalOptionSelected);
+    display.WriteStringAligned("YES", Font_6x8, Rectangle(MODAL_LEFT_OPTION_X_START + 1, MODAL_LEFT_OPTION_Y_START + 1, MODAL_OPTION_WIDTH, MODAL_OPTION_HEIGHT), Alignment::centered, modalOptionSelected);
+
+    display.DrawRect(MODAL_RIGHT_OPTION_X_START, MODAL_RIGHT_OPTION_Y_START, MODAL_RIGHT_OPTION_X_START + MODAL_OPTION_WIDTH, MODAL_RIGHT_OPTION_Y_START + MODAL_OPTION_HEIGHT, true, modalOptionSelected);
+    display.WriteStringAligned("NO", Font_6x8, Rectangle(MODAL_RIGHT_OPTION_X_START + 1, MODAL_RIGHT_OPTION_Y_START + 1, MODAL_OPTION_WIDTH, MODAL_OPTION_HEIGHT), Alignment::centered, !modalOptionSelected);
+
+    display.Update();
+}
+
+void Dubby::CloseModal()
+{
+    isModalActive = false;
+    modalOptionSelected = YES;
+
+    display.DrawRect(0, 0, OLED_WIDTH, OLED_WIDTH, false, true);
+
+    ReleaseWindowSelector();
+    UpdateWindowList();
 }
 
 void Dubby::InitAudio()
