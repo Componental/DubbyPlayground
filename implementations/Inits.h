@@ -31,7 +31,7 @@ void Init(Dubby& dubby)
     dubby.midi_usb.StartReceive(); 
 
     dubby.lfo1.Init(dubby.seed.AudioSampleRate());
-        dubby.lfo2.Init(dubby.seed.AudioSampleRate());
+    dubby.lfo2.Init(dubby.seed.AudioSampleRate());
 
 
 
