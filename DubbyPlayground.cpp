@@ -1,4 +1,3 @@
-#include "daisysp.h"
 #include "Dubby.h"
 #include "implementations/includes.h"
 #include "reverbsc.h"
@@ -40,6 +39,8 @@ void HandleMidiUsbMessage(MidiEvent m);
 PersistentStorage<PersistantMemoryParameterSettings> SavedParameterSettings(dubby.seed.qspi);
 void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, size_t size)
 {
+    dubby.ProcessLFO();
+
     double sumSquared[2][NUM_AUDIO_CHANNELS] = {0.0f};
     bool freeze = dubby.dubbyParameters[DLY_FREEZE].value > 0.5f;
 
@@ -109,12 +110,15 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
     SetRMSValues(dubby, sumSquared);
 }
 
-
 int main(void)
 {
     Init(dubby);
     InitMidiClock(dubby);
     InitPersistantMemory(dubby, SavedParameterSettings);
+
+    setLED(1, NO_COLOR, 0);
+    setLED(0, NO_COLOR, 0);
+    updateLED();
     // Init DSP
     sample_rate = dubby.seed.AudioSampleRate();
 
@@ -135,7 +139,6 @@ int main(void)
     }
 
     dubby.seed.StartAudio(AudioCallback);
-
     float sample_rate = dubby.seed.AudioSampleRate();
 
     while (1)
@@ -159,7 +162,7 @@ int main(void)
 
         reverbDryAmplitude = 1.f - dubby.dubbyParameters[RVB_MIX].value;
 
-        divisor =   dubby.dubbyParameters[DLY_DIVISION].value <= 0.05f   ? 8.0f
+        divisor = dubby.dubbyParameters[DLY_DIVISION].value <= 0.05f   ? 8.0f
                   : dubby.dubbyParameters[DLY_DIVISION].value <= 0.15f ? 4.0f
                   : dubby.dubbyParameters[DLY_DIVISION].value <= 0.25f ? 3.0f
                   : dubby.dubbyParameters[DLY_DIVISION].value <= 0.35f ? 2.0f
@@ -169,7 +172,7 @@ int main(void)
                   : dubby.dubbyParameters[DLY_DIVISION].value <= 0.75f ? 0.33f
                   : dubby.dubbyParameters[DLY_DIVISION].value <= 0.85f ? 0.25f
                   : dubby.dubbyParameters[DLY_DIVISION].value <= 0.95f ? 0.2f
-                                       : 0.125f;
+                                                                       : 0.125f;
 
         delayTimeMillis[0] = (dubby.dubbyParameters[DLY_TIME].value - dubby.dubbyParameters[DLY_SPREAD].value) / divisor;
         delayTimeMillis[1] = (dubby.dubbyParameters[DLY_TIME].value + dubby.dubbyParameters[DLY_SPREAD].value) / divisor;
