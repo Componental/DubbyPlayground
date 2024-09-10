@@ -64,11 +64,13 @@ int main(void)
     InitMidiClock(dubby);
     InitPersistantMemory(dubby, SavedParameterSettings);
     
+    setLED(1, NO_COLOR, 0);
+    setLED(0, NO_COLOR, 0);
+    updateLED();
 
     dubby.seed.StartAudio(AudioCallback);
     osc.Init(dubby.seed.AudioSampleRate());
     osc.SetFreq(220.f);
-
     // Set parameters for oscillator
     osc.SetWaveform(osc.WAVE_SAW);
     osc.SetAmp(0.05f);
@@ -79,8 +81,8 @@ int main(void)
         Monitor(dubby);
         MonitorMidi();
         MonitorPersistantMemory(dubby, SavedParameterSettings);
-        setLED(1, TURQUOISE, abs(0.5+dubby.lfo1Value)*50);
-        setLED(0, TURQUOISE, abs(0.5+dubby.lfo2Value)*50);
+        setLED(1, TURQUOISE, abs(0.5 + dubby.lfo1Value) * 50);
+        setLED(0, TURQUOISE, abs(0.5 + dubby.lfo2Value) * 50);
         updateLED();
     }
 }
