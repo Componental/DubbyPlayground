@@ -1150,10 +1150,34 @@ void Dubby::UpdateCurrentMappingWindow()
         }
     }
 
+    // Shorten the labels
+    for (int i = 0; i < 8; i++)
+    {
+        if (macroLabels[i].length() > 4)
+        {
+            macroLabels[i] = macroLabels[i].substr(0, 4);
+        }
+    }
+
     ClearPane(); // Clear the display area
 
+    // // Draw 2x2 rectangle in the center of the display
+    // int rectWidth = 3;  // Width of the rectangle
+    // int rectHeight = 3; // Height of the rectangle
+
+    // int centerX = OLED_WIDTH / 2;  // X-coordinate of the display center
+    // int centerY = OLED_HEIGHT / 2 + 15; // Y-coordinate of the display center
+
+    // // Calculate the top-left corner of the rectangle
+    // int rectX1 = centerX - (rectWidth / 2) - 10 * GetKnobValue(CTRL_5);
+    // int rectY1 = centerY - (rectHeight / 2) + 10 * GetKnobValue(CTRL_6);
+    // int rectX2 = centerX + (rectWidth / 2) - 1 - 10 * GetKnobValue(CTRL_5);
+    // int rectY2 = centerY + (rectHeight / 2) - 1 + 10 * GetKnobValue(CTRL_6);
+    // // Draw the centered rectangle
+    // display.DrawRect(rectX1, rectY1, rectX2, rectY2, true, true);
+
     // Define parameters for circular knobs
-    int circle_y = 37;     // Y-coordinate of the center of the circle
+    int circle_y = 14;     // Y-coordinate of the center of the circle
     int circle_radius = 5; // Radius of the circle
 
     // Adjusted spacing between knobs
@@ -1173,14 +1197,6 @@ void Dubby::UpdateCurrentMappingWindow()
     // Loop through each knob value
     for (int i = 0; i < NUM_KNOBS; ++i)
     {
-        // Truncate label to 5 characters and add a period
-        std::string truncatedLabel = macroLabels[i];
-        if (truncatedLabel.length() > 4)
-        {
-            truncatedLabel = truncatedLabel.substr(0, 4);
-            //truncatedLabel += "."; // Add a period to the end
-        }
-
         // Calculate knob x-coordinate
         int circle_x_offset = circleSpacing + (i * (2 * circle_radius + adjustedSpacing)) + circle_radius;
 
@@ -1199,46 +1215,29 @@ void Dubby::UpdateCurrentMappingWindow()
         display.DrawLine(circle_x_offset, circle_y, line_end_x, line_end_y, true);
 
         // Calculate the position for the label to be centered above the circle
-        int label_x = circle_x_offset - (truncatedLabel.size() * 4) / 2; // Assuming each character is 4 pixels wide in the selected font
+        int label_x = circle_x_offset - (macroLabels[i].size() * 4) / 2; // Assuming each character is 4 pixels wide in the selected font
         int label_y = circle_y - 14;                                     // Adjust this value to position the label properly above the circle
 
         // Draw custom label above each circle
         display.SetCursor(label_x, label_y);
-        display.WriteString(truncatedLabel.c_str(), Font_4x5, true);
+        display.WriteString(macroLabels[i].c_str(), Font_4x5, true);
     }
-
-    // Parameters for the centered rectangle
-    int rectWidth = 90; // Width of the rectangle
-    int rectHeight = 24; // Height of the rectangle
-
-    // Calculate the center position of the display
-    int centerX = OLED_WIDTH / 2;
-    int centerY = OLED_HEIGHT / 2;
-
-    // Calculate the top-left corner position of the rectangle
-    int rectX1 = centerX - (rectWidth / 2);
-    int rectY1 = centerY - (rectHeight / 2);
-    int rectX2 = centerX + (rectWidth / 2) - 1;
-    int rectY2 = centerY + (rectHeight / 2) - 1;
-
-    // Draw the centered rectangle
-    display.DrawRect(rectX1, rectY1+1, rectX2, rectY2+1, true);
 
     // Draw small rectangles in each corner
     int rectSize = 8; // Size of the rectangle
-
     const int CHAR_WIDTH = 4;
+    const int OFFSET = 26; // Adjust this offset as needed
 
     // Top-left corner
-    display.DrawRect(0, PANE_Y_START, rectSize, rectSize + PANE_Y_START, true, buttons[0].Pressed());
-    display.SetCursor(rectSize + 2, PANE_Y_START + 2);           // Adjust position for label (left-aligned to the right of the rectangle)
+    display.DrawRect(0, PANE_Y_START + OFFSET, rectSize, rectSize + PANE_Y_START + OFFSET, true, buttons[0].Pressed());
+    display.SetCursor(rectSize + 2, PANE_Y_START + OFFSET + 2);  // Adjust position for label (left-aligned to the right of the rectangle)
     display.WriteString(macroLabels[4].c_str(), Font_4x5, true); // Top-left corner label
 
     // Top-right corner
-    display.DrawRect(OLED_WIDTH - rectSize-1, PANE_Y_START, OLED_WIDTH - 1, rectSize + PANE_Y_START, true, buttons[2].Pressed());
-    int textWidth = macroLabels[5].size() * CHAR_WIDTH;                         // Approximate text width
-    display.SetCursor(OLED_WIDTH - rectSize - textWidth - 3, PANE_Y_START + 2); // Adjust position for label (right-aligned to the left of the rectangle)
-    display.WriteString(macroLabels[5].c_str(), Font_4x5, true);                // Top-right corner label
+    display.DrawRect(OLED_WIDTH - rectSize - 1, PANE_Y_START + OFFSET, OLED_WIDTH - 1, rectSize + PANE_Y_START + OFFSET, true, buttons[2].Pressed());
+    int textWidth = macroLabels[5].size() * CHAR_WIDTH;                                  // Approximate text width
+    display.SetCursor(OLED_WIDTH - rectSize - textWidth - 3, PANE_Y_START + OFFSET + 2); // Adjust position for label (right-aligned to the left of the rectangle)
+    display.WriteString(macroLabels[5].c_str(), Font_4x5, true);                         // Top-right corner label
 
     // Bottom-left corner
     display.DrawRect(0, PANE_Y_END - rectSize, rectSize, PANE_Y_END, true, buttons[1].Pressed());
@@ -1246,7 +1245,7 @@ void Dubby::UpdateCurrentMappingWindow()
     display.WriteString(macroLabels[6].c_str(), Font_4x5, true); // Bottom-left corner label
 
     // Bottom-right corner
-    display.DrawRect(OLED_WIDTH - rectSize-1, PANE_Y_END - rectSize, OLED_WIDTH - 1, PANE_Y_END, true, buttons[3].Pressed());
+    display.DrawRect(OLED_WIDTH - rectSize - 1, PANE_Y_END - rectSize, OLED_WIDTH - 1, PANE_Y_END, true, buttons[3].Pressed());
     textWidth = macroLabels[7].size() * CHAR_WIDTH;                                      // Approximate text width
     display.SetCursor(OLED_WIDTH - rectSize - textWidth - 3, PANE_Y_END - rectSize + 2); // Adjust position for label (right-aligned to the left of the rectangle)
     display.WriteString(macroLabels[7].c_str(), Font_4x5, true);                         // Bottom-right corner label
