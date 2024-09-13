@@ -1,5 +1,5 @@
 # Project Name
-TARGET = DubbyPlayground
+TARGET = MultiEffect
 
 APP_TYPE=BOOT_SRAM
 
