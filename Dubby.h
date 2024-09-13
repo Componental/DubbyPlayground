@@ -492,7 +492,7 @@ namespace daisy
         int receivedBPM;
         // uint32_t bpm = 120;
         std::vector<std::string> customLabels = {"RATE", "AMT", "RATE", "AMT"};
-                std::vector<std::string> macroLabels = {"-", "-", "-", "-"};
+        std::vector<std::string> macroLabels = {"-", "-", "-", "-", "-", "-", "-", "-"};
 
         std::vector<float> knobValues = {100.f, 0.f, 25.f, 0.f};
         std::vector<int> numDecimals = {0, 1, 0, 1}; // Assuming you have three knobs with different decimal places

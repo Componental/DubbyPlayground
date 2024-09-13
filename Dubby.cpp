@@ -211,15 +211,14 @@ void Dubby::InitDubbyControls()
 void Dubby::InitDubbyParameters()
 {
 
-    dubbyParameters[TIME].Init(Params(TIME), CONTROL_NONE, 110.f, 0, 440, LINEAR, true, 0, true, 2000);
-    dubbyParameters[FEEDBACK].Init(Params(FEEDBACK), CONTROL_NONE, 0.6f, 0, 1, LINEAR, true, 0, true, 1);
-    dubbyParameters[MIX].Init(Params(MIX), CONTROL_NONE, 0.5f, 0, 1, EXPONENTIAL, true, 0, true, 100);
-    dubbyParameters[CUTOFF].Init(Params(CUTOFF), CONTROL_NONE, 5.f, 0, 10, EXPONENTIAL, true, 0, true, 10);
-    dubbyParameters[IN_GAIN].Init(Params(IN_GAIN), CONTROL_NONE, 0.5f, 0, 5, LINEAR, true, 0, true, 5);
-    dubbyParameters[OUT_GAIN].Init(Params(OUT_GAIN), CONTROL_NONE, 0.5f, 0, 5, LINEAR, true, 0, true, 5);
-    dubbyParameters[OUT_GAIN].Init(Params(OUT_GAIN), CONTROL_NONE, 0.5f, 0, 5, LINEAR, true, 0, true, 5);
-    dubbyParameters[FREEZE].Init(Params(FREEZE), CONTROL_NONE, 0.5f, 0, 5, LINEAR, true, 0, true, 5);
-    dubbyParameters[MUTE].Init(Params(MUTE), CONTROL_NONE, 0.5f, 0, 5, LINEAR, true, 0, true, 5);
+    dubbyParameters[TIME].Init(Params(TIME), KN1, 110.f, 0, 440, LINEAR, true, 0, true, 2000);
+    dubbyParameters[FEEDBACK].Init(Params(FEEDBACK), KN2, 0.6f, 0, 1, LINEAR, true, 0, true, 1);
+    dubbyParameters[MIX].Init(Params(MIX), KN3, 0.5f, 0, 1, EXPONENTIAL, true, 0, true, 100);
+    dubbyParameters[CUTOFF].Init(Params(CUTOFF), KN4, 5.f, 0, 10, EXPONENTIAL, true, 0, true, 10);
+    dubbyParameters[IN_GAIN].Init(Params(IN_GAIN), BTN1, 0.5f, 0, 5, LINEAR, true, 0, true, 5);
+    dubbyParameters[OUT_GAIN].Init(Params(OUT_GAIN), BTN2, 0.5f, 0, 5, LINEAR, true, 0, true, 5);
+    dubbyParameters[FREEZE].Init(Params(FREEZE), BTN3, 0.5f, 0, 5, LINEAR, true, 0, true, 5);
+    dubbyParameters[MUTE].Init(Params(MUTE), BTN4, 0.5f, 0, 5, LINEAR, true, 0, true, 5);
     dubbyParameters[LOOP].Init(Params(LOOP), CONTROL_NONE, 0.5f, 0, 5, LINEAR, true, 0, true, 5);
 }
 
@@ -1079,63 +1078,111 @@ void Dubby::ProcessLFO()
 
 void Dubby::UpdateCurrentMappingWindow()
 {
-    int controlCount[CONTROLS_LAST] = {0}; // Assuming NUM_CONTROLS is the number of possible controls (e.g., KN1, KN2, KN3, KN4)
+    int controlCount[CONTROLS_LAST] = {0}; // Assuming CONTROLS_LAST is the number of possible controls (e.g., KN1, KN2, KN3, KN4)
 
     // First pass: count how many times each control appears
-    for (int i = 0; i < PARAMS_LAST; i++) {
-        if (dubbyParameters[i].control == KN1) {
+    for (int i = 0; i < PARAMS_LAST; i++)
+    {
+        switch (dubbyParameters[i].control)
+        {
+        case KN1:
             controlCount[0]++;
-        }
-        if (dubbyParameters[i].control == KN2) {
+            break;
+        case KN2:
             controlCount[1]++;
-        }
-        if (dubbyParameters[i].control == KN3) {
+            break;
+        case KN3:
             controlCount[2]++;
-        }
-        if (dubbyParameters[i].control == KN4) {
+            break;
+        case KN4:
             controlCount[3]++;
+            break;
+        case BTN1:
+            controlCount[4]++;
+            break;
+        case BTN2:
+            controlCount[5]++;
+            break;
+        case BTN3:
+            controlCount[6]++;
+            break;
+        case BTN4:
+            controlCount[7]++;
+            break;
         }
+    }
+
+    // Initialize macroLabels with default value
+    for (int i = 0; i < 8; i++)
+    {
+        macroLabels[i] = "-";
     }
 
     // Second pass: assign labels
-    for (int i = 0; i < PARAMS_LAST; i++) {
-        if (dubbyParameters[i].control == KN1) {
+    for (int i = 0; i < PARAMS_LAST; i++)
+    {
+        switch (dubbyParameters[i].control)
+        {
+        case KN1:
             macroLabels[0] = (controlCount[0] > 1) ? "MACRO" : ParamsStrings[i];
-        }
-        if (dubbyParameters[i].control == KN2) {
+            break;
+        case KN2:
             macroLabels[1] = (controlCount[1] > 1) ? "MACRO" : ParamsStrings[i];
-        }
-        if (dubbyParameters[i].control == KN3) {
+            break;
+        case KN3:
             macroLabels[2] = (controlCount[2] > 1) ? "MACRO" : ParamsStrings[i];
-        }
-        if (dubbyParameters[i].control == KN4) {
+            break;
+        case KN4:
             macroLabels[3] = (controlCount[3] > 1) ? "MACRO" : ParamsStrings[i];
+            break;
+        case BTN1:
+            macroLabels[4] = (controlCount[4] > 1) ? "MACRO" : ParamsStrings[i];
+            break;
+        case BTN2:
+            macroLabels[5] = (controlCount[5] > 1) ? "MACRO" : ParamsStrings[i];
+            break;
+        case BTN3:
+            macroLabels[6] = (controlCount[6] > 1) ? "MACRO" : ParamsStrings[i];
+            break;
+        case BTN4:
+            macroLabels[7] = (controlCount[7] > 1) ? "MACRO" : ParamsStrings[i];
+            break;
         }
     }
-
-
-
-
-
-
 
     ClearPane(); // Clear the display area
 
     // Define parameters for circular knobs
-    int circle_y = 36;     // Y-coordinate of the center of the circle
-    int circle_radius = 8; // Radius of the circle
+    int circle_y = 37;     // Y-coordinate of the center of the circle
+    int circle_radius = 5; // Radius of the circle
+
+    // Adjusted spacing between knobs
+    int adjustedSpacing = 13; // New space between the circles (reduce this value to move knobs closer together)
 
     // Calculate total width occupied by circles
     int totalWidth = NUM_KNOBS * 2 * circle_radius;
 
     // Calculate space between circles
-    int circleSpacing = (OLED_WIDTH - totalWidth) / (NUM_KNOBS + 1);
+    int circleSpacing = (OLED_WIDTH - totalWidth - (NUM_KNOBS - 1) * adjustedSpacing) / 2;
+
+    if (circleSpacing < adjustedSpacing)
+    {
+        circleSpacing = adjustedSpacing; // Ensure spacing is not negative
+    }
 
     // Loop through each knob value
     for (int i = 0; i < NUM_KNOBS; ++i)
     {
+        // Truncate label to 5 characters and add a period
+        std::string truncatedLabel = macroLabels[i];
+        if (truncatedLabel.length() > 4)
+        {
+            truncatedLabel = truncatedLabel.substr(0, 4);
+            //truncatedLabel += "."; // Add a period to the end
+        }
+
         // Calculate knob x-coordinate
-        int circle_x_offset = circleSpacing * (i + 1) + circle_radius + i * 2 * circle_radius;
+        int circle_x_offset = circleSpacing + (i * (2 * circle_radius + adjustedSpacing)) + circle_radius;
 
         float knobValueLive = GetKnobValue(static_cast<Ctrl>(i));
         // Calculate angle for the current knob
@@ -1145,37 +1192,65 @@ void Dubby::UpdateCurrentMappingWindow()
         int line_end_x = circle_x_offset + static_cast<int>(circle_radius * cos(angle));
         int line_end_y = circle_y + static_cast<int>(circle_radius * sin(angle));
 
-        // Calculate start and end angles for the arc
-
         // Draw circular knob
         display.DrawCircle(circle_x_offset, circle_y, circle_radius, true);
 
         // Draw line indicating knob value
         display.DrawLine(circle_x_offset, circle_y, line_end_x, line_end_y, true);
 
-        // Draw line indicating knobValueLive
-        // display.DrawLine(live_start_x, live_start_y, live_line_end_x, live_line_end_y, true);
-
         // Calculate the position for the label to be centered above the circle
-        int label_x = circle_x_offset - (macroLabels[i].size() * 4) / 2; // Assuming each character is 4 pixels wide in the selected font
-        int label_y = circle_y - 20;                                     // Adjust this value to position the label properly above the circle
+        int label_x = circle_x_offset - (truncatedLabel.size() * 4) / 2; // Assuming each character is 4 pixels wide in the selected font
+        int label_y = circle_y - 14;                                     // Adjust this value to position the label properly above the circle
 
         // Draw custom label above each circle
         display.SetCursor(label_x, label_y);
-        display.WriteString(macroLabels[i].c_str(), Font_4x5, true);
-
-        // Format knob value as string
-        //  char formattedValue[10];
-        // snprintf(formattedValue, 10, "%.*f", numDecimals[i], knobValuesForPrint[i]);
-
-        // Calculate the position for the value to be centered under the circle
-        //   int value_width = strlen(formattedValue) * 4; // Assuming each character is 4 pixels wide in the selected font
-        // int value_x = circle_x_offset - value_width / 2;
-
-        // Draw knob value below the label
-        //  display.SetCursor(value_x, circle_y + 15);
-        //  display.WriteString(formattedValue, Font_4x5, true);
+        display.WriteString(truncatedLabel.c_str(), Font_4x5, true);
     }
+
+    // Parameters for the centered rectangle
+    int rectWidth = 90; // Width of the rectangle
+    int rectHeight = 24; // Height of the rectangle
+
+    // Calculate the center position of the display
+    int centerX = OLED_WIDTH / 2;
+    int centerY = OLED_HEIGHT / 2;
+
+    // Calculate the top-left corner position of the rectangle
+    int rectX1 = centerX - (rectWidth / 2);
+    int rectY1 = centerY - (rectHeight / 2);
+    int rectX2 = centerX + (rectWidth / 2) - 1;
+    int rectY2 = centerY + (rectHeight / 2) - 1;
+
+    // Draw the centered rectangle
+    display.DrawRect(rectX1, rectY1+1, rectX2, rectY2+1, true);
+
+    // Draw small rectangles in each corner
+    int rectSize = 8; // Size of the rectangle
+
+    const int CHAR_WIDTH = 4;
+
+    // Top-left corner
+    display.DrawRect(0, PANE_Y_START, rectSize, rectSize + PANE_Y_START, true, buttons[0].Pressed());
+    display.SetCursor(rectSize + 2, PANE_Y_START + 2);           // Adjust position for label (left-aligned to the right of the rectangle)
+    display.WriteString(macroLabels[4].c_str(), Font_4x5, true); // Top-left corner label
+
+    // Top-right corner
+    display.DrawRect(OLED_WIDTH - rectSize-1, PANE_Y_START, OLED_WIDTH - 1, rectSize + PANE_Y_START, true, buttons[2].Pressed());
+    int textWidth = macroLabels[5].size() * CHAR_WIDTH;                         // Approximate text width
+    display.SetCursor(OLED_WIDTH - rectSize - textWidth - 3, PANE_Y_START + 2); // Adjust position for label (right-aligned to the left of the rectangle)
+    display.WriteString(macroLabels[5].c_str(), Font_4x5, true);                // Top-right corner label
+
+    // Bottom-left corner
+    display.DrawRect(0, PANE_Y_END - rectSize, rectSize, PANE_Y_END, true, buttons[1].Pressed());
+    display.SetCursor(rectSize + 2, PANE_Y_END - rectSize + 2);  // Adjust position for label (left-aligned to the right of the rectangle)
+    display.WriteString(macroLabels[6].c_str(), Font_4x5, true); // Bottom-left corner label
+
+    // Bottom-right corner
+    display.DrawRect(OLED_WIDTH - rectSize-1, PANE_Y_END - rectSize, OLED_WIDTH - 1, PANE_Y_END, true, buttons[3].Pressed());
+    textWidth = macroLabels[7].size() * CHAR_WIDTH;                                      // Approximate text width
+    display.SetCursor(OLED_WIDTH - rectSize - textWidth - 3, PANE_Y_END - rectSize + 2); // Adjust position for label (right-aligned to the left of the rectangle)
+    display.WriteString(macroLabels[7].c_str(), Font_4x5, true);                         // Bottom-right corner label
+
     // Update the display after drawing all elements
     display.Update();
 }
