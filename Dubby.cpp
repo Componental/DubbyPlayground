@@ -212,8 +212,8 @@ void Dubby::InitDubbyParameters()
 {
 
     dubbyParameters[TIME].Init(Params(TIME), CONTROL_NONE, 110.f, 0, 440, LINEAR, true, 0, true, 2000);
-    dubbyParameters[FEEDBACK].Init(Params(FEEDBACK), KN1, 0.6f, 0, 1, LINEAR, true, 0, true, 1);
-    dubbyParameters[MIX].Init(Params(MIX), KN2, 0.5f, 0, 1, EXPONENTIAL, true, 0, true, 100);
+    dubbyParameters[FEEDBACK].Init(Params(FEEDBACK), CONTROL_NONE, 0.6f, 0, 1, LINEAR, true, 0, true, 1);
+    dubbyParameters[MIX].Init(Params(MIX), CONTROL_NONE, 0.5f, 0, 1, EXPONENTIAL, true, 0, true, 100);
     dubbyParameters[CUTOFF].Init(Params(CUTOFF), CONTROL_NONE, 5.f, 0, 10, EXPONENTIAL, true, 0, true, 10);
     dubbyParameters[IN_GAIN].Init(Params(IN_GAIN), CONTROL_NONE, 0.5f, 0, 5, LINEAR, true, 0, true, 5);
     dubbyParameters[OUT_GAIN].Init(Params(OUT_GAIN), CONTROL_NONE, 0.5f, 0, 5, LINEAR, true, 0, true, 5);
@@ -221,7 +221,6 @@ void Dubby::InitDubbyParameters()
     dubbyParameters[FREEZE].Init(Params(FREEZE), CONTROL_NONE, 0.5f, 0, 5, LINEAR, true, 0, true, 5);
     dubbyParameters[MUTE].Init(Params(MUTE), CONTROL_NONE, 0.5f, 0, 5, LINEAR, true, 0, true, 5);
     dubbyParameters[LOOP].Init(Params(LOOP), CONTROL_NONE, 0.5f, 0, 5, LINEAR, true, 0, true, 5);
-    
 }
 
 void Dubby::SetAudioInGain(AudioIns in, float gain)
@@ -316,6 +315,9 @@ void Dubby::UpdateDisplay()
             break;
         case WIN7:
             UpdateLFOWindow();
+            break;
+        case WIN8:
+            UpdateCurrentMappingWindow();
             break;
         default:
             break;
@@ -547,6 +549,9 @@ void Dubby::UpdateWindowList()
     case WIN7:
         UpdateLFOWindow();
         break;
+    case WIN8:
+        UpdateCurrentMappingWindow();
+        break;
     default:
         break;
     }
@@ -756,14 +761,14 @@ void Dubby::UpdateLFOWindow()
 
     // Define positions for parameter boxes
     int paramBoxLFO1X = 2;
-    int paramBoxLFO1Y = 50-yOffset;
+    int paramBoxLFO1Y = 50 - yOffset;
     int paramBoxLFO2X = displayWidth / 2 + 2;
-    int paramBoxLFO2Y = 50-yOffset;
+    int paramBoxLFO2Y = 50 - yOffset;
 
     int paramBoxWaveShapeLFO1X = halfWidth / 2 + 3;
-    int paramBoxWaveShapeLFO1Y = 10-yOffset;
+    int paramBoxWaveShapeLFO1Y = 10 - yOffset;
     int paramBoxWaveShapeLFO2X = displayWidth - halfWidth / 2 + 3;
-    int paramBoxWaveShapeLFO2Y = 10-yOffset;
+    int paramBoxWaveShapeLFO2Y = 10 - yOffset;
 
     const char *paramLFO1 = ParamsStrings[currentParamIndexLFO1];
     const char *paramLFO2 = ParamsStrings[currentParamIndexLFO2];
@@ -780,7 +785,7 @@ void Dubby::UpdateLFOWindow()
     };
 
     // Define parameters for circular knobs and bounding circles
-    int circle_y = 34-yOffset;              // Y-coordinate of the center of the circle
+    int circle_y = 34 - yOffset;    // Y-coordinate of the center of the circle
     int circle_radius = 6;          // Radius of the circle
     int bounding_circle_radius = 7; // Radius of the bounding circle, slightly larger than the knob circle
     int selectedIndices[NUM_KNOBS] = {1, 2, 5, 6};
@@ -794,7 +799,7 @@ void Dubby::UpdateLFOWindow()
     const int offsetKnob1And2 = -6;
     const int offsetKnob3And4 = 6;
 
-    //display.Fill(false);
+    // display.Fill(false);
     ClearPane();
     display.DrawLine(halfWidth, PANE_Y_START, halfWidth, PANE_Y_END, true);
 
@@ -856,7 +861,6 @@ void Dubby::UpdateLFOWindow()
                 break;
 
             case 1:
-                    
 
                 encoder.EnableAcceleration(true);
                 // Update knobValues[1] with encoder increment
@@ -972,9 +976,9 @@ void Dubby::UpdateLFOWindow()
 
     // Draw boxes for LFO1, LFO2, WaveShapeLFO1, and WaveShapeLFO2
     drawParamBox(paramWaveShapeLFO1, paramBoxWaveShapeLFO1X, paramBoxWaveShapeLFO1Y, paramBoxWaveShapeWidth, paramBoxWaveShapeHeight, isSelected[0], selectIndexMode);
-    drawParamBox(paramLFO1, paramBoxLFO1X, paramBoxLFO1Y-1, paramBoxLFOWidth, paramBoxLFOHeight, isSelected[3], selectIndexMode);
+    drawParamBox(paramLFO1, paramBoxLFO1X, paramBoxLFO1Y - 1, paramBoxLFOWidth, paramBoxLFOHeight, isSelected[3], selectIndexMode);
     drawParamBox(paramWaveShapeLFO2, paramBoxWaveShapeLFO2X, paramBoxWaveShapeLFO2Y, paramBoxWaveShapeWidth, paramBoxWaveShapeHeight, isSelected[4], selectIndexMode);
-    drawParamBox(paramLFO2, paramBoxLFO2X, paramBoxLFO2Y-1, paramBoxLFOWidth, paramBoxLFOHeight, isSelected[7], selectIndexMode);
+    drawParamBox(paramLFO2, paramBoxLFO2X, paramBoxLFO2Y - 1, paramBoxLFOWidth, paramBoxLFOHeight, isSelected[7], selectIndexMode);
 
     // visualizeKnobValuesCircle(customLabels, numDecimals);
 
@@ -996,7 +1000,6 @@ void Dubby::UpdateLFOWindow()
             circle_x_offset += offsetKnob3And4;
         }
 
-      
         // Draw circular knob
         display.DrawCircle(circle_x_offset, circle_y, bounding_circle_radius, selected); // Draw filled knob circle
         display.DrawCircle(circle_x_offset, circle_y, circle_radius, true);              // Draw filled knob circle
@@ -1039,7 +1042,7 @@ void Dubby::UpdateLFOWindow()
     }
 
     // Update the display to show the changes
-   // display.Update();
+    // display.Update();
 }
 
 void Dubby::UpdateLFO()
@@ -1072,6 +1075,109 @@ void Dubby::ProcessLFO()
     {
         lfo2Values[currentParamIndexLFO2] = 0;
     }
+}
+
+void Dubby::UpdateCurrentMappingWindow()
+{
+    int controlCount[CONTROLS_LAST] = {0}; // Assuming NUM_CONTROLS is the number of possible controls (e.g., KN1, KN2, KN3, KN4)
+
+    // First pass: count how many times each control appears
+    for (int i = 0; i < PARAMS_LAST; i++) {
+        if (dubbyParameters[i].control == KN1) {
+            controlCount[0]++;
+        }
+        if (dubbyParameters[i].control == KN2) {
+            controlCount[1]++;
+        }
+        if (dubbyParameters[i].control == KN3) {
+            controlCount[2]++;
+        }
+        if (dubbyParameters[i].control == KN4) {
+            controlCount[3]++;
+        }
+    }
+
+    // Second pass: assign labels
+    for (int i = 0; i < PARAMS_LAST; i++) {
+        if (dubbyParameters[i].control == KN1) {
+            macroLabels[0] = (controlCount[0] > 1) ? "MACRO" : ParamsStrings[i];
+        }
+        if (dubbyParameters[i].control == KN2) {
+            macroLabels[1] = (controlCount[1] > 1) ? "MACRO" : ParamsStrings[i];
+        }
+        if (dubbyParameters[i].control == KN3) {
+            macroLabels[2] = (controlCount[2] > 1) ? "MACRO" : ParamsStrings[i];
+        }
+        if (dubbyParameters[i].control == KN4) {
+            macroLabels[3] = (controlCount[3] > 1) ? "MACRO" : ParamsStrings[i];
+        }
+    }
+
+
+
+
+
+
+
+    ClearPane(); // Clear the display area
+
+    // Define parameters for circular knobs
+    int circle_y = 36;     // Y-coordinate of the center of the circle
+    int circle_radius = 8; // Radius of the circle
+
+    // Calculate total width occupied by circles
+    int totalWidth = NUM_KNOBS * 2 * circle_radius;
+
+    // Calculate space between circles
+    int circleSpacing = (OLED_WIDTH - totalWidth) / (NUM_KNOBS + 1);
+
+    // Loop through each knob value
+    for (int i = 0; i < NUM_KNOBS; ++i)
+    {
+        // Calculate knob x-coordinate
+        int circle_x_offset = circleSpacing * (i + 1) + circle_radius + i * 2 * circle_radius;
+
+        float knobValueLive = GetKnobValue(static_cast<Ctrl>(i));
+        // Calculate angle for the current knob
+        float angle = (knobValueLive * 0.8f * 2 * PI_F) - (PI_F * 1.5f) + 0.2 * PI_F; // Convert knob value to angle
+
+        // Calculate line end position based on knob value
+        int line_end_x = circle_x_offset + static_cast<int>(circle_radius * cos(angle));
+        int line_end_y = circle_y + static_cast<int>(circle_radius * sin(angle));
+
+        // Calculate start and end angles for the arc
+
+        // Draw circular knob
+        display.DrawCircle(circle_x_offset, circle_y, circle_radius, true);
+
+        // Draw line indicating knob value
+        display.DrawLine(circle_x_offset, circle_y, line_end_x, line_end_y, true);
+
+        // Draw line indicating knobValueLive
+        // display.DrawLine(live_start_x, live_start_y, live_line_end_x, live_line_end_y, true);
+
+        // Calculate the position for the label to be centered above the circle
+        int label_x = circle_x_offset - (macroLabels[i].size() * 4) / 2; // Assuming each character is 4 pixels wide in the selected font
+        int label_y = circle_y - 20;                                     // Adjust this value to position the label properly above the circle
+
+        // Draw custom label above each circle
+        display.SetCursor(label_x, label_y);
+        display.WriteString(macroLabels[i].c_str(), Font_4x5, true);
+
+        // Format knob value as string
+        //  char formattedValue[10];
+        // snprintf(formattedValue, 10, "%.*f", numDecimals[i], knobValuesForPrint[i]);
+
+        // Calculate the position for the value to be centered under the circle
+        //   int value_width = strlen(formattedValue) * 4; // Assuming each character is 4 pixels wide in the selected font
+        // int value_x = circle_x_offset - value_width / 2;
+
+        // Draw knob value below the label
+        //  display.SetCursor(value_x, circle_y + 15);
+        //  display.WriteString(formattedValue, Font_4x5, true);
+    }
+    // Update the display after drawing all elements
+    display.Update();
 }
 
 void Dubby::UpdateBar(int i)

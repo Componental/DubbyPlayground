@@ -98,7 +98,7 @@ namespace daisy
                 "MIDI CONF",
                 "ROUTING",
                 "LFO",
-                "WIN8",
+                "PERFORM",
         };
 
         enum PreferencesMenuItems
@@ -291,7 +291,7 @@ namespace daisy
         int currentParamIndexLFO1WaveShape, currentParamIndexLFO2WaveShape;
         int currentParamIndexLFO1 = 0, currentParamIndexLFO2 = 0;
 
-        enum ModalOptions 
+        enum ModalOptions
         {
             YES,
             NO
@@ -373,6 +373,8 @@ namespace daisy
 
         void UpdateLFOWindow();
 
+        void UpdateCurrentMappingWindow();
+
         void ProcessAllControls();
 
         void ProcessAnalogControls();
@@ -404,7 +406,7 @@ namespace daisy
         float GetParameterValue(Parameters p);
 
         bool EncoderFallingEdgeCustom();
-        
+
         bool EncoderRisingEdgeCustom();
 
         void UpdateChannelMappingPane();
@@ -490,6 +492,8 @@ namespace daisy
         int receivedBPM;
         // uint32_t bpm = 120;
         std::vector<std::string> customLabels = {"RATE", "AMT", "RATE", "AMT"};
+                std::vector<std::string> macroLabels = {"-", "-", "-", "-"};
+
         std::vector<float> knobValues = {100.f, 0.f, 25.f, 0.f};
         std::vector<int> numDecimals = {0, 1, 0, 1}; // Assuming you have three knobs with different decimal places
 
