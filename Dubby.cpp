@@ -1078,11 +1078,31 @@ void Dubby::ProcessLFO()
 
 void Dubby::UpdateCurrentMappingWindow()
 {
+    // Define constants
+    const int numControls = 10; // Number of possible controls (e.g., KN1, KN2, ..., JSX, JSY)
+    const int macroLabelCount = 12; // Total number of macro labels
+    const int controlMappingCount = PARAMS_LAST; // Total number of parameter mappings
+    const int charWidth = 4; // Width of each character in the font
+    const int charHeight = 5; // Height of each character in the font
+    const float joystickMin = 0.14f; // Minimum joystick value
+    const float joystickMax = 0.86f; // Maximum joystick value
+    const float joystickIdle = 0.45f; // Joystick idle value
+    const int movementRangeWidth = 14; // Maximum range width for rectangle movement
+    const int movementRangeHeight = 14; // Maximum range height for rectangle movement
+    const int rectWidthJoystick = 3; // Width of the joystick rectangle
+    const int rectHeightJoystick = 3; // Height of the joystick rectangle
+    const int labelOffset = 3; // Offset for labels from axis lines
+    const int circleRadius = 5; // Radius of circular knobs
+    const int circleY = 12; // Y-coordinate of the center of the circular knobs
+    const int adjustedSpacing = 13; // Spacing between circular knobs
+    const int buttonRectWidth = 4; // Width of button rectangles
+    const int buttonRectHeight = 8; // Height of button rectangles
+    const int offset = 26; // Offset for positioning button rectangles
 
     int controlCount[CONTROLS_LAST] = {0}; // Assuming CONTROLS_LAST is the number of possible controls (e.g., KN1, KN2, KN3, KN4)
 
     // First pass: count how many times each control appears
-    for (int i = 0; i < PARAMS_LAST; i++)
+    for (int i = 0; i < controlMappingCount; i++)
     {
         switch (dubbyParameters[i].control)
         {
@@ -1120,13 +1140,13 @@ void Dubby::UpdateCurrentMappingWindow()
     }
 
     // Initialize macroLabels with default value
-    for (int i = 0; i < 12; i++)
+    for (int i = 0; i < macroLabelCount; i++)
     {
         macroLabels[i] = "-";
     }
 
     // Second pass: assign labels
-    for (int i = 0; i < PARAMS_LAST; i++)
+    for (int i = 0; i < controlMappingCount; i++)
     {
         switch (dubbyParameters[i].control)
         {
@@ -1164,7 +1184,7 @@ void Dubby::UpdateCurrentMappingWindow()
     }
 
     // Update joystick X and Y labels and create new labels with '-'
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < numControls; i++)
     {
         if (i == 8 || i == 9) // Joystick labels
         {
@@ -1192,17 +1212,14 @@ void Dubby::UpdateCurrentMappingWindow()
     display.DrawRect(0, 0, PANE_X_END + 1, PANE_Y_END + 12, false, true);
 
     // Mapping joystick values to screen coordinates
-    float joystickX = GetKnobValue(CTRL_5); // Get joystick X value (0.14 to 0.86)
-    float joystickY = GetKnobValue(CTRL_6); // Get joystick Y value (0.14 to 0.86)
+    float joystickX = GetKnobValue(CTRL_5); // Get joystick X value (joystickMin to joystickMax)
+    float joystickY = GetKnobValue(CTRL_6); // Get joystick Y value (joystickMin to joystickMax)
 
     // Define joystick range
-    float joystickMin = 0.14f;
-    float joystickMax = 0.86f;
-    float joystickIdle = 0.45f;
+    // (Already defined as joystickMin, joystickMax, joystickIdle)
 
     // Define the maximum range for rectangle movement
-    int movementRangeWidth = 14;
-    int movementRangeHeight = 14;
+    // (Already defined as movementRangeWidth, movementRangeHeight)
 
     // Calculate the center position, so the movement range is centered on the screen
     int centerX = OLED_WIDTH / 2;
@@ -1223,7 +1240,7 @@ void Dubby::UpdateCurrentMappingWindow()
     int axisY = (boundaryY1 + boundaryY2) / 2;
     display.DrawLine(boundaryX1, axisY, boundaryX2, axisY, true);
 
-    // Normalize joystick values to the screen coordinate range, making sure 0.45 maps to the center of the constrained movement range
+    // Normalize joystick values to the screen coordinate range, making sure joystickIdle maps to the center of the constrained movement range
     // Flip the x-axis by subtracting from 1.0
     int mappedX = (1.0f - ((joystickX - joystickIdle) / (joystickMax - joystickMin) + 0.5f)) * movementRangeWidth;
     int mappedY = ((joystickY - joystickIdle) / (joystickMax - joystickMin) + 0.5f) * movementRangeHeight;
@@ -1233,42 +1250,35 @@ void Dubby::UpdateCurrentMappingWindow()
     mappedY = centerY + mappedY - (movementRangeHeight / 2);
 
     // Rectangle size
-    int rectWidth = 3;
-    int rectHeight = 3;
-
-    // Center the rectangle at the mapped position
-    int rectX1 = mappedX - (rectWidth / 2);
-    int rectY1 = mappedY - (rectHeight / 2);
-    int rectX2 = rectX1 + rectWidth - 1;
-    int rectY2 = rectY1 + rectHeight - 1;
+    int rectX1 = mappedX - (rectWidthJoystick / 2);
+    int rectY1 = mappedY - (rectHeightJoystick / 2);
+    int rectX2 = rectX1 + rectWidthJoystick - 1;
+    int rectY2 = rectY1 + rectHeightJoystick - 1;
 
     // Draw the rectangle at the new position
     display.DrawRect(rectX1, rectY1, rectX2, rectY2, true, true);
 
     // Width and height of the font (adjust as needed)
-    const int CHAR_WIDTH = 4;
-    const int CHAR_HEIGHT = 5;
+    // (Already defined as charWidth, charHeight)
 
     // Calculate the position for the joystick labels
-    const int labelOffset = 3; // Offset from the end of the axis lines
-
     // Joystick X label (to the right of the end of the X-axis line)
     int joystickXLabelX = axisX + 7 + labelOffset;
-    int joystickXLabelY = axisY - CHAR_HEIGHT / 2; // Center vertically based on font height
+    int joystickXLabelY = axisY - charHeight / 2; // Center vertically based on font height
 
     // Joystick Y label (centered under the end of the Y-axis line)
-    int joystickYLabelWidth = macroLabels[9].size() * CHAR_WIDTH; // Width of the joystick Y label
+    int joystickYLabelWidth = macroLabels[9].size() * charWidth; // Width of the joystick Y label
     int joystickYLabelX = axisX - (joystickYLabelWidth / 2);      // Center horizontally
     int joystickYLabelY = boundaryY2 + labelOffset;               // Offset below the end of the Y-axis line
 
     // New joystick X "-" label (to the left of the X-axis line)
-    int joystickXNegLabelX = axisX - 7 - (macroLabels[10].size() * CHAR_WIDTH) - labelOffset;
-    int joystickXNegLabelY = axisY - CHAR_HEIGHT / 2; // Center vertically based on font height
+    int joystickXNegLabelX = axisX - 7 - (macroLabels[10].size() * charWidth) - labelOffset;
+    int joystickXNegLabelY = axisY - charHeight / 2; // Center vertically based on font height
 
     // New joystick Y "-" label (centered above the Y-axis line)
-    int joystickYNegLabelWidth = macroLabels[11].size() * CHAR_WIDTH;    // Width of the joystick Y "-" label
+    int joystickYNegLabelWidth = macroLabels[11].size() * charWidth;    // Width of the joystick Y "-" label
     int joystickYNegLabelX = axisX - (joystickYNegLabelWidth / 2);       // Center horizontally
-    int joystickYNegLabelY = boundaryY1 + 1 - labelOffset - CHAR_HEIGHT; // Offset above the end of the Y-axis line
+    int joystickYNegLabelY = boundaryY1 + 1 - labelOffset - charHeight; // Offset above the end of the Y-axis line
 
     // Draw the joystick parameter labels
     display.SetCursor(joystickXLabelX, joystickXLabelY);
@@ -1286,14 +1296,13 @@ void Dubby::UpdateCurrentMappingWindow()
 
     // Continue with the rest of the code...
     // Define parameters for circular knobs
-    int circle_y = 12;     // Y-coordinate of the center of the circle
-    int circle_radius = 5; // Radius of the circle
+    // (Already defined as circleY, circleRadius)
 
     // Adjusted spacing between knobs
-    int adjustedSpacing = 13; // New space between the circles (reduce this value to move knobs closer together)
+    // (Already defined as adjustedSpacing)
 
     // Calculate total width occupied by circles
-    int totalWidth = NUM_KNOBS * 2 * circle_radius;
+    int totalWidth = NUM_KNOBS * 2 * circleRadius;
 
     // Calculate space between circles
     int circleSpacing = (OLED_WIDTH - totalWidth - (NUM_KNOBS - 1) * adjustedSpacing) / 2;
@@ -1307,46 +1316,43 @@ void Dubby::UpdateCurrentMappingWindow()
     for (int i = 0; i < NUM_KNOBS; ++i)
     {
         // Calculate knob x-coordinate
-        int circle_x_offset = circleSpacing + (i * (2 * circle_radius + adjustedSpacing)) + circle_radius;
+        int circleXOffset = circleSpacing + (i * (2 * circleRadius + adjustedSpacing)) + circleRadius;
 
         float knobValueLive = GetKnobValue(static_cast<Ctrl>(i));
         // Calculate angle for the current knob
         float angle = (knobValueLive * 0.8f * 2 * PI_F) - (PI_F * 1.5f) + 0.2 * PI_F; // Convert knob value to angle
 
         // Calculate line end position based on knob value
-        int line_end_x = circle_x_offset + static_cast<int>(circle_radius * cos(angle));
-        int line_end_y = circle_y + static_cast<int>(circle_radius * sin(angle));
+        int lineEndX = circleXOffset + static_cast<int>(circleRadius * cos(angle));
+        int lineEndY = circleY + static_cast<int>(circleRadius * sin(angle));
 
         // Draw circular knob
-        display.DrawCircle(circle_x_offset, circle_y, circle_radius, true);
+        display.DrawCircle(circleXOffset, circleY, circleRadius, true);
 
         // Draw line indicating knob value
-        display.DrawLine(circle_x_offset, circle_y, line_end_x, line_end_y, true);
+        display.DrawLine(circleXOffset, circleY, lineEndX, lineEndY, true);
 
         // Calculate the position for the label to be centered above the circle
-        int label_x = circle_x_offset - (macroLabels[i].size() * 4) / 2; // Assuming each character is 4 pixels wide in the selected font
-        int label_y = 0;                                     // Adjust this value to position the label properly above the circle
+        int labelX = circleXOffset - (macroLabels[i].size() * charWidth) / 2; // Assuming each character is charWidth pixels wide in the selected font
+        int labelY = 0; // Adjust this value to position the label properly above the circle
 
         // Draw custom label above each circle
-        display.SetCursor(label_x, label_y);
+        display.SetCursor(labelX, labelY);
         display.WriteString(macroLabels[i].c_str(), Font_4x5, true);
     }
 
     // Define rectangle dimensions
-    int buttonRectWidth = 4;  // Width of the rectangle
-    int buttonRectHeight = 8; // Height of the rectangle
-    // const int CHAR_WIDTH = 4;
-    const int OFFSET = 26; // Adjust this offset as needed
+    // (Already defined as buttonRectWidth, buttonRectHeight)
 
     // Top-left corner
-    display.DrawRect(0, PANE_Y_START + OFFSET - 4, buttonRectWidth, buttonRectHeight + PANE_Y_START + OFFSET - 4, true, buttons[0].Pressed());
-    display.SetCursor(buttonRectWidth + 2, PANE_Y_START + OFFSET - 4 + 2);
+    display.DrawRect(0, PANE_Y_START + offset - 4, buttonRectWidth, buttonRectHeight + PANE_Y_START + offset - 4, true, buttons[0].Pressed());
+    display.SetCursor(buttonRectWidth + 2, PANE_Y_START + offset - 4 + 2);
     display.WriteString(macroLabels[4].c_str(), Font_4x5, true);
 
     // Top-right corner
-    display.DrawRect(OLED_WIDTH - buttonRectWidth - 1, PANE_Y_START + OFFSET - 4, OLED_WIDTH - 1, buttonRectHeight + PANE_Y_START + OFFSET - 4, true, buttons[2].Pressed());
-    int textWidth = macroLabels[5].size() * CHAR_WIDTH;
-    display.SetCursor(OLED_WIDTH - buttonRectWidth - textWidth - 3, PANE_Y_START + OFFSET - 4 + 2);
+    display.DrawRect(OLED_WIDTH - buttonRectWidth - 1, PANE_Y_START + offset - 4, OLED_WIDTH - 1, buttonRectHeight + PANE_Y_START + offset - 4, true, buttons[2].Pressed());
+    int textWidth = macroLabels[5].size() * charWidth;
+    display.SetCursor(OLED_WIDTH - buttonRectWidth - textWidth - 3, PANE_Y_START + offset - 4 + 2);
     display.WriteString(macroLabels[5].c_str(), Font_4x5, true);
 
     // Bottom-left corner
@@ -1356,13 +1362,14 @@ void Dubby::UpdateCurrentMappingWindow()
 
     // Bottom-right corner
     display.DrawRect(OLED_WIDTH - buttonRectWidth - 1, PANE_Y_END - buttonRectHeight - 4, OLED_WIDTH - 1, PANE_Y_END - 4, true, buttons[3].Pressed());
-    textWidth = macroLabels[7].size() * CHAR_WIDTH;
+    textWidth = macroLabels[7].size() * charWidth;
     display.SetCursor(OLED_WIDTH - buttonRectWidth - textWidth - 3, PANE_Y_END - buttonRectHeight - 4 + 2);
     display.WriteString(macroLabels[7].c_str(), Font_4x5, true);
 
     // Update the display after drawing all elements
     display.Update();
 }
+
 
 void Dubby::UpdateBar(int i)
 {
