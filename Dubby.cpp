@@ -1214,6 +1214,7 @@ void Dubby::UpdateCurrentMappingWindow()
 
     display.DrawRect(0, 0, PANE_X_END + 1, PANE_Y_END + 12, false, true);
 
+    // change size when joystick button pressed
     if (joystickButton.Pressed())
     {
         rectHeightJoystick = 5;
