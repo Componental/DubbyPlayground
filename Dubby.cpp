@@ -1084,9 +1084,12 @@ void Dubby::UpdateCurrentMappingWindow()
     const int controlMappingCount = PARAMS_LAST; // Total number of parameter mappings
     const int charWidth = 4;                     // Width of each character in the font
     const int charHeight = 5;                    // Height of each character in the font
-    const float joystickMin = 0.14f;             // Minimum joystick value
-    const float joystickMax = 0.86f;             // Maximum joystick value
-    const float joystickIdle = 0.45f;            // Joystick idle value
+    const float joystickMinX = 0.16f;            // Minimum joystick value
+    const float joystickMaxX = 0.77f;            // Maximum joystick value
+    const float joystickMinY = 0.14f;            // Minimum joystick value
+    const float joystickMaxY = 0.86f;            // Maximum joystick value
+    const float joystickIdleX = 0.49f;           // Joystick X idle value
+    const float joystickIdleY = 0.45f;           // Joystick Y idle value
     const int movementRangeWidth = 14;           // Maximum range width for rectangle movement
     const int movementRangeHeight = 14;          // Maximum range height for rectangle movement
     const int rectWidthJoystick = 3;             // Width of the joystick rectangle
@@ -1242,8 +1245,8 @@ void Dubby::UpdateCurrentMappingWindow()
 
     // Normalize joystick values to the screen coordinate range, making sure joystickIdle maps to the center of the constrained movement range
     // Flip the x-axis by subtracting from 1.0
-    int mappedX = (1.0f - ((joystickX - joystickIdle) / (joystickMax - joystickMin) + 0.5f)) * movementRangeWidth;
-    int mappedY = ((joystickY - joystickIdle) / (joystickMax - joystickMin) + 0.5f) * movementRangeHeight;
+    int mappedX = (1.0f - ((joystickX - joystickIdleX) / (joystickMaxX - joystickMinX) + 0.5f)) * movementRangeWidth;
+    int mappedY = ((joystickY - joystickIdleY) / (joystickMaxY - joystickMinY) + 0.5f) * movementRangeHeight;
 
     // Adjust the mapped position to be within the constrained area and centered on the screen
     mappedX = centerX + mappedX - (movementRangeWidth / 2);
