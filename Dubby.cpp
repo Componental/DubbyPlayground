@@ -270,18 +270,23 @@ void Dubby::UpdateDisplay()
             if (encoder.Increment())
                 UpdateWindowSelector(encoder.Increment(), true);
 
-            if (encoder.RisingEdge())
+            if (encoder.FallingEdgeCustom())
             {
                 windowSelectorActive = false;
                 ReleaseWindowSelector();
                 UpdateWindowList();
+
+                wasEncoderJustInHighlightMenu = true;
+                encoderLastDebounceTime2 = seed.system.GetNow();
             }
 
-            if (!wasEncoderJustInHighlightMenu && EncoderFallingEdgeCustom())
+            if (!wasEncoderJustInHighlightMenu && encoder.FallingEdgeCustom()) {
                 wasEncoderJustInHighlightMenu = true;
+                encoderLastDebounceTime2 = seed.system.GetNow();    
+            }
         }
 
-        if (wasEncoderJustInHighlightMenu && EncoderFallingEdgeCustom())
+        if (wasEncoderJustInHighlightMenu && encoder.FallingEdgeCustom())
         {
             if (highlightMenuCounter < 2)
             {
@@ -327,7 +332,7 @@ void Dubby::UpdateDisplay()
         {
             ChangeModalOption();
         }
-        else if (EncoderRisingEdgeCustom())
+        else if (encoder.RisingEdgeCustom())
         {
             if (modalOptionSelected == YES)
             {
@@ -581,7 +586,7 @@ void Dubby::UpdateChannelMappingPane()
     static bool selectIndexMode = true; // Flag to toggle between index mode and grid mode
 
     // Toggle mode when the encoder is pressed
-    if (EncoderFallingEdgeCustom() && !windowSelectorActive)
+    if (encoder.FallingEdgeCustom() && !windowSelectorActive)
     {
         selectIndexMode = !selectIndexMode; // Toggle between selectIndexMode and grid navigation mode
     }
@@ -825,7 +830,7 @@ void Dubby::UpdateLFOWindow()
 
     int increment = encoder.Increment();
 
-    if (EncoderFallingEdgeCustom() && !windowSelectorActive)
+    if (encoder.FallingEdgeCustom() && !windowSelectorActive)
         selectIndexMode = !selectIndexMode;
 
     // Determine which parameter box is selected
@@ -1115,7 +1120,7 @@ void Dubby::UpdateRenderPane()
 
 void Dubby::UpdateGlobalSettingsPane()
 {
-    if (EncoderFallingEdgeCustom() && !isSubMenuActive)
+    if (encoder.FallingEdgeCustom() && !isSubMenuActive)
     {
         isSubMenuActive = true;
         DisplayPreferencesMenuList(0);
@@ -1129,7 +1134,7 @@ void Dubby::UpdateGlobalSettingsPane()
 
     DisplayPreferencesSubMenuList(encoder.Increment(), preferencesMenuItemSelected);
 
-    if (EncoderRisingEdgeCustom() && !windowSelectorActive)
+    if (encoder.RisingEdgeCustom() && !windowSelectorActive)
     {
         switch (preferencesMenuItemSelected)
         {
@@ -1157,19 +1162,23 @@ void Dubby::UpdateGlobalSettingsPane()
 
 void Dubby::UpdateParameterPane()
 {
-    // if (encoder.FallingEdge() && !wasEncoderJustInHighlightMenu) {
+    
     DisplayParameterList(encoder.Increment());
 
     if (encoder.Increment() && !isEncoderIncrementDisabled && !windowSelectorActive && !isParameterSelected)
         UpdateParameterList(encoder.Increment());
 
-    if (encoder.FallingEdge() && !wasEncoderJustInHighlightMenu && !windowSelectorActive && !isParameterSelected)
+    if (encoder.FallingEdge() && !windowSelectorActive && !isParameterSelected)
     {
-        isParameterSelected = true;
-        parameterOptionSelected = PARAM;
+        if ((seed.system.GetNow() - encoderLastDebounceTime2) > encoderDebounceDelay2) {
+            
+            isParameterSelected = true;
+            parameterOptionSelected = PARAM;
 
-        DisplayParameterList(encoder.Increment());
+            DisplayParameterList(encoder.Increment());
+        }
     }
+    // if (encoder.FallingEdge() && wasEncoderJustInHighlightMenu) wasEncoderJustInHighlightMenu = !wasEncoderJustInHighlightMenu;
 
     if (isListeningControlChange)
     {
@@ -1184,7 +1193,7 @@ void Dubby::UpdateParameterPane()
                 dubbyParameters[parameterSelected].control = static_cast<DubbyControls>(static_cast<int>(dubbyParameters[parameterSelected].control) + encoder.Increment());
         }
 
-        if (EncoderFallingEdgeCustom())
+        if (encoder.FallingEdgeCustom())
         {
             isListeningControlChange = false;
             isEncoderIncrementDisabled = false;
@@ -1219,7 +1228,7 @@ void Dubby::UpdateParameterPane()
             else
                 dubbyParameters[parameterSelected].curve = static_cast<Curves>(static_cast<int>(dubbyParameters[parameterSelected].curve) + encoder.Increment());
         }
-        if (EncoderFallingEdgeCustom())
+        if (encoder.FallingEdgeCustom())
         {
             isCurveChanging = false;
             isEncoderIncrementDisabled = false;
@@ -1244,7 +1253,7 @@ void Dubby::UpdateParameterPane()
             // Apply the new value
             dubbyParameters[parameterSelected].min = newValue;
         }
-        if (EncoderFallingEdgeCustom())
+        if (encoder.FallingEdgeCustom())
         {
             isMinChanging = false;
             isEncoderIncrementDisabled = false;
@@ -1271,7 +1280,7 @@ void Dubby::UpdateParameterPane()
             dubbyParameters[parameterSelected].max = newValue;
         }
 
-        if (EncoderFallingEdgeCustom())
+        if (encoder.FallingEdgeCustom())
         {
             isMaxChanging = false;
             isEncoderIncrementDisabled = false;
@@ -1311,7 +1320,7 @@ void Dubby::UpdateParameterPane()
                 }
             }
         }
-        if (EncoderFallingEdgeCustom())
+        if (encoder.FallingEdgeCustom())
         {
             isValueChanging = false;
             isEncoderIncrementDisabled = false;
@@ -1351,7 +1360,7 @@ void Dubby::UpdateParameterPane()
         }
         else if (parameterOptionSelected == CTRL)
         {
-            if (EncoderFallingEdgeCustom())
+            if (encoder.FallingEdgeCustom())
             {
                 UpdateStatusBar("SELECT A CONTROL", MIDDLE, 127);
                 isListeningControlChange = true;
@@ -1363,7 +1372,7 @@ void Dubby::UpdateParameterPane()
         }
         else if (parameterOptionSelected == CURVE)
         {
-            if (EncoderFallingEdgeCustom())
+            if (encoder.FallingEdgeCustom())
             {
                 UpdateStatusBar("SELECT A CURVE", MIDDLE, 127);
                 isEncoderIncrementDisabled = true;
@@ -1372,7 +1381,7 @@ void Dubby::UpdateParameterPane()
         }
         else if (parameterOptionSelected == MIN)
         {
-            if (EncoderFallingEdgeCustom())
+            if (encoder.FallingEdgeCustom())
             {
                 UpdateStatusBar("SELECT MIN VALUE", MIDDLE, 127);
                 isEncoderIncrementDisabled = true;
@@ -1382,7 +1391,7 @@ void Dubby::UpdateParameterPane()
         }
         else if (parameterOptionSelected == MAX)
         {
-            if (EncoderFallingEdgeCustom())
+            if (encoder.FallingEdgeCustom())
             {
                 UpdateStatusBar("SELECT MAX VALUE", MIDDLE, 127);
                 isEncoderIncrementDisabled = true;
@@ -1392,7 +1401,7 @@ void Dubby::UpdateParameterPane()
         }
         else if (parameterOptionSelected == VALUE && dubbyParameters[parameterSelected].control == CONTROL_NONE)
         {
-            if (EncoderFallingEdgeCustom())
+            if (encoder.FallingEdgeCustom())
             {
                 UpdateStatusBar("SELECT A VALUE", MIDDLE, 127);
                 isEncoderIncrementDisabled = true;
@@ -1948,62 +1957,6 @@ void Dubby::ProcessDigitalControls()
 float Dubby::GetKnobValue(Ctrl k)
 {
     return (analogInputs[k].Value());
-}
-
-bool Dubby::EncoderFallingEdgeCustom()
-{
-    bool reading = encoder.Pressed(); // Read the encoder button state, assuming true is pressed
-
-    if (reading != encoderLastState)
-    {
-        encoderLastDebounceTime = seed.system.GetNow();
-    }
-
-    if ((seed.system.GetNow() - encoderLastDebounceTime) > encoderDebounceDelay)
-    {
-
-        if (reading != encoderState)
-        {
-            encoderState = reading;
-
-            if (encoderState == true)
-            { // Encoder button pressed
-                return true;
-            }
-        }
-    }
-
-    encoderLastState = reading;
-
-    return false;
-}
-
-bool Dubby::EncoderRisingEdgeCustom()
-{
-    bool reading = encoder.Pressed(); // Read the encoder button state, assuming true is pressed
-
-    if (reading != encoderLastState)
-    {
-        encoderLastDebounceTime = seed.system.GetNow();
-    }
-
-    if ((seed.system.GetNow() - encoderLastDebounceTime) > encoderDebounceDelay)
-    {
-
-        if (reading != encoderState)
-        {
-            encoderState = reading;
-
-            if (encoderState == false)
-            { // Encoder button released
-                return true;
-            }
-        }
-    }
-
-    encoderLastState = reading;
-
-    return false;
 }
 
 void Dubby::OpenModal(const char *text)

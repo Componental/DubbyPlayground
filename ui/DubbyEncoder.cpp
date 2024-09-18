@@ -104,3 +104,55 @@ void DubbyEncoder::Debounce()
     // Debounce built-in switch
     sw_.Debounce();
 }
+
+bool DubbyEncoder::RisingEdgeCustom()
+{
+    bool reading = sw_.Pressed(); // Read the encoder button state, assuming true is pressed
+
+    if (reading != encoderLastState)
+        encoderLastDebounceTime = System::GetNow();
+
+    if ((System::GetNow() - encoderLastDebounceTime) > encoderDebounceDelay)
+    {
+        if (reading != encoderState)
+        {
+            encoderState = reading;
+
+            if (encoderState == false)
+            { // Encoder button released
+                return true;
+            }
+        }
+    }
+
+    encoderLastState = reading;
+
+    return false;
+}
+
+bool DubbyEncoder::FallingEdgeCustom()
+{
+    bool reading = sw_.Pressed(); // Read the encoder button state, assuming true is pressed
+
+    if (reading != encoderLastState)
+    {
+        encoderLastDebounceTime = System::GetNow();
+    }
+
+    if ((System::GetNow() - encoderLastDebounceTime) > encoderDebounceDelay)
+    {
+        if (reading != encoderState)
+        {
+            encoderState = reading;
+
+            if (encoderState == true)
+            { // Encoder button pressed
+                return true;
+            }
+        }
+    }
+
+    encoderLastState = reading;
+
+    return false;
+}

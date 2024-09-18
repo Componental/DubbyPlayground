@@ -403,10 +403,6 @@ namespace daisy
 
         float GetParameterValue(Parameters p);
 
-        bool EncoderFallingEdgeCustom();
-        
-        bool EncoderRisingEdgeCustom();
-
         void UpdateChannelMappingPane();
 
         void OpenModal(const char *text);
@@ -528,10 +524,8 @@ namespace daisy
         int highlightMenuCounter = 0;
         unsigned long encoderPressStartTime = 0;
 
-        bool encoderState = false;                 // Previous state of the button
-        bool encoderLastState = true;              // Previous state of the button
-        unsigned long encoderLastDebounceTime = 0; // Time the button was last toggled
-        unsigned long encoderDebounceDelay = 50;   // Debounce time in milliseconds
+        unsigned long encoderLastDebounceTime2 = 0; // Time the button was last toggled
+        unsigned long encoderDebounceDelay2 = 100;   // Debounce time in milliseconds
 
         float audioGains[2][4] = {{0.8f, 0.8f, 0.8f, 0.8f}, {0.8f, 0.8f, 0.8f, 0.8f}}; // 0 => INPUTS, 1 => OUTPUTS
     };
