@@ -1092,8 +1092,8 @@ void Dubby::UpdateCurrentMappingWindow()
     const float joystickIdleY = 0.45f;           // Joystick Y idle value
     const int movementRangeWidth = 14;           // Maximum range width for rectangle movement
     const int movementRangeHeight = 14;          // Maximum range height for rectangle movement
-    const int rectWidthJoystick = 3;             // Width of the joystick rectangle
-    const int rectHeightJoystick = 3;            // Height of the joystick rectangle
+    int rectWidthJoystick = 3;                   // Width of the joystick rectangle
+    int rectHeightJoystick = 3;                  // Height of the joystick rectangle
     const int labelOffset = 3;                   // Offset for labels from axis lines
     const int circleRadius = 5;                  // Radius of circular knobs
     const int circleY = 12;                      // Y-coordinate of the center of the circular knobs
@@ -1214,6 +1214,16 @@ void Dubby::UpdateCurrentMappingWindow()
 
     display.DrawRect(0, 0, PANE_X_END + 1, PANE_Y_END + 12, false, true);
 
+    if (joystickButton.Pressed())
+    {
+        rectHeightJoystick = 5;
+        rectWidthJoystick = 5;
+    }
+    else
+    {
+        rectHeightJoystick = 3;
+        rectWidthJoystick = 3;
+    }
     // Mapping joystick values to screen coordinates
     float joystickX = GetKnobValue(CTRL_5); // Get joystick X value (joystickMin to joystickMax)
     float joystickY = GetKnobValue(CTRL_6); // Get joystick Y value (joystickMin to joystickMax)
