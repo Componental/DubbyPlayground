@@ -1079,28 +1079,21 @@ void Dubby::ProcessLFO()
 void Dubby::UpdateCurrentMappingWindow()
 {
     // Define constants
-    const int numControls = 10;                  // Number of possible controls (e.g., KN1, KN2, ..., JSX, JSY)
-    const int macroLabelCount = 12;              // Total number of macro labels
-    const int controlMappingCount = PARAMS_LAST; // Total number of parameter mappings
-    const int charWidth = 4;                     // Width of each character in the font
-    const int charHeight = 5;                    // Height of each character in the font
-    const float joystickMinX = 0.16f;            // Minimum joystick value
-    const float joystickMaxX = 0.77f;            // Maximum joystick value
-    const float joystickMinY = 0.14f;            // Minimum joystick value
-    const float joystickMaxY = 0.86f;            // Maximum joystick value
-    const float joystickIdleX = 0.49f;           // Joystick X idle value
-    const float joystickIdleY = 0.45f;           // Joystick Y idle value
-    const int movementRangeWidth = 14;           // Maximum range width for rectangle movement
-    const int movementRangeHeight = 14;          // Maximum range height for rectangle movement
-    int rectWidthJoystick = 3;                   // Width of the joystick rectangle
-    int rectHeightJoystick = 3;                  // Height of the joystick rectangle
-    const int labelOffset = 3;                   // Offset for labels from axis lines
-    const int circleRadius = 5;                  // Radius of circular knobs
-    const int circleY = 12;                      // Y-coordinate of the center of the circular knobs
-    const int adjustedSpacing = 13;              // Spacing between circular knobs
-    const int buttonRectWidth = 4;               // Width of button rectangles
-    const int buttonRectHeight = 8;              // Height of button rectangles
-    const int offset = 26;                       // Offset for positioning button rectangles
+    const int numControls = 10;                                  // Number of possible controls (e.g., KN1, KN2, ..., JSX, JSY)
+    const int macroLabelCount = 12;                              // Total number of macro labels
+    const int controlMappingCount = PARAMS_LAST;                 // Total number of parameter mappings
+    const int charWidth = 4, charHeight = 5;                     // Height & width of each character in the font
+    const float joystickMinX = 0.16f, joystickMaxX = 0.77f;      // Minimum & maximum joystick value
+    const float joystickMinY = 0.14f, joystickMaxY = 0.86f;      // Minimum & maximum joystick value
+    const float joystickIdleX = 0.49f, joystickIdleY = 0.45f;    // Joystick X/Y idle value
+    const int movementRangeWidth = 14, movementRangeHeight = 14; // Minimum & maximum range height for rectangle movement
+    int rectWidthJoystick = 3, rectHeightJoystick = 3;           // Height & width of the joystick rectangle
+    const int labelOffset = 3;                                   // Offset for labels from axis lines
+    const int circleRadius = 5;                                  // Radius of circular knobs
+    const int circleY = 12;                                      // Y-coordinate of the center of the circular knobs
+    const int adjustedSpacing = 13;                              // Spacing between circular knobs
+    const int buttonRectWidth = 4, buttonRectHeight = 8;         // Height & width of button rectangles
+    const int offset = 26;                                       // Offset for positioning button rectangles
 
     int controlCount[CONTROLS_LAST] = {0}; // Assuming CONTROLS_LAST is the number of possible controls (e.g., KN1, KN2, KN3, KN4)
 
@@ -1189,51 +1182,26 @@ void Dubby::UpdateCurrentMappingWindow()
     // Update joystick X and Y labels and create new labels with '-'
     for (int i = 0; i < numControls; i++)
     {
-        if (i == 8 || i == 9) // Joystick labels
+        int labelLength = (i == 8 || i == 9) ? 3 : 4;
+        if (macroLabels[i].length() > labelLength)
         {
-            if (macroLabels[i].length() > 3)
+            macroLabels[i] = macroLabels[i].substr(0, labelLength);
+            if (i == 8 || i == 9)
             {
-                // Shorten and add "+"
-                macroLabels[i] = macroLabels[i].substr(0, 3) + "+";
-            }
-
-            if (macroLabels[i] != "-")
-            {
-                // Create new labels with "-" at the other end
+                macroLabels[i] += "+";
                 macroLabels[i + 2] = macroLabels[i].substr(0, 3) + "-";
-            }
-        }
-        else
-        {
-            if (macroLabels[i].length() > 4)
-            {
-                macroLabels[i] = macroLabels[i].substr(0, 4);
             }
         }
     }
 
     display.DrawRect(0, 0, PANE_X_END + 1, PANE_Y_END + 12, false, true);
 
-    // change size when joystick button pressed
-    if (joystickButton.Pressed())
-    {
-        rectHeightJoystick = 5;
-        rectWidthJoystick = 5;
-    }
-    else
-    {
-        rectHeightJoystick = 3;
-        rectWidthJoystick = 3;
-    }
+    // Change size when joystick button is pressed
+    rectHeightJoystick = rectWidthJoystick = joystickButton.Pressed() ? 5 : 3;
+
     // Mapping joystick values to screen coordinates
     float joystickX = GetKnobValue(CTRL_5); // Get joystick X value (joystickMin to joystickMax)
     float joystickY = GetKnobValue(CTRL_6); // Get joystick Y value (joystickMin to joystickMax)
-
-    // Define joystick range
-    // (Already defined as joystickMin, joystickMax, joystickIdle)
-
-    // Define the maximum range for rectangle movement
-    // (Already defined as movementRangeWidth, movementRangeHeight)
 
     // Calculate the center position, so the movement range is centered on the screen
     int centerX = OLED_WIDTH / 2;
@@ -1272,9 +1240,6 @@ void Dubby::UpdateCurrentMappingWindow()
     // Draw the rectangle at the new position
     display.DrawRect(rectX1, rectY1, rectX2, rectY2, true, true);
 
-    // Width and height of the font (adjust as needed)
-    // (Already defined as charWidth, charHeight)
-
     // Calculate the position for the joystick labels
     // Joystick X label (to the right of the end of the X-axis line)
     int joystickXLabelX = axisX + 7 + labelOffset;
@@ -1308,23 +1273,13 @@ void Dubby::UpdateCurrentMappingWindow()
     display.SetCursor(joystickYNegLabelX, joystickYNegLabelY);
     display.WriteString(macroLabels[11].c_str(), Font_4x5, true); // Label for joystick Y "-"
 
-    // Continue with the rest of the code...
-    // Define parameters for circular knobs
-    // (Already defined as circleY, circleRadius)
-
-    // Adjusted spacing between knobs
-    // (Already defined as adjustedSpacing)
-
     // Calculate total width occupied by circles
     int totalWidth = NUM_KNOBS * 2 * circleRadius;
 
     // Calculate space between circles
     int circleSpacing = (OLED_WIDTH - totalWidth - (NUM_KNOBS - 1) * adjustedSpacing) / 2;
 
-    if (circleSpacing < adjustedSpacing)
-    {
-        circleSpacing = adjustedSpacing; // Ensure spacing is not negative
-    }
+    circleSpacing = std::max(circleSpacing, adjustedSpacing); // Ensure spacing is not negative
 
     // Loop through each knob value
     for (int i = 0; i < NUM_KNOBS; ++i)
