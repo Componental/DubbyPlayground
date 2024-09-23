@@ -261,6 +261,17 @@ void Dubby::UpdateDisplay()
         if (encoder.TimeHeldMs() > ENCODER_LONGPRESS_THRESHOLD && !windowSelectorActive)
         {
             windowSelectorActive = true;
+            
+            isParameterSelected = false;
+            isListeningControlChange = false;
+            isValueChanging = false;
+            isMinChanging = false;
+            isMaxChanging = false;
+            isCurveChanging = false;
+            parameterOptionSelected = PARAM;
+
+            isEncoderIncrementDisabled = false;
+
             encoder.EnableAcceleration(false);
         }
 
@@ -1162,7 +1173,6 @@ void Dubby::UpdateGlobalSettingsPane()
 
 void Dubby::UpdateParameterPane()
 {
-    
     DisplayParameterList(encoder.Increment());
 
     if (encoder.Increment() && !isEncoderIncrementDisabled && !windowSelectorActive && !isParameterSelected)
@@ -1182,7 +1192,6 @@ void Dubby::UpdateParameterPane()
 
     if (isListeningControlChange)
     {
-
         if (encoder.Increment())
         {
             if (dubbyParameters[parameterSelected].control == CONTROLS_LAST - 1 && encoder.Increment() == 1)
@@ -1193,7 +1202,7 @@ void Dubby::UpdateParameterPane()
                 dubbyParameters[parameterSelected].control = static_cast<DubbyControls>(static_cast<int>(dubbyParameters[parameterSelected].control) + encoder.Increment());
         }
 
-        if (encoder.FallingEdgeCustom())
+        if (encoder.RisingEdgeCustom())
         {
             isListeningControlChange = false;
             isEncoderIncrementDisabled = false;
@@ -1228,7 +1237,7 @@ void Dubby::UpdateParameterPane()
             else
                 dubbyParameters[parameterSelected].curve = static_cast<Curves>(static_cast<int>(dubbyParameters[parameterSelected].curve) + encoder.Increment());
         }
-        if (encoder.FallingEdgeCustom())
+        if (encoder.RisingEdgeCustom())
         {
             isCurveChanging = false;
             isEncoderIncrementDisabled = false;
@@ -1253,7 +1262,7 @@ void Dubby::UpdateParameterPane()
             // Apply the new value
             dubbyParameters[parameterSelected].min = newValue;
         }
-        if (encoder.FallingEdgeCustom())
+        if (encoder.RisingEdgeCustom())
         {
             isMinChanging = false;
             isEncoderIncrementDisabled = false;
@@ -1280,7 +1289,7 @@ void Dubby::UpdateParameterPane()
             dubbyParameters[parameterSelected].max = newValue;
         }
 
-        if (encoder.FallingEdgeCustom())
+        if (encoder.RisingEdgeCustom())
         {
             isMaxChanging = false;
             isEncoderIncrementDisabled = false;
@@ -1320,7 +1329,7 @@ void Dubby::UpdateParameterPane()
                 }
             }
         }
-        if (encoder.FallingEdgeCustom())
+        if (encoder.RisingEdgeCustom())
         {
             isValueChanging = false;
             isEncoderIncrementDisabled = false;
@@ -1358,9 +1367,13 @@ void Dubby::UpdateParameterPane()
 
             DisplayParameterList(encoder.Increment());
         }
-        else if (parameterOptionSelected == CTRL)
-        {
-            if (encoder.FallingEdgeCustom())
+
+        if (encoder.RisingEdgeCustom()) {
+            if (parameterOptionSelected == PARAM) 
+            {
+                isParameterSelected = false;
+            }
+            else if (parameterOptionSelected == CTRL)
             {
                 UpdateStatusBar("SELECT A CONTROL", MIDDLE, 127);
                 isListeningControlChange = true;
@@ -1368,40 +1381,29 @@ void Dubby::UpdateParameterPane()
 
                 for (int i = 0; i < CONTROLS_LAST; i++)
                     dubbyCtrls[i].tempValue = dubbyCtrls[i].value;
+            
             }
-        }
-        else if (parameterOptionSelected == CURVE)
-        {
-            if (encoder.FallingEdgeCustom())
+            else if (parameterOptionSelected == CURVE)
             {
                 UpdateStatusBar("SELECT A CURVE", MIDDLE, 127);
                 isEncoderIncrementDisabled = true;
                 isCurveChanging = true;
             }
-        }
-        else if (parameterOptionSelected == MIN)
-        {
-            if (encoder.FallingEdgeCustom())
+            else if (parameterOptionSelected == MIN)
             {
                 UpdateStatusBar("SELECT MIN VALUE", MIDDLE, 127);
                 isEncoderIncrementDisabled = true;
                 isMinChanging = true;
                 encoder.EnableAcceleration(true);
             }
-        }
-        else if (parameterOptionSelected == MAX)
-        {
-            if (encoder.FallingEdgeCustom())
+            else if (parameterOptionSelected == MAX)
             {
                 UpdateStatusBar("SELECT MAX VALUE", MIDDLE, 127);
                 isEncoderIncrementDisabled = true;
                 isMaxChanging = true;
                 encoder.EnableAcceleration(true);
             }
-        }
-        else if (parameterOptionSelected == VALUE && dubbyParameters[parameterSelected].control == CONTROL_NONE)
-        {
-            if (encoder.FallingEdgeCustom())
+            else if (parameterOptionSelected == VALUE && dubbyParameters[parameterSelected].control == CONTROL_NONE)
             {
                 UpdateStatusBar("SELECT A VALUE", MIDDLE, 127);
                 isEncoderIncrementDisabled = true;
@@ -1409,6 +1411,7 @@ void Dubby::UpdateParameterPane()
                 encoder.EnableAcceleration(true);
             }
         }
+    
     }
 }
 
@@ -1685,6 +1688,10 @@ void Dubby::DisplayParameterList(int increment)
             str = std::to_string(dubbyParameters[i].value).substr(0, std::to_string(dubbyParameters[i].value).find(".") + 3);
             break;
         }
+
+        // ALIGN TO RIGHT
+        // Rectangle strArea = Rectangle(93, PARAMLIST_Y_START + 1 + (j * PARAMLIST_SPACING), 30, 5);
+        // display.WriteStringAligned(&str[0], Font_4x5, strArea, daisy::Alignment::centeredRight, !(parameterSelected == i && isParameterSelected));
 
         display.SetCursor(93, PARAMLIST_Y_START + 1 + (j * PARAMLIST_SPACING));
         display.WriteString(&str[0], Font_4x5, !(parameterSelected == i && isParameterSelected));
