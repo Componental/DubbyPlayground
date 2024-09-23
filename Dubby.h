@@ -103,21 +103,22 @@ namespace daisy
 
         enum PreferencesMenuItems
         {
-            MIDI,
+            LEDS,
             ROUTING,
-            PARAMS,
             DFUMODE,
+            PARAMS,
             SAVEMEMORY,
             RESETMEMORY,
+            BLABLA,
             PREFERENCESMENU_LAST // used to know the size of enum
         };
 
         const char *PreferencesMenuItemsStrings[PREFERENCESMENU_LAST] =
             {
-                "MIDI",
-                "ROUTING",
-                "PARAMETERS",
-                "DFU MODE",
+                "LEDS",
+                "MEMORY",
+                "FIRMWARE",
+                "CALLIBRATION",
                 "SAVE MEMORY",
                 "RESET MEMORY"};
 
@@ -195,23 +196,17 @@ namespace daisy
                 "OUTPUTS",
         };
 
-        enum PreferencesMidiMenuItems
+        enum PreferencesLedsMenuItems
         {
-            xMIDIIN,
-            xMIDIOUT,
-            xMIDITHRU,
-            MIDIWHATEV,
-            MIDIWHATEVA,
-            PREFERENCESMIDIMENU_LAST // used to know the size of enum
+            MAXBRIGHTNESS1,
+            MAXBRIGHTNESS2,
+            PREFERENCESLEDMENU_LAST // used to know the size of enum
         };
 
-        const char *PreferencesMidiMenuItemsStrings[PREFERENCESMENU_LAST] =
+        const char *PreferencesLedsMenuItemsStrings[2] =
             {
-                "MIDI IN",
-                "MIDI OUT",
-                "MIDI THRU",
-                "MIDI WHATEV",
-                "MIDI WHATEVA",
+                "MAX BRIGHTNESS 1",
+                "MAX BRIGHTNESS 2",
         };
 
         enum PreferencesRoutingMenuItems
@@ -224,18 +219,15 @@ namespace daisy
             PREFERENCESROUTINGMENU_LAST // used to know the size of enum
         };
 
-        const char *PreferencesRoutingMenuItemsStrings[PREFERENCESMENU_LAST] =
+        const char *PreferencesRoutingMenuItemsStrings[2] =
             {
-                "ROUTING 1",
-                "ROUTING 2",
-                "ROUTING 3",
-                "ROUTING 4",
-                "ROUTING 5",
+                "SAVE MEMORY",
+                "RESET MEMORY",
         };
 
         enum EnumTypes
         {
-            PREFERENCESMIDIMENULIST,
+            PREFERENCESLEDSMENULIST,
             PREFERENCESROUTINGMENULIST,
             PREFERENCESMENU,
             WINDOWS,
@@ -291,7 +283,7 @@ namespace daisy
         int currentParamIndexLFO1WaveShape, currentParamIndexLFO2WaveShape;
         int currentParamIndexLFO1 = 0, currentParamIndexLFO2 = 0;
 
-        enum ModalOptions 
+        enum ModalOptions
         {
             YES,
             NO
@@ -416,7 +408,7 @@ namespace daisy
         WindowItems windowItemSelected = (WindowItems)0;
 
         PreferencesMenuItems preferencesMenuItemSelected = (PreferencesMenuItems)0;
-        PreferencesMidiMenuItems preferencesMidiMenuItemSelected = (PreferencesMidiMenuItems)0;
+        PreferencesLedsMenuItems  preferencesLedsMenuItemSelected = (PreferencesLedsMenuItems)0;
         PreferencesRoutingMenuItems preferencesRoutingMenuItemSelected = (PreferencesRoutingMenuItems)0;
         int subMenuSelector = 0;
 
@@ -439,6 +431,7 @@ namespace daisy
 
         bool isSubMenuActive = false;
 
+
         MidiSettings midiSettingSelected = (MidiSettings)0;
         bool isMidiSettingSelected = false;
         bool testBool = false;
@@ -450,7 +443,7 @@ namespace daisy
         // const int menuTextCursors[3][2] = { {8, 55}, {50, 55}, {92, 55} }; OLD
         const int windowTextCursors[3][2] = {{3, 52}, {46, 52}, {88, 52}};
         const int windowBoxBounding[3][4] = {{0, 56, 43, 61}, {43, 56, 85, 61}, {85, 56, 127, 61}};
-        int menuListBoxBounding[5][4];
+        int menuListBoxBounding[7][4];
         int paramListBoxBounding[8][4];
         int midiListBoxBounding[5][4];
 
