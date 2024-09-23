@@ -1132,13 +1132,13 @@ void Dubby::UpdateRenderPane()
 
 void Dubby::UpdateGlobalSettingsPane()
 {
-    if (encoder.FallingEdgeCustom() && !isSubMenuActive)
+    if (encoder.RisingEdge() && !isSubMenuActive)
     {
         isSubMenuActive = true;
         DisplayPreferencesMenuList(0);
     }
 
-    if (windowSelectorActive)
+    if (encoder.RisingEdge() && windowSelectorActive)
     {
         isSubMenuActive = false;
         DisplayPreferencesMenuList(0);
@@ -1146,7 +1146,7 @@ void Dubby::UpdateGlobalSettingsPane()
 
     DisplayPreferencesSubMenuList(encoder.Increment(), preferencesMenuItemSelected);
 
-    if (encoder.RisingEdgeCustom() && !windowSelectorActive)
+    if (encoder.RisingEdgeCustom() && !windowSelectorActive && ((seed.system.GetNow() - encoderLastDebounceTime2) > encoderDebounceDelay2))
     {
         if (!isSubMenuActive)
         {
@@ -1534,6 +1534,7 @@ void Dubby::DisplayPreferencesSubMenuList(int increment, PreferencesMenuItems pr
         break;
     case ROUTING:
         type = PREFERENCESROUTINGMENULIST;
+        numItems = PREFERENCESROUTINGMENU_LAST;
         break;
     default:
         type = PREFERENCESLEDSMENULIST;
@@ -1583,10 +1584,10 @@ void Dubby::UpdatePreferencesSubMenuList(int increment, PreferencesMenuItems pre
     switch (prefMenuItemSelected)
     {
     case LEDS:
-        endSelector = sizeof(PreferencesLedsMenuItemsStrings);;
+        endSelector = sizeof(PreferencesLedsMenuItemsStrings);  
         break;
     case ROUTING:
-        endSelector = PREFERENCESROUTINGMENU_LAST;
+        endSelector = sizeof(PreferencesRoutingMenuItemsStrings);
         break;
     default:
         endSelector = 0;
