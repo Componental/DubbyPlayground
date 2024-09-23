@@ -1542,13 +1542,13 @@ void Dubby::DisplayPreferencesSubMenuList(int increment, PreferencesMenuItems pr
     }
 
     int optionStart = 0;
-    if (subMenuSelector > (numItems - 1))
+    if (subMenuSelector > (numItems))
     {
-        optionStart = subMenuSelector - (numItems - 1);
+        optionStart = subMenuSelector - (numItems);
     }
 
     // display each item, j for text cursor
-    for (int i = optionStart, j = 0; i < numItems; i++, j++)
+    for (int i = optionStart, j = 0; i <= numItems; i++, j++)
     {
         // clear item spaces
         if ((optionStart > 0 || (!optionStart && increment < 0)))
@@ -1568,8 +1568,17 @@ void Dubby::DisplayPreferencesSubMenuList(int increment, PreferencesMenuItems pr
                 display.DrawRect(menuListBoxBounding[j][0] + MENULIST_SUBMENU_SPACING, menuListBoxBounding[j][1], menuListBoxBounding[j][2] + MENULIST_SUBMENU_SPACING, menuListBoxBounding[j][3], true);
         }
 
-        display.SetCursor(5 + MENULIST_SUBMENU_SPACING, MENULIST_Y_START + 2 + (j * MENULIST_SPACING));
-        display.WriteString(GetTextForEnum(type, i), Font_4x5, true);
+        if (i < numItems) 
+        {
+            display.SetCursor(5 + MENULIST_SUBMENU_SPACING, MENULIST_Y_START + 2 + (j * MENULIST_SPACING));
+            display.WriteString(GetTextForEnum(type, i), Font_4x5, true);
+        }
+        else 
+        {
+            display.SetCursor(5 + MENULIST_SUBMENU_SPACING, MENULIST_Y_START + 2 + (j * MENULIST_SPACING));
+            display.WriteString("< BACK", Font_4x5, true);
+        }
+
     }
 
     display.DrawRect(PANE_X_START + MENULIST_SUBMENU_SPACING - 1, 0, PANE_X_END, PANE_Y_END + 1, true, false);
@@ -1584,10 +1593,10 @@ void Dubby::UpdatePreferencesSubMenuList(int increment, PreferencesMenuItems pre
     switch (prefMenuItemSelected)
     {
     case LEDS:
-        endSelector = sizeof(PreferencesLedsMenuItemsStrings);  
+        endSelector = sizeof(PreferencesLedsMenuItemsStrings) + 1;  
         break;
     case ROUTING:
-        endSelector = sizeof(PreferencesRoutingMenuItemsStrings);
+        endSelector = sizeof(PreferencesRoutingMenuItemsStrings) + 1;
         break;
     default:
         endSelector = 0;
