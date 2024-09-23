@@ -109,7 +109,7 @@ namespace daisy
             PARAMS,
             SAVEMEMORY,
             RESETMEMORY,
-            BLABLA,
+            RESET,
             PREFERENCESMENU_LAST // used to know the size of enum
         };
 
@@ -120,7 +120,9 @@ namespace daisy
                 "FIRMWARE",
                 "CALLIBRATION",
                 "SAVE MEMORY",
-                "RESET MEMORY"};
+                "RESET MEMORY",
+                "RESET"
+            };
 
         enum Ctrl
         {
@@ -219,10 +221,13 @@ namespace daisy
             PREFERENCESROUTINGMENU_LAST // used to know the size of enum
         };
 
-        const char *PreferencesRoutingMenuItemsStrings[2] =
+        const char *PreferencesRoutingMenuItemsStrings[PREFERENCESROUTINGMENU_LAST] =
             {
                 "SAVE MEMORY",
                 "RESET MEMORY",
+                "SAVE MEMORY1",
+                "RESET MEMORY1",
+                "RESET MEMORY2",
         };
 
         enum EnumTypes
