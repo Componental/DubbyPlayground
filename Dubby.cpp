@@ -142,6 +142,7 @@ void Dubby::InitControls()
     }
 
     seed.adc.Start();
+
 }
 
 void Dubby::InitButtons()
@@ -1102,7 +1103,7 @@ void Dubby::UpdateCurrentMappingWindow()
     const int charWidth = 4, charHeight = 5;                     // Height & width of each character in the font
     const float joystickMinX = 0.16f, joystickMaxX = 0.77f;      // Minimum & maximum joystick value
     const float joystickMinY = 0.14f, joystickMaxY = 0.86f;      // Minimum & maximum joystick value
-    const float joystickIdleX = 0.49f, joystickIdleY = 0.45f;    // Joystick X/Y idle value
+    // const float joystickIdleX = 0.49f, joystickIdleY = 0.45f;    // Joystick X/Y idle value
     const int movementRangeWidth = 14, movementRangeHeight = 14; // Minimum & maximum range height for rectangle movement
     int rectWidthJoystick = 3, rectHeightJoystick = 3;           // Height & width of the joystick rectangle
     const int labelOffset = 3;                                   // Offset for labels from axis lines
@@ -1239,23 +1240,24 @@ void Dubby::UpdateCurrentMappingWindow()
     int axisY = (boundaryY1 + boundaryY2) / 2;
     display.DrawLine(boundaryX1, axisY, boundaryX2, axisY, true);
 
-    // Normalize joystick values to the screen coordinate range, making sure joystickIdle maps to the center of the constrained movement range
-    // Flip the x-axis by subtracting from 1.0
-    int mappedX = (1.0f - ((joystickX - joystickIdleX) / (joystickMaxX - joystickMinX) + 0.5f)) * movementRangeWidth;
-    int mappedY = ((joystickY - joystickIdleY) / (joystickMaxY - joystickMinY) + 0.5f) * movementRangeHeight;
+// Normalize joystick values, making sure joystickIdle maps to the center of the constrained movement range
+float normalizedX = (joystickX - joystickMinX) / (joystickMaxX - joystickMinX);
+float normalizedY = (joystickY - joystickMinY) / (joystickMaxY - joystickMinY);
 
-    // Adjust the mapped position to be within the constrained area and centered on the screen
-    mappedX = centerX + mappedX - (movementRangeWidth / 2);
-    mappedY = centerY + mappedY - (movementRangeHeight / 2);
+// Map normalized values to the screen coordinate range, with the idle position centered
+int mappedX = centerX + (1.f - normalizedX - 0.5f) * movementRangeWidth+1.f;
 
-    // Rectangle size
-    int rectX1 = mappedX - (rectWidthJoystick / 2);
-    int rectY1 = mappedY - (rectHeightJoystick / 2);
-    int rectX2 = rectX1 + rectWidthJoystick - 1;
-    int rectY2 = rectY1 + rectHeightJoystick - 1;
+// Invert the y-axis by subtracting from 1.0 to match display coordinates (assuming 0 is at the top)
+int mappedY = centerY - (1.f - normalizedY - 0.5f) * movementRangeHeight+0.5f;
 
-    // Draw the rectangle at the new position
-    display.DrawRect(rectX1, rectY1, rectX2, rectY2, true, true);
+// Rectangle size
+int rectX1 = mappedX - (rectWidthJoystick / 2);
+int rectY1 = mappedY - (rectHeightJoystick / 2);
+int rectX2 = rectX1 + rectWidthJoystick - 1;
+int rectY2 = rectY1 + rectHeightJoystick - 1;
+
+// Draw the rectangle at the new position
+display.DrawRect(rectX1, rectY1, rectX2, rectY2, true, true);
 
     // Calculate the position for the joystick labels
     // Joystick X label (to the right of the end of the X-axis line)

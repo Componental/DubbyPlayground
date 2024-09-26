@@ -59,6 +59,9 @@ int main(void)
     InitMidiClock(dubby);
     InitPersistantMemory(dubby, SavedParameterSettings);
     
+    dubby.joystickIdleX = dubby.GetKnobValue(dubby.CTRL_5);
+     dubby.joystickIdleY = dubby.GetKnobValue(dubby.CTRL_6);
+
     setLED(1, NO_COLOR, 0);
     setLED(0, NO_COLOR, 0);
     updateLED();

@@ -446,6 +446,7 @@ namespace daisy
         ChannelMappings channelMappingSelected = (ChannelMappings)0;
         bool isChannelMappingSelected = false;
         daisysp::Oscillator lfo1, lfo2;
+         float joystickIdleX, joystickIdleY;
 
         // const int menuTextCursors[3][2] = { {8, 55}, {50, 55}, {92, 55} }; OLD
         const int windowTextCursors[3][2] = {{3, 52}, {46, 52}, {88, 52}};
