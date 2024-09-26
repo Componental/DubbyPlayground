@@ -103,23 +103,26 @@ namespace daisy
 
         enum PreferencesMenuItems
         {
-            MIDI,
+            LEDS,
             ROUTING,
-            PARAMS,
             DFUMODE,
+            PARAMS,
             SAVEMEMORY,
             RESETMEMORY,
+            RESET,
             PREFERENCESMENU_LAST // used to know the size of enum
         };
 
         const char *PreferencesMenuItemsStrings[PREFERENCESMENU_LAST] =
             {
-                "MIDI",
-                "ROUTING",
-                "PARAMETERS",
-                "DFU MODE",
+                "LEDS",
+                "MEMORY",
+                "FIRMWARE",
+                "CALLIBRATION",
                 "SAVE MEMORY",
-                "RESET MEMORY"};
+                "RESET MEMORY",
+                "RESET"
+            };
 
         enum Ctrl
         {
@@ -195,23 +198,17 @@ namespace daisy
                 "OUTPUTS",
         };
 
-        enum PreferencesMidiMenuItems
+        enum PreferencesLedsMenuItems
         {
-            xMIDIIN,
-            xMIDIOUT,
-            xMIDITHRU,
-            MIDIWHATEV,
-            MIDIWHATEVA,
-            PREFERENCESMIDIMENU_LAST // used to know the size of enum
+            MAXBRIGHTNESS1,
+            MAXBRIGHTNESS2,
+            PREFERENCESLEDMENU_LAST // used to know the size of enum
         };
 
-        const char *PreferencesMidiMenuItemsStrings[PREFERENCESMENU_LAST] =
+        const char *PreferencesLedsMenuItemsStrings[2] =
             {
-                "MIDI IN",
-                "MIDI OUT",
-                "MIDI THRU",
-                "MIDI WHATEV",
-                "MIDI WHATEVA",
+                "MAX BRIGHTNESS 1",
+                "MAX BRIGHTNESS 2",
         };
 
         enum PreferencesRoutingMenuItems
@@ -224,18 +221,18 @@ namespace daisy
             PREFERENCESROUTINGMENU_LAST // used to know the size of enum
         };
 
-        const char *PreferencesRoutingMenuItemsStrings[PREFERENCESMENU_LAST] =
+        const char *PreferencesRoutingMenuItemsStrings[PREFERENCESROUTINGMENU_LAST] =
             {
-                "ROUTING 1",
-                "ROUTING 2",
-                "ROUTING 3",
-                "ROUTING 4",
-                "ROUTING 5",
+                "SAVE MEMORY",
+                "RESET MEMORY",
+                "SAVE MEMORY1",
+                "RESET MEMORY1",
+                "RESET MEMORY2",
         };
 
         enum EnumTypes
         {
-            PREFERENCESMIDIMENULIST,
+            PREFERENCESLEDSMENULIST,
             PREFERENCESROUTINGMENULIST,
             PREFERENCESMENU,
             WINDOWS,
@@ -405,10 +402,6 @@ namespace daisy
 
         float GetParameterValue(Parameters p);
 
-        bool EncoderFallingEdgeCustom();
-
-        bool EncoderRisingEdgeCustom();
-
         void UpdateChannelMappingPane();
 
         void OpenModal(const char *text);
@@ -422,7 +415,7 @@ namespace daisy
         WindowItems windowItemSelected = (WindowItems)0;
 
         PreferencesMenuItems preferencesMenuItemSelected = (PreferencesMenuItems)0;
-        PreferencesMidiMenuItems preferencesMidiMenuItemSelected = (PreferencesMidiMenuItems)0;
+        PreferencesLedsMenuItems  preferencesLedsMenuItemSelected = (PreferencesLedsMenuItems)0;
         PreferencesRoutingMenuItems preferencesRoutingMenuItemSelected = (PreferencesRoutingMenuItems)0;
         int subMenuSelector = 0;
 
@@ -445,6 +438,7 @@ namespace daisy
 
         bool isSubMenuActive = false;
 
+
         MidiSettings midiSettingSelected = (MidiSettings)0;
         bool isMidiSettingSelected = false;
         bool testBool = false;
@@ -456,7 +450,7 @@ namespace daisy
         // const int menuTextCursors[3][2] = { {8, 55}, {50, 55}, {92, 55} }; OLD
         const int windowTextCursors[3][2] = {{3, 52}, {46, 52}, {88, 52}};
         const int windowBoxBounding[3][4] = {{0, 56, 43, 61}, {43, 56, 85, 61}, {85, 56, 127, 61}};
-        int menuListBoxBounding[5][4];
+        int menuListBoxBounding[7][4];
         int paramListBoxBounding[8][4];
         int midiListBoxBounding[5][4];
 
@@ -532,10 +526,8 @@ namespace daisy
         int highlightMenuCounter = 0;
         unsigned long encoderPressStartTime = 0;
 
-        bool encoderState = false;                 // Previous state of the button
-        bool encoderLastState = true;              // Previous state of the button
-        unsigned long encoderLastDebounceTime = 0; // Time the button was last toggled
-        unsigned long encoderDebounceDelay = 50;   // Debounce time in milliseconds
+        unsigned long encoderLastDebounceTime2 = 0; // Time the button was last toggled
+        unsigned long encoderDebounceDelay2 = 100;   // Debounce time in milliseconds
 
         float audioGains[2][4] = {{0.8f, 0.8f, 0.8f, 0.8f}, {0.8f, 0.8f, 0.8f, 0.8f}}; // 0 => INPUTS, 1 => OUTPUTS
     };
