@@ -97,6 +97,10 @@ void Dubby::Init()
         paramListBoxBounding[i][1] = PARAMLIST_Y_START + i * PARAMLIST_SPACING;
         paramListBoxBounding[i][2] = PARAMLIST_X_END;
         paramListBoxBounding[i][3] = PARAMLIST_Y_END + i * PARAMLIST_SPACING;
+
+        if (i == PARAMLIST_ROWS_ON_SCREEN - 1)
+            paramListBoxBounding[i][3] = (PARAMLIST_Y_END + i * PARAMLIST_SPACING) - 2;
+        
     }
 
     for (int i = 0; i < MIDILIST_ROWS_ON_SCREEN; i++)
@@ -441,7 +445,7 @@ void Dubby::HighlightWindowItem()
         display.WriteStringAligned(GetTextForEnum(WINDOWS, currentText), Font_4x5, daisy::Rectangle(windowBoxBounding[i][0], windowBoxBounding[i][1] + 1, 43, 7), daisy::Alignment::centered, i == 0 ? false : true);
     }
 
-    display.DrawLine(PANE_X_START - 1, PANE_Y_START + 1, PANE_X_START - 1, PANE_Y_END + 1, true);
+    // display.DrawLine(PANE_X_START - 1, PANE_Y_START + 1, PANE_X_START - 1, PANE_Y_END + 1, true);
 
     display.DrawLine(PANE_X_START - 1, PANE_Y_END + 1, PANE_X_END - 1, PANE_Y_END + 1, true);
 
