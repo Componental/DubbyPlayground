@@ -1239,12 +1239,24 @@ void Dubby::UpdateCurrentMappingWindow()
     // Horizontal line (x-axis)
     int axisY = (boundaryY1 + boundaryY2) / 2;
     display.DrawLine(boundaryX1, axisY, boundaryX2, axisY, true);
+// Define the percentage threshold for snapping to idle
+float snapThreshold = 0.10; // 10%
+
+// Check if the joystick X is within 10% of the idle value
+if (fabs(joystickX - joystickIdleX) / (joystickMaxX - joystickMinX) < snapThreshold) {
+    joystickX = joystickIdleX;
+}
+
+// Check if the joystick Y is within 10% of the idle value
+if (fabs(joystickY - joystickIdleY) / (joystickMaxY - joystickMinY) < snapThreshold) {
+    joystickY = joystickIdleY;
+}
+
 // Normalize joystick values with joystickIdleX and joystickIdleY as reference points
 float normalizedX = (joystickX - joystickIdleX) / (joystickMaxX - joystickMinX);
 float normalizedY = (joystickY - joystickIdleY) / (joystickMaxY - joystickMinY);
 
 // Flip the X and Y axes and map the normalized values to the screen coordinate range
-// For flipping, subtract normalized values from 1.0 to invert the direction
 int mappedX = centerX - normalizedX * movementRangeWidth;   // Flip X-axis
 int mappedY = centerY + normalizedY * movementRangeHeight;  // Flip Y-axis (positive movementY moves down)
 
@@ -1256,6 +1268,7 @@ int rectY2 = rectY1 + rectHeightJoystick - 1;
 
 // Draw the rectangle at the new position
 display.DrawRect(rectX1, rectY1, rectX2, rectY2, true, true);
+
 
     // Calculate the position for the joystick labels
     // Joystick X label (to the right of the end of the X-axis line)
