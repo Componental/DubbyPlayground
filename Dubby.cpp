@@ -1099,6 +1099,8 @@ void Dubby::ProcessLFO()
 
 void Dubby::UpdateCurrentMappingWindow()
 {
+        display.DrawRect(0, 0, PANE_X_END + 1, PANE_Y_END + 12, false, true); 
+
     // Define constants
     const int numControls = 10;                             // Number of possible controls (e.g., KN1, KN2, ..., JSX, JSY)
     const int macroLabelCount = 12;                         // Total number of macro labels
@@ -1370,7 +1372,9 @@ void Dubby::UpdateCurrentMappingWindow()
     display.WriteString(macroLabels[7].c_str(), Font_4x5, true);
 
     // Update the display after drawing all elements
+    if(!windowSelectorActive){
     display.Update();
+    } 
 }
 
 void Dubby::UpdateBar(int i)
