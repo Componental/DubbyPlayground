@@ -1239,16 +1239,14 @@ void Dubby::UpdateCurrentMappingWindow()
     // Horizontal line (x-axis)
     int axisY = (boundaryY1 + boundaryY2) / 2;
     display.DrawLine(boundaryX1, axisY, boundaryX2, axisY, true);
+// Normalize joystick values with joystickIdleX and joystickIdleY as reference points
+float normalizedX = (joystickX - joystickIdleX) / (joystickMaxX - joystickMinX);
+float normalizedY = (joystickY - joystickIdleY) / (joystickMaxY - joystickMinY);
 
-// Normalize joystick values, making sure joystickIdle maps to the center of the constrained movement range
-float normalizedX = (joystickX - joystickMinX) / (joystickMaxX - joystickMinX);
-float normalizedY = (joystickY - joystickMinY) / (joystickMaxY - joystickMinY);
-
-// Map normalized values to the screen coordinate range, with the idle position centered
-int mappedX = centerX + (1.f - normalizedX - 0.5f) * movementRangeWidth+1.f;
-
-// Invert the y-axis by subtracting from 1.0 to match display coordinates (assuming 0 is at the top)
-int mappedY = centerY - (1.f - normalizedY - 0.5f) * movementRangeHeight+0.5f;
+// Flip the X and Y axes and map the normalized values to the screen coordinate range
+// For flipping, subtract normalized values from 1.0 to invert the direction
+int mappedX = centerX - normalizedX * movementRangeWidth;   // Flip X-axis
+int mappedY = centerY + normalizedY * movementRangeHeight;  // Flip Y-axis (positive movementY moves down)
 
 // Rectangle size
 int rectX1 = mappedX - (rectWidthJoystick / 2);
