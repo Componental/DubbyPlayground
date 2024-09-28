@@ -817,13 +817,12 @@ void Dubby::UpdateLFOWindow()
 
     //display.Fill(false);
     ClearPane();
-    display.DrawLine(halfWidth, PANE_Y_START, halfWidth, PANE_Y_END, true);
 
-    // Draw the vertical line in the center of the display
-    display.DrawLine(halfWidth, PANE_Y_START, halfWidth, PANE_Y_END, true);
+    // // Draw the vertical line in the center of the display
+    // display.DrawLine(halfWidth, PANE_Y_START, halfWidth, PANE_Y_END, true);
 
-    // Draw bounding box for LFO1
-    display.DrawRect(lfo1BoundingBoxStartX, yStart, lfo1BoundingBoxEndX, yStart + rectHeight, true, false);
+    // // Draw bounding box for LFO1
+     display.DrawRect(lfo1BoundingBoxStartX, yStart, lfo1BoundingBoxEndX, yStart + rectHeight, true, false);
 
     // Draw rectangles for lfo1Value (left half)
     if (lfo1Value != 0)
