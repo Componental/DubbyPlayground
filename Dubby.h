@@ -98,7 +98,7 @@ namespace daisy
                 "MIDI CONF",
                 "ROUTING",
                 "LFO",
-                "WIN8",
+                "PERFORM",
         };
 
         enum PreferencesMenuItems
@@ -370,6 +370,8 @@ namespace daisy
 
         void UpdateLFOWindow();
 
+        void UpdateCurrentMappingWindow();
+
         void ProcessAllControls();
 
         void ProcessAnalogControls();
@@ -444,6 +446,7 @@ namespace daisy
         ChannelMappings channelMappingSelected = (ChannelMappings)0;
         bool isChannelMappingSelected = false;
         daisysp::Oscillator lfo1, lfo2;
+         float joystickIdleX, joystickIdleY;
 
         // const int menuTextCursors[3][2] = { {8, 55}, {50, 55}, {92, 55} }; OLD
         const int windowTextCursors[3][2] = {{3, 52}, {46, 52}, {88, 52}};
@@ -484,6 +487,8 @@ namespace daisy
         int receivedBPM;
         // uint32_t bpm = 120;
         std::vector<std::string> customLabels = {"RATE", "AMT", "RATE", "AMT"};
+        std::vector<std::string> macroLabels = {"-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-"};
+
         std::vector<float> knobValues = {100.f, 0.f, 25.f, 0.f};
         std::vector<int> numDecimals = {0, 1, 0, 1}; // Assuming you have three knobs with different decimal places
 
