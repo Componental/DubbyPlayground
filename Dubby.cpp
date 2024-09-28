@@ -142,7 +142,6 @@ void Dubby::InitControls()
     }
 
     seed.adc.Start();
-
 }
 
 void Dubby::InitButtons()
@@ -260,7 +259,7 @@ void Dubby::UpdateDisplay()
         if (encoder.TimeHeldMs() > ENCODER_LONGPRESS_THRESHOLD && !windowSelectorActive)
         {
             windowSelectorActive = true;
-            
+
             isParameterSelected = false;
             isListeningControlChange = false;
             isValueChanging = false;
@@ -290,9 +289,10 @@ void Dubby::UpdateDisplay()
                 encoderLastDebounceTime2 = seed.system.GetNow();
             }
 
-            if (!wasEncoderJustInHighlightMenu && encoder.FallingEdgeCustom()) {
+            if (!wasEncoderJustInHighlightMenu && encoder.FallingEdgeCustom())
+            {
                 wasEncoderJustInHighlightMenu = true;
-                encoderLastDebounceTime2 = seed.system.GetNow();    
+                encoderLastDebounceTime2 = seed.system.GetNow();
             }
         }
 
@@ -459,7 +459,7 @@ void Dubby::ReleaseWindowSelector()
     display.DrawRect(windowBoxBounding[0][0], windowBoxBounding[0][1], windowBoxBounding[0][2], windowBoxBounding[0][3], false, false);
 
     display.SetCursor(windowTextCursors[0][0], windowTextCursors[0][1]);
-    
+
     display.WriteStringAligned(GetTextForEnum(WINDOWS, windowItemSelected), Font_4x5, daisy::Rectangle(windowBoxBounding[0][0], windowBoxBounding[0][1] + 1, 43, 7), daisy::Alignment::centeredLeft, true);
 
     display.Update();
@@ -1097,12 +1097,12 @@ void Dubby::ProcessLFO()
 void Dubby::UpdateCurrentMappingWindow()
 {
     // Define constants
-    const int numControls = 10;                                  // Number of possible controls (e.g., KN1, KN2, ..., JSX, JSY)
-    const int macroLabelCount = 12;                              // Total number of macro labels
-    const int controlMappingCount = PARAMS_LAST;                 // Total number of parameter mappings
-    const int charWidth = 4, charHeight = 5;                     // Height & width of each character in the font
-    const float joystickMinX = 0.16f, joystickMaxX = 0.77f;      // Minimum & maximum joystick value
-    const float joystickMinY = 0.14f, joystickMaxY = 0.86f;      // Minimum & maximum joystick value
+    const int numControls = 10;                             // Number of possible controls (e.g., KN1, KN2, ..., JSX, JSY)
+    const int macroLabelCount = 12;                         // Total number of macro labels
+    const int controlMappingCount = PARAMS_LAST;            // Total number of parameter mappings
+    const int charWidth = 4, charHeight = 5;                // Height & width of each character in the font
+    const float joystickMinX = 0.16f, joystickMaxX = 0.77f; // Minimum & maximum joystick value
+    const float joystickMinY = 0.14f, joystickMaxY = 0.86f; // Minimum & maximum joystick value
     // const float joystickIdleX = 0.49f, joystickIdleY = 0.45f;    // Joystick X/Y idle value
     const int movementRangeWidth = 14, movementRangeHeight = 14; // Minimum & maximum range height for rectangle movement
     int rectWidthJoystick = 3, rectHeightJoystick = 3;           // Height & width of the joystick rectangle
@@ -1239,36 +1239,37 @@ void Dubby::UpdateCurrentMappingWindow()
     // Horizontal line (x-axis)
     int axisY = (boundaryY1 + boundaryY2) / 2;
     display.DrawLine(boundaryX1, axisY, boundaryX2, axisY, true);
-// Define the percentage threshold for snapping to idle
-float snapThreshold = 0.10; // 10%
+    // Define the percentage threshold for snapping to idle
+    float snapThreshold = 0.10; // 10%
 
-// Check if the joystick X is within 10% of the idle value
-if (fabs(joystickX - joystickIdleX) / (joystickMaxX - joystickMinX) < snapThreshold) {
-    joystickX = joystickIdleX;
-}
+    // Check if the joystick X is within 10% of the idle value
+    if (fabs(joystickX - joystickIdleX) / (joystickMaxX - joystickMinX) < snapThreshold)
+    {
+        joystickX = joystickIdleX;
+    }
 
-// Check if the joystick Y is within 10% of the idle value
-if (fabs(joystickY - joystickIdleY) / (joystickMaxY - joystickMinY) < snapThreshold) {
-    joystickY = joystickIdleY;
-}
+    // Check if the joystick Y is within 10% of the idle value
+    if (fabs(joystickY - joystickIdleY) / (joystickMaxY - joystickMinY) < snapThreshold)
+    {
+        joystickY = joystickIdleY;
+    }
 
-// Normalize joystick values with joystickIdleX and joystickIdleY as reference points
-float normalizedX = (joystickX - joystickIdleX) / (joystickMaxX - joystickMinX);
-float normalizedY = (joystickY - joystickIdleY) / (joystickMaxY - joystickMinY);
+    // Normalize joystick values with joystickIdleX and joystickIdleY as reference points
+    float normalizedX = (joystickX - joystickIdleX) / (joystickMaxX - joystickMinX);
+    float normalizedY = (joystickY - joystickIdleY) / (joystickMaxY - joystickMinY);
 
-// Flip the X and Y axes and map the normalized values to the screen coordinate range
-int mappedX = centerX - normalizedX * movementRangeWidth;   // Flip X-axis
-int mappedY = centerY + normalizedY * movementRangeHeight;  // Flip Y-axis (positive movementY moves down)
+    // Flip the X and Y axes and map the normalized values to the screen coordinate range
+    int mappedX = centerX - normalizedX * movementRangeWidth;  // Flip X-axis
+    int mappedY = centerY + normalizedY * movementRangeHeight; // Flip Y-axis (positive movementY moves down)
 
-// Rectangle size
-int rectX1 = mappedX - (rectWidthJoystick / 2);
-int rectY1 = mappedY - (rectHeightJoystick / 2);
-int rectX2 = rectX1 + rectWidthJoystick - 1;
-int rectY2 = rectY1 + rectHeightJoystick - 1;
+    // Rectangle size
+    int rectX1 = mappedX - (rectWidthJoystick / 2);
+    int rectY1 = mappedY - (rectHeightJoystick / 2);
+    int rectX2 = rectX1 + rectWidthJoystick - 1;
+    int rectY2 = rectY1 + rectHeightJoystick - 1;
 
-// Draw the rectangle at the new position
-display.DrawRect(rectX1, rectY1, rectX2, rectY2, true, true);
-
+    // Draw the rectangle at the new position
+    display.DrawRect(rectX1, rectY1, rectX2, rectY2, true, true);
 
     // Calculate the position for the joystick labels
     // Joystick X label (to the right of the end of the X-axis line)
@@ -1466,8 +1467,9 @@ void Dubby::UpdateParameterPane()
 
     if (encoder.FallingEdge() && !windowSelectorActive && !isParameterSelected)
     {
-        if ((seed.system.GetNow() - encoderLastDebounceTime2) > encoderDebounceDelay2) {
-            
+        if ((seed.system.GetNow() - encoderLastDebounceTime2) > encoderDebounceDelay2)
+        {
+
             isParameterSelected = true;
             parameterOptionSelected = PARAM;
 
@@ -1654,8 +1656,9 @@ void Dubby::UpdateParameterPane()
             DisplayParameterList(encoder.Increment());
         }
 
-        if (encoder.RisingEdgeCustom()) {
-            if (parameterOptionSelected == PARAM) 
+        if (encoder.RisingEdgeCustom())
+        {
+            if (parameterOptionSelected == PARAM)
             {
                 isParameterSelected = false;
             }
@@ -1667,7 +1670,6 @@ void Dubby::UpdateParameterPane()
 
                 for (int i = 0; i < CONTROLS_LAST; i++)
                     dubbyCtrls[i].tempValue = dubbyCtrls[i].value;
-            
             }
             else if (parameterOptionSelected == CURVE)
             {
@@ -1697,7 +1699,6 @@ void Dubby::UpdateParameterPane()
                 encoder.EnableAcceleration(true);
             }
         }
-    
     }
 }
 
@@ -1862,7 +1863,7 @@ void Dubby::UpdatePreferencesSubMenuList(int increment, PreferencesMenuItems pre
     switch (prefMenuItemSelected)
     {
     case LEDS:
-        endSelector = sizeof(PreferencesLedsMenuItemsStrings);  
+        endSelector = sizeof(PreferencesLedsMenuItemsStrings);
         break;
     case ROUTING:
         endSelector = sizeof(PreferencesRoutingMenuItemsStrings);
