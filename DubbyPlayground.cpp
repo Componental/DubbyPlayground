@@ -45,6 +45,8 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
 
     for (size_t i = 0; i < size; i++)
     {
+        AssignScopeData(dubby, i, in, out);
+
         float processedSample[2];
 
         dry[0] = in[2][i];

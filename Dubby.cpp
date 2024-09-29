@@ -321,30 +321,28 @@ void Dubby::UpdateDisplay()
         switch (windowItemSelected)
         {
         case WIN1:
-            UpdateRenderPane();
-            break;
-        case WIN2:
-            UpdateMixerPane();
-            break;
-        case WIN3:
-            UpdateGlobalSettingsPane();
-            break;
-        case WIN4:
-            UpdateParameterPane();
-            break;
-        case WIN5:
-            UpdateMidiSettingsPane();
-            break;
-        case WIN6:
-            // UpdateChannelMappingPane();
-            break;
-        case WIN7:
-            UpdateLFOWindow();
-            break;
-        case WIN8:
             UpdateCurrentMappingWindow();
             break;
+        case WIN2:
+            UpdateLFOWindow();
+            break;
+        case WIN3:
+            UpdateParameterPane();
+            break;
+        case WIN4:
+            UpdateRenderPane();
+            break;
+        case WIN5:
+            UpdateChannelMappingPane();
+            break;
+        case WIN6:
+            UpdateMidiSettingsPane();
+            break;
+        case WIN7:
+            UpdateGlobalSettingsPane();
+            break;
         default:
+            UpdateCurrentMappingWindow();
             break;
         }
     }
@@ -543,39 +541,31 @@ void Dubby::UpdateWindowList()
     switch (windowItemSelected)
     {
     case WIN1:
+        UpdateCurrentMappingWindow();
+        break;
+    case WIN2:
+        UpdateLFOWindow();
+        break;
+    case WIN3:
+        UpdateStatusBar(" PARAM       CTRL      VALUE  >", LEFT);
+        display.DrawLine(6, 7, 127, 7, true);
+        DisplayParameterList(0);
+        break;
+    case WIN4:
         statusStr = GetTextForEnum(SCOPE, scopeSelector);
         UpdateStatusBar(&statusStr[0], LEFT, 70);
         UpdateRenderPane();
         break;
-    case WIN2:
-        for (int i = 0; i < 4; i++)
-            UpdateBar(i);
-        break;
-    case WIN3:
-        DisplayPreferencesMenuList(preferencesMenuItemSelected);
-        break;
-    case WIN4:
-        UpdateStatusBar(" PARAM       CTRL      VALUE  >", LEFT);
-        display.DrawLine(6, 7, 127, 7, true);
-
-        DisplayParameterList(0);
-
-        break;
     case WIN5:
-        UpdateStatusBar(" SETTING              VALUE    ", LEFT);
-        display.DrawLine(6, 10, 121, 10, true);
-
-        DisplayMidiSettingsList(0);
-
+        UpdateChannelMappingPane();
         break;
     case WIN6:
-        // UpdateChannelMappingPane();
+        UpdateStatusBar(" SETTING              VALUE    ", LEFT);
+        display.DrawLine(6, 10, 121, 10, true);
+        DisplayMidiSettingsList(0);
         break;
     case WIN7:
-        UpdateLFOWindow();
-        break;
-    case WIN8:
-        UpdateCurrentMappingWindow();
+        DisplayPreferencesMenuList(preferencesMenuItemSelected);
         break;
     default:
         break;

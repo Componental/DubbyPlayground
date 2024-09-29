@@ -16,7 +16,7 @@ void AssignScopeData(Dubby& dubby, size_t i, AudioHandle::InputBuffer& in, Audio
     switch (dubby.scopeSelector)
     {
         case 0: dubby.scope_buffer[i] = (in[0][i] + in[1][i]) * .5f; break;
-        case 1: dubby.scope_buffer[i] = (in[0][i] + in[1][i]) * .5f; break;
+        case 1: dubby.scope_buffer[i] = (in[2][i] + in[3][i]) * .5f; break;
         case 2: dubby.scope_buffer[i] = (out[0][i] + out[1][i]) * .5f; break;
         case 3: dubby.scope_buffer[i] = (out[2][i] + out[3][i]) * .5f; break;
         case 4: dubby.scope_buffer[i] = in[0][i]; break;
