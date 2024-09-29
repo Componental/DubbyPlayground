@@ -38,11 +38,11 @@ using namespace daisy;
 
 #define MENULIST_X_START 0
 #define MENULIST_X_END 63
-#define MENULIST_Y_START 8
-#define MENULIST_Y_END 19
+#define MENULIST_Y_START 0
+#define MENULIST_Y_END 8
 #define MENULIST_SPACING 8
 #define MENULIST_SUBMENU_SPACING 63
-#define MENULIST_ROWS_ON_SCREEN 5
+#define MENULIST_ROWS_ON_SCREEN 7
 
 #define PARAMLIST_X_START 1
 #define PARAMLIST_X_END 127
@@ -96,6 +96,10 @@ void Dubby::Init()
         paramListBoxBounding[i][1] = PARAMLIST_Y_START + i * PARAMLIST_SPACING;
         paramListBoxBounding[i][2] = PARAMLIST_X_END;
         paramListBoxBounding[i][3] = PARAMLIST_Y_END + i * PARAMLIST_SPACING;
+
+        if (i == PARAMLIST_ROWS_ON_SCREEN - 1)
+            paramListBoxBounding[i][3] = (PARAMLIST_Y_END + i * PARAMLIST_SPACING) - 2;
+        
     }
 
     for (int i = 0; i < MIDILIST_ROWS_ON_SCREEN; i++)
@@ -264,6 +268,17 @@ void Dubby::UpdateDisplay()
         if (encoder.TimeHeldMs() > ENCODER_LONGPRESS_THRESHOLD && !windowSelectorActive)
         {
             windowSelectorActive = true;
+
+            isParameterSelected = false;
+            isListeningControlChange = false;
+            isValueChanging = false;
+            isMinChanging = false;
+            isMaxChanging = false;
+            isCurveChanging = false;
+            parameterOptionSelected = PARAM;
+
+            isEncoderIncrementDisabled = false;
+
             encoder.EnableAcceleration(false);
         }
 
@@ -273,18 +288,24 @@ void Dubby::UpdateDisplay()
             if (encoder.Increment())
                 UpdateWindowSelector(encoder.Increment(), true);
 
-            if (encoder.RisingEdge())
+            if (encoder.FallingEdgeCustom())
             {
                 windowSelectorActive = false;
                 ReleaseWindowSelector();
                 UpdateWindowList();
+
+                wasEncoderJustInHighlightMenu = true;
+                encoderLastDebounceTime2 = seed.system.GetNow();
             }
 
-            if (!wasEncoderJustInHighlightMenu && EncoderFallingEdgeCustom())
+            if (!wasEncoderJustInHighlightMenu && encoder.FallingEdgeCustom())
+            {
                 wasEncoderJustInHighlightMenu = true;
+                encoderLastDebounceTime2 = seed.system.GetNow();
+            }
         }
 
-        if (wasEncoderJustInHighlightMenu && EncoderFallingEdgeCustom())
+        if (wasEncoderJustInHighlightMenu && encoder.FallingEdgeCustom())
         {
             if (highlightMenuCounter < 2)
             {
@@ -320,6 +341,9 @@ void Dubby::UpdateDisplay()
         case WIN7:
             UpdateLFOWindow();
             break;
+        case WIN8:
+            UpdateCurrentMappingWindow();
+            break;
         default:
             break;
         }
@@ -330,7 +354,7 @@ void Dubby::UpdateDisplay()
         {
             ChangeModalOption();
         }
-        else if (EncoderRisingEdgeCustom())
+        else if (encoder.RisingEdgeCustom())
         {
             if (modalOptionSelected == YES)
             {
@@ -428,7 +452,7 @@ void Dubby::HighlightWindowItem()
         display.WriteStringAligned(GetTextForEnum(WINDOWS, currentText), Font_4x5, daisy::Rectangle(windowBoxBounding[i][0], windowBoxBounding[i][1] + 1, 43, 7), daisy::Alignment::centered, i == 0 ? false : true);
     }
 
-    display.DrawLine(PANE_X_START - 1, PANE_Y_START + 1, PANE_X_START - 1, PANE_Y_END + 1, true);
+    // display.DrawLine(PANE_X_START - 1, PANE_Y_START + 1, PANE_X_START - 1, PANE_Y_END + 1, true);
 
     display.DrawLine(PANE_X_START - 1, PANE_Y_END + 1, PANE_X_END - 1, PANE_Y_END + 1, true);
 
@@ -444,7 +468,8 @@ void Dubby::ReleaseWindowSelector()
     display.DrawRect(windowBoxBounding[0][0], windowBoxBounding[0][1], windowBoxBounding[0][2], windowBoxBounding[0][3], false, false);
 
     display.SetCursor(windowTextCursors[0][0], windowTextCursors[0][1]);
-    display.WriteStringAligned(GetTextForEnum(WINDOWS, windowItemSelected), Font_4x5, daisy::Rectangle(windowBoxBounding[0][0], windowBoxBounding[0][1] + 1, 43, 7), daisy::Alignment::centered, true);
+
+    display.WriteStringAligned(GetTextForEnum(WINDOWS, windowItemSelected), Font_4x5, daisy::Rectangle(windowBoxBounding[0][0], windowBoxBounding[0][1] + 1, 43, 7), daisy::Alignment::centeredLeft, true);
 
     display.Update();
 }
@@ -549,6 +574,9 @@ void Dubby::UpdateWindowList()
     case WIN7:
         UpdateLFOWindow();
         break;
+    case WIN8:
+        UpdateCurrentMappingWindow();
+        break;
     default:
         break;
     }
@@ -583,7 +611,7 @@ void Dubby::UpdateChannelMappingPane()
     static bool selectIndexMode = true; // Flag to toggle between index mode and grid mode
 
     // Toggle mode when the encoder is pressed
-    if (EncoderFallingEdgeCustom() && !windowSelectorActive)
+    if (encoder.FallingEdgeCustom() && !windowSelectorActive)
     {
         selectIndexMode = !selectIndexMode; // Toggle between selectIndexMode and grid navigation mode
     }
@@ -758,14 +786,14 @@ void Dubby::UpdateLFOWindow()
 
     // Define positions for parameter boxes
     int paramBoxLFO1X = 2;
-    int paramBoxLFO1Y = 50-yOffset;
+    int paramBoxLFO1Y = 50 - yOffset;
     int paramBoxLFO2X = displayWidth / 2 + 2;
-    int paramBoxLFO2Y = 50-yOffset;
+    int paramBoxLFO2Y = 50 - yOffset;
 
     int paramBoxWaveShapeLFO1X = halfWidth / 2 + 3;
-    int paramBoxWaveShapeLFO1Y = 10-yOffset;
+    int paramBoxWaveShapeLFO1Y = 10 - yOffset;
     int paramBoxWaveShapeLFO2X = displayWidth - halfWidth / 2 + 3;
-    int paramBoxWaveShapeLFO2Y = 10-yOffset;
+    int paramBoxWaveShapeLFO2Y = 10 - yOffset;
 
     const char *paramLFO1 = ParamsStrings[currentParamIndexLFO1];
     const char *paramLFO2 = ParamsStrings[currentParamIndexLFO2];
@@ -782,7 +810,7 @@ void Dubby::UpdateLFOWindow()
     };
 
     // Define parameters for circular knobs and bounding circles
-    int circle_y = 34-yOffset;              // Y-coordinate of the center of the circle
+    int circle_y = 34 - yOffset;    // Y-coordinate of the center of the circle
     int circle_radius = 6;          // Radius of the circle
     int bounding_circle_radius = 7; // Radius of the bounding circle, slightly larger than the knob circle
     int selectedIndices[NUM_KNOBS] = {1, 2, 5, 6};
@@ -796,15 +824,14 @@ void Dubby::UpdateLFOWindow()
     const int offsetKnob1And2 = -6;
     const int offsetKnob3And4 = 6;
 
-    //display.Fill(false);
+    // display.Fill(false);
     ClearPane();
-    display.DrawLine(halfWidth, PANE_Y_START, halfWidth, PANE_Y_END, true);
 
-    // Draw the vertical line in the center of the display
-    display.DrawLine(halfWidth, PANE_Y_START, halfWidth, PANE_Y_END, true);
+    // // Draw the vertical line in the center of the display
+    // display.DrawLine(halfWidth, PANE_Y_START, halfWidth, PANE_Y_END, true);
 
-    // Draw bounding box for LFO1
-    display.DrawRect(lfo1BoundingBoxStartX, yStart, lfo1BoundingBoxEndX, yStart + rectHeight, true, false);
+    // // Draw bounding box for LFO1
+     display.DrawRect(lfo1BoundingBoxStartX, yStart, lfo1BoundingBoxEndX, yStart + rectHeight, true, false);
 
     // Draw rectangles for lfo1Value (left half)
     if (lfo1Value != 0)
@@ -827,7 +854,7 @@ void Dubby::UpdateLFOWindow()
 
     int increment = encoder.Increment();
 
-    if (EncoderFallingEdgeCustom() && !windowSelectorActive)
+    if (encoder.FallingEdgeCustom() && !windowSelectorActive)
         selectIndexMode = !selectIndexMode;
 
     // Determine which parameter box is selected
@@ -858,7 +885,6 @@ void Dubby::UpdateLFOWindow()
                 break;
 
             case 1:
-                    
 
                 encoder.EnableAcceleration(true);
                 // Update knobValues[1] with encoder increment
@@ -974,9 +1000,9 @@ void Dubby::UpdateLFOWindow()
 
     // Draw boxes for LFO1, LFO2, WaveShapeLFO1, and WaveShapeLFO2
     drawParamBox(paramWaveShapeLFO1, paramBoxWaveShapeLFO1X, paramBoxWaveShapeLFO1Y, paramBoxWaveShapeWidth, paramBoxWaveShapeHeight, isSelected[0], selectIndexMode);
-    drawParamBox(paramLFO1, paramBoxLFO1X, paramBoxLFO1Y-1, paramBoxLFOWidth, paramBoxLFOHeight, isSelected[3], selectIndexMode);
+    drawParamBox(paramLFO1, paramBoxLFO1X, paramBoxLFO1Y - 1, paramBoxLFOWidth, paramBoxLFOHeight, isSelected[3], selectIndexMode);
     drawParamBox(paramWaveShapeLFO2, paramBoxWaveShapeLFO2X, paramBoxWaveShapeLFO2Y, paramBoxWaveShapeWidth, paramBoxWaveShapeHeight, isSelected[4], selectIndexMode);
-    drawParamBox(paramLFO2, paramBoxLFO2X, paramBoxLFO2Y-1, paramBoxLFOWidth, paramBoxLFOHeight, isSelected[7], selectIndexMode);
+    drawParamBox(paramLFO2, paramBoxLFO2X, paramBoxLFO2Y - 1, paramBoxLFOWidth, paramBoxLFOHeight, isSelected[7], selectIndexMode);
 
     // visualizeKnobValuesCircle(customLabels, numDecimals);
 
@@ -998,7 +1024,6 @@ void Dubby::UpdateLFOWindow()
             circle_x_offset += offsetKnob3And4;
         }
 
-      
         // Draw circular knob
         display.DrawCircle(circle_x_offset, circle_y, bounding_circle_radius, selected); // Draw filled knob circle
         display.DrawCircle(circle_x_offset, circle_y, circle_radius, true);              // Draw filled knob circle
@@ -1041,7 +1066,7 @@ void Dubby::UpdateLFOWindow()
     }
 
     // Update the display to show the changes
-   // display.Update();
+    // display.Update();
 }
 
 void Dubby::UpdateLFO()
@@ -1074,6 +1099,286 @@ void Dubby::ProcessLFO()
     {
         lfo2Values[currentParamIndexLFO2] = 0;
     }
+}
+
+void Dubby::UpdateCurrentMappingWindow()
+{
+        display.DrawRect(0, 0, PANE_X_END + 1, PANE_Y_END + 12, false, true); 
+
+    // Define constants
+    const int numControls = 10;                             // Number of possible controls (e.g., KN1, KN2, ..., JSX, JSY)
+    const int macroLabelCount = 12;                         // Total number of macro labels
+    const int controlMappingCount = PARAMS_LAST;            // Total number of parameter mappings
+    const int charWidth = 4, charHeight = 5;                // Height & width of each character in the font
+    const float joystickMinX = 0.16f, joystickMaxX = 0.77f; // Minimum & maximum joystick value
+    const float joystickMinY = 0.14f, joystickMaxY = 0.86f; // Minimum & maximum joystick value
+    // const float joystickIdleX = 0.49f, joystickIdleY = 0.45f;    // Joystick X/Y idle value
+    const int movementRangeWidth = 14, movementRangeHeight = 14; // Minimum & maximum range height for rectangle movement
+    int rectWidthJoystick = 3, rectHeightJoystick = 3;           // Height & width of the joystick rectangle
+    const int labelOffset = 3;                                   // Offset for labels from axis lines
+    const int circleRadius = 5;                                  // Radius of circular knobs
+    const int circleY = 12;                                      // Y-coordinate of the center of the circular knobs
+    const int adjustedSpacing = 13;                              // Spacing between circular knobs
+    const int buttonRectWidth = 4, buttonRectHeight = 8;         // Height & width of button rectangles
+    const int offset = 26;                                       // Offset for positioning button rectangles
+
+    int controlCount[CONTROLS_LAST] = {0}; // Assuming CONTROLS_LAST is the number of possible controls (e.g., KN1, KN2, KN3, KN4)
+
+    // First pass: count how many times each control appears
+    for (int i = 0; i < controlMappingCount; i++)
+    {
+        switch (dubbyParameters[i].control)
+        {
+        case KN1:
+            controlCount[0]++;
+            break;
+        case KN2:
+            controlCount[1]++;
+            break;
+        case KN3:
+            controlCount[2]++;
+            break;
+        case KN4:
+            controlCount[3]++;
+            break;
+        case BTN1:
+            controlCount[4]++;
+            break;
+        case BTN2:
+            controlCount[5]++;
+            break;
+        case BTN3:
+            controlCount[6]++;
+            break;
+        case BTN4:
+            controlCount[7]++;
+            break;
+        case JSX:
+            controlCount[8]++;
+            break;
+        case JSY:
+            controlCount[9]++;
+            break;
+        }
+    }
+
+    // Initialize macroLabels with default value
+    for (int i = 0; i < macroLabelCount; i++)
+    {
+        macroLabels[i] = "-";
+    }
+
+    // Second pass: assign labels
+    for (int i = 0; i < controlMappingCount; i++)
+    {
+        switch (dubbyParameters[i].control)
+        {
+        case KN1:
+            macroLabels[0] = (controlCount[0] > 1) ? "MACRO" : ParamsStrings[i];
+            break;
+        case KN2:
+            macroLabels[1] = (controlCount[1] > 1) ? "MACRO" : ParamsStrings[i];
+            break;
+        case KN3:
+            macroLabels[2] = (controlCount[2] > 1) ? "MACRO" : ParamsStrings[i];
+            break;
+        case KN4:
+            macroLabels[3] = (controlCount[3] > 1) ? "MACRO" : ParamsStrings[i];
+            break;
+        case BTN1:
+            macroLabels[4] = (controlCount[4] > 1) ? "MACRO" : ParamsStrings[i];
+            break;
+        case BTN2:
+            macroLabels[5] = (controlCount[5] > 1) ? "MACRO" : ParamsStrings[i];
+            break;
+        case BTN3:
+            macroLabels[6] = (controlCount[6] > 1) ? "MACRO" : ParamsStrings[i];
+            break;
+        case BTN4:
+            macroLabels[7] = (controlCount[7] > 1) ? "MACRO" : ParamsStrings[i];
+            break;
+        case JSX:
+            macroLabels[8] = (controlCount[8] > 1) ? "MACRO" : ParamsStrings[i];
+            break;
+        case JSY:
+            macroLabels[9] = (controlCount[9] > 1) ? "MACRO" : ParamsStrings[i];
+            break;
+        }
+    }
+
+    // Update joystick X and Y labels and create new labels with '-'
+    for (int i = 0; i < numControls; i++)
+    {
+        int labelLength = (i == 8 || i == 9) ? 3 : 4;
+        if (macroLabels[i].length() > labelLength)
+        {
+            macroLabels[i] = macroLabels[i].substr(0, labelLength);
+            if (i == 8 || i == 9)
+            {
+                macroLabels[i] += "+";
+                macroLabels[i + 2] = macroLabels[i].substr(0, 3) + "-";
+            }
+        }
+    }
+
+    display.DrawRect(0, 0, PANE_X_END + 1, PANE_Y_END + 12, false, true);
+
+    // Change size when joystick button is pressed
+    rectHeightJoystick = rectWidthJoystick = joystickButton.Pressed() ? 5 : 3;
+
+    // Mapping joystick values to screen coordinates
+    float joystickX = GetKnobValue(CTRL_5); // Get joystick X value (joystickMin to joystickMax)
+    float joystickY = GetKnobValue(CTRL_6); // Get joystick Y value (joystickMin to joystickMax)
+
+    // Calculate the center position, so the movement range is centered on the screen
+    int centerX = OLED_WIDTH / 2;
+    int centerY = OLED_HEIGHT / 1.6;
+
+    // Define the boundary rectangle encompassing the possible movement area
+    int boundaryX1 = centerX - movementRangeWidth / 2;
+    int boundaryY1 = centerY - movementRangeHeight / 2;
+    int boundaryX2 = boundaryX1 + movementRangeWidth;
+    int boundaryY2 = boundaryY1 + movementRangeHeight;
+
+    // Draw the coordinate system lines inside the boundary rectangle
+    // Vertical line (y-axis)
+    int axisX = (boundaryX1 + boundaryX2) / 2;
+    display.DrawLine(axisX, boundaryY1, axisX, boundaryY2, true);
+
+    // Horizontal line (x-axis)
+    int axisY = (boundaryY1 + boundaryY2) / 2;
+    display.DrawLine(boundaryX1, axisY, boundaryX2, axisY, true);
+    // Define the percentage threshold for snapping to idle
+    float snapThreshold = 0.10; // 10%
+
+    // Check if the joystick X is within 10% of the idle value
+    if (fabs(joystickX - joystickIdleX) / (joystickMaxX - joystickMinX) < snapThreshold)
+    {
+        joystickX = joystickIdleX;
+    }
+
+    // Check if the joystick Y is within 10% of the idle value
+    if (fabs(joystickY - joystickIdleY) / (joystickMaxY - joystickMinY) < snapThreshold)
+    {
+        joystickY = joystickIdleY;
+    }
+
+    // Normalize joystick values with joystickIdleX and joystickIdleY as reference points
+    float normalizedX = (joystickX - joystickIdleX) / (joystickMaxX - joystickMinX);
+    float normalizedY = (joystickY - joystickIdleY) / (joystickMaxY - joystickMinY);
+
+    // Flip the X and Y axes and map the normalized values to the screen coordinate range
+    int mappedX = centerX - normalizedX * movementRangeWidth;  // Flip X-axis
+    int mappedY = centerY + normalizedY * movementRangeHeight; // Flip Y-axis (positive movementY moves down)
+
+    // Rectangle size
+    int rectX1 = mappedX - (rectWidthJoystick / 2);
+    int rectY1 = mappedY - (rectHeightJoystick / 2);
+    int rectX2 = rectX1 + rectWidthJoystick - 1;
+    int rectY2 = rectY1 + rectHeightJoystick - 1;
+
+    // Draw the rectangle at the new position
+    display.DrawRect(rectX1, rectY1, rectX2, rectY2, true, true);
+
+    // Calculate the position for the joystick labels
+    // Joystick X label (to the right of the end of the X-axis line)
+    int joystickXLabelX = axisX + 7 + labelOffset;
+    int joystickXLabelY = axisY - charHeight / 2; // Center vertically based on font height
+
+    // Joystick Y label (centered under the end of the Y-axis line)
+    int joystickYLabelWidth = macroLabels[9].size() * charWidth; // Width of the joystick Y label
+    int joystickYLabelX = axisX - (joystickYLabelWidth / 2);     // Center horizontally
+    int joystickYLabelY = boundaryY2 + labelOffset;              // Offset below the end of the Y-axis line
+
+    // New joystick X "-" label (to the left of the X-axis line)
+    int joystickXNegLabelX = axisX - 7 - (macroLabels[10].size() * charWidth) - labelOffset;
+    int joystickXNegLabelY = axisY - charHeight / 2; // Center vertically based on font height
+
+    // New joystick Y "-" label (centered above the Y-axis line)
+    int joystickYNegLabelWidth = macroLabels[11].size() * charWidth;    // Width of the joystick Y "-" label
+    int joystickYNegLabelX = axisX - (joystickYNegLabelWidth / 2);      // Center horizontally
+    int joystickYNegLabelY = boundaryY1 + 1 - labelOffset - charHeight; // Offset above the end of the Y-axis line
+
+    // Draw the joystick parameter labels
+    display.SetCursor(joystickXLabelX, joystickXLabelY);
+    display.WriteString(macroLabels[8].c_str(), Font_4x5, true); // Label for joystick X "+"
+
+    display.SetCursor(joystickYLabelX, joystickYLabelY);
+    display.WriteString(macroLabels[9].c_str(), Font_4x5, true); // Label for joystick Y "+"
+
+    // Draw the new joystick labels
+    display.SetCursor(joystickXNegLabelX, joystickXNegLabelY);
+    display.WriteString(macroLabels[10].c_str(), Font_4x5, true); // Label for joystick X "-"
+
+    display.SetCursor(joystickYNegLabelX, joystickYNegLabelY);
+    display.WriteString(macroLabels[11].c_str(), Font_4x5, true); // Label for joystick Y "-"
+
+    // Calculate total width occupied by circles
+    int totalWidth = NUM_KNOBS * 2 * circleRadius;
+
+    // Calculate space between circles
+    int circleSpacing = (OLED_WIDTH - totalWidth - (NUM_KNOBS - 1) * adjustedSpacing) / 2;
+
+    circleSpacing = std::max(circleSpacing, adjustedSpacing); // Ensure spacing is not negative
+
+    // Loop through each knob value
+    for (int i = 0; i < NUM_KNOBS; ++i)
+    {
+        // Calculate knob x-coordinate
+        int circleXOffset = circleSpacing + (i * (2 * circleRadius + adjustedSpacing)) + circleRadius;
+
+        float knobValueLive = GetKnobValue(static_cast<Ctrl>(i));
+        // Calculate angle for the current knob
+        float angle = (knobValueLive * 0.8f * 2 * PI_F) - (PI_F * 1.5f) + 0.2 * PI_F; // Convert knob value to angle
+
+        // Calculate line end position based on knob value
+        int lineEndX = circleXOffset + static_cast<int>(circleRadius * cos(angle));
+        int lineEndY = circleY + static_cast<int>(circleRadius * sin(angle));
+
+        // Draw circular knob
+        display.DrawCircle(circleXOffset, circleY, circleRadius, true);
+
+        // Draw line indicating knob value
+        display.DrawLine(circleXOffset, circleY, lineEndX, lineEndY, true);
+
+        // Calculate the position for the label to be centered above the circle
+        int labelX = circleXOffset - (macroLabels[i].size() * charWidth) / 2; // Assuming each character is charWidth pixels wide in the selected font
+        int labelY = 0;                                                       // Adjust this value to position the label properly above the circle
+
+        // Draw custom label above each circle
+        display.SetCursor(labelX, labelY);
+        display.WriteString(macroLabels[i].c_str(), Font_4x5, true);
+    }
+
+    // Define rectangle dimensions
+    // (Already defined as buttonRectWidth, buttonRectHeight)
+
+    // Top-left corner
+    display.DrawRect(0, PANE_Y_START + offset - 4, buttonRectWidth, buttonRectHeight + PANE_Y_START + offset - 4, true, buttons[0].Pressed());
+    display.SetCursor(buttonRectWidth + 2, PANE_Y_START + offset - 4 + 2);
+    display.WriteString(macroLabels[4].c_str(), Font_4x5, true);
+
+    // Top-right corner
+    display.DrawRect(OLED_WIDTH - buttonRectWidth - 1, PANE_Y_START + offset - 4, OLED_WIDTH - 1, buttonRectHeight + PANE_Y_START + offset - 4, true, buttons[2].Pressed());
+    int textWidth = macroLabels[5].size() * charWidth;
+    display.SetCursor(OLED_WIDTH - buttonRectWidth - textWidth - 3, PANE_Y_START + offset - 4 + 2);
+    display.WriteString(macroLabels[5].c_str(), Font_4x5, true);
+
+    // Bottom-left corner
+    display.DrawRect(0, PANE_Y_END - buttonRectHeight - 4, buttonRectWidth, PANE_Y_END - 4, true, buttons[1].Pressed());
+    display.SetCursor(buttonRectWidth + 2, PANE_Y_END - buttonRectHeight - 4 + 2);
+    display.WriteString(macroLabels[6].c_str(), Font_4x5, true);
+
+    // Bottom-right corner
+    display.DrawRect(OLED_WIDTH - buttonRectWidth - 1, PANE_Y_END - buttonRectHeight - 4, OLED_WIDTH - 1, PANE_Y_END - 4, true, buttons[3].Pressed());
+    textWidth = macroLabels[7].size() * charWidth;
+    display.SetCursor(OLED_WIDTH - buttonRectWidth - textWidth - 3, PANE_Y_END - buttonRectHeight - 4 + 2);
+    display.WriteString(macroLabels[7].c_str(), Font_4x5, true);
+
+    // Update the display after drawing all elements
+    if(!windowSelectorActive){
+    display.Update();
+    } 
 }
 
 void Dubby::UpdateBar(int i)
@@ -1117,25 +1422,33 @@ void Dubby::UpdateRenderPane()
 
 void Dubby::UpdateGlobalSettingsPane()
 {
-    if (EncoderFallingEdgeCustom() && !isSubMenuActive)
+    if (encoder.RisingEdge() && !isSubMenuActive)
     {
         isSubMenuActive = true;
         DisplayPreferencesMenuList(0);
     }
 
-    if (windowSelectorActive)
+    if (encoder.RisingEdgeCustom() && windowSelectorActive)
     {
-        isSubMenuActive = false;
+        
+        windowSelectorActive = false;
         DisplayPreferencesMenuList(0);
     }
 
     DisplayPreferencesSubMenuList(encoder.Increment(), preferencesMenuItemSelected);
 
-    if (EncoderRisingEdgeCustom() && !windowSelectorActive)
+    if (encoder.RisingEdgeCustom() && !windowSelectorActive && ((seed.system.GetNow() - encoderLastDebounceTime2) > encoderDebounceDelay2))
     {
+        if (!isSubMenuActive)
+        {
+            isSubMenuActive = true;
+            // UpdateStatusBar("UPDATED", MIDDLE, 128);
+            DisplayPreferencesMenuList(0);
+        }
+
         switch (preferencesMenuItemSelected)
         {
-        case MIDI:
+        case LEDS:
             break;
         case SAVEMEMORY:
             OpenModal("ARE YOU SURE?");
@@ -1159,23 +1472,26 @@ void Dubby::UpdateGlobalSettingsPane()
 
 void Dubby::UpdateParameterPane()
 {
-    // if (encoder.FallingEdge() && !wasEncoderJustInHighlightMenu) {
     DisplayParameterList(encoder.Increment());
 
     if (encoder.Increment() && !isEncoderIncrementDisabled && !windowSelectorActive && !isParameterSelected)
         UpdateParameterList(encoder.Increment());
 
-    if (encoder.FallingEdge() && !wasEncoderJustInHighlightMenu && !windowSelectorActive && !isParameterSelected)
+    if (encoder.FallingEdge() && !windowSelectorActive && !isParameterSelected)
     {
-        isParameterSelected = true;
-        parameterOptionSelected = PARAM;
+        if ((seed.system.GetNow() - encoderLastDebounceTime2) > encoderDebounceDelay2)
+        {
 
-        DisplayParameterList(encoder.Increment());
+            isParameterSelected = true;
+            parameterOptionSelected = PARAM;
+
+            DisplayParameterList(encoder.Increment());
+        }
     }
+    // if (encoder.FallingEdge() && wasEncoderJustInHighlightMenu) wasEncoderJustInHighlightMenu = !wasEncoderJustInHighlightMenu;
 
     if (isListeningControlChange)
     {
-
         if (encoder.Increment())
         {
             if (dubbyParameters[parameterSelected].control == CONTROLS_LAST - 1 && encoder.Increment() == 1)
@@ -1186,7 +1502,7 @@ void Dubby::UpdateParameterPane()
                 dubbyParameters[parameterSelected].control = static_cast<DubbyControls>(static_cast<int>(dubbyParameters[parameterSelected].control) + encoder.Increment());
         }
 
-        if (EncoderFallingEdgeCustom())
+        if (encoder.RisingEdgeCustom())
         {
             isListeningControlChange = false;
             isEncoderIncrementDisabled = false;
@@ -1221,7 +1537,7 @@ void Dubby::UpdateParameterPane()
             else
                 dubbyParameters[parameterSelected].curve = static_cast<Curves>(static_cast<int>(dubbyParameters[parameterSelected].curve) + encoder.Increment());
         }
-        if (EncoderFallingEdgeCustom())
+        if (encoder.RisingEdgeCustom())
         {
             isCurveChanging = false;
             isEncoderIncrementDisabled = false;
@@ -1246,7 +1562,7 @@ void Dubby::UpdateParameterPane()
             // Apply the new value
             dubbyParameters[parameterSelected].min = newValue;
         }
-        if (EncoderFallingEdgeCustom())
+        if (encoder.RisingEdgeCustom())
         {
             isMinChanging = false;
             isEncoderIncrementDisabled = false;
@@ -1273,7 +1589,7 @@ void Dubby::UpdateParameterPane()
             dubbyParameters[parameterSelected].max = newValue;
         }
 
-        if (EncoderFallingEdgeCustom())
+        if (encoder.RisingEdgeCustom())
         {
             isMaxChanging = false;
             isEncoderIncrementDisabled = false;
@@ -1313,7 +1629,7 @@ void Dubby::UpdateParameterPane()
                 }
             }
         }
-        if (EncoderFallingEdgeCustom())
+        if (encoder.RisingEdgeCustom())
         {
             isValueChanging = false;
             isEncoderIncrementDisabled = false;
@@ -1351,9 +1667,14 @@ void Dubby::UpdateParameterPane()
 
             DisplayParameterList(encoder.Increment());
         }
-        else if (parameterOptionSelected == CTRL)
+
+        if (encoder.RisingEdgeCustom())
         {
-            if (EncoderFallingEdgeCustom())
+            if (parameterOptionSelected == PARAM)
+            {
+                isParameterSelected = false;
+            }
+            else if (parameterOptionSelected == CTRL)
             {
                 UpdateStatusBar("SELECT A CONTROL", MIDDLE, 127);
                 isListeningControlChange = true;
@@ -1362,39 +1683,27 @@ void Dubby::UpdateParameterPane()
                 for (int i = 0; i < CONTROLS_LAST; i++)
                     dubbyCtrls[i].tempValue = dubbyCtrls[i].value;
             }
-        }
-        else if (parameterOptionSelected == CURVE)
-        {
-            if (EncoderFallingEdgeCustom())
+            else if (parameterOptionSelected == CURVE)
             {
                 UpdateStatusBar("SELECT A CURVE", MIDDLE, 127);
                 isEncoderIncrementDisabled = true;
                 isCurveChanging = true;
             }
-        }
-        else if (parameterOptionSelected == MIN)
-        {
-            if (EncoderFallingEdgeCustom())
+            else if (parameterOptionSelected == MIN)
             {
                 UpdateStatusBar("SELECT MIN VALUE", MIDDLE, 127);
                 isEncoderIncrementDisabled = true;
                 isMinChanging = true;
                 encoder.EnableAcceleration(true);
             }
-        }
-        else if (parameterOptionSelected == MAX)
-        {
-            if (EncoderFallingEdgeCustom())
+            else if (parameterOptionSelected == MAX)
             {
                 UpdateStatusBar("SELECT MAX VALUE", MIDDLE, 127);
                 isEncoderIncrementDisabled = true;
                 isMaxChanging = true;
                 encoder.EnableAcceleration(true);
             }
-        }
-        else if (parameterOptionSelected == VALUE && dubbyParameters[parameterSelected].control == CONTROL_NONE)
-        {
-            if (EncoderFallingEdgeCustom())
+            else if (parameterOptionSelected == VALUE && dubbyParameters[parameterSelected].control == CONTROL_NONE)
             {
                 UpdateStatusBar("SELECT A VALUE", MIDDLE, 127);
                 isEncoderIncrementDisabled = true;
@@ -1440,7 +1749,6 @@ void Dubby::RenderScope()
             prev_x = x;
             prev_y = y;
         }
-
         display.Update();
     }
 }
@@ -1507,29 +1815,31 @@ void Dubby::DisplayPreferencesSubMenuList(int increment, PreferencesMenuItems pr
     display.DrawRect(PANE_X_START + MENULIST_SUBMENU_SPACING - 1, PANE_Y_START, PANE_X_END, PANE_Y_END, false, true);
 
     EnumTypes type;
+    int numItems = 0;
 
     switch (prefMenuItemSelected)
     {
-    case MIDI:
-        type = PREFERENCESMIDIMENULIST;
+    case LEDS:
+        type = PREFERENCESLEDSMENULIST;
+        numItems = PREFERENCESLEDMENU_LAST;
         break;
     case ROUTING:
         type = PREFERENCESROUTINGMENULIST;
+        numItems = PREFERENCESROUTINGMENU_LAST;
         break;
     default:
-        type = PREFERENCESMIDIMENULIST;
+        type = PREFERENCESLEDSMENULIST;
         break;
     }
 
-    int optionStart = 1;
-
-    if (subMenuSelector > (MENULIST_ROWS_ON_SCREEN - 1))
+    int optionStart = 0;
+    if (subMenuSelector > (numItems - 1))
     {
-        optionStart = subMenuSelector - (MENULIST_ROWS_ON_SCREEN - 1);
+        optionStart = subMenuSelector - (numItems - 1);
     }
 
     // display each item, j for text cursor
-    for (int i = optionStart, j = 0; i < optionStart + MENULIST_ROWS_ON_SCREEN; i++, j++)
+    for (int i = optionStart, j = 0; i < numItems; i++, j++)
     {
         // clear item spaces
         if ((optionStart > 0 || (!optionStart && increment < 0)))
@@ -1553,7 +1863,7 @@ void Dubby::DisplayPreferencesSubMenuList(int increment, PreferencesMenuItems pr
         display.WriteString(GetTextForEnum(type, i), Font_4x5, true);
     }
 
-    display.DrawRect(PANE_X_START + MENULIST_SUBMENU_SPACING - 1, PANE_Y_START + 1, PANE_X_END, PANE_Y_END - 1, true, false);
+    display.DrawRect(PANE_X_START + MENULIST_SUBMENU_SPACING - 1, 0, PANE_X_END, PANE_Y_END + 1, true, false);
 
     display.Update();
 }
@@ -1564,11 +1874,11 @@ void Dubby::UpdatePreferencesSubMenuList(int increment, PreferencesMenuItems pre
 
     switch (prefMenuItemSelected)
     {
-    case MIDI:
-        endSelector = PREFERENCESMIDIMENU_LAST;
+    case LEDS:
+        endSelector = sizeof(PreferencesLedsMenuItemsStrings);
         break;
     case ROUTING:
-        endSelector = PREFERENCESROUTINGMENU_LAST;
+        endSelector = sizeof(PreferencesRoutingMenuItemsStrings);
         break;
     default:
         endSelector = 0;
@@ -1678,6 +1988,10 @@ void Dubby::DisplayParameterList(int increment)
             str = std::to_string(dubbyParameters[i].value).substr(0, std::to_string(dubbyParameters[i].value).find(".") + 3);
             break;
         }
+
+        // ALIGN TO RIGHT
+        // Rectangle strArea = Rectangle(93, PARAMLIST_Y_START + 1 + (j * PARAMLIST_SPACING), 30, 5);
+        // display.WriteStringAligned(&str[0], Font_4x5, strArea, daisy::Alignment::centeredRight, !(parameterSelected == i && isParameterSelected));
 
         display.SetCursor(93, PARAMLIST_Y_START + 1 + (j * PARAMLIST_SPACING));
         display.WriteString(&str[0], Font_4x5, !(parameterSelected == i && isParameterSelected));
@@ -1952,62 +2266,6 @@ float Dubby::GetKnobValue(Ctrl k)
     return (analogInputs[k].Value());
 }
 
-bool Dubby::EncoderFallingEdgeCustom()
-{
-    bool reading = encoder.Pressed(); // Read the encoder button state, assuming true is pressed
-
-    if (reading != encoderLastState)
-    {
-        encoderLastDebounceTime = seed.system.GetNow();
-    }
-
-    if ((seed.system.GetNow() - encoderLastDebounceTime) > encoderDebounceDelay)
-    {
-
-        if (reading != encoderState)
-        {
-            encoderState = reading;
-
-            if (encoderState == true)
-            { // Encoder button pressed
-                return true;
-            }
-        }
-    }
-
-    encoderLastState = reading;
-
-    return false;
-}
-
-bool Dubby::EncoderRisingEdgeCustom()
-{
-    bool reading = encoder.Pressed(); // Read the encoder button state, assuming true is pressed
-
-    if (reading != encoderLastState)
-    {
-        encoderLastDebounceTime = seed.system.GetNow();
-    }
-
-    if ((seed.system.GetNow() - encoderLastDebounceTime) > encoderDebounceDelay)
-    {
-
-        if (reading != encoderState)
-        {
-            encoderState = reading;
-
-            if (encoderState == false)
-            { // Encoder button released
-                return true;
-            }
-        }
-    }
-
-    encoderLastState = reading;
-
-    return false;
-}
-
 void Dubby::OpenModal(const char *text)
 {
     isModalActive = true;
@@ -2129,8 +2387,8 @@ const char *Dubby::GetTextForEnum(EnumTypes m, int enumVal)
     case PREFERENCESMENU:
         return PreferencesMenuItemsStrings[enumVal];
         break;
-    case PREFERENCESMIDIMENULIST:
-        return PreferencesMidiMenuItemsStrings[enumVal];
+    case PREFERENCESLEDSMENULIST:
+        return PreferencesLedsMenuItemsStrings[enumVal];
         break;
     case PREFERENCESROUTINGMENULIST:
         return PreferencesRoutingMenuItemsStrings[enumVal];

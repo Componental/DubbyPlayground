@@ -114,6 +114,9 @@ int main(void)
     Init(dubby);
     InitMidiClock(dubby);
     InitPersistantMemory(dubby, SavedParameterSettings);
+    
+    dubby.joystickIdleX = dubby.GetKnobValue(dubby.CTRL_5);
+     dubby.joystickIdleY = dubby.GetKnobValue(dubby.CTRL_6);
 
     setLED(1, NO_COLOR, 0);
     setLED(0, NO_COLOR, 0);
@@ -147,53 +150,9 @@ int main(void)
         Monitor(dubby);
         MonitorMidi();
         MonitorPersistantMemory(dubby, SavedParameterSettings);
-        setLED(1, TURQUOISE, abs(0.5 + dubby.lfo1Value) * 50);
-        setLED(0, TURQUOISE, abs(0.5 + dubby.lfo2Value) * 50);
+        setLED(1, RED, abs(0.5 + dubby.lfo1Value) * 50);
+        setLED(0, RED, abs(0.5 + dubby.lfo2Value) * 50);
         updateLED();
-
-        delayWetAmplitude = dubby.dubbyParameters[DLY_MIX].value;
-        delayDryAmplitude = 1.f - delayWetAmplitude;
-
-        if (dubby.dubbyParameters[DLY_MAXWET].value > 0.5f)
-        {
-            delayDryAmplitude = 0.f;
-            delayWetAmplitude = 1.f;
-        }
-
-        delayFeedback = dubby.dubbyParameters[DLY_FEEDBACK].value;
-
-        reverbDryAmplitude = 1.f - dubby.dubbyParameters[RVB_MIX].value;
-
-        divisor = dubby.dubbyParameters[DLY_DIVISION].value <= 0.05f   ? 8.0f
-                  : dubby.dubbyParameters[DLY_DIVISION].value <= 0.15f ? 4.0f
-                  : dubby.dubbyParameters[DLY_DIVISION].value <= 0.25f ? 3.0f
-                  : dubby.dubbyParameters[DLY_DIVISION].value <= 0.35f ? 2.0f
-                  : dubby.dubbyParameters[DLY_DIVISION].value <= 0.45f ? 1.5f
-                  : dubby.dubbyParameters[DLY_DIVISION].value <= 0.55f ? 1.0f
-                  : dubby.dubbyParameters[DLY_DIVISION].value <= 0.65f ? 0.5f
-                  : dubby.dubbyParameters[DLY_DIVISION].value <= 0.75f ? 0.33f
-                  : dubby.dubbyParameters[DLY_DIVISION].value <= 0.85f ? 0.25f
-                  : dubby.dubbyParameters[DLY_DIVISION].value <= 0.95f ? 0.2f
-                                                                       : 0.125f;
-
-        delayTimeMillis[0] = (dubby.dubbyParameters[DLY_TIME].value - dubby.dubbyParameters[DLY_SPREAD].value) / divisor;
-        delayTimeMillis[1] = (dubby.dubbyParameters[DLY_TIME].value + dubby.dubbyParameters[DLY_SPREAD].value) / divisor;
-
-        for (int j = 0; j < 2; j++)
-        {
-            delayTimeMillis[j] = fmaxf(delayTimeMillis[j], 1.0f);
-
-            reverb[j].SetFeedback(dubby.dubbyParameters[RVB_FEEDBACK].value);
-            reverb[j].SetLpFreq(dubby.dubbyParameters[RVB_LPF_CUTOFF].value);
-
-            filter[j].SetFreq(dubby.dubbyParameters[FLT_CUTOFF].value);
-            filter[j].SetRes(dubby.dubbyParameters[FLT_RESONANCE].value);
-
-            driveReverb[j].SetDrive(dubby.dubbyParameters[DRV_AMOUNT].value);
-            driveDelay[j].SetDrive(dubby.dubbyParameters[DRV_AMOUNT].value);
-        }
-
-        driveGainCompensation = dubby.dubbyParameters[DRV_GAIN_COMPENSATION].value;
     }
 }
 
