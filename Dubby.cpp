@@ -99,7 +99,6 @@ void Dubby::Init()
 
         if (i == PARAMLIST_ROWS_ON_SCREEN - 1)
             paramListBoxBounding[i][3] = (PARAMLIST_Y_END + i * PARAMLIST_SPACING) - 2;
-        
     }
 
     for (int i = 0; i < MIDILIST_ROWS_ON_SCREEN; i++)
@@ -461,7 +460,10 @@ void Dubby::HighlightWindowItem()
 
 void Dubby::ReleaseWindowSelector()
 {
-    ClearPane();
+  //  ClearPane();
+
+    display.DrawRect(PANE_X_START-1, PANE_Y_END, PANE_X_END, PANE_Y_END + 13, false, true);
+
 
     display.DrawRect(windowBoxBounding[0][0], windowBoxBounding[0][1], windowBoxBounding[0][2], windowBoxBounding[0][3], false, false);
 
@@ -474,7 +476,7 @@ void Dubby::ReleaseWindowSelector()
 
 void Dubby::ClearPane()
 {
-    display.DrawRect(PANE_X_START - 1, PANE_Y_START - 1, PANE_X_END + 1, PANE_Y_END + 12, false, true);
+    display.DrawRect(PANE_X_START, PANE_Y_START, PANE_X_END, PANE_Y_END, false, true);
 }
 
 void Dubby::UpdateMixerPane()
@@ -821,7 +823,7 @@ void Dubby::UpdateLFOWindow()
     // display.DrawLine(halfWidth, PANE_Y_START, halfWidth, PANE_Y_END, true);
 
     // // Draw bounding box for LFO1
-     display.DrawRect(lfo1BoundingBoxStartX, yStart, lfo1BoundingBoxEndX, yStart + rectHeight, true, false);
+    display.DrawRect(lfo1BoundingBoxStartX, yStart, lfo1BoundingBoxEndX, yStart + rectHeight, true, false);
 
     // Draw rectangles for lfo1Value (left half)
     if (lfo1Value != 0)
@@ -1093,8 +1095,8 @@ void Dubby::ProcessLFO()
 
 void Dubby::UpdateCurrentMappingWindow()
 {
-        display.DrawRect(0, 0, PANE_X_END + 1, PANE_Y_END + 12, false, true); 
-
+    // display.DrawRect(0, 0, PANE_X_END + 1, PANE_Y_END + 12, false, true);
+    ClearPane();
     // Define constants
     const int numControls = 10;                             // Number of possible controls (e.g., KN1, KN2, ..., JSX, JSY)
     const int macroLabelCount = 12;                         // Total number of macro labels
@@ -1211,7 +1213,8 @@ void Dubby::UpdateCurrentMappingWindow()
         }
     }
 
-    display.DrawRect(0, 0, PANE_X_END + 1, PANE_Y_END + 12, false, true);
+  
+    display.DrawRect(0, 0, PANE_X_END + 1, PANE_Y_END, false, true);
 
     // Change size when joystick button is pressed
     rectHeightJoystick = rectWidthJoystick = joystickButton.Pressed() ? 5 : 3;
@@ -1340,9 +1343,6 @@ void Dubby::UpdateCurrentMappingWindow()
         display.WriteString(macroLabels[i].c_str(), Font_4x5, true);
     }
 
-    // Define rectangle dimensions
-    // (Already defined as buttonRectWidth, buttonRectHeight)
-
     // Top-left corner
     display.DrawRect(0, PANE_Y_START + offset - 4, buttonRectWidth, buttonRectHeight + PANE_Y_START + offset - 4, true, buttons[0].Pressed());
     display.SetCursor(buttonRectWidth + 2, PANE_Y_START + offset - 4 + 2);
@@ -1366,9 +1366,11 @@ void Dubby::UpdateCurrentMappingWindow()
     display.WriteString(macroLabels[7].c_str(), Font_4x5, true);
 
     // Update the display after drawing all elements
-    if(!windowSelectorActive){
-    display.Update();
-    } 
+
+    if (!windowSelectorActive)
+    {
+        display.Update();
+    }
 }
 
 void Dubby::UpdateBar(int i)
