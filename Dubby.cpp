@@ -460,10 +460,9 @@ void Dubby::HighlightWindowItem()
 
 void Dubby::ReleaseWindowSelector()
 {
-  //  ClearPane();
+    //  ClearPane();
 
-    display.DrawRect(PANE_X_START-1, PANE_Y_END, PANE_X_END, PANE_Y_END + 13, false, true);
-
+    display.DrawRect(PANE_X_START - 1, PANE_Y_END, PANE_X_END, PANE_Y_END + 13, false, true);
 
     display.DrawRect(windowBoxBounding[0][0], windowBoxBounding[0][1], windowBoxBounding[0][2], windowBoxBounding[0][3], false, false);
 
@@ -476,6 +475,7 @@ void Dubby::ReleaseWindowSelector()
 
 void Dubby::ClearPane()
 {
+    // CLEAR THE PANE
     display.DrawRect(PANE_X_START, PANE_Y_START, PANE_X_END, PANE_Y_END, false, true);
 }
 
@@ -1213,7 +1213,6 @@ void Dubby::UpdateCurrentMappingWindow()
         }
     }
 
-  
     display.DrawRect(0, 0, PANE_X_END + 1, PANE_Y_END, false, true);
 
     // Change size when joystick button is pressed
@@ -1414,7 +1413,7 @@ void Dubby::UpdateRenderPane()
 
 void Dubby::UpdateGlobalSettingsPane()
 {
-    if (encoder.RisingEdge() && !isSubMenuActive)
+    if (encoder.RisingEdgeCustom() && !isSubMenuActive)
     {
         isSubMenuActive = true;
         DisplayPreferencesMenuList(0);
@@ -1422,8 +1421,8 @@ void Dubby::UpdateGlobalSettingsPane()
 
     if (encoder.RisingEdgeCustom() && windowSelectorActive)
     {
-        
-        windowSelectorActive = false;
+
+        isSubMenuActive = false;
         DisplayPreferencesMenuList(0);
     }
 

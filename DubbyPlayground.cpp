@@ -39,7 +39,7 @@ void HandleMidiUsbMessage(MidiEvent m);
 PersistentStorage<PersistantMemoryParameterSettings> SavedParameterSettings(dubby.seed.qspi);
 void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, size_t size)
 {
-    dubby.ProcessLFO(); 
+    dubby.ProcessLFO();
     double sumSquared[2][NUM_AUDIO_CHANNELS] = {0.0f};
     bool freeze = dubby.dubbyParameters[DLY_FREEZE].value > 0.5f;
 
@@ -116,9 +116,9 @@ int main(void)
     Init(dubby);
     InitMidiClock(dubby);
     InitPersistantMemory(dubby, SavedParameterSettings);
-    
+
     dubby.joystickIdleX = dubby.GetKnobValue(dubby.CTRL_5);
-     dubby.joystickIdleY = dubby.GetKnobValue(dubby.CTRL_6);
+    dubby.joystickIdleY = dubby.GetKnobValue(dubby.CTRL_6);
 
     setLED(1, NO_COLOR, 0);
     setLED(0, NO_COLOR, 0);
