@@ -25,6 +25,8 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
 
     for (size_t i = 0; i < size; i++)
     {
+        AssignScopeData(dubby, i, in, out);
+
         for (int j = 0; j < NUM_AUDIO_CHANNELS; j++)
         {
 
@@ -51,6 +53,7 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
             }
         }
     }
+    
 }
 
 int main(void)
