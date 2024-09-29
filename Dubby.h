@@ -85,20 +85,18 @@ namespace daisy
             WIN5,
             WIN6,
             WIN7,
-            WIN8,
             WIN_LAST // used to know the size of enum
         };
 
         const char *WindowItemsStrings[WIN_LAST] =
-            {
-                "SCOPE",
-                "MIXER",
-                "PREFS",
-                "PARAMETERS",
-                "MIDI CONF",
-                "ROUTING",
-                "LFO",
+            {   
                 "PERFORM",
+                "LFO",
+                "PARAMETERS",
+                "SCOPE",
+                "ROUTING",
+                "MIDI CONF",
+                "PREFS",
         };
 
         enum PreferencesMenuItems
