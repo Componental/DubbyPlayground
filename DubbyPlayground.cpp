@@ -115,7 +115,7 @@ int main(void)
 {
     Init(dubby);
     InitMidiClock(dubby);
-    InitPersistantMemory(dubby, SavedParameterSettings);
+  //  InitPersistantMemory(dubby, SavedParameterSettings);
 
     dubby.joystickIdleX = dubby.GetKnobValue(dubby.CTRL_5);
     dubby.joystickIdleY = dubby.GetKnobValue(dubby.CTRL_6);
@@ -147,11 +147,10 @@ int main(void)
 
     while (1)
     {
-        MonitorPersistantMemory(dubby, SavedParameterSettings);
+        //MonitorPersistantMemory(dubby, SavedParameterSettings);
 
         Monitor(dubby);
         MonitorMidi();
-        MonitorPersistantMemory(dubby, SavedParameterSettings);
         setLED(1, TURQUOISE, abs(0.5 + dubby.lfo1Value) * 50);
         setLED(0, TURQUOISE, abs(0.5 + dubby.lfo2Value) * 50);
         updateLED();

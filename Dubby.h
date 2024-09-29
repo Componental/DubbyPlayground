@@ -505,7 +505,7 @@ namespace daisy
 
         MidiSettingsMenu dubbyMidiSettings;
         bool trigger_save_parameters_qspi = false;
-        bool trigger_reset_parameters_qspi = false;
+        bool trigger_reset_parameters_qspi = true;
 
         bool isModalActive = false;
         ModalOptions modalOptionSelected = YES;
