@@ -1415,20 +1415,18 @@ void Dubby::UpdateRenderPane()
 }
 
 void Dubby::UpdateGlobalSettingsPane()
-
 {
-    if (encoder.RisingEdgeCustom() && windowSelectorActive)
-    {
-        windowSelectorActive = false;
-        DisplayPreferencesMenuList(0);
-    }
-    else if (encoder.RisingEdge() && !isSubMenuActive)
+    if (encoder.RisingEdge() && !isSubMenuActive)
     {
         isSubMenuActive = true;
         DisplayPreferencesMenuList(0);
     }
 
-
+    if (encoder.RisingEdge() && windowSelectorActive)
+    {
+        isSubMenuActive = false;
+        DisplayPreferencesMenuList(0);
+    }
 
     DisplayPreferencesSubMenuList(encoder.Increment(), preferencesMenuItemSelected);
 
@@ -2366,7 +2364,7 @@ void Dubby::InitAudio()
 
     // Reinit Audio for _both_ codecs...
     AudioHandle::Config cfg;
-    cfg.blocksize = 48;
+    cfg.blocksize = AUDIO_BLOCK_SIZE;
     cfg.samplerate = SaiHandle::Config::SampleRate::SAI_48KHZ;
     cfg.postgain = 1.f;
     seed.audio_handle.Init(cfg, sai_handle[0], sai_handle[1]);
