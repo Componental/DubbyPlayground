@@ -354,7 +354,9 @@ void sendMidiBasedOnRhythms()
         {
             if (activeNotesSet.find(note) == activeNotesSet.end())
             {
-                int channel = (note - notes[0]) % 16; // Calculate channel based on note position (0 to 7)
+//                int channel = (note - notes[0]) % 16; // Calculate channel based on note position (0 to 7)
+                int channel = 0; // Calculate channel based on note position (0 to 7)
+
                 MIDIUsbSendNoteOff(channel, note);  // Sending note off for USB
                 MIDIUartSendNoteOff(channel, note); // Sending note off for UART
             }
@@ -368,7 +370,8 @@ void sendMidiBasedOnRhythms()
             {
                 if (notes[i] == note)
                 {
-                    int channel = (i % 16); // Calculate the channel for this note
+                   int channel = 0;
+                   // int channel = (i % 16); // Calculate the channel for this note
                     velocities[velocityIndex] = std::max(0, std::min(127, baselineVelocities[i] + getRandom(-velocityRandomAmounts[i] * baselineVelocities[i], velocityRandomAmounts[i] * baselineVelocities[i])));
                     MIDIUsbSendNoteOn(channel, note, velocities[velocityIndex]);
                     MIDIUartSendNoteOn(channel, note, velocities[velocityIndex]);
