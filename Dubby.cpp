@@ -759,6 +759,7 @@ void Dubby::UpdateLFOWindow()
     int16_t yStart = displayHeight / 5 - 2 - yOffset;
     int16_t halfWidth = displayWidth / 2;
     int16_t rectHeight = 8;
+
     // Define the bounding box dimensions for LFO1 and LFO2
     int16_t lfo1BoundingBoxStartX = 0;
     int16_t lfo1BoundingBoxEndX = halfWidth / 2;
@@ -817,8 +818,8 @@ void Dubby::UpdateLFOWindow()
     const int offsetKnob3And4 = 6;
 
     // display.Fill(false);
-   // ClearPane();
-    display.DrawRect(0, 0, PANE_X_END + 1, PANE_Y_END, false, true); 
+    // ClearPane();
+    display.DrawRect(0, 6, PANE_X_END + 1, PANE_Y_END, false, true);
 
     // // Draw the vertical line in the center of the display
     // display.DrawLine(halfWidth, PANE_Y_START, halfWidth, PANE_Y_END, true);
@@ -1021,7 +1022,7 @@ void Dubby::UpdateLFOWindow()
         // Draw circular knob
         display.DrawCircle(circle_x_offset, circle_y, bounding_circle_radius, selected); // Draw filled knob circle
         display.DrawCircle(circle_x_offset, circle_y, circle_radius, true);              // Draw filled knob circle
-        display.DrawCircle(circle_x_offset, circle_y, circle_radius-1, pressed);              // Draw filled knob circle
+        display.DrawCircle(circle_x_offset, circle_y, circle_radius - 1, pressed);       // Draw filled knob circle
 
         // Normalize the knob value for the first and third knobs
         float normalizedValue = knobValues[i];
@@ -1345,7 +1346,6 @@ void Dubby::UpdateCurrentMappingWindow()
         display.WriteString(macroLabels[i].c_str(), Font_4x5, true);
     }
 
-
     // Top-left corner
     display.DrawRect(0, PANE_Y_START + offset - 4, buttonRectWidth, buttonRectHeight + PANE_Y_START + offset - 4, true, buttons[0].Pressed());
     display.SetCursor(buttonRectWidth + 2, PANE_Y_START + offset - 4 + 2);
@@ -1415,19 +1415,20 @@ void Dubby::UpdateRenderPane()
 }
 
 void Dubby::UpdateGlobalSettingsPane()
+
 {
-    if (encoder.RisingEdgeCustom() && !isSubMenuActive)
+    if (encoder.RisingEdgeCustom() && windowSelectorActive)
+    {
+        windowSelectorActive = false;
+        DisplayPreferencesMenuList(0);
+    }
+    else if (encoder.RisingEdge() && !isSubMenuActive)
     {
         isSubMenuActive = true;
         DisplayPreferencesMenuList(0);
     }
 
-    if (encoder.RisingEdgeCustom() && windowSelectorActive)
-    {
 
-        isSubMenuActive = false;
-        DisplayPreferencesMenuList(0);
-    }
 
     DisplayPreferencesSubMenuList(encoder.Increment(), preferencesMenuItemSelected);
 
