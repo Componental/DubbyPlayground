@@ -817,8 +817,8 @@ void Dubby::UpdateLFOWindow()
     const int offsetKnob3And4 = 6;
 
     // display.Fill(false);
-    //ClearPane();
-    display.DrawRect(0, 0, PANE_X_END + 1, PANE_Y_END, false, true);
+   // ClearPane();
+    display.DrawRect(0, 0, PANE_X_END + 1, PANE_Y_END, false, true); 
 
     // // Draw the vertical line in the center of the display
     // display.DrawLine(halfWidth, PANE_Y_START, halfWidth, PANE_Y_END, true);
@@ -1003,6 +1003,7 @@ void Dubby::UpdateLFOWindow()
     for (int i = 0; i < NUM_KNOBS; ++i)
     {
         bool selected = isSelected[selectedIndices[i]];
+        bool pressed = isSelected[selectedIndices[i]] & selectIndexMode;
 
         // Calculate knob x-coordinate with the applied offsets
         int circle_x_offset = circleSpacing * (i + 1) + bounding_circle_radius + i * 2 * bounding_circle_radius;
@@ -1020,6 +1021,7 @@ void Dubby::UpdateLFOWindow()
         // Draw circular knob
         display.DrawCircle(circle_x_offset, circle_y, bounding_circle_radius, selected); // Draw filled knob circle
         display.DrawCircle(circle_x_offset, circle_y, circle_radius, true);              // Draw filled knob circle
+        display.DrawCircle(circle_x_offset, circle_y, circle_radius-1, pressed);              // Draw filled knob circle
 
         // Normalize the knob value for the first and third knobs
         float normalizedValue = knobValues[i];
