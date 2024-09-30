@@ -768,7 +768,7 @@ void Dubby::UpdateLFOWindow()
 
     static bool isSelected[] = {true, false, false, false, false, false, false, false}; // 0: LFO1, 1: LFO2, 2: WaveShapeLFO1, 3: WaveShapeLFO2
     static bool selectIndexMode = false;
-    float maxRateLFO = 10000.f;
+    float maxRateLFO = 3000.f;
 
     // Define box dimensions for LFO and WaveShape parameters
     int paramBoxLFOWidth = 34;
