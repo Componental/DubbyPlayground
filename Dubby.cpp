@@ -2360,7 +2360,7 @@ void Dubby::InitAudio()
 
     // Reinit Audio for _both_ codecs...
     AudioHandle::Config cfg;
-    cfg.blocksize = 48;
+    cfg.blocksize = AUDIO_BLOCK_SIZE;
     cfg.samplerate = SaiHandle::Config::SampleRate::SAI_48KHZ;
     cfg.postgain = 1.f;
     seed.audio_handle.Init(cfg, sai_handle[0], sai_handle[1]);
