@@ -813,7 +813,7 @@ void Dubby::UpdateLFOWindow()
 
     // display.Fill(false);
    // ClearPane();
-    display.DrawRect(0, 0, PANE_X_END + 1, PANE_Y_END, false, true); 
+    display.DrawRect(0, 6, PANE_X_END + 1, PANE_Y_END, false, true);
 
     // // Draw the vertical line in the center of the display
     // display.DrawLine(halfWidth, PANE_Y_START, halfWidth, PANE_Y_END, true);
