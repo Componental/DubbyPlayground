@@ -35,7 +35,7 @@ void DubbyEncoder::Debounce()
     uint32_t now = System::GetNow();
     updated_ = false;
 
-    if (now - last_update_ >= 1)
+    if (now - last_update_ >= 0.5)
     {
         last_update_ = now;
         updated_ = true;

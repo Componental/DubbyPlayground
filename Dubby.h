@@ -445,6 +445,7 @@ namespace daisy
 
         MidiSettings midiSettingSelected = (MidiSettings)0;
         bool isMidiSettingSelected = false;
+        bool isGlobalSettingSelected = false;
         bool testBool = false;
 
         ChannelMappings channelMappingSelected = (ChannelMappings)0;
