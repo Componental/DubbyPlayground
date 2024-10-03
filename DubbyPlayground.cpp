@@ -71,7 +71,8 @@ int main(void)
 
     while (1)
     {
-
+        dubby.RefreshDisplay();
+        
         Monitor(dubby);
         MonitorMidi();
         MonitorPersistantMemory(dubby, SavedParameterSettings);

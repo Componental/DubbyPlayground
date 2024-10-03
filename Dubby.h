@@ -316,6 +316,8 @@ namespace daisy
 
         float GetAudioOutGain(AudioOuts out);
 
+        void RefreshDisplay();
+
         void UpdateDisplay();
 
         void DrawLogo();

@@ -254,9 +254,19 @@ float Dubby::GetAudioOutGain(AudioOuts out)
 {
     return audioGains[1][out];
 }
+
+void Dubby::RefreshDisplay() {
+
+    // REFRESH OLED DISPLAY
+    if (seed.system.GetNow() - screen_update_last_ > screen_update_period_)
+    {
+        screen_update_last_ = seed.system.GetNow();
+        display.Update();
+    }
+}
+
 void Dubby::UpdateDisplay()
 {
-
     if (!isModalActive)
     {
         if (encoder.TimeHeldMs() > ENCODER_LONGPRESS_THRESHOLD && !windowSelectorActive)
@@ -402,12 +412,8 @@ void Dubby::DrawBitmap(int bitmapIndex)
 
                 display.DrawPixel(x + bitIndex, y, isWhite);
             }
-
-            if (y % 6 == 0)
-                display.Update();
         }
     }
-    display.Update();
 }
 
 void Dubby::UpdateWindowSelector(int increment, bool higlight)
@@ -428,8 +434,6 @@ void Dubby::UpdateWindowSelector(int increment, bool higlight)
         HighlightWindowItem();
 
     UpdateWindowList();
-
-    display.Update();
 }
 
 void Dubby::HighlightWindowItem()
@@ -449,24 +453,19 @@ void Dubby::HighlightWindowItem()
     display.DrawLine(PANE_X_START - 1, PANE_Y_END + 1, PANE_X_END - 1, PANE_Y_END + 1, true);
 
     display.DrawLine(windowItemSelected * scrollbarWidth, 63, (windowItemSelected * scrollbarWidth) + scrollbarWidth, 63, true);
-
-    display.Update();
 }
 
 void Dubby::ReleaseWindowSelector()
 {
-  //  ClearPane();
+    //  ClearPane();
 
-    display.DrawRect(PANE_X_START-1, PANE_Y_END, PANE_X_END, PANE_Y_END + 13, false, true);
-
+    display.DrawRect(PANE_X_START - 1, PANE_Y_END, PANE_X_END, PANE_Y_END + 13, false, true);
 
     display.DrawRect(windowBoxBounding[0][0], windowBoxBounding[0][1], windowBoxBounding[0][2], windowBoxBounding[0][3], false, false);
 
     display.SetCursor(windowTextCursors[0][0], windowTextCursors[0][1]);
 
     display.WriteStringAligned(GetTextForEnum(WINDOWS, windowItemSelected), Font_4x5, daisy::Rectangle(windowBoxBounding[0][0], windowBoxBounding[0][1] + 1, 43, 7), daisy::Alignment::centeredLeft, true);
-
-    display.Update();
 }
 
 void Dubby::ClearPane()
@@ -567,8 +566,6 @@ void Dubby::UpdateWindowList()
     default:
         break;
     }
-
-    display.Update();
 }
 
 void Dubby::UpdateChannelMappingPane()
@@ -739,9 +736,6 @@ void Dubby::UpdateChannelMappingPane()
             display.DrawLine(lineX, y + 3, lineX, y + cellHeight - 1, negativeFill); // Draw line
         }
     }
-
-    // Update the display after drawing all elements
-    display.Update();
 }
 
 void Dubby::UpdateLFOWindow()
@@ -812,7 +806,7 @@ void Dubby::UpdateLFOWindow()
     const int offsetKnob3And4 = 6;
 
     // display.Fill(false);
-   // ClearPane();
+    // ClearPane();
     display.DrawRect(0, 6, PANE_X_END + 1, PANE_Y_END, false, true);
 
     // // Draw the vertical line in the center of the display
@@ -1016,7 +1010,7 @@ void Dubby::UpdateLFOWindow()
         // Draw circular knob
         display.DrawCircle(circle_x_offset, circle_y, bounding_circle_radius, selected); // Draw filled knob circle
         display.DrawCircle(circle_x_offset, circle_y, circle_radius, true);              // Draw filled knob circle
-        display.DrawCircle(circle_x_offset, circle_y, circle_radius-1, pressed);              // Draw filled knob circle
+        display.DrawCircle(circle_x_offset, circle_y, circle_radius - 1, pressed);       // Draw filled knob circle
 
         // Normalize the knob value for the first and third knobs
         float normalizedValue = knobValues[i];
@@ -1054,9 +1048,6 @@ void Dubby::UpdateLFOWindow()
         display.SetCursor(value_x, circle_y + 9);
         display.WriteString(formattedValue, Font_4x5, true);
     }
-
-    // Update the display to show the changes
-    // display.Update();
 }
 
 void Dubby::UpdateLFO()
@@ -1211,7 +1202,6 @@ void Dubby::UpdateCurrentMappingWindow()
         }
     }
 
-  
     display.DrawRect(0, 0, PANE_X_END + 1, PANE_Y_END, false, true);
 
     // Change size when joystick button is pressed
@@ -1364,11 +1354,6 @@ void Dubby::UpdateCurrentMappingWindow()
     display.WriteString(macroLabels[7].c_str(), Font_4x5, true);
 
     // Update the display after drawing all elements
-
-    if (!windowSelectorActive)
-    {
-        display.Update();
-    }
 }
 
 void Dubby::UpdateBar(int i)
@@ -1388,8 +1373,6 @@ void Dubby::UpdateBar(int i)
 
     // display sound output
     display.DrawRect((i * 32) + margin, int(abs((currentLevels[mixerPageSelected][i] * 5.0f) - 1.0f) * 41.0f) + 12, ((i + 1) * 32) - margin, 53, true, true);
-
-    display.Update();
 }
 
 void Dubby::UpdateRenderPane()
@@ -1738,7 +1721,6 @@ void Dubby::RenderScope()
             prev_x = x;
             prev_y = y;
         }
-        display.Update();
     }
 }
 
@@ -1784,8 +1766,6 @@ void Dubby::DisplayPreferencesMenuList(int increment)
         display.SetCursor(5, MENULIST_Y_START + 2 + (j * MENULIST_SPACING));
         display.WriteString(GetTextForEnum(PREFERENCESMENU, i), Font_4x5, i == preferencesMenuItemSelected && isSubMenuActive ? false : true);
     }
-
-    display.Update();
 }
 
 void Dubby::UpdatePreferencesMenuList(int increment)
@@ -1853,8 +1833,6 @@ void Dubby::DisplayPreferencesSubMenuList(int increment, PreferencesMenuItems pr
     }
 
     display.DrawRect(PANE_X_START + MENULIST_SUBMENU_SPACING - 1, 0, PANE_X_END, PANE_Y_END + 1, true, false);
-
-    display.Update();
 }
 
 void Dubby::UpdatePreferencesSubMenuList(int increment, PreferencesMenuItems prefMenuItemSelected)
@@ -1901,9 +1879,8 @@ void Dubby::UpdateStatusBar(const char *text, StatusBarSide side = LEFT, int wid
         display.DrawRect(STATUSBAR_X_END - width, STATUSBAR_Y_START, STATUSBAR_X_END, STATUSBAR_Y_END - 1, false, true);
         display.WriteStringAligned(text, Font_4x5, barRec, daisy::Alignment::centeredRight, true);
     }
-
-    display.Update();
 }
+
 void Dubby::DisplayParameterList(int increment)
 {
     // clear bounding box
@@ -1985,8 +1962,6 @@ void Dubby::DisplayParameterList(int increment)
         display.SetCursor(93, PARAMLIST_Y_START + 1 + (j * PARAMLIST_SPACING));
         display.WriteString(&str[0], Font_4x5, !(parameterSelected == i && isParameterSelected));
     }
-
-    display.Update();
 }
 
 void Dubby::DisplayMidiSettingsList(int increment)
@@ -2123,8 +2098,6 @@ void Dubby::DisplayMidiSettingsList(int increment)
     }
 
     globalBPM = dubbyMidiSettings.currentBpm;
-
-    display.Update();
 }
 
 void Dubby::UpdateParameterList(int increment)
@@ -2152,8 +2125,6 @@ void Dubby::ResetToBootloader()
 {
     DrawBitmap(1);
     display.WriteStringAligned("FIRMWARE UPDATE", Font_4x5, daisy::Rectangle(1, 35, 127, 45), daisy::Alignment::centered, true);
-
-    display.Update();
 
     System::ResetToBootloader(System::DAISY_INFINITE_TIMEOUT);
 }
@@ -2278,8 +2249,6 @@ void Dubby::ChangeModalOption()
 
     display.DrawRect(MODAL_RIGHT_OPTION_X_START, MODAL_RIGHT_OPTION_Y_START, MODAL_RIGHT_OPTION_X_START + MODAL_OPTION_WIDTH, MODAL_RIGHT_OPTION_Y_START + MODAL_OPTION_HEIGHT, true, modalOptionSelected);
     display.WriteStringAligned("NO", Font_6x8, Rectangle(MODAL_RIGHT_OPTION_X_START + 1, MODAL_RIGHT_OPTION_Y_START + 1, MODAL_OPTION_WIDTH, MODAL_OPTION_HEIGHT), Alignment::centered, !modalOptionSelected);
-
-    display.Update();
 }
 
 void Dubby::CloseModal()

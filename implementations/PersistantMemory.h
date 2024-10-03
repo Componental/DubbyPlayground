@@ -57,7 +57,7 @@ void InitPersistantMemory(Dubby& dubby, PersistentStorage<PersistantMemoryParame
 void MonitorPersistantMemory(Dubby& dubby, PersistentStorage<PersistantMemoryParameterSettings>& SavedParameterSettings) 
 {
     dubby.ProcessAllControls();
-    dubby.UpdateDisplay();
+    // dubby.UpdateDisplay();
 
     if(dubby.trigger_save_parameters_qspi) {
 
