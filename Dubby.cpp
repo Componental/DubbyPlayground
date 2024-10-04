@@ -595,15 +595,15 @@ void Dubby::UpdateChannelMappingPane()
     // Static variables to keep track of the current position and mode
     static int currentRow = 0;          // Current selected row
     static int currentCol = 0;          // Current selected column
-    static bool selectIndexMode = true; // Flag to toggle between index mode and grid mode
+    static bool selectJunctionMode = true; // Flag to toggle between index mode and grid mode
 
     // Toggle mode when the encoder is pressed
-    if (encoder.FallingEdgeCustom() && !windowSelectorActive)
+    if (encoder.RisingEdge() && !windowSelectorActive)
     {
-        selectIndexMode = !selectIndexMode; // Toggle between selectIndexMode and grid navigation mode
+        selectJunctionMode = !selectJunctionMode; // Toggle between selectJunctionMode and grid navigation mode
     }
-
-    if (selectIndexMode)
+ 
+    if (selectJunctionMode)
     {
         // Display status bar message for select index mode
         UpdateStatusBar("SELECT AUDIO JUNCTION   ", LEFT);
@@ -729,7 +729,7 @@ void Dubby::UpdateChannelMappingPane()
 
             // Display the mapping string in the cell
             const char *mappingString = dubbyChannelMapping->ChannelMappingsStrings[mappingValue];
-            bool negativeFill = (row == currentRow && col == currentCol && !selectIndexMode);
+            bool negativeFill = (row == currentRow && col == currentCol && !selectJunctionMode);
 
             display.SetCursor(x + 5, y + 3);                             // Adjust text positioning for centering
             display.WriteString(mappingString, Font_4x5, !negativeFill); // Display mapping text
