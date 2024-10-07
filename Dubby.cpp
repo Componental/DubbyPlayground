@@ -256,7 +256,6 @@ float Dubby::GetAudioOutGain(AudioOuts out)
 }
 void Dubby::UpdateDisplay()
 {
-
     if (!isModalActive)
     {
         if (encoder.TimeHeldMs() > ENCODER_LONGPRESS_THRESHOLD && !windowSelectorActive)
@@ -299,7 +298,7 @@ void Dubby::UpdateDisplay()
             }
         }
 
-        if (wasEncoderJustInHighlightMenu && encoder.FallingEdgeCustom())
+        if (wasEncoderJustInHighlightMenu && (encoder.FallingEdgeCustom() || encoder.FallingEdge()))
         {
             if (highlightMenuCounter < 2)
             {
@@ -455,10 +454,9 @@ void Dubby::HighlightWindowItem()
 
 void Dubby::ReleaseWindowSelector()
 {
-  //  ClearPane();
+    //  ClearPane();
 
-    display.DrawRect(PANE_X_START-1, PANE_Y_END, PANE_X_END, PANE_Y_END + 13, false, true);
-
+    display.DrawRect(PANE_X_START - 1, PANE_Y_END, PANE_X_END, PANE_Y_END + 13, false, true);
 
     display.DrawRect(windowBoxBounding[0][0], windowBoxBounding[0][1], windowBoxBounding[0][2], windowBoxBounding[0][3], false, false);
 
@@ -573,6 +571,7 @@ void Dubby::UpdateWindowList()
 
 void Dubby::UpdateChannelMappingPane()
 {
+
     // Define dimensions for each cell in the grid
     const int cellWidth = 23; // Width of each cell in the grid
     const int cellHeight = 8; // Height of each cell in the grid
@@ -593,16 +592,16 @@ void Dubby::UpdateChannelMappingPane()
     int increment = encoder.Increment(); // Encoder increment value
 
     // Static variables to keep track of the current position and mode
-    static int currentRow = 0;          // Current selected row
-    static int currentCol = 0;          // Current selected column
+    static int currentRow = 0;             // Current selected row
+    static int currentCol = 0;             // Current selected column
     static bool selectJunctionMode = true; // Flag to toggle between index mode and grid mode
 
     // Toggle mode when the encoder is pressed
-    if (encoder.RisingEdge() && !windowSelectorActive)
+    if (encoder.FallingEdge() && !wasEncoderJustInHighlightMenu && !windowSelectorActive)
     {
         selectJunctionMode = !selectJunctionMode; // Toggle between selectJunctionMode and grid navigation mode
     }
- 
+
     if (selectJunctionMode)
     {
         // Display status bar message for select index mode
@@ -812,7 +811,7 @@ void Dubby::UpdateLFOWindow()
     const int offsetKnob3And4 = 6;
 
     // display.Fill(false);
-   // ClearPane();
+    // ClearPane();
     display.DrawRect(0, 6, PANE_X_END + 1, PANE_Y_END, false, true);
 
     // // Draw the vertical line in the center of the display
@@ -1016,7 +1015,7 @@ void Dubby::UpdateLFOWindow()
         // Draw circular knob
         display.DrawCircle(circle_x_offset, circle_y, bounding_circle_radius, selected); // Draw filled knob circle
         display.DrawCircle(circle_x_offset, circle_y, circle_radius, true);              // Draw filled knob circle
-        display.DrawCircle(circle_x_offset, circle_y, circle_radius-1, pressed);              // Draw filled knob circle
+        display.DrawCircle(circle_x_offset, circle_y, circle_radius - 1, pressed);       // Draw filled knob circle
 
         // Normalize the knob value for the first and third knobs
         float normalizedValue = knobValues[i];
@@ -1211,7 +1210,6 @@ void Dubby::UpdateCurrentMappingWindow()
         }
     }
 
-  
     display.DrawRect(0, 0, PANE_X_END + 1, PANE_Y_END, false, true);
 
     // Change size when joystick button is pressed
