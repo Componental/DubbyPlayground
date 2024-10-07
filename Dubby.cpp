@@ -844,7 +844,7 @@ void Dubby::UpdateLFOWindow()
 
     int increment = encoder.Increment();
 
-    if (encoder.FallingEdgeCustom() && !windowSelectorActive)
+    if (encoder.FallingEdge() && !windowSelectorActive && !wasEncoderJustInHighlightMenu)
         selectIndexMode = !selectIndexMode;
 
     // Determine which parameter box is selected
