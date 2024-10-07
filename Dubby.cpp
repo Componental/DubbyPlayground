@@ -1459,19 +1459,20 @@ void Dubby::UpdateGlobalSettingsPane()
 
 void Dubby::UpdateParameterPane()
 {
+    // std::string hlmode = std::to_string(wasEncoderJustInHighlightMenu);
+    // UpdateStatusBar(&hlmode[0], LEFT);
     DisplayParameterList(encoder.Increment());
+
 
     if (encoder.Increment() && !isEncoderIncrementDisabled && !windowSelectorActive && !isParameterSelected)
         UpdateParameterList(encoder.Increment());
 
-    if (encoder.FallingEdge() && !windowSelectorActive && !isParameterSelected)
+    if (encoder.FallingEdge() && !windowSelectorActive && !isParameterSelected && !wasEncoderJustInHighlightMenu)
     {
         if ((seed.system.GetNow() - encoderLastDebounceTime2) > encoderDebounceDelay2)
         {
-
             isParameterSelected = true;
             parameterOptionSelected = PARAM;
-
             DisplayParameterList(encoder.Increment());
         }
     }
