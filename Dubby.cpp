@@ -1410,13 +1410,13 @@ void Dubby::UpdateRenderPane()
 
 void Dubby::UpdateGlobalSettingsPane()
 {
-    if (encoder.RisingEdge() && !isSubMenuActive)
+    if (encoder.FallingEdge() && !wasEncoderJustInHighlightMenu && !isSubMenuActive)
     {
         isSubMenuActive = true;
         DisplayPreferencesMenuList(0);
     }
 
-    if (encoder.RisingEdge() && windowSelectorActive)
+    if (encoder.FallingEdge() && !wasEncoderJustInHighlightMenu && windowSelectorActive)
     {
         isSubMenuActive = false;
         DisplayPreferencesMenuList(0);
