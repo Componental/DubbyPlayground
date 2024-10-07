@@ -116,7 +116,7 @@ namespace daisy
                 "LEDS",
                 "MEMORY",
                 "FIRMWARE",
-                "CALLIBRATION",
+                "CALIBRATION",
                 "SAVE MEMORY",
                 "RESET MEMORY",
                 "RESET"};
