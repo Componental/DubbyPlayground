@@ -24,75 +24,75 @@ namespace daisy
     // Initialize a timer variable
     uint32_t lastTime; // = System::GetUs();
 
-void MIDIUartSendStart(Dubby &dubby)
-{
-    uint8_t data[1] = {0xFA};
-    dubby.midi_uart.SendMessage(data, 1);
-}
-
-void MIDIUartSendStop(Dubby &dubby)
-{
-    uint8_t data[1] = {0xFC};
-    dubby.midi_uart.SendMessage(data, 1);
-}
-
-void MIDIUartSendContinue(Dubby &dubby)
-{
-    uint8_t data[1] = {0xFB};
-    dubby.midi_uart.SendMessage(data, 1);
-}
-
-void MIDIUsbSendStart(Dubby &dubby)
-{
-    uint8_t data[1] = {0xFA};
-    dubby.midi_usb.SendMessage(data, 1);
-}
-
-void MIDIUsbSendStop(Dubby &dubby)
-{
-    uint8_t data[1] = {0xFC};
-    dubby.midi_usb.SendMessage(data, 1);
-}
-
-void MIDIUsbSendContinue(Dubby &dubby)
-{
-    uint8_t data[1] = {0xFB};
-    dubby.midi_usb.SendMessage(data, 1);
-}
-
-void MIDISendStart(Dubby &dubby)
-{
-    if (dubby.dubbyMidiSettings.currentMidiClockOption == LEADER)
+    void MIDIUartSendStart(Dubby &dubby)
     {
-        MIDIUsbSendStart(dubby);
-        MIDIUartSendStart(dubby);
+        uint8_t data[1] = {0xFA};
+        dubby.midi_uart.SendMessage(data, 1);
     }
-}
 
-void MIDISendStop(Dubby &dubby)
-{
-    if (dubby.dubbyMidiSettings.currentMidiClockOption == LEADER)
+    void MIDIUartSendStop(Dubby &dubby)
     {
-        MIDIUsbSendStop(dubby);
-        MIDIUartSendStop(dubby);
+        uint8_t data[1] = {0xFC};
+        dubby.midi_uart.SendMessage(data, 1);
     }
-}
 
-void MIDISendContinue(Dubby &dubby)
-{
-    if (dubby.dubbyMidiSettings.currentMidiClockOption == LEADER)
+    void MIDIUartSendContinue(Dubby &dubby)
     {
-        MIDIUsbSendContinue(dubby);
-        MIDIUartSendContinue(dubby);
+        uint8_t data[1] = {0xFB};
+        dubby.midi_uart.SendMessage(data, 1);
     }
-}
+
+    void MIDIUsbSendStart(Dubby &dubby)
+    {
+        uint8_t data[1] = {0xFA};
+        dubby.midi_usb.SendMessage(data, 1);
+    }
+
+    void MIDIUsbSendStop(Dubby &dubby)
+    {
+        uint8_t data[1] = {0xFC};
+        dubby.midi_usb.SendMessage(data, 1);
+    }
+
+    void MIDIUsbSendContinue(Dubby &dubby)
+    {
+        uint8_t data[1] = {0xFB};
+        dubby.midi_usb.SendMessage(data, 1);
+    }
+
+    void MIDISendStart(Dubby &dubby)
+    {
+        if (dubby.dubbyMidiSettings.currentMidiClockOption == LEADER)
+        {
+            MIDIUsbSendStart(dubby);
+            MIDIUartSendStart(dubby);
+        }
+    }
+
+    void MIDISendStop(Dubby &dubby)
+    {
+        if (dubby.dubbyMidiSettings.currentMidiClockOption == LEADER)
+        {
+            MIDIUsbSendStop(dubby);
+            MIDIUartSendStop(dubby);
+        }
+    }
+
+    void MIDISendContinue(Dubby &dubby)
+    {
+        if (dubby.dubbyMidiSettings.currentMidiClockOption == LEADER)
+        {
+            MIDIUsbSendContinue(dubby);
+            MIDIUartSendContinue(dubby);
+        }
+    }
 
     void MIDIUartSendNoteOn(Dubby &dubby, uint8_t channel, uint8_t note, uint8_t velocity)
     {
         uint8_t data[3] = {0};
 
         data[0] = (channel & 0x0F) + 0x90; // limit channel byte, add status byte
-        data[1] = note & 0x7F;                                                         // remove MSB on data
+        data[1] = note & 0x7F;             // remove MSB on data
         data[2] = velocity & 0x7F;
 
         dubby.midi_uart.SendMessage(data, 3);
@@ -103,7 +103,7 @@ void MIDISendContinue(Dubby &dubby)
         uint8_t data[3] = {0};
 
         data[0] = (channel & 0x0F) + 0x80; // limit channel byte, add status byte
-        data[1] = note & 0x7F;                                                         // remove MSB on data
+        data[1] = note & 0x7F;             // remove MSB on data
         data[2] = 0 & 0x7F;
 
         dubby.midi_uart.SendMessage(data, 3);
@@ -114,7 +114,7 @@ void MIDISendContinue(Dubby &dubby)
         uint8_t data[3] = {0};
 
         data[0] = (channel & 0x0F) + 0x90; // limit channel byte, add status byte
-        data[1] = note & 0x7F;                                                         // remove MSB on data
+        data[1] = note & 0x7F;             // remove MSB on data
         data[2] = velocity & 0x7F;
 
         dubby.midi_usb.SendMessage(data, 3);
@@ -125,7 +125,7 @@ void MIDISendContinue(Dubby &dubby)
         uint8_t data[3] = {0};
 
         data[0] = (channel & 0x0F) + 0x80; // limit channel byte, add status byte
-        data[1] = note & 0x7F;                                                         // remove MSB on data
+        data[1] = note & 0x7F;             // remove MSB on data
         data[2] = 0 & 0x7F;
 
         dubby.midi_usb.SendMessage(data, 3);
@@ -193,10 +193,8 @@ void MIDISendContinue(Dubby &dubby)
                 //  std::string stra = std::to_string(bpm);
                 //  dubby.UpdateStatusBar(&stra[0], dubby.MIDDLE, 127);
 
-                
                 prev_ms = ms;
                 tt_count = 0;
-
             }
             break;
         }
@@ -241,9 +239,5 @@ void MIDISendContinue(Dubby &dubby)
         midiClockTimer.SetCallback(MIDICallback, &dubby);
         midiClockTimer.Start();
     }
-
-
-
-
 
 } // namespace daisy

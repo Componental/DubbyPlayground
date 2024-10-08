@@ -1,4 +1,3 @@
-#include "daisysp.h"
 #include "Dubby.h"
 #include "implementations/includes.h"
 
@@ -8,7 +7,6 @@ using namespace daisysp;
 Dubby dubby;
 int outChannel;
 int inChannel = 0;
-
 
 bool midiClockStarted = false;
 bool midiClockStoppedByButton2 = false;
@@ -39,6 +37,8 @@ void HandleMidiUsbMessage(MidiEvent m);
 PersistentStorage<PersistantMemoryParameterSettings> SavedParameterSettings(dubby.seed.qspi);
 void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, size_t size)
 {
+    dubby.ProcessLFO();
+
     double sumSquared[2][NUM_AUDIO_CHANNELS] = {0.0f};
 
     // Retrieve the FREEZE parameter
@@ -46,6 +46,8 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
 
     for (size_t i = 0; i < size; i++)
     {
+        AssignScopeData(dubby, i, in, out);
+
         for (int j = 0; j < NUM_AUDIO_CHANNELS; j++)
         {
             // === AUDIO PROCESSING CODE ===
@@ -115,6 +117,13 @@ int main(void)
     Init(dubby);
     InitMidiClock(dubby);
     InitPersistantMemory(dubby, SavedParameterSettings);
+
+    dubby.joystickIdleX = dubby.GetKnobValue(dubby.CTRL_5);
+    dubby.joystickIdleY = dubby.GetKnobValue(dubby.CTRL_6);
+
+    setLED(1, NO_COLOR, 0);
+    setLED(0, NO_COLOR, 0);
+    updateLED();
     // Init DSP
     delayLineLeft.Init();
     delayLineRight.Init();
@@ -133,21 +142,15 @@ int main(void)
 
     dubby.seed.StartAudio(AudioCallback);
 
-    // initLED();
-    // setLED(0, BLUE, 0);
-    // setLED(1, RED, 0);
-    // updateLED();
-
-    // DELETE MEMORY
-    SavedParameterSettings.RestoreDefaults();
-
     while (1)
     {
 
         Monitor(dubby);
         MonitorMidi();
         MonitorPersistantMemory(dubby, SavedParameterSettings);
-
+        setLED(1, RED, abs(0.5 + dubby.lfo1Value) * 50);
+        setLED(0, RED, abs(0.5 + dubby.lfo2Value) * 50);
+        updateLED();
         // Set the wet and dry mix based on the delay mix parameter
         wetAmplitude = dubby.dubbyParameters[DLY_MIX].value;
         dryAmplitude = 1.f - wetAmplitude;
@@ -257,7 +260,7 @@ void HandleMidiMessage(MidiEvent m)
             if (m.channel == dubby.dubbyMidiSettings.currentMidiInChannelOption)
             {
                 NoteOnEvent p = m.AsNoteOn();
-                (void)p;  // Suppress unused variable warning
+                (void)p; // Suppress unused variable warning
             }
         }
         break;
@@ -269,7 +272,7 @@ void HandleMidiMessage(MidiEvent m)
             if (m.channel == dubby.dubbyMidiSettings.currentMidiInChannelOption)
             {
                 NoteOffEvent p = m.AsNoteOff();
-                (void)p;  // Suppress unused variable warning
+                (void)p; // Suppress unused variable warning
             }
         }
         break;

@@ -60,11 +60,8 @@ void MonitorPersistantMemory(Dubby& dubby, PersistentStorage<PersistantMemoryPar
     dubby.UpdateDisplay();
 
     if(dubby.trigger_save_parameters_qspi) {
+
         SaveToQspi(dubby, SavedParameterSettings);
-
-        dubby.preferencesMenuItemSelected = dubby.MIDI;
-
-        dubby.UpdateDisplay();
 
         dubby.UpdateStatusBar("SAVED TO MEMORY", dubby.MIDDLE, 127);
 
@@ -77,12 +74,7 @@ void MonitorPersistantMemory(Dubby& dubby, PersistentStorage<PersistantMemoryPar
 
         LoadFromQspi(dubby, SavedParameterSettings);
 
-        dubby.preferencesMenuItemSelected = dubby.MIDI;
-
-        dubby.UpdateDisplay();
-
         dubby.UpdateStatusBar("RESET TO DEFAULTS", dubby.MIDDLE, 127);
-
 
         dubby.trigger_reset_parameters_qspi = false;
     }

@@ -85,8 +85,8 @@ void initLED(void)
 	{
 		RCC->APB1LENR |= RCC_APB1LENR_TIM7EN;
 		__DMB();
-		TIM7->PSC = 6-1;
-		TIM7->ARR = 4-1;
+		TIM7->PSC = 14-1;
+		TIM7->ARR = 3-1;
 
 		TIM7->CR1 = 0x0084;
 		TIM7->CR2 = 0x0000;
@@ -152,7 +152,7 @@ void updateLED(void)
 		uint32_t led_buffer = g_LED_INFO.led_buffer[k];
 		for(j=0;j<24;j++)
 		{
-			if (led_buffer & 0x00000001)
+			if (led_buffer & 0x00800000)
 			{
 				for (i=0;i<12;i++)
 				{
@@ -182,7 +182,7 @@ void updateLED(void)
 					++g_LED_INFO.tx_cnt;
 				}
 			}
-			led_buffer = (led_buffer >> 1);
+			led_buffer = (led_buffer << 1);
 		}
 	}
 	DMA1->HIFCR = (DMA_HIFCR_CTCIF7 | DMA_HIFCR_CHTIF7 | DMA_HIFCR_CFEIF7 | DMA_HIFCR_CDMEIF7 | DMA_HIFCR_CTEIF7);
