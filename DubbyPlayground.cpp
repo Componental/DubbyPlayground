@@ -49,8 +49,8 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
 
         float processedSample[2];
 
-        dry[0] = in[2][i];
-        dry[1] = in[3][i];
+        dry[0] = in[0][i] + in[2][i];
+        dry[1] = in[1][i] + in[3][i];
 
         for (int j = 0; j < 2; j++)
         {
@@ -93,17 +93,18 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
             // Update output channels 1 and 3
             if (j == 0)
             {
-                out[0][i] = SoftLimit(reverbDelayDryWetMix[j]) * dubby.dubbyParameters[OUT_GAIN].value;
+                out[0][i] = out[2][i] = SoftLimit(reverbDelayDryWetMix[j]) * dubby.dubbyParameters[OUT_GAIN].value;
+
             }
             else
             {
-                out[1][i] = SoftLimit(reverbDelayDryWetMix[j]) * dubby.dubbyParameters[OUT_GAIN].value;
+                out[1][i] = out[3][i] = SoftLimit(reverbDelayDryWetMix[j]) * dubby.dubbyParameters[OUT_GAIN].value;
             }
         }
 
-        // Clear channels 2 and 4 (since we're not using them)
-        out[2][i] = 0;
-        out[3][i] = 0;
+        // // Clear channels 2 and 4 (since we're not using them)
+        // out[2][i] = 0;
+        // out[3][i] = 0;
 
         AssignScopeData(dubby, i, in, out);
     }
