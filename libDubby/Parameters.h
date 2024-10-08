@@ -8,6 +8,12 @@
 #include "MidiSettingsMenu.h"
 #include "ChannelMappingMenu.h"
 
+// HOW TO USE PARAMS: 
+// 1. ADD PARAMS TO ENUM LIST BELOW
+// 2. UPDATE PARAMSSTRINGS IN Dubby.h WITH THE SAME ORDER AS THE ENUM
+// 3. INITIALIZE IN USING .Init() IN InitDubbyParameters() IN Dubby.cpp
+// 4. USE THE VARIABLE IN DubbyPlayground.cpp, GET THE VALUE USING: dubby.dubbyParameters[FLT_CUTOFF].value
+
 enum Params
 {
   PARAM_NONE,
