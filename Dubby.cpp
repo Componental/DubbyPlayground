@@ -1344,21 +1344,21 @@ void Dubby::UpdateCurrentMappingWindow()
         display.WriteString(macroLabels[i].c_str(), Font_4x5, true);
     }
 
-    // Top-left corner
+        // Top-left corner
     display.DrawRect(0, PANE_Y_START + offset - 4, buttonRectWidth, buttonRectHeight + PANE_Y_START + offset - 4, true, buttons[0].Pressed());
     display.SetCursor(buttonRectWidth + 2, PANE_Y_START + offset - 4 + 2);
     display.WriteString(macroLabels[4].c_str(), Font_4x5, true);
 
     // Top-right corner
     display.DrawRect(OLED_WIDTH - buttonRectWidth - 1, PANE_Y_START + offset - 4, OLED_WIDTH - 1, buttonRectHeight + PANE_Y_START + offset - 4, true, buttons[2].Pressed());
-    int textWidth = macroLabels[5].size() * charWidth;
+    int textWidth = macroLabels[6].size() * charWidth;
     display.SetCursor(OLED_WIDTH - buttonRectWidth - textWidth - 3, PANE_Y_START + offset - 4 + 2);
-    display.WriteString(macroLabels[5].c_str(), Font_4x5, true);
+    display.WriteString(macroLabels[6].c_str(), Font_4x5, true);
 
     // Bottom-left corner
     display.DrawRect(0, PANE_Y_END - buttonRectHeight - 4, buttonRectWidth, PANE_Y_END - 4, true, buttons[1].Pressed());
     display.SetCursor(buttonRectWidth + 2, PANE_Y_END - buttonRectHeight - 4 + 2);
-    display.WriteString(macroLabels[6].c_str(), Font_4x5, true);
+    display.WriteString(macroLabels[5].c_str(), Font_4x5, true);
 
     // Bottom-right corner
     display.DrawRect(OLED_WIDTH - buttonRectWidth - 1, PANE_Y_END - buttonRectHeight - 4, OLED_WIDTH - 1, PANE_Y_END - 4, true, buttons[3].Pressed());
