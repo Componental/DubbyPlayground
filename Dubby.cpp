@@ -1470,7 +1470,6 @@ void Dubby::UpdateParameterPane()
     // UpdateStatusBar(&hlmode[0], LEFT);
     DisplayParameterList(encoder.Increment());
 
-
     if (encoder.Increment() && !isEncoderIncrementDisabled && !windowSelectorActive && !isParameterSelected)
         UpdateParameterList(encoder.Increment());
 
