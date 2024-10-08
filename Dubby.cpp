@@ -1114,7 +1114,7 @@ void Dubby::UpdateCurrentMappingWindow()
     const int buttonRectWidth = 4, buttonRectHeight = 8;         // Height & width of button rectangles
     const int offset = 26;                                       // Offset for positioning button rectangles
 
-    int controlCount[CONTROLS_LAST] = {0}; // Assuming CONTROLS_LAST is the number of possible controls (e.g., KN1, KN2, KN3, KN4)
+    int controlCount[CONTROLS_LAST] = {0}; // Assuming CONTROLS_LAST is the number of possible controls
 
     // First pass: count how many times each control appears
     for (int i = 0; i < controlMappingCount; i++)
@@ -1151,16 +1151,16 @@ void Dubby::UpdateCurrentMappingWindow()
         case JSY:
             controlCount[9]++;
             break;
+        default:
+            // You can leave these as is or add some handling if necessary.
+            break;
         }
     }
-
     // Initialize macroLabels with default value
     for (int i = 0; i < macroLabelCount; i++)
     {
         macroLabels[i] = "-";
     }
-
-    // Second pass: assign labels
     for (int i = 0; i < controlMappingCount; i++)
     {
         switch (dubbyParameters[i].control)
@@ -1195,16 +1195,21 @@ void Dubby::UpdateCurrentMappingWindow()
         case JSY:
             macroLabels[9] = (controlCount[9] > 1) ? "MACRO" : ParamsStrings[i];
             break;
+        default:
+            // This should never happen, but it's good practice to handle unexpected cases.
+            break;
         }
     }
-
     // Update joystick X and Y labels and create new labels with '-'
     for (int i = 0; i < numControls; i++)
     {
         int labelLength = (i == 8 || i == 9) ? 3 : 4;
-        if (macroLabels[i].length() > labelLength)
+
+        // Cast labelLength to std::string::size_type to match macroLabels[i].length() type
+        if (macroLabels[i].length() > static_cast<std::string::size_type>(labelLength))
         {
             macroLabels[i] = macroLabels[i].substr(0, labelLength);
+
             if (i == 8 || i == 9)
             {
                 macroLabels[i] += "+";
@@ -1323,7 +1328,7 @@ void Dubby::UpdateCurrentMappingWindow()
         // Calculate angle for the current knob
         float angle = (knobValueLive * 0.8f * 2 * PI_F) - (PI_F * 1.5f) + 0.2 * PI_F; // Convert knob value to angle
 
-        // Calculate line end position based on knob value
+        // Calculate line end p2osition based on knob value
         int lineEndX = circleXOffset + static_cast<int>(circleRadius * cos(angle));
         int lineEndY = circleY + static_cast<int>(circleRadius * sin(angle));
 
@@ -1465,7 +1470,6 @@ void Dubby::UpdateParameterPane()
     // std::string hlmode = std::to_string(wasEncoderJustInHighlightMenu);
     // UpdateStatusBar(&hlmode[0], LEFT);
     DisplayParameterList(encoder.Increment());
-
 
     if (encoder.Increment() && !isEncoderIncrementDisabled && !windowSelectorActive && !isParameterSelected)
         UpdateParameterList(encoder.Increment());
