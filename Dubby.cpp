@@ -217,7 +217,7 @@ void Dubby::InitDubbyParameters()
     dubbyParameters[DLY_FEEDBACK].Init(Params(DLY_FEEDBACK), KN2, 0, 0, 1, LINEAR);
     dubbyParameters[DLY_DIVISION].Init(Params(DLY_DIVISION), JSY, 0, 0, 1, LINEAR);
     dubbyParameters[DLY_SPREAD].Init(Params(CONTROL_NONE), JSX, 0, -100, 100, LINEAR);
-    dubbyParameters[DLY_FREEZE].Init(Params(DLY_FREEZE), BTN3, 0, 0, 1, LINEAR);
+    dubbyParameters[DLY_FREEZE].Init(Params(DLY_FREEZE), BTN2, 0, 0, 1, LINEAR);
     dubbyParameters[DLY_MAXWET].Init(Params(DLY_MAXWET), BTN4, 0, 0, 1, LINEAR);
     dubbyParameters[DLY_MIX].Init(Params(DLY_MIX), KN4, 0, 0, 1, LINEAR);
     dubbyParameters[FLT_CUTOFF].Init(Params(FLT_CUTOFF), KN3, 1, 0, 2000, EXPONENTIAL);
@@ -1343,7 +1343,6 @@ void Dubby::UpdateCurrentMappingWindow()
         display.SetCursor(labelX, labelY);
         display.WriteString(macroLabels[i].c_str(), Font_4x5, true);
     }
-
     // Top-left corner
     display.DrawRect(0, PANE_Y_START + offset - 4, buttonRectWidth, buttonRectHeight + PANE_Y_START + offset - 4, true, buttons[0].Pressed());
     display.SetCursor(buttonRectWidth + 2, PANE_Y_START + offset - 4 + 2);
@@ -1351,14 +1350,14 @@ void Dubby::UpdateCurrentMappingWindow()
 
     // Top-right corner
     display.DrawRect(OLED_WIDTH - buttonRectWidth - 1, PANE_Y_START + offset - 4, OLED_WIDTH - 1, buttonRectHeight + PANE_Y_START + offset - 4, true, buttons[2].Pressed());
-    int textWidth = macroLabels[5].size() * charWidth;
+    int textWidth = macroLabels[6].size() * charWidth;
     display.SetCursor(OLED_WIDTH - buttonRectWidth - textWidth - 3, PANE_Y_START + offset - 4 + 2);
-    display.WriteString(macroLabels[5].c_str(), Font_4x5, true);
+    display.WriteString(macroLabels[6].c_str(), Font_4x5, true);
 
     // Bottom-left corner
     display.DrawRect(0, PANE_Y_END - buttonRectHeight - 4, buttonRectWidth, PANE_Y_END - 4, true, buttons[1].Pressed());
     display.SetCursor(buttonRectWidth + 2, PANE_Y_END - buttonRectHeight - 4 + 2);
-    display.WriteString(macroLabels[6].c_str(), Font_4x5, true);
+    display.WriteString(macroLabels[5].c_str(), Font_4x5, true);
 
     // Bottom-right corner
     display.DrawRect(OLED_WIDTH - buttonRectWidth - 1, PANE_Y_END - buttonRectHeight - 4, OLED_WIDTH - 1, PANE_Y_END - 4, true, buttons[3].Pressed());
