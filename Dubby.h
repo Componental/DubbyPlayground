@@ -256,16 +256,16 @@ namespace daisy
     const char * ParamsStrings[PARAMS_LAST] = 
     { 
       "-",
-      "DLY SYNC",
-      "DLY TIME", 
-      "DLY FB", 
-      "DLY DIV", 
-      "DLY SPREAD",
-      "DLY FREEZE",
-      "MIX TOGGLE",
+      "SYNC DLY",
+      "TIME DLY", 
+      "FEEDBACK DLY", 
+      "DIVISION DLY", 
+      "SPREAD DLY",
+      "FREEZE DLY",
+      "TOGGLE MIX",
       "MIX",
-      "LPF CUTOFF",
-      "LPF RES",
+      "CUTOFF LPF",
+      "RESONANCE LFP",
       "OUT GAIN", 
       "2ND_LAST" // because of a bug
     };
