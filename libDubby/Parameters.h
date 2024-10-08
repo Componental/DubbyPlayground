@@ -11,15 +11,10 @@
 enum Params
 {
   PARAM_NONE,
-  TIME,
-  FEEDBACK,
+  PREDELAY_TIME,
+  REVERB_TIME,
+  LPF_CUTOFF,
   MIX,
-  CUTOFF,
-  IN_GAIN,
-  OUT_GAIN,
-  FREEZE,
-  MUTE,
-  LOOP,
   PARAMS_2ND_LAST, // because of a bug with last element of list, made this one but stays hidden
   PARAMS_LAST
 };

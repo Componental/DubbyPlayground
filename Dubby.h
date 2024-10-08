@@ -513,6 +513,8 @@ namespace daisy
         void InitDubbyParameters();
         void InitDubbyControls();
 
+        int outChannel;
+        int inChannel = 0;
         int margin = 8;
         bool windowSelectorActive = false;
         uint32_t screen_update_last_, screen_update_period_;
