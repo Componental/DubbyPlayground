@@ -76,7 +76,7 @@ namespace daisy
     bool encoderLastState = true;              // Previous state of the button
     
     unsigned long encoderLastDebounceTime = 0; // Time the button was last toggled
-    unsigned long encoderDebounceDelay = 10;   // Debounce time in milliseconds
+    unsigned long encoderDebounceDelay = 5;   // Debounce time in milliseconds
 
     // Variables for acceleration
     bool use_acceleration_ = false;

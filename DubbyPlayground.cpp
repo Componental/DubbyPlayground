@@ -11,7 +11,6 @@ int inChannel = 0;
 bool midiClockStarted = false;
 bool midiClockStoppedByButton2 = false;
 
-
 void MonitorMidi();
 void HandleMidiUartMessage(MidiEvent m);
 void HandleMidiUsbMessage(MidiEvent m);
@@ -21,7 +20,7 @@ PersistentStorage<PersistantMemoryParameterSettings> SavedParameterSettings(dubb
 
 void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, size_t size)
 {
-    dubby.ProcessLFO(); 
+    dubby.ProcessLFO();
 
     for (size_t i = 0; i < size; i++)
     {
@@ -53,7 +52,6 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
             }
         }
     }
-    
 }
 
 int main(void)
@@ -61,9 +59,9 @@ int main(void)
     Init(dubby);
     InitMidiClock(dubby);
     InitPersistantMemory(dubby, SavedParameterSettings);
-    
+
     dubby.joystickIdleX = dubby.GetKnobValue(dubby.CTRL_5);
-     dubby.joystickIdleY = dubby.GetKnobValue(dubby.CTRL_6);
+    dubby.joystickIdleY = dubby.GetKnobValue(dubby.CTRL_6);
 
     setLED(1, NO_COLOR, 0);
     setLED(0, NO_COLOR, 0);

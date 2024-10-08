@@ -89,7 +89,7 @@ namespace daisy
         };
 
         const char *WindowItemsStrings[WIN_LAST] =
-            {   
+            {
                 "PERFORM",
                 "LFO",
                 "PARAMETERS",
@@ -116,11 +116,10 @@ namespace daisy
                 "LEDS",
                 "MEMORY",
                 "FIRMWARE",
-                "CALLIBRATION",
+                "CALIBRATION",
                 "SAVE MEMORY",
                 "RESET MEMORY",
-                "RESET"
-            };
+                "RESET"};
 
         enum Ctrl
         {
@@ -413,7 +412,7 @@ namespace daisy
         WindowItems windowItemSelected = (WindowItems)0;
 
         PreferencesMenuItems preferencesMenuItemSelected = (PreferencesMenuItems)0;
-        PreferencesLedsMenuItems  preferencesLedsMenuItemSelected = (PreferencesLedsMenuItems)0;
+        PreferencesLedsMenuItems preferencesLedsMenuItemSelected = (PreferencesLedsMenuItems)0;
         PreferencesRoutingMenuItems preferencesRoutingMenuItemSelected = (PreferencesRoutingMenuItems)0;
         int subMenuSelector = 0;
 
@@ -436,7 +435,6 @@ namespace daisy
 
         bool isSubMenuActive = false;
 
-
         MidiSettings midiSettingSelected = (MidiSettings)0;
         bool isMidiSettingSelected = false;
         bool testBool = false;
@@ -444,7 +442,7 @@ namespace daisy
         ChannelMappings channelMappingSelected = (ChannelMappings)0;
         bool isChannelMappingSelected = false;
         daisysp::Oscillator lfo1, lfo2;
-         float joystickIdleX, joystickIdleY;
+        float joystickIdleX, joystickIdleY;
 
         // const int menuTextCursors[3][2] = { {8, 55}, {50, 55}, {92, 55} }; OLD
         const int windowTextCursors[3][2] = {{3, 52}, {46, 52}, {88, 52}};
@@ -526,7 +524,7 @@ namespace daisy
         unsigned long encoderPressStartTime = 0;
 
         unsigned long encoderLastDebounceTime2 = 0; // Time the button was last toggled
-        unsigned long encoderDebounceDelay2 = 100;   // Debounce time in milliseconds
+        unsigned long encoderDebounceDelay2 = 100;  // Debounce time in milliseconds
 
         float audioGains[2][4] = {{0.8f, 0.8f, 0.8f, 0.8f}, {0.8f, 0.8f, 0.8f, 0.8f}}; // 0 => INPUTS, 1 => OUTPUTS
     };

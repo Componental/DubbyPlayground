@@ -256,7 +256,6 @@ float Dubby::GetAudioOutGain(AudioOuts out)
 }
 void Dubby::UpdateDisplay()
 {
-
     if (!isModalActive)
     {
         if (encoder.TimeHeldMs() > ENCODER_LONGPRESS_THRESHOLD && !windowSelectorActive)
@@ -299,7 +298,7 @@ void Dubby::UpdateDisplay()
             }
         }
 
-        if (wasEncoderJustInHighlightMenu && encoder.FallingEdgeCustom())
+        if (wasEncoderJustInHighlightMenu && (encoder.FallingEdgeCustom() || encoder.FallingEdge()))
         {
             if (highlightMenuCounter < 2)
             {
@@ -455,10 +454,9 @@ void Dubby::HighlightWindowItem()
 
 void Dubby::ReleaseWindowSelector()
 {
-  //  ClearPane();
+    //  ClearPane();
 
-    display.DrawRect(PANE_X_START-1, PANE_Y_END, PANE_X_END, PANE_Y_END + 13, false, true);
-
+    display.DrawRect(PANE_X_START - 1, PANE_Y_END, PANE_X_END, PANE_Y_END + 13, false, true);
 
     display.DrawRect(windowBoxBounding[0][0], windowBoxBounding[0][1], windowBoxBounding[0][2], windowBoxBounding[0][3], false, false);
 
@@ -573,6 +571,7 @@ void Dubby::UpdateWindowList()
 
 void Dubby::UpdateChannelMappingPane()
 {
+
     // Define dimensions for each cell in the grid
     const int cellWidth = 23; // Width of each cell in the grid
     const int cellHeight = 8; // Height of each cell in the grid
@@ -593,17 +592,17 @@ void Dubby::UpdateChannelMappingPane()
     int increment = encoder.Increment(); // Encoder increment value
 
     // Static variables to keep track of the current position and mode
-    static int currentRow = 0;          // Current selected row
-    static int currentCol = 0;          // Current selected column
-    static bool selectIndexMode = true; // Flag to toggle between index mode and grid mode
+    static int currentRow = 0;             // Current selected row
+    static int currentCol = 0;             // Current selected column
+    static bool selectJunctionMode = true; // Flag to toggle between index mode and grid mode
 
     // Toggle mode when the encoder is pressed
-    if (encoder.FallingEdgeCustom() && !windowSelectorActive)
+    if (encoder.FallingEdge() && !wasEncoderJustInHighlightMenu && !windowSelectorActive)
     {
-        selectIndexMode = !selectIndexMode; // Toggle between selectIndexMode and grid navigation mode
+        selectJunctionMode = !selectJunctionMode; // Toggle between selectJunctionMode and grid navigation mode
     }
 
-    if (selectIndexMode)
+    if (selectJunctionMode)
     {
         // Display status bar message for select index mode
         UpdateStatusBar("SELECT AUDIO JUNCTION   ", LEFT);
@@ -729,7 +728,7 @@ void Dubby::UpdateChannelMappingPane()
 
             // Display the mapping string in the cell
             const char *mappingString = dubbyChannelMapping->ChannelMappingsStrings[mappingValue];
-            bool negativeFill = (row == currentRow && col == currentCol && !selectIndexMode);
+            bool negativeFill = (row == currentRow && col == currentCol && !selectJunctionMode);
 
             display.SetCursor(x + 5, y + 3);                             // Adjust text positioning for centering
             display.WriteString(mappingString, Font_4x5, !negativeFill); // Display mapping text
@@ -812,7 +811,7 @@ void Dubby::UpdateLFOWindow()
     const int offsetKnob3And4 = 6;
 
     // display.Fill(false);
-   // ClearPane();
+    // ClearPane();
     display.DrawRect(0, 6, PANE_X_END + 1, PANE_Y_END, false, true);
 
     // // Draw the vertical line in the center of the display
@@ -842,7 +841,7 @@ void Dubby::UpdateLFOWindow()
 
     int increment = encoder.Increment();
 
-    if (encoder.FallingEdgeCustom() && !windowSelectorActive)
+    if (encoder.FallingEdge() && !windowSelectorActive && !wasEncoderJustInHighlightMenu)
         selectIndexMode = !selectIndexMode;
 
     // Determine which parameter box is selected
@@ -1016,7 +1015,7 @@ void Dubby::UpdateLFOWindow()
         // Draw circular knob
         display.DrawCircle(circle_x_offset, circle_y, bounding_circle_radius, selected); // Draw filled knob circle
         display.DrawCircle(circle_x_offset, circle_y, circle_radius, true);              // Draw filled knob circle
-        display.DrawCircle(circle_x_offset, circle_y, circle_radius-1, pressed);              // Draw filled knob circle
+        display.DrawCircle(circle_x_offset, circle_y, circle_radius - 1, pressed);       // Draw filled knob circle
 
         // Normalize the knob value for the first and third knobs
         float normalizedValue = knobValues[i];
@@ -1112,7 +1111,7 @@ void Dubby::UpdateCurrentMappingWindow()
     const int buttonRectWidth = 4, buttonRectHeight = 8;         // Height & width of button rectangles
     const int offset = 26;                                       // Offset for positioning button rectangles
 
-    int controlCount[CONTROLS_LAST] = {0}; // Assuming CONTROLS_LAST is the number of possible controls (e.g., KN1, KN2, KN3, KN4)
+    int controlCount[CONTROLS_LAST] = {0}; // Assuming CONTROLS_LAST is the number of possible controls
 
     // First pass: count how many times each control appears
     for (int i = 0; i < controlMappingCount; i++)
@@ -1149,16 +1148,16 @@ void Dubby::UpdateCurrentMappingWindow()
         case JSY:
             controlCount[9]++;
             break;
+        default:
+            // You can leave these as is or add some handling if necessary.
+            break;
         }
     }
-
     // Initialize macroLabels with default value
     for (int i = 0; i < macroLabelCount; i++)
     {
         macroLabels[i] = "-";
     }
-
-    // Second pass: assign labels
     for (int i = 0; i < controlMappingCount; i++)
     {
         switch (dubbyParameters[i].control)
@@ -1193,16 +1192,21 @@ void Dubby::UpdateCurrentMappingWindow()
         case JSY:
             macroLabels[9] = (controlCount[9] > 1) ? "MACRO" : ParamsStrings[i];
             break;
+        default:
+            // This should never happen, but it's good practice to handle unexpected cases.
+            break;
         }
     }
-
     // Update joystick X and Y labels and create new labels with '-'
     for (int i = 0; i < numControls; i++)
     {
         int labelLength = (i == 8 || i == 9) ? 3 : 4;
-        if (macroLabels[i].length() > labelLength)
+
+        // Cast labelLength to std::string::size_type to match macroLabels[i].length() type
+        if (macroLabels[i].length() > static_cast<std::string::size_type>(labelLength))
         {
             macroLabels[i] = macroLabels[i].substr(0, labelLength);
+
             if (i == 8 || i == 9)
             {
                 macroLabels[i] += "+";
@@ -1211,7 +1215,6 @@ void Dubby::UpdateCurrentMappingWindow()
         }
     }
 
-  
     display.DrawRect(0, 0, PANE_X_END + 1, PANE_Y_END, false, true);
 
     // Change size when joystick button is pressed
@@ -1322,7 +1325,7 @@ void Dubby::UpdateCurrentMappingWindow()
         // Calculate angle for the current knob
         float angle = (knobValueLive * 0.8f * 2 * PI_F) - (PI_F * 1.5f) + 0.2 * PI_F; // Convert knob value to angle
 
-        // Calculate line end position based on knob value
+        // Calculate line end p2osition based on knob value
         int lineEndX = circleXOffset + static_cast<int>(circleRadius * cos(angle));
         int lineEndY = circleY + static_cast<int>(circleRadius * sin(angle));
 
@@ -1341,21 +1344,21 @@ void Dubby::UpdateCurrentMappingWindow()
         display.WriteString(macroLabels[i].c_str(), Font_4x5, true);
     }
 
-    // Top-left corner
+        // Top-left corner
     display.DrawRect(0, PANE_Y_START + offset - 4, buttonRectWidth, buttonRectHeight + PANE_Y_START + offset - 4, true, buttons[0].Pressed());
     display.SetCursor(buttonRectWidth + 2, PANE_Y_START + offset - 4 + 2);
     display.WriteString(macroLabels[4].c_str(), Font_4x5, true);
 
     // Top-right corner
     display.DrawRect(OLED_WIDTH - buttonRectWidth - 1, PANE_Y_START + offset - 4, OLED_WIDTH - 1, buttonRectHeight + PANE_Y_START + offset - 4, true, buttons[2].Pressed());
-    int textWidth = macroLabels[5].size() * charWidth;
+    int textWidth = macroLabels[6].size() * charWidth;
     display.SetCursor(OLED_WIDTH - buttonRectWidth - textWidth - 3, PANE_Y_START + offset - 4 + 2);
-    display.WriteString(macroLabels[5].c_str(), Font_4x5, true);
+    display.WriteString(macroLabels[6].c_str(), Font_4x5, true);
 
     // Bottom-left corner
     display.DrawRect(0, PANE_Y_END - buttonRectHeight - 4, buttonRectWidth, PANE_Y_END - 4, true, buttons[1].Pressed());
     display.SetCursor(buttonRectWidth + 2, PANE_Y_END - buttonRectHeight - 4 + 2);
-    display.WriteString(macroLabels[6].c_str(), Font_4x5, true);
+    display.WriteString(macroLabels[5].c_str(), Font_4x5, true);
 
     // Bottom-right corner
     display.DrawRect(OLED_WIDTH - buttonRectWidth - 1, PANE_Y_END - buttonRectHeight - 4, OLED_WIDTH - 1, PANE_Y_END - 4, true, buttons[3].Pressed());
@@ -1412,13 +1415,13 @@ void Dubby::UpdateRenderPane()
 
 void Dubby::UpdateGlobalSettingsPane()
 {
-    if (encoder.RisingEdge() && !isSubMenuActive)
+    if (encoder.FallingEdge() && !wasEncoderJustInHighlightMenu && !isSubMenuActive)
     {
         isSubMenuActive = true;
         DisplayPreferencesMenuList(0);
     }
 
-    if (encoder.RisingEdge() && windowSelectorActive)
+    if (encoder.FallingEdge() && !wasEncoderJustInHighlightMenu && windowSelectorActive)
     {
         isSubMenuActive = false;
         DisplayPreferencesMenuList(0);
@@ -1461,19 +1464,19 @@ void Dubby::UpdateGlobalSettingsPane()
 
 void Dubby::UpdateParameterPane()
 {
+    // std::string hlmode = std::to_string(wasEncoderJustInHighlightMenu);
+    // UpdateStatusBar(&hlmode[0], LEFT);
     DisplayParameterList(encoder.Increment());
 
     if (encoder.Increment() && !isEncoderIncrementDisabled && !windowSelectorActive && !isParameterSelected)
         UpdateParameterList(encoder.Increment());
 
-    if (encoder.FallingEdge() && !windowSelectorActive && !isParameterSelected)
+    if (encoder.FallingEdge() && !windowSelectorActive && !isParameterSelected && !wasEncoderJustInHighlightMenu)
     {
         if ((seed.system.GetNow() - encoderLastDebounceTime2) > encoderDebounceDelay2)
         {
-
             isParameterSelected = true;
             parameterOptionSelected = PARAM;
-
             DisplayParameterList(encoder.Increment());
         }
     }
@@ -2360,7 +2363,7 @@ void Dubby::InitAudio()
 
     // Reinit Audio for _both_ codecs...
     AudioHandle::Config cfg;
-    cfg.blocksize = 48;
+    cfg.blocksize = AUDIO_BLOCK_SIZE;
     cfg.samplerate = SaiHandle::Config::SampleRate::SAI_48KHZ;
     cfg.postgain = 1.f;
     seed.audio_handle.Init(cfg, sai_handle[0], sai_handle[1]);
