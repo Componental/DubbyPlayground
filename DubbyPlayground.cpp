@@ -2,6 +2,12 @@
 #include "implementations/includes.h"
 #include "reverbsc.h"
 #define MAX_DELAY static_cast<size_t>(24000)
+
+using namespace daisy;
+using namespace daisysp;
+
+Dubby dubby;
+
 const float smoothingFactor = .0002f;
 ReverbSc DSY_SDRAM_BSS verbLeft, verbRight;
 DelayLine<float, MAX_DELAY> DSY_SDRAM_BSS preDelayLeft, preDelayRight;
@@ -9,10 +15,6 @@ float sample_rate;
 static float smoothedPreDelayValue = 0.0f;
 float wetVolumeAdjustment = 0.5f;
 
-using namespace daisy;
-using namespace daisysp;
-
-Dubby dubby;
 
 void MonitorMidi();
 void HandleMidiUartMessage(MidiEvent m);
@@ -29,8 +31,6 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
     {
         AssignScopeData(dubby, i, in, out);
 
-        for (int j = 0; j < NUM_AUDIO_CHANNELS; j++)
-        {
 
             // Process input samples through the reverb effect
             float processedSampleLeft;
@@ -48,21 +48,21 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
             float wetLeft = processedSampleLeft;
             float wetRight = processedSampleRight;
 
-            fonepole(smoothedPreDelayValue, PREDELAYTIME, smoothingFactor);
+            fonepole(smoothedPreDelayValue, dubby.dubbyParameters[PREDELAY].value, smoothingFactor);
             if (smoothedPreDelayValue < 0.01f)
             {
                 smoothedPreDelayValue = 0.01f;
             }
 
-            preDelayLeft.SetDelay(smoothedPreDelayValue * 0.5f * sample_rate);
-            preDelayRight.SetDelay(smoothedPreDelayValue * 0.5f * sample_rate);
+            preDelayLeft.SetDelay(smoothedPreDelayValue);
+            preDelayRight.SetDelay(smoothedPreDelayValue);
 
             float preDelayedWetLeft = preDelayLeft.Read() * wetVolumeAdjustment;
             float preDelayedWetRight = preDelayRight.Read() * wetVolumeAdjustment;
 
             // Dry/Wet mix for left and right channels
-            float dryWetLeft = (1.0f - MIX) * dryLeft + MIX * preDelayedWetLeft;
-            float dryWetRight = (1.0f - MIX) * dryRight + MIX * preDelayedWetRight;
+            float dryWetLeft = (1.0f - dubby.dubbyParameters[MIX].value) * dryLeft + dubby.dubbyParameters[MIX].value * preDelayedWetLeft;
+            float dryWetRight = (1.0f - dubby.dubbyParameters[MIX].value) * dryRight + dubby.dubbyParameters[MIX].value * preDelayedWetRight;
 
             // Output to both stereo channels
             out[0][i] = out[2][i] = dryWetLeft;
@@ -71,7 +71,7 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
             preDelayLeft.Write(wetLeft);
             preDelayRight.Write(wetRight);
             // =======================================
-        }
+        
     }
 }
 
@@ -80,6 +80,7 @@ int main(void)
     Init(dubby);
     InitMidiClock(dubby);
     InitPersistantMemory(dubby, SavedParameterSettings);
+    sample_rate = dubby.seed.AudioSampleRate();
 
     dubby.joystickIdleX = dubby.GetKnobValue(dubby.CTRL_5);
     dubby.joystickIdleY = dubby.GetKnobValue(dubby.CTRL_6);
@@ -87,28 +88,22 @@ int main(void)
     setLED(1, NO_COLOR, 0);
     setLED(0, NO_COLOR, 0);
     updateLED();
-
-    dubby.seed.StartAudio(AudioCallback);
-    sample_rate = dubby.seed.AudioSampleRate();
-
     // setup reverb
     verbLeft.Init(sample_rate);
     verbLeft.SetFeedback(0.5f);
-    verbLeft.SetLpFreq(20000.0f);
+    verbLeft.SetLpFreq(5000.f);
     // setup reverb
     verbRight.Init(sample_rate);
     verbRight.SetFeedback(0.5f);
-    verbRight.SetLpFreq(20000.0f);
+    verbRight.SetLpFreq(5000.f);
+    dubby.seed.StartAudio(AudioCallback);
+
+
 
     preDelayLeft.Init();
     preDelayRight.Init();
-    preDelayLeft.SetDelay(10.f);
-    preDelayRight.SetDelay(10.f);
-
-    verbLeft.SetFeedback(0.5f);
-    verbLeft.SetLpFreq(20.f);
-    verbRight.SetFeedback(0.5f);
-    verbRight.SetLpFreq(20.f);
+    preDelayLeft.SetDelay(dubby.dubbyParameters[PREDELAY].value);
+    preDelayRight.SetDelay(dubby.dubbyParameters[PREDELAY].value);
 
     while (1)
     {
@@ -120,10 +115,10 @@ int main(void)
         setLED(0, RED, abs(0.5 + dubby.lfo2Value) * 50);
         updateLED();
 
-        verbLeft.SetFeedback(feedback);
-        verbLeft.SetLpFreq(cutoff);
-        verbRight.SetFeedback(feedback);
-        verbRight.SetLpFreq(cutoff);
+        verbLeft.SetFeedback(dubby.dubbyParameters[LUSH].value);
+        verbLeft.SetLpFreq(dubby.dubbyParameters[COLOUR].value);
+        verbRight.SetFeedback(dubby.dubbyParameters[LUSH].value);
+        verbRight.SetLpFreq(dubby.dubbyParameters[COLOUR].value);
     }
 }
 

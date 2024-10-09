@@ -253,18 +253,14 @@ namespace daisy
                 "JSSW",
         };
 
+
         const char *ParamsStrings[PARAMS_LAST] =
             {
                 "-",
-                "TIME",
-                "FEEDBACK",
+                "PREDELAY",
+                "LUSH",
+                "COLOUR",
                 "MIX",
-                "CUTOFF",
-                "IN GAIN",
-                "OUT GAIN",
-                "FREEZE",
-                "MUTE",
-                "LOOP",
                 "2ND_LAST" // because of a bug
         };
 

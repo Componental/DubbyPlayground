@@ -17,9 +17,9 @@
 enum Params
 {
   PARAM_NONE,
-  PREDELAY_TIME,
-  REVERB_TIME,
-  LPF_CUTOFF,
+  PREDELAY,
+  LUSH,
+  COLOUR,
   MIX,
   PARAMS_2ND_LAST, // because of a bug with last element of list, made this one but stays hidden
   PARAMS_LAST

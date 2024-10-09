@@ -213,16 +213,10 @@ void Dubby::InitDubbyControls()
 
 void Dubby::InitDubbyParameters()
 {
-
-    dubbyParameters[TIME].Init(Params(TIME), KN1, 110.f, 0, 440, LINEAR, true, 0, true, 2000);
-    dubbyParameters[FEEDBACK].Init(Params(FEEDBACK), KN2, 0.6f, 0, 1, LINEAR, true, 0, true, 1);
-    dubbyParameters[MIX].Init(Params(MIX), KN3, 0.5f, 0, 1, EXPONENTIAL, true, 0, true, 100);
-    dubbyParameters[CUTOFF].Init(Params(CUTOFF), JSY, 5.f, 0, 10, EXPONENTIAL, true, 0, true, 10);
-    dubbyParameters[IN_GAIN].Init(Params(IN_GAIN), BTN1, 0.5f, 0, 5, LINEAR, true, 0, true, 5);
-    dubbyParameters[OUT_GAIN].Init(Params(OUT_GAIN), BTN2, 0.5f, 0, 5, LINEAR, true, 0, true, 5);
-    dubbyParameters[FREEZE].Init(Params(FREEZE), BTN3, 0.5f, 0, 5, LINEAR, true, 0, true, 5);
-    dubbyParameters[MUTE].Init(Params(MUTE), BTN4, 0.5f, 0, 5, LINEAR, true, 0, true, 5);
-    dubbyParameters[LOOP].Init(Params(LOOP), JSX, 0.5f, 0, 5, LINEAR, true, 0, true, 5);
+    dubbyParameters[PREDELAY].Init(Params(PREDELAY), KN1, 0.f, 0.f, 20000.f, LINEAR, true, 0.f, true, 20000.f);
+    dubbyParameters[LUSH].Init(Params(LUSH), KN2, 0.67f, 0.66f, 0.999f, LOGARITHMIC, true, 0.01f, true, 0.999f);
+    dubbyParameters[COLOUR].Init(Params(COLOUR), KN3, 5000.f, 50.f, 10000.f, LOGARITHMIC, true, 100.f, true, 10000.f);
+    dubbyParameters[MIX].Init(Params(MIX), KN4, 0.5f, 0.f, 1.f, LINEAR, true, 0.f, true, 1.f);
 }
 
 void Dubby::SetAudioInGain(AudioIns in, float gain)
