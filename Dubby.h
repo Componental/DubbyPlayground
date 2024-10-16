@@ -388,6 +388,8 @@ namespace daisy
         void ResetToBootloader();
 
         void SwitchMIDIOutThru(bool state);
+        
+        void ToggleAudio(bool state);
 
         void ClearPane();
 
@@ -477,6 +479,8 @@ namespace daisy
 
         MidiUartHandler midi_uart;
         dsy_gpio midi_sw_output;
+
+        dsy_gpio audio_sw_output;
 
         int mixerPageSelected = INPUTS;
 
