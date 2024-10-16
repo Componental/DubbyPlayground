@@ -1,4 +1,3 @@
-#include "daisysp.h"
 #include "Dubby.h"
 #include "implementations/includes.h"
 
@@ -8,7 +7,6 @@ using namespace daisysp;
 Dubby dubby;
 int outChannel;
 int inChannel = 0;
-
 
 bool midiClockStarted = false;
 bool midiClockStoppedByButton2 = false;
@@ -22,8 +20,12 @@ PersistentStorage<PersistantMemoryParameterSettings> SavedParameterSettings(dubb
 
 void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, size_t size)
 {
+    dubby.ProcessLFO();
+
     for (size_t i = 0; i < size; i++)
     {
+        AssignScopeData(dubby, i, in, out);
+
         for (int j = 0; j < NUM_AUDIO_CHANNELS; j++)
         {
             SetGains(dubby, j, i, in, out); 
@@ -36,22 +38,25 @@ int main(void)
     Init(dubby);
     InitMidiClock(dubby);
     InitPersistantMemory(dubby, SavedParameterSettings);
-    
-    initLED();
-    setLED(0, GREEN, 0);
-    setLED(1, RED, 0);
+
+    dubby.joystickIdleX = dubby.GetKnobValue(dubby.CTRL_5);
+    dubby.joystickIdleY = dubby.GetKnobValue(dubby.CTRL_6);
+
+    setLED(1, NO_COLOR, 0);
+    setLED(0, NO_COLOR, 0);
     updateLED();
 
     dubby.seed.StartAudio(AudioCallback);
 
-  
     while (1)
     {
 
         Monitor(dubby);
         MonitorMidi();
         MonitorPersistantMemory(dubby, SavedParameterSettings);
-
+        setLED(1, RED, abs(0.5 + dubby.lfo1Value) * 50);
+        setLED(0, RED, abs(0.5 + dubby.lfo2Value) * 50);
+        updateLED();
     }
 }
 
@@ -66,7 +71,7 @@ void HandleMidiMessage(MidiEvent m)
             if (m.channel == dubby.dubbyMidiSettings.currentMidiInChannelOption)
             {
                 NoteOnEvent p = m.AsNoteOn();
-                (void)p;  // Suppress unused variable warning
+                (void)p; // Suppress unused variable warning
             }
         }
         break;
@@ -78,7 +83,7 @@ void HandleMidiMessage(MidiEvent m)
             if (m.channel == dubby.dubbyMidiSettings.currentMidiInChannelOption)
             {
                 NoteOffEvent p = m.AsNoteOff();
-                (void)p;  // Suppress unused variable warning
+                (void)p; // Suppress unused variable warning
             }
         }
         break;

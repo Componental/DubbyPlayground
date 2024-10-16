@@ -40,8 +40,12 @@ namespace daisy
     /** Returns true if the encoder was just pressed. */
     inline bool RisingEdge() const { return sw_.RisingEdge(); }
 
+    bool RisingEdgeCustom();
+
     /** Returns true if the encoder was just released. */
     inline bool FallingEdge() const { return sw_.FallingEdge(); }
+
+    bool FallingEdgeCustom();
 
     /** Returns true while the encoder is held down.*/
     inline bool Pressed() const { return sw_.Pressed(); }
@@ -67,6 +71,12 @@ namespace daisy
     int32_t accumulated_inc_; // Accumulated increments for acceleration
     int32_t last_encoder_change_time_;
     int prev_state;
+
+    bool encoderState = false;                 // Previous state of the button
+    bool encoderLastState = true;              // Previous state of the button
+    
+    unsigned long encoderLastDebounceTime = 0; // Time the button was last toggled
+    unsigned long encoderDebounceDelay = 5;   // Debounce time in milliseconds
 
     // Variables for acceleration
     bool use_acceleration_ = false;
