@@ -335,6 +335,9 @@ void Dubby::UpdateDisplay()
         case WIN7:
             UpdateGlobalSettingsPane();
             break;
+        case WIN8:
+            UpdateMixerPane();
+            break;
         default:
             UpdateCurrentMappingWindow();
             break;
