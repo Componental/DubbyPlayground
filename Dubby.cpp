@@ -23,6 +23,7 @@ using namespace daisy;
 #define PIN_MIDI_OUT 13
 #define PIN_MIDI_IN 14
 #define PIN_MIDI_SWITCH 1
+#define PIN_AUDIO_SWITCH 0
 
 #define OLED_WIDTH 128
 #define OLED_HEIGHT 64
@@ -168,9 +169,7 @@ void Dubby::InitMidi()
     midi_sw_output.mode = DSY_GPIO_MODE_OUTPUT_PP;
     midi_sw_output.pull = DSY_GPIO_NOPULL;
     dsy_gpio_init(&midi_sw_output);
-
-    dsy_gpio_write(&midi_sw_output, false);
-
+    
     MidiUsbHandler::Config midi_usb_cfg;
     midi_usb_cfg.transport_config.periph = MidiUsbTransport::Config::EXTERNAL;
     midi_usb.Init(midi_usb_cfg);
@@ -2370,8 +2369,22 @@ void Dubby::InitAudio()
     cfg.samplerate = SaiHandle::Config::SampleRate::SAI_48KHZ;
     cfg.postgain = 1.f;
     seed.audio_handle.Init(cfg, sai_handle[0], sai_handle[1]);
+
+    // RELAYS FOR TOGGLING AUDIO
+    audio_sw_output.pin = seed.GetPin(PIN_AUDIO_SWITCH);
+    audio_sw_output.mode = DSY_GPIO_MODE_OUTPUT_PP;
+    audio_sw_output.pull = DSY_GPIO_NOPULL;
+    dsy_gpio_init(&audio_sw_output);
+
+    ToggleAudio(true);
 }
 
+void Dubby::ToggleAudio(bool state)
+{
+    // state == true => PIN IS HIGH => MIDI ON
+    // state == false => PIN IS LOW => MIDI OFF
+    dsy_gpio_write(&audio_sw_output, state);
+}
 const char *Dubby::GetTextForEnum(EnumTypes m, int enumVal)
 {
     switch (m)

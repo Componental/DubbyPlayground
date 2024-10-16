@@ -385,6 +385,8 @@ namespace daisy
 
         void SwitchMIDIOutThru(bool state);
 
+        void ToggleAudio(bool state);
+
         void ClearPane();
 
         void UpdateStatusBar(const char *text, StatusBarSide side, int width = 40); // side = 0 => left, side = 1 => right
@@ -473,6 +475,7 @@ namespace daisy
 
         MidiUartHandler midi_uart;
         dsy_gpio midi_sw_output;
+        dsy_gpio audio_sw_output;
 
         int mixerPageSelected = INPUTS;
 
