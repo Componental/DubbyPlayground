@@ -33,8 +33,8 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
     {
         AssignScopeData(dubby, i, in, out);
 
-        float dryLeft = in[2][i];
-        float dryRight = in[3][i];
+        float dryLeft = in[0][i]+in[2][i];
+        float dryRight =in[1][i] +in[3][i];
 
         // Reverb processing
         float processedSampleLeft, processedSampleRight;
