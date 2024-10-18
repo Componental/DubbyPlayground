@@ -261,6 +261,7 @@ namespace daisy
                 "LUSH",
                 "COLOUR",
                 "MIX",
+                "FRZ",
                 "2ND_LAST" // because of a bug
         };
 

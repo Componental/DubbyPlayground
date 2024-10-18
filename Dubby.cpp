@@ -217,6 +217,7 @@ void Dubby::InitDubbyParameters()
     dubbyParameters[LUSH].Init(Params(LUSH), KN2, 0.67f, 0.66f, 0.98f, LOGARITHMIC, true, 0.01f, true, 0.999f);
     dubbyParameters[COLOUR].Init(Params(COLOUR), KN3, 0.5f, 0.f, 1.f, LINEAR, true, 0.f, true, 1.f);
     dubbyParameters[MIX].Init(Params(MIX), KN4, 0.5f, 0.f, 1.f, LINEAR, true, 0.f, true, 1.f);
+    dubbyParameters[FRZ].Init(Params(FRZ), BTN3, 0.0f, 0.f, 1.f, LINEAR, true, 0.f, true, 1.f);
 }
 
 void Dubby::SetAudioInGain(AudioIns in, float gain)

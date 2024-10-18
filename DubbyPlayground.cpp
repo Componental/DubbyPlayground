@@ -44,14 +44,6 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
         float wetLeft = processedSampleLeft;
         float wetRight = processedSampleRight;
 
-        // Filter processing
-        lpfLeft.Process(wetLeft);
-        lpfRight.Process(wetRight);
-        hpfLeft.Process(lpfLeft.Low()); // Apply high-pass filter
-        hpfRight.Process(lpfRight.Low());
-
-        float filteredWetLeft = hpfLeft.High();
-        float filteredWetRight = hpfRight.High();
 
         fonepole(smoothedPreDelayValue, dubby.dubbyParameters[PREDELAY].value, smoothingFactor);
         preDelayLeft.SetDelay(smoothedPreDelayValue);
@@ -60,15 +52,25 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
         float preDelayedWetLeft = preDelayLeft.Read() * wetVolumeAdjustment;
         float preDelayedWetRight = preDelayRight.Read() * wetVolumeAdjustment;
 
-        float dryWetLeft = (1.0f - dubby.dubbyParameters[MIX].value) * dryLeft + dubby.dubbyParameters[MIX].value * preDelayedWetLeft;
-        float dryWetRight = (1.0f - dubby.dubbyParameters[MIX].value) * dryRight + dubby.dubbyParameters[MIX].value * preDelayedWetRight;
+        // Filter processing
+        lpfLeft.Process(preDelayedWetLeft);
+        lpfRight.Process(preDelayedWetRight);
+        hpfLeft.Process(lpfLeft.Low()); // Apply high-pass filter
+        hpfRight.Process(lpfRight.Low());
+       
+        float filteredWetLeft = hpfLeft.High();
+        float filteredWetRight = hpfRight.High();
+
+
+        float dryWetLeft = (1.0f - dubby.dubbyParameters[MIX].value) * dryLeft + dubby.dubbyParameters[MIX].value * filteredWetLeft;
+        float dryWetRight = (1.0f - dubby.dubbyParameters[MIX].value) * dryRight + dubby.dubbyParameters[MIX].value * filteredWetRight;
 
         // Output to both stereo channels
         out[0][i] = out[2][i] = dryWetLeft;
         out[1][i] = out[3][i] = dryWetRight;
 
-        preDelayLeft.Write(filteredWetLeft);
-        preDelayRight.Write(filteredWetRight);
+        preDelayLeft.Write(wetLeft);
+        preDelayRight.Write(wetRight);
     }
 }
 
@@ -135,8 +137,8 @@ int main(void)
         verbRight.SetFeedback(dubby.dubbyParameters[LUSH].value);
         // verbRight.SetLpFreq(dubby.dubbyParameters[COLOUR].value);
 
-        verbLeft.SetFreeze(dubby.buttons[2].Pressed());
-        verbRight.SetFreeze(dubby.buttons[2].Pressed());
+        verbLeft.SetFreeze(dubby.dubbyParameters[FRZ].value);
+        verbRight.SetFreeze(dubby.dubbyParameters[FRZ].value);
 
         // Apply filtering based on COLOUR parameter
         float colourValue = dubby.dubbyParameters[COLOUR].value;
