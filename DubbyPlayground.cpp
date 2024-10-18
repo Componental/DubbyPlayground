@@ -15,6 +15,8 @@ float sample_rate;
 static float smoothedPreDelayValue = 0.0f;
 float wetVolumeAdjustment = 0.5f;
 
+Svf lpfLeft, lpfRight; // Array for filters
+Svf hpfLeft, hpfRight; // Array for filters
 
 void MonitorMidi();
 void HandleMidiUartMessage(MidiEvent m);
@@ -31,47 +33,42 @@ void AudioCallback(AudioHandle::InputBuffer in, AudioHandle::OutputBuffer out, s
     {
         AssignScopeData(dubby, i, in, out);
 
+        float dryLeft = in[2][i];
+        float dryRight = in[3][i];
 
-            // Process input samples through the reverb effect
-            float processedSampleLeft;
-            float processedSampleRight;
+        // Reverb processing
+        float processedSampleLeft, processedSampleRight;
+        verbLeft.Process(dryLeft, &processedSampleLeft);
+        verbRight.Process(dryRight, &processedSampleRight);
 
-            float dryLeft = in[2][i];
-            float dryRight = in[3][i];
+        float wetLeft = processedSampleLeft;
+        float wetRight = processedSampleRight;
 
-            //  float shiftedLeft = pitchshiftLeft.Process(dryLeft);
-            //  float shiftedRight = pitchshiftRight.Process(dryRight);
+        // Filter processing
+        lpfLeft.Process(wetLeft);
+        lpfRight.Process(wetRight);
+        hpfLeft.Process(lpfLeft.Low()); // Apply high-pass filter
+        hpfRight.Process(lpfRight.Low());
 
-            verbLeft.Process(dryLeft, &processedSampleLeft);
-            verbRight.Process(dryRight, &processedSampleRight);
+        float filteredWetLeft = hpfLeft.High();
+        float filteredWetRight = hpfRight.High();
 
-            float wetLeft = processedSampleLeft;
-            float wetRight = processedSampleRight;
+        fonepole(smoothedPreDelayValue, dubby.dubbyParameters[PREDELAY].value, smoothingFactor);
+        preDelayLeft.SetDelay(smoothedPreDelayValue);
+        preDelayRight.SetDelay(smoothedPreDelayValue);
 
-            fonepole(smoothedPreDelayValue, dubby.dubbyParameters[PREDELAY].value, smoothingFactor);
-            if (smoothedPreDelayValue < 0.01f)
-            {
-                smoothedPreDelayValue = 0.01f;
-            }
+        float preDelayedWetLeft = preDelayLeft.Read() * wetVolumeAdjustment;
+        float preDelayedWetRight = preDelayRight.Read() * wetVolumeAdjustment;
 
-            preDelayLeft.SetDelay(smoothedPreDelayValue);
-            preDelayRight.SetDelay(smoothedPreDelayValue);
+        float dryWetLeft = (1.0f - dubby.dubbyParameters[MIX].value) * dryLeft + dubby.dubbyParameters[MIX].value * preDelayedWetLeft;
+        float dryWetRight = (1.0f - dubby.dubbyParameters[MIX].value) * dryRight + dubby.dubbyParameters[MIX].value * preDelayedWetRight;
 
-            float preDelayedWetLeft = preDelayLeft.Read() * wetVolumeAdjustment;
-            float preDelayedWetRight = preDelayRight.Read() * wetVolumeAdjustment;
+        // Output to both stereo channels
+        out[0][i] = out[2][i] = dryWetLeft;
+        out[1][i] = out[3][i] = dryWetRight;
 
-            // Dry/Wet mix for left and right channels
-            float dryWetLeft = (1.0f - dubby.dubbyParameters[MIX].value) * dryLeft + dubby.dubbyParameters[MIX].value * preDelayedWetLeft;
-            float dryWetRight = (1.0f - dubby.dubbyParameters[MIX].value) * dryRight + dubby.dubbyParameters[MIX].value * preDelayedWetRight;
-
-            // Output to both stereo channels
-            out[0][i] = out[2][i] = dryWetLeft;
-            out[1][i] = out[3][i] = dryWetRight; // Mix the processed sample with the original input
-            // out[j][i] = in[j][i] + processed_sample;
-            preDelayLeft.Write(wetLeft);
-            preDelayRight.Write(wetRight);
-            // =======================================
-        
+        preDelayLeft.Write(filteredWetLeft);
+        preDelayRight.Write(filteredWetRight);
     }
 }
 
@@ -98,12 +95,30 @@ int main(void)
     verbRight.SetLpFreq(20000.f);
     dubby.seed.StartAudio(AudioCallback);
 
-
-
     preDelayLeft.Init();
     preDelayRight.Init();
     preDelayLeft.SetDelay(dubby.dubbyParameters[PREDELAY].value);
     preDelayRight.SetDelay(dubby.dubbyParameters[PREDELAY].value);
+
+    lpfLeft.Init(sample_rate);
+    lpfLeft.SetFreq(500.0);
+    lpfLeft.SetRes(0.3f);
+    lpfLeft.SetDrive(0.8f);
+
+    lpfRight.Init(sample_rate);
+    lpfRight.SetFreq(500.0);
+    lpfRight.SetRes(0.3f);
+    lpfRight.SetDrive(0.8f);
+
+    hpfLeft.Init(sample_rate);
+    hpfLeft.SetFreq(500.0);
+    hpfLeft.SetRes(0.3f);
+    hpfLeft.SetDrive(0.8f);
+
+    hpfRight.Init(sample_rate);
+    hpfRight.SetFreq(500.0);
+    hpfRight.SetRes(0.3f);
+    hpfRight.SetDrive(0.8f);
 
     while (1)
     {
@@ -116,12 +131,35 @@ int main(void)
         updateLED();
 
         verbLeft.SetFeedback(dubby.dubbyParameters[LUSH].value);
-       // verbLeft.SetLpFreq(dubby.dubbyParameters[COLOUR].value);
+        // verbLeft.SetLpFreq(dubby.dubbyParameters[COLOUR].value);
         verbRight.SetFeedback(dubby.dubbyParameters[LUSH].value);
-        //verbRight.SetLpFreq(dubby.dubbyParameters[COLOUR].value);
-        
+        // verbRight.SetLpFreq(dubby.dubbyParameters[COLOUR].value);
+
         verbLeft.SetFreeze(dubby.buttons[2].Pressed());
         verbRight.SetFreeze(dubby.buttons[2].Pressed());
+
+        // Apply filtering based on COLOUR parameter
+        float colourValue = dubby.dubbyParameters[COLOUR].value;
+
+
+        // If COLOUR is 0 to 0.5, control LPF (500 Hz to 20000 Hz) exponentially
+        if (colourValue <= 0.5f)
+        {
+            // Map the range 0 to 0.5 to an exponential scale for the LPF
+            float scaledValue = powf(colourValue / 0.5f, 2.0f); // Apply exponential curve
+            float lpfFreq = 500.0f + scaledValue * (20000.0f - 500.0f);
+            lpfLeft.SetFreq(lpfFreq);
+            lpfRight.SetFreq(lpfFreq);
+        }
+        // If COLOUR is 0.5 to 1, control HPF (0 Hz to 10000 Hz) exponentially
+        else
+        {
+            // Map the range 0.5 to 1 to an exponential scale for the HPF
+            float scaledValue = powf((colourValue - 0.5f) / 0.5f, 2.0f); // Apply exponential curve
+            float hpfFreq = scaledValue * 10000.0f;
+            hpfLeft.SetFreq(hpfFreq);
+            hpfRight.SetFreq(hpfFreq);
+        }
 
         // verbLeft.MakeBubbles(dubby.buttons[3].Pressed());
         // verbRight.MakeBubbles(dubby.buttons[3].Pressed());

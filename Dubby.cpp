@@ -215,7 +215,7 @@ void Dubby::InitDubbyParameters()
 {
     dubbyParameters[PREDELAY].Init(Params(PREDELAY), KN1, 5.f, 5.f, 20000.f, LINEAR, true, 0.f, true, 20000.f);
     dubbyParameters[LUSH].Init(Params(LUSH), KN2, 0.67f, 0.66f, 0.98f, LOGARITHMIC, true, 0.01f, true, 0.999f);
-    dubbyParameters[COLOUR].Init(Params(COLOUR), KN3, 5000.f, 500.f, 10000.f, EXPONENTIAL, true, 50.f, true, 10000.f);
+    dubbyParameters[COLOUR].Init(Params(COLOUR), KN3, 0.5f, 0.f, 1.f, LINEAR, true, 0.f, true, 1.f);
     dubbyParameters[MIX].Init(Params(MIX), KN4, 0.5f, 0.f, 1.f, LINEAR, true, 0.f, true, 1.f);
 }
 
