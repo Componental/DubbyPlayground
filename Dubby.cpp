@@ -1908,13 +1908,13 @@ void Dubby::DisplayParameterList(int increment)
     // display.DrawRect(PANE_X_START - 1, 1, PANE_X_END, PANE_Y_END, false, true);
 
     int optionStart = 1;
-    if (parameterSelected > (PARAMLIST_ROWS_ON_SCREEN - 1))
+    if (parameterSelected > (PARAMLIST_ROWS_ON_SCREEN - 1 -3)) // HARDCODED QUICK FIX. ADJUST WHEN ADDING MORE PARAMETERS
     {
-        optionStart = parameterSelected - (PARAMLIST_ROWS_ON_SCREEN - 1);
+        optionStart = parameterSelected - (PARAMLIST_ROWS_ON_SCREEN - 1 -3); // HARDCODED QUICK FIX. ADJUST WHEN ADDING MORE PARAMETERS
     }
 
     // display each item, j for text cursor
-    for (int i = optionStart, j = 0; i < optionStart + PARAMLIST_ROWS_ON_SCREEN; i++, j++)
+    for (int i = optionStart, j = 0; i < optionStart + PARAMLIST_ROWS_ON_SCREEN-3; i++, j++) // HARDCODED QUICK FIX. ADJUST WHEN ADDING MORE PARAMETERS
     {
         // clear item spaces
         display.DrawRect(paramListBoxBounding[j][0], paramListBoxBounding[j][1], paramListBoxBounding[j][2], paramListBoxBounding[j][3], false, true);
