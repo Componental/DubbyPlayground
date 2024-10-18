@@ -220,9 +220,9 @@ void Dubby::InitDubbyParameters()
     dubbyParameters[DLY_MAXWET].Init(Params(DLY_MAXWET), BTN4, 0, 0, 1, LINEAR, true, 0, true, 1);
     dubbyParameters[DLY_MIX].Init(Params(DLY_MIX), KN3, 0, 0, 1, LINEAR, true, 0, true, 1);
     dubbyParameters[RVB_FEEDBACK].Init(Params(RVB_FEEDBACK), KN1, 0.96, 0.84, 0.99, LOGARITHMIC, true, 0, true, 1);
-    dubbyParameters[RVB_LPF_CUTOFF].Init(Params(RVB_LPF_CUTOFF), KN4, 2500, 2500, 10000, EXPONENTIAL, true, 0, true, 20000);
+    dubbyParameters[RVB_LPF_CUTOFF].Init(Params(RVB_LPF_CUTOFF), KN4, 2500, 250, 10000, EXPONENTIAL, true, 0, true, 20000);
     dubbyParameters[RVB_MIX].Init(Params(RVB_MIX), KN2, 0.8, 0, 1, LINEAR);
-    dubbyParameters[FLT_CUTOFF].Init(Params(FLT_CUTOFF), KN4, 2500, 2500, 10000, EXPONENTIAL);
+    dubbyParameters[FLT_CUTOFF].Init(Params(FLT_CUTOFF), KN4, 2500, 250, 10000, EXPONENTIAL);
     dubbyParameters[FLT_RESONANCE].Init(Params(FLT_RESONANCE), CONTROL_NONE, 0.3, 0, 1, LINEAR);
     dubbyParameters[DRV_AMOUNT].Init(Params(DRV_AMOUNT), CONTROL_NONE, 0.43, 0.10, 0.46, EXPONENTIAL);
     dubbyParameters[DRV_GAIN_COMPENSATION].Init(Params(DRV_GAIN_COMPENSATION), CONTROL_NONE, 0.21, 1, 0.21, EXPONENTIAL);

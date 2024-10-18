@@ -256,14 +256,14 @@ namespace daisy
     const char * ParamsStrings[PARAMS_LAST] = 
     { 
       "-",
-      "TIME DLY", 
+      "DTIME DLY", 
       "FB DLY", 
       "DIV DLY", 
       "SPREAD DLY",
       "DMIX DLY",
-      "FREEZE DLY",
+      "FRZ DLY",
       "WET TOGGLE",
-      "TIME RVB",
+      "RTIME RVB",
       "CUTOFF RVB",
       "RMIX RVB",
       "CUTOFF LPF",
