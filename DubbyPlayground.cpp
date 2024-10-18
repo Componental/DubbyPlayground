@@ -91,11 +91,11 @@ int main(void)
     // setup reverb
     verbLeft.Init(sample_rate);
     verbLeft.SetFeedback(0.5f);
-    verbLeft.SetLpFreq(5000.f);
+    verbLeft.SetLpFreq(20000.f);
     // setup reverb
     verbRight.Init(sample_rate);
     verbRight.SetFeedback(0.5f);
-    verbRight.SetLpFreq(5000.f);
+    verbRight.SetLpFreq(20000.f);
     dubby.seed.StartAudio(AudioCallback);
 
 
@@ -116,9 +116,9 @@ int main(void)
         updateLED();
 
         verbLeft.SetFeedback(dubby.dubbyParameters[LUSH].value);
-        verbLeft.SetLpFreq(dubby.dubbyParameters[COLOUR].value);
+       // verbLeft.SetLpFreq(dubby.dubbyParameters[COLOUR].value);
         verbRight.SetFeedback(dubby.dubbyParameters[LUSH].value);
-        verbRight.SetLpFreq(dubby.dubbyParameters[COLOUR].value);
+        //verbRight.SetLpFreq(dubby.dubbyParameters[COLOUR].value);
         
         verbLeft.SetFreeze(dubby.buttons[2].Pressed());
         verbRight.SetFreeze(dubby.buttons[2].Pressed());

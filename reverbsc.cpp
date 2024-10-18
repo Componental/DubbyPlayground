@@ -48,10 +48,10 @@ int ReverbSc::Init(float sr)
     i_sample_rate_ = sr;
     sample_rate_   = sr;
     feedback_      = 0.97;
-    lpfreq_        = 10000;
+    lpfreq_        = 20000;
     i_pitch_mod_   = 1;
     i_skip_init_   = 0;
-    damp_fact_     = 1.0;
+    damp_fact_     = 0.0;
     prv_lpfreq_    = 0.0;
     init_done_     = 1;
     int i, n_bytes = 0;
@@ -410,7 +410,7 @@ int ReverbSc::Process(const float &in,
         /* apply feedback gain and lowpass filter */
 
         v0 *= (float)feedback_;
-        v0               = (lp->filter_state - v0) * damp_fact + v0;
+        //v0               = (lp->filter_state - v0) * damp_fact + v0;
         lp->filter_state = v0;
 
         /* mix to output */
