@@ -1,3 +1,4 @@
+
 #include <math.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -82,7 +83,19 @@ static int DelayLineBytesAlloc(float sr, float i_pitch_mod, int n)
     n_bytes += (DelayLineMaxSamples(sr, i_pitch_mod, n) * (int)sizeof(float));
     return n_bytes;
 }
-
+void ReverbSc::SetFreeze(bool freeze)
+{
+    if (freeze && !freeze_)
+    {
+        freeze_feedback_ = feedback_; // Save the current feedback value before freezing
+        feedback_ = 1.0;              // Set feedback to 1 when frozen
+    }
+    else if (!freeze && freeze_)
+    {
+        feedback_ = freeze_feedback_;  // Restore the original feedback value when unfreezing
+    }
+    freeze_ = freeze;  // Update the freeze state
+}
 void ReverbSc::NextRandomLineseg(ReverbScDl *lp, int n)
 {
     float prv_del, nxt_del, phs_inc_val;
@@ -136,153 +149,154 @@ int ReverbSc::InitDelayLine(ReverbScDl *lp, int n)
     return REVSC_OK;
 }
 
-int ReverbSc::Process(const float &in1,
-                      const float &in2,
-                      float *      out1,
-                      float *      out2)
-{
-    float       a_in_l, a_in_r, a_out_l, a_out_r;
-    float       vm1, v0, v1, v2, am1, a0, a1, a2, frac;
-    ReverbScDl *lp;
-    int         read_pos;
-    uint32_t    n;
-    int         buffer_size; /* Local copy */
-    float       damp_fact = damp_fact_;
+// int ReverbSc::Process(const float &in1,
+//                       const float &in2,
+//                       float *      out1,
+//                       float *      out2)
+// {
+//     float       a_in_l, a_in_r, a_out_l, a_out_r;
+//     float       vm1, v0, v1, v2, am1, a0, a1, a2, frac;
+//     ReverbScDl *lp;
+//     int         read_pos;
+//     uint32_t    n;
+//     int         buffer_size; /* Local copy */
+//     float       damp_fact = damp_fact_;
 
-    //if (init_done_ <= 0) return REVSC_NOT_OK;
-    if(init_done_ <= 0)
-        return REVSC_NOT_OK;
+//     //if (init_done_ <= 0) return REVSC_NOT_OK;
+//     if(init_done_ <= 0)
+//         return REVSC_NOT_OK;
 
-    /* calculate tone filter coefficient if frequency changed */
-    if(lpfreq_ != prv_lpfreq_)
-    {
-        prv_lpfreq_ = lpfreq_;
-        damp_fact
-            = 2.0f - cosf(prv_lpfreq_ * (2.0f * (float)M_PI) / sample_rate_);
-        damp_fact = damp_fact_
-            = damp_fact - sqrtf(damp_fact * damp_fact - 1.0f);
-    }
+//     /* calculate tone filter coefficient if frequency changed */
+//     if(lpfreq_ != prv_lpfreq_)
+//     {
+//         prv_lpfreq_ = lpfreq_;
+//         damp_fact
+//             = 2.0f - cosf(prv_lpfreq_ * (2.0f * (float)M_PI) / sample_rate_);
+//         damp_fact = damp_fact_
+//             = damp_fact - sqrtf(damp_fact * damp_fact - 1.0f);
+//     }
 
-    /* calculate "resultant junction pressure" and mix to input signals */
+//     /* calculate "resultant junction pressure" and mix to input signals */
  
-    a_in_l = a_out_l = a_out_r = 0.0;
-    for(n = 0; n < 8; n++)
-    {
-        a_in_l += delay_lines_[n].filter_state;
-    }
-    a_in_l *= kJpScale;
-    a_in_r = a_in_l + in2;
-    a_in_l = a_in_l + in1;
+//     a_in_l = a_out_l = a_out_r = 0.0;
+//     for(n = 0; n < 8; n++)
+//     {
+//         a_in_l += delay_lines_[n].filter_state;
+//     }
+//     a_in_l *= kJpScale;
+//     a_in_r = a_in_l + in2;
+//     a_in_l = a_in_l + in1;
 
-    /* loop through all delay lines */
+//     /* loop through all delay lines */
 
-    for(n = 0; n < 8; n++)
-    {
-        lp          = &delay_lines_[n];
-        buffer_size = lp->buffer_size;
+//     for(n = 0; n < 8; n++)
+//     {
+//         lp          = &delay_lines_[n];
+//         buffer_size = lp->buffer_size;
 
-        /* send input signal and feedback to delay line */
+//         /* send input signal and feedback to delay line */
 
-        lp->buf[lp->write_pos]
-            = (float)((n & 1 ? a_in_r : a_in_l) - lp->filter_state);
-        if(++lp->write_pos >= buffer_size)
-        {
-            lp->write_pos -= buffer_size;
-        }
+//         lp->buf[lp->write_pos]
+//             = (float)((n & 1 ? a_in_r : a_in_l) - lp->filter_state);
+//         if(++lp->write_pos >= buffer_size)
+//         {
+//             lp->write_pos -= buffer_size;
+//         }
 
-        /* read from delay line with cubic interpolation */
+//         /* read from delay line with cubic interpolation */
 
-        if(lp->read_pos_frac >= DELAYPOS_SCALE)
-        {
-            lp->read_pos += (lp->read_pos_frac >> DELAYPOS_SHIFT);
-            lp->read_pos_frac &= DELAYPOS_MASK;
-        }
-        if(lp->read_pos >= buffer_size)
-            lp->read_pos -= buffer_size;
-        read_pos = lp->read_pos;
-        frac     = (float)lp->read_pos_frac * (1.0 / (float)DELAYPOS_SCALE);
+//         if(lp->read_pos_frac >= DELAYPOS_SCALE)
+//         {
+//             lp->read_pos += (lp->read_pos_frac >> DELAYPOS_SHIFT);
+//             lp->read_pos_frac &= DELAYPOS_MASK;
+//         }
+//         if(lp->read_pos >= buffer_size)
+//             lp->read_pos -= buffer_size;
+//         read_pos = lp->read_pos;
+//         frac     = (float)lp->read_pos_frac * (1.0 / (float)DELAYPOS_SCALE);
 
-        /* calculate interpolation coefficients */
+//         /* calculate interpolation coefficients */
 
-        a2 = frac * frac;
-        a2 -= 1.0;
-        a2 *= (1.0 / 6.0);
-        a1 = frac;
-        a1 += 1.0;
-        a1 *= 0.5;
-        am1 = a1 - 1.0;
-        a0  = 3.0 * a2;
-        a1 -= a0;
-        am1 -= a2;
-        a0 -= frac;
+//         a2 = frac * frac;
+//         a2 -= 1.0;
+//         a2 *= (1.0 / 6.0);
+//         a1 = frac;
+//         a1 += 1.0;
+//         a1 *= 0.5;
+//         am1 = a1 - 1.0;
+//         a0  = 3.0 * a2;
+//         a1 -= a0;
+//         am1 -= a2;
+//         a0 -= frac;
 
-        /* read four samples for interpolation */
+//         /* read four samples for interpolation */
 
-        if(read_pos > 0 && read_pos < (buffer_size - 2))
-        {
-            vm1 = (float)(lp->buf[read_pos - 1]);
-            v0  = (float)(lp->buf[read_pos]);
-            v1  = (float)(lp->buf[read_pos + 1]);
-            v2  = (float)(lp->buf[read_pos + 2]);
-        }
-        else
-        {
-            /* at buffer wrap-around, need to check index */
+//         if(read_pos > 0 && read_pos < (buffer_size - 2))
+//         {
+//             vm1 = (float)(lp->buf[read_pos - 1]);
+//             v0  = (float)(lp->buf[read_pos]);
+//             v1  = (float)(lp->buf[read_pos + 1]);
+//             v2  = (float)(lp->buf[read_pos + 2]);
+//         }
+//         else
+//         {
+//             /* at buffer wrap-around, need to check index */
 
-            if(--read_pos < 0)
-                read_pos += buffer_size;
-            vm1 = (float)lp->buf[read_pos];
-            if(++read_pos >= buffer_size)
-                read_pos -= buffer_size;
-            v0 = (float)lp->buf[read_pos];
-            if(++read_pos >= buffer_size)
-                read_pos -= buffer_size;
-            v1 = (float)lp->buf[read_pos];
-            if(++read_pos >= buffer_size)
-                read_pos -= buffer_size;
-            v2 = (float)lp->buf[read_pos];
-        }
-        v0 = (am1 * vm1 + a0 * v0 + a1 * v1 + a2 * v2) * frac + v0;
+//             if(--read_pos < 0)
+//                 read_pos += buffer_size;
+//             vm1 = (float)lp->buf[read_pos];
+//             if(++read_pos >= buffer_size)
+//                 read_pos -= buffer_size;
+//             v0 = (float)lp->buf[read_pos];
+//             if(++read_pos >= buffer_size)
+//                 read_pos -= buffer_size;
+//             v1 = (float)lp->buf[read_pos];
+//             if(++read_pos >= buffer_size)
+//                 read_pos -= buffer_size;
+//             v2 = (float)lp->buf[read_pos];
+//         }
+//         v0 = (am1 * vm1 + a0 * v0 + a1 * v1 + a2 * v2) * frac + v0;
 
-        /* update buffer read position */
+//         /* update buffer read position */
 
-        lp->read_pos_frac += lp->read_pos_frac_inc;
+//         lp->read_pos_frac += lp->read_pos_frac_inc;
 
-        /* apply feedback gain and lowpass filter */
+//         /* apply feedback gain and lowpass filter */
 
-        v0 *= (float)feedback_;
-        v0               = (lp->filter_state - v0) * damp_fact + v0;
-        lp->filter_state = v0;
+//         v0 *= (float)feedback_;
+//         v0               = (lp->filter_state - v0) * damp_fact + v0;
+//         lp->filter_state = v0;
 
-        /* mix to output */
+//         /* mix to output */
 
-        if(n & 1)
-        {
-            a_out_r += v0;
-        }
-        else
-        {
-            a_out_l += v0;
-        }
+//         if(n & 1)
+//         {
+//             a_out_r += v0;
+//         }
+//         else
+//         {
+//             a_out_l += v0;
+//         }
 
-        /* start next random line segment if current one has reached endpoint */
+//         /* start next random line segment if current one has reached endpoint */
 
-        if(--(lp->rand_line_cnt) <= 0)
-        {
-            NextRandomLineseg(lp, n);
-        }
-    }
-    /* someday, use a_out_r for multimono out */
+//         if(--(lp->rand_line_cnt) <= 0)
+//         {
+//             NextRandomLineseg(lp, n);
+//         }
+//     }
+//     /* someday, use a_out_r for multimono out */
 
-    *out1 = a_out_l * kOutputGain;
-    *out2 = a_out_r * kOutputGain;
-    return REVSC_OK;
-}
+//     *out1 = a_out_l * kOutputGain;
+//     *out2 = a_out_r * kOutputGain;
+//     return REVSC_OK;
+// }
 
 
 int ReverbSc::Process(const float &in,
                       float *      out)
 {
+  
     float       a_in_l, a_out_l;
     float       vm1, v0, v1, v2, am1, a0, a1, a2, frac;
     ReverbScDl *lp;
@@ -313,8 +327,12 @@ int ReverbSc::Process(const float &in,
         a_in_l += delay_lines_[n].filter_state;
     }
     a_in_l *= kJpScale;
-    a_in_l = a_in_l + in;
 
+    if(!freeze_){
+    a_in_l = a_in_l + in;
+    } else{
+        a_in_l = a_in_l;
+    }
     /* loop through all delay lines */
 
     for(n = 0; n < 8; n++)

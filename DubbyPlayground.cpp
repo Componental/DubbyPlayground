@@ -119,6 +119,12 @@ int main(void)
         verbLeft.SetLpFreq(dubby.dubbyParameters[COLOUR].value);
         verbRight.SetFeedback(dubby.dubbyParameters[LUSH].value);
         verbRight.SetLpFreq(dubby.dubbyParameters[COLOUR].value);
+        
+        verbLeft.SetFreeze(dubby.buttons[2].Pressed());
+        verbRight.SetFreeze(dubby.buttons[2].Pressed());
+
+        // verbLeft.MakeBubbles(dubby.buttons[3].Pressed());
+        // verbRight.MakeBubbles(dubby.buttons[3].Pressed());
     }
 }
 
